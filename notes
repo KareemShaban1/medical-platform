@@ -1,0 +1,82 @@
+-- notes
+database tables:
+
+/// market place
+- products (id , name ,  )
+- orders
+- order items
+- cart
+- cart items
+- suppliers (auth)
+- suppliers_users
+- categores
+- product_categories
+- module_approvement
+- admins (auth)
+- doctors 
+- contacts 
+
+
+// rents
+- rental_spaces
+- rental_avalibalities
+- rental_pricings
+- rental_bookings
+- media
+- rental_reviews (not required)
+
+
+// tickets
+- purchase_requests
+- supplier_offer
+- media
+- offer_comments (optional)
+- accepted_offers
+
+
+// jobs
+- jobs
+- job_applications
+
+
+// courses
+- courses
+- course_enrollments
+
+// blog
+- blog categories
+- blog posts
+
+// clinics
+- clinics (auth)
+- clinics_users
+- users_salaries
+- roles 
+- permissions
+- patients (auth) (guest)
+- appointments
+- clinic_inventories
+- clinic_inventories_movments
+- lab_orders 
+
+
+// subscription
+- subscription_plans
+- plan_features
+- user_subscriptions
+
+
+
+
+---------------------------------------------
+-- clinic flow
+    - registration form (clinic details, user details) this data stored in clinis , users tables 
+    admin check this details and approve if data is correct . send notification to clinic user 
+    to know his account id active
+    - registred user take admin role , then he can add users to clinic (doctor , clinic_users) with role 
+    - patient register before make appointment
+    - user can add clinic / doctor available times during week to allow patient to make appointment
+    - patient (auth) can make appointment with status not accepted , user change status to accepted after
+      check patient / appointment data 
+    -   
+
