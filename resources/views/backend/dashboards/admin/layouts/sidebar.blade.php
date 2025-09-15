@@ -30,16 +30,14 @@
 
               <!-- <li class="side-nav-title side-nav-item">Navigation</li> -->
 
-              <!-- @can('view dashboard')
               <li class="side-nav-item">
-                  <a href="{{route('dashboard.index')}}" class="side-nav-link">
+                  <a href="" class="side-nav-link">
                       <i class="uil-home-alt"></i>
                       <span>
                           {{__('Dashboard')}}
                       </span>
                   </a>
               </li>
-              @endcan -->
 
 
 
@@ -72,12 +70,7 @@
                   </div>
               </li>
 
-
-
           </ul>
-
-
-
 
           <!-- End Sidebar -->
 

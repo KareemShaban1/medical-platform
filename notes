@@ -68,15 +68,368 @@ database tables:
 
 
 
----------------------------------------------
--- clinic flow
-    - registration form (clinic details, user details) this data stored in clinis , users tables 
-    admin check this details and approve if data is correct . send notification to clinic user 
-    to know his account id active
-    - registred user take admin role , then he can add users to clinic (doctor , clinic_users) with role 
-    - patient register before make appointment
-    - user can add clinic / doctor available times during week to allow patient to make appointment
-    - patient (auth) can make appointment with status not accepted , user change status to accepted after
-      check patient / appointment data 
-    -   
+--------------------------------------------------------------------------------------------------------------
 
+
+------------- 🛒 Marketplace Module ------------
+--- required tables in module : 
+--- admins, suppliers, suppliers_users, clinic_users, clinics , module_approvement
+--- contacts , categories, products , product_categories, cart, cart_items , orders , order_items
+
+admins (auth)
+  id → bigint (PK)
+  name → varchar(255)
+  email → varchar(255) unique
+  password → varchar(255)
+  created_at, updated_at
+
+categories
+  id → bigint (PK)
+  name → varchar(255)
+  slug → varchar(255) unique
+  created_at, updated_at
+
+products
+  id → bigint (PK, auto increment)
+  supplier_id → bigint (FK → suppliers)
+  name → varchar(255)
+  description → text
+  sku → varchar(100) (unique)
+  price_before → decimal(10,2)
+  price_after → decimal(10,2)
+  discount_value → decimal(10,2), nullable
+  stock → int
+  approved → boolean (default false, admin approval)
+  status → boolean (default true)  -- (active or not)
+  created_at, updated_at
+
+product_categories
+  id → bigint (PK)
+  product_id → bigint (FK → products)
+  category_id → bigint (FK → categories)
+
+orders
+  id → bigint (PK)
+  clinic_user_id → bigint (FK → clinic_users)
+  clinic_id → bigint (FK → clinics)
+  status → enum(‘pending’, ‘processing’, ‘completed’, ‘canceled’)
+  total → decimal(10,2)
+  payment_method → enum(‘card’, ‘cash’, ‘wallet’)
+  created_at, updated_at
+
+order_items
+  id → bigint (PK)
+  order_id → bigint (FK → orders)
+  product_id → bigint (FK → products)
+  quantity → int
+  price → decimal(10,2)
+
+cart
+  id → bigint (PK)
+  uuid → varchar(255) (unique)
+  clinic_user_id → bigint (FK → clinic_users)
+  clinic_id → bigint (FK → clinics)
+  created_at, updated_at
+
+cart_items
+  id → bigint (PK)
+  cart_id → bigint (FK → cart)
+  product_id → bigint (FK → products)
+  quantity → int
+
+suppliers (auth)
+  id → bigint (PK)
+  name → varchar(255)
+  phone → varchar(50)
+  address → text
+  approved → boolean (admin approval)
+  created_at, updated_at
+
+supplier_users
+  id → bigint (PK)
+  supplier_id → bigint (FK → suppliers)
+  name → varchar(255)
+  email → varchar(255)
+  password → varchar(255)
+  created_at, updated_at
+
+module_approvement
+  id → bigint (PK)
+  module → nullableMorphs (module_type, module_id)
+  approved_by → bigint (FK → admins)
+  status → enum(‘pending’, ‘approved’, ‘rejected’)
+  notes → text nullable
+  created_at, updated_at
+
+contacts
+  id → bigint (PK)
+  module → nullableMorphs (module_type, module_id)
+  key → enum(‘phone’, ‘email’)
+  value → text
+  status → enum(‘pending’, ‘read’, ‘replied’)
+  created_at, updated_at
+
+
+--------------------------------------------------------------------------------------------------------------
+
+-------------- clinic module ------------
+--- required tables in module : 
+--- admins, clinics, clinic_users ,clinic_user_salaries , patients, doctors
+--- clinic_inventories, clinic_inventories_movments , appointments, lab_orders,
+--- [roles, permissions , media] => packages tables
+
+
+- clinics (auth)
+  id → bigint (PK)
+  name → varchar(255)
+  phone → varchar(50)
+  address → text
+  approved → boolean
+  status → boolean (default true) -- (active or not)
+  created_at, updated_at  
+
+- clinic_users
+  id → bigint (PK)
+  clinic_id → bigint (FK → clinics)
+  email → varchar(255) unique
+  password → varchar(255)
+  status → boolean (default true) -- (active or not)
+  salary_frequency → enum(‘daily’, ‘weekly’, ‘monthly’)
+  amount_per_salary_frequency → decimal(10,2) nullable
+  created_at, updated_at
+
+- clinic_user_salaries
+  id → bigint (PK)
+  clinic_user_id → bigint (FK → clinic_users)
+  amount → decimal(10,2)
+  salary_frequency → enum(‘daily’, ‘weekly’, ‘monthly’)
+  amount_per_salary_frequency → decimal(10,2)
+  start_date → date
+  end_date → date nullable
+  paid → boolean (default false)
+  notes → text nullable
+  created_at, updated_at
+ 
+- doctors
+  id → bigint (PK)
+  clinic_user_id → bigint (FK → clinic_users)
+  name → varchar(255)
+  specialization → varchar(255)
+  bio → text
+  email → varchar(255) unique
+  password → varchar(255)
+  phone → varchar(50)
+  approved → boolean
+  created_at, updated_at
+
+- clinic_inventories  
+  id → bigint (PK)
+  clinic_id → bigint (FK → clinics)
+  item_name → varchar(255)
+  quantity → int
+  unit → varchar(50) -- (piece, kg, g, ml, l, etc.)
+  created_at, updated_at
+
+- clinic_inventories_movments
+  id → bigint (PK)
+  clinic_inventory_id → bigint (FK → clinic_inventories) (item id)
+  quantity → int
+  type → enum(‘in’, ‘out’)
+  notes → text nullable
+  created_at, updated_at  
+
+- patients
+  id → bigint (PK)
+  clinic_id → bigint (FK → clinics) (optional)
+  name → varchar(255)
+  email → varchar(255) unique
+  password → varchar(255)
+  phone → varchar(50)
+  created_at, updated_at
+
+- appointments
+  id → bigint (PK)
+  doctor_id → bigint (FK → doctors)
+  patient_id → bigint (FK → patients)
+  date → date
+  time → time
+  notes → text nullable
+  status → enum(‘pending’, ‘confirmed’, ‘canceled’)
+  created_at, updated_at
+
+- lab_orders
+  id → bigint (PK)
+  patient_id → bigint (FK → patients)
+  doctor_id → bigint (FK → doctors)
+  lab_test → varchar(255)
+  report → text nullable
+  notes → text nullable
+  image → varchar(255) nullable
+  status → enum(‘pending’, ‘completed’)
+  created_at, updated_at
+
+
+--------------------------------------------------------------------------------------------------------------
+
+-------------- job module ------------
+--- required tables in module : 
+--- admins, clinics, clinic_users , jobs, job_applications 
+
+- jobs
+  id → bigint (PK)
+  clinic_id → bigint (FK → clinics)
+  title → varchar(255)
+  description → text
+  location → varchar(255)
+  salary → decimal(10,2)
+  approved → boolean (default false, admin approval)
+  status → boolean (default true) -- (active or not)
+  created_at, updated_at
+
+- job_applications
+  id → bigint (PK)
+  job_id → bigint (FK → jobs)
+  clinic_user_id → bigint (FK → clinic_users)
+  cv → varchar(255) nullable
+  status → enum(‘pending’, ‘interviewed’, ‘hired’)
+  notes → text nullable
+  [applicant_data → json nullable] -- (name, phone, email)
+  created_at, updated_at
+
+
+--------------------------------------------------------------------------------------------------------------
+
+-------------- courses module ------------
+--- required tables in module : 
+--- admins, clinics, clinic_users , doctors , courses, course_applications 
+
+- courses
+  id → bigint (PK)
+  title → varchar(255)
+  description → text
+  url → varchar(255)
+  duration → varchar(50) -- (hours, days, weeks, months)
+  start_date → date
+  end_date → date nullable
+  image → varchar(255) nullable  -- [media]
+  approved → boolean (default false, admin approval)
+  status → boolean (default true) -- (active or not)
+  created_at, updated_at
+
+- course_enrollments
+  id → bigint (PK)
+  course_id → bigint (FK → courses)
+  clinic_user_id → bigint (FK → clinic_users)
+  status → boolean (default true) -- (active or not)
+  notes → text nullable
+  created_at, updated_at
+
+
+-----------------------------------------------------------------------------------------------
+
+-------------- Blog module ------------
+--- required tables in module : 
+--- admins, blogs
+
+- blog_categories
+  id → bigint (PK)
+  name → varchar(255)
+  slug → varchar(255) unique
+  approved → boolean (default false, admin approval)
+  status → boolean (default true) -- (active or not)
+  created_at, updated_at
+
+- blog_posts
+  id → bigint (PK)
+  category_id → bigint (FK → blog_categories)
+  title → varchar(255)
+  content → text
+  image → varchar(255) nullable  -- [media]
+  approved → boolean (default false, admin approval)
+  status → boolean (default true) -- (active or not)
+  created_at, updated_at
+
+
+-----------------------------------------------------------------------------------------------------
+-------------- Tickets module ------------
+--- required tables in module : 
+--- admins , clinics , suppliers , purchase_requests , supplier_offers , offer_comments , accepted_offers , media
+
+- purchase_requests
+  id → bigint (PK)
+  clinic_id → bigint (FK → clinics)
+  title → varchar(255)
+  content → text
+  notes → text nullable
+  approved → boolean (default false, admin approval)
+  status → boolean (default true) -- (active or not)
+  created_at, updated_at
+
+- supplier_offers
+  id → bigint (PK)
+  purchase_request_id → bigint (FK → purchase_requests)
+  supplier_user_id → bigint (FK → supplier_users)
+  content → text
+  notes → text nullable
+  price → decimal(10,2)
+  approved → boolean (default false, admin approval)
+  created_at, updated_at
+
+- offer_comments
+  id → bigint (PK)
+  supplier_offer_id → bigint (FK → supplier_offers)
+  supplier_user_id → bigint (FK → supplier_users)
+  clinic_user_id → bigint (FK → clinic_users)
+  content → text
+  created_at, updated_at
+
+- accepted_offers
+  id → bigint (PK)
+  purchase_request_id → bigint (FK → purchase_requests)
+  supplier_offer_id → bigint (FK → supplier_offers)
+  supplier_user_id → bigint (FK → supplier_users)
+  clinic_user_id → bigint (FK → clinic_users)
+  price → decimal(10,2)
+  created_at, updated_at
+
+
+-----------------------------------------------------------------------------------------------
+-------------- Rentals module ------------
+--- required tables in module : 
+--- admins , clinics , suppliers , rentals_spaces
+
+- rentals_spaces
+  id → bigint (PK)
+  clinic_id → bigint (FK → clinics)
+  name → varchar(255)
+  location → varchar(255)
+  description → text
+  approved → boolean (default false, admin approval)
+  status → boolean (default true) -- (active or not)
+  created_at, updated_at
+
+- rentals_availabilities
+  id → bigint (PK)
+  rental_space_id → bigint (FK → rentals_spaces)
+  start_date → date
+  end_date → date
+  time_start → time
+  time_end → time
+  notes → text nullable
+  status → boolean (default true) -- (available or not)
+  created_at, updated_at
+
+- rental_pricings
+  id → bigint (PK)
+  rental_space_id → bigint (FK → rentals_spaces)
+  price → decimal(10,2)
+  created_at, updated_at
+
+- rental_bookings
+  id → bigint (PK)
+  rental_space_id → bigint (FK → rentals_spaces)
+  booking_user_id → bigint (FK → clinic_users)
+  clinic_id → bigint (FK → clinics)
+  price → decimal(10,2)
+  notes → text nullable
+  created_at, updated_at
