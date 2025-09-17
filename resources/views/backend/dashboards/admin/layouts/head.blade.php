@@ -5,7 +5,7 @@
     <meta content="A fully featured admin theme which can be used to build CRM, CMS, etc." name="description">
     <meta content="Coderthemes" name="author">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    
+
     <!-- App favicon -->
     <link rel="shortcut icon" href="{{asset('backend/assets/images/favicon.ico')}}">
 
@@ -25,7 +25,7 @@
 
 
     <!-- Global Assets -->
-    @include('backend.layouts.global-assets')
+    @include('backend.dashboards.admin.layouts.global-assets')
 
     <style>
         .logo {
