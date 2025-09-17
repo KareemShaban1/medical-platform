@@ -433,3 +433,27 @@ contacts
   price → decimal(10,2)
   notes → text nullable
   created_at, updated_at
+
+
+-------------------------------------------------------------
+4 auth 
+admin (dashboard)  -  supplier -> (supplier_users)  -  clinic -> (clinic_users) - Patient  (reserve - see his reserve - edit his profile)
+
+1- dashboards 
+ - admin dashboard :  admins - roles permissions (approval)
+ - supplier dashboard : products - orders - ....
+ 
+
+
+-- Multi auth + datatable (Supplier - )
+-- 2 ways of trans (name_ar , name_en -  {} )
+name , desc 
+
+
+Step 1 : Multi-Auth (guards) for the diff users + login to the dashboards (fortify) + datatable example in any module
+
+step 2 : register to any dashboard except admin -> status (under-review) or admin can create account for him  (manage clinics module - suppliers module -)
+Step 3 : pending : admin - begin to work in the supplier ( prod - cat [admin] ) dashboard + clinic dashboard 
+
+
+User ????? 
