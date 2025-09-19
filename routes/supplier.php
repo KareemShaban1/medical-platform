@@ -31,19 +31,8 @@ Route::group(
 
         Route::post('/register-supplier', [SupplierController::class, 'registerSupplier'])
             ->name('register-supplier')->withoutMiddleware('auth:supplier');
-    }
-);
 
-        // Roles Management
-        Route::get('roles/data', [\App\Http\Controllers\Backend\Dashboards\Supplier\RoleController::class, 'data'])->name('roles.data');
-        Route::get('roles/trash', [\App\Http\Controllers\Backend\Dashboards\Supplier\RoleController::class, 'trash'])->name('roles.trash');
-        Route::get('roles/trash/data', [\App\Http\Controllers\Backend\Dashboards\Supplier\RoleController::class, 'trashData'])->name('roles.trash.data');
-        Route::post('roles/{id}/restore', [\App\Http\Controllers\Backend\Dashboards\Supplier\RoleController::class, 'restore'])->name('roles.restore');
-        Route::delete('roles/{id}/force-delete', [\App\Http\Controllers\Backend\Dashboards\Supplier\RoleController::class, 'forceDelete'])->name('roles.forceDelete');
-        Route::resource('roles', \App\Http\Controllers\Backend\Dashboards\Supplier\RoleController::class);
-
-
-       Route::group(['prefix' => 'products'], function () {
+        Route::group(['prefix' => 'products'], function () {
             Route::get('/categories', [ProductController::class, 'categories'])->name('products.categories');
             Route::get('/data', [ProductController::class, 'data'])->name('products.data');
             Route::get('/trash/list', [ProductController::class, 'trash'])->name('products.trash');
@@ -59,12 +48,27 @@ Route::group(
 
         });
 
-        Route::post('/supplier/logout', function (Request $request) {
-            Auth::guard('supplier')->logout();
+        // Roles Management
+        Route::get('roles/data', [\App\Http\Controllers\Backend\Dashboards\Supplier\RoleController::class, 'data'])->name('roles.data');
+        Route::get('roles/trash', [\App\Http\Controllers\Backend\Dashboards\Supplier\RoleController::class, 'trash'])->name('roles.trash');
+        Route::get('roles/trash/data', [\App\Http\Controllers\Backend\Dashboards\Supplier\RoleController::class, 'trashData'])->name('roles.trash.data');
+        Route::post('roles/{id}/restore', [\App\Http\Controllers\Backend\Dashboards\Supplier\RoleController::class, 'restore'])->name('roles.restore');
+        Route::delete('roles/{id}/force-delete', [\App\Http\Controllers\Backend\Dashboards\Supplier\RoleController::class, 'forceDelete'])->name('roles.forceDelete');
+        Route::resource('roles', \App\Http\Controllers\Backend\Dashboards\Supplier\RoleController::class);
 
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
+    }
+);
 
-            return redirect()->to('/');
-        })->name('supplier.logout');
+
+
+
+
+    Route::post('/supplier/logout', function (Request $request) {
+        Auth::guard('supplier')->logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->to('/');
+    })->name('supplier.logout');
 
