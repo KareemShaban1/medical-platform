@@ -6,11 +6,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
+use App\Models\Role;
+use Spatie\Permission\Traits\HasRoles;
 
 class ClinicUser extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\ClinicUserFactory> */
-    use HasFactory;
+    use HasFactory, HasRoles;
+
+    protected $guard_name = 'clinic';
 
     protected $fillable = [
         'clinic_id',
@@ -26,4 +30,10 @@ class ClinicUser extends Authenticatable
     {
         return $this->belongsTo(Clinic::class);
     }
+
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class, 'model_has_roles', 'model_id', 'role_id');
+    }
+
 }
