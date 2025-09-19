@@ -1,0 +1,243 @@
+@push('scripts')
+<script>
+    let table = $('#suppliers-table').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: '{{ route("admin.suppliers.data") }}',
+        columns: [{
+                data: 'id',
+                name: 'id'
+            },
+            {
+                data: 'name',
+                name: 'name'
+            },
+            {
+                data: 'phone',
+                name: 'phone'
+            },
+           
+            {
+                data: 'is_allowed',
+                name: 'is_allowed'
+            },
+            {
+                data: 'status',
+                name: 'status'
+            },
+            {
+                data: 'supplier_users',
+                name: 'supplier_users'
+            },
+            {
+                data: 'action',
+                name: 'action',
+                orderable: false,
+                searchable: false
+            },
+
+        ],
+        order: [
+            [0, 'desc']
+        ],
+        dom: '<"d-flex justify-content-between align-items-center mb-3"lfB>rtip',
+        pageLength: 10,
+        responsive: true,
+        language: languages[language],
+        buttons: [{
+                extend: 'print',
+                exportOptions: {
+                    columns: [0, 1, 2, 3, 4, 5, 6]
+                }
+            },
+            {
+                extend: 'excel',
+                text: 'Excel',
+                title: 'Suppliers Data',
+                exportOptions: {
+                    columns: [0, 1, 2, 3, 4, 5, 6]
+                }
+            },
+            {
+                extend: 'copy',
+                exportOptions: {
+                    columns: [0, 1, 2, 3, 4, 5, 6]
+                }
+            },
+        ],
+        drawCallback: function() {
+            $('.dataTables_paginate > .pagination').addClass(
+                'pagination-rounded');
+        }
+    });
+
+
+    $('#images').on('change', function(e) {
+        const files = this.files;
+        const $preview = $('#imagesPreview');
+        $preview.empty(); // clear old previews
+
+        if (!files || files.length === 0) {
+            return;
+        }
+
+        Array.from(files).forEach(file => {
+            if (!file.type.startsWith('image/')) return; // skip non-images
+
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                const img = $('<img>')
+                    .attr('src', ev.target.result)
+                    .addClass('img-fluid rounded me-2 mb-2')
+                    .css({
+                        maxHeight: '150px',
+                        maxWidth: '150px'
+                    });
+                $preview.append(img);
+            }
+            reader.readAsDataURL(file);
+        });
+    });
+
+
+
+    // Reset form
+    function resetForm() {
+        $('#suppliersForm')[0].reset();
+        $('#suppliersForm').attr('action', '{{ route("admin.suppliers.store") }}');
+        $('#supplierId').val('');
+        $('#imagesPreview').hide().attr('src', '');
+        $('#suppliersModal .modal-title').text('{{ __("Add Supplier") }}');
+    }
+
+    // Handle Add/Edit Form Submission
+    $('#suppliersForm').on('submit', function(e) {
+        e.preventDefault();
+
+        let id = $('#supplierId').val();
+        let url = id ?
+            '{{ route("admin.suppliers.update", ":id") }}'.replace(':id', id) :
+            '{{ route("admin.suppliers.store") }}';
+        let method = id ? 'POST' : 'POST'; // always POST, Laravel expects _method for PUT
+
+        // prepare form data
+        let formData = new FormData(this);
+
+        // add hidden values manually (checkboxes)
+        formData.set('status', $('#statusToggle').is(':checked') ? 1 : 0);
+        formData.set('is_allowed', $('#isAllowedToggle').is(':checked') ? 1 : 0);
+
+        if (id) {
+            formData.append('_method', 'PUT'); // Laravel way to spoof PUT
+        }
+
+        $.ajax({
+            url: url,
+            method: method,
+            data: formData,
+            processData: false, // don't let jQuery transform FormData
+            contentType: false,
+            success: function(response) {
+                $('#suppliersModal').modal('hide');
+                table.ajax.reload();
+                Swal.fire('Success', response.message, 'success');
+            },
+            error: function(xhr) {
+                if (xhr.status === 422) {
+                    let errors = xhr.responseJSON.errors || {};
+                    let messages = [];
+                    Object.keys(errors).forEach(function(key) {
+                        messages.push(errors[key][0]);
+                        let nameSelector = '[name="' + key + '"]';
+                        let $input = $(nameSelector);
+                        if (!$input.length) {
+                            $input = $('#clinicsForm').find('[name^="' + key + '"], [name$="' + key + '"]');
+                        }
+                        if ($input.length) {
+                            $input.addClass('is-invalid');
+                            $input.next('.invalid-feedback').text(errors[key][0]);
+                        }
+                    });
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Validation Errors',
+                        html: messages.join('<br>')
+                    });
+                } else {
+                    Swal.fire('Error', 'Something went wrong', 'error');
+                }
+            }
+        });
+    });
+
+    // Edit
+    function editSupplier(id) {
+        $.get('{{ route("admin.suppliers.index") }}/' + id, function(data) {
+            $('#supplierId').val(data.id);
+            $('#name').val(data.name);
+            $('#phone').val(data.phone);
+            $('#address').val(data.address);
+            $('#isAllowedToggle').prop('checked', data.is_allowed);
+            $('#statusToggle').prop('checked', data.status);
+
+            $('#suppliersForm').attr('action',
+                '{{ route("admin.suppliers.update", ":id") }}'.replace(
+                    ':id', id));
+            $('#suppliersModal .modal-title').text('{{ __("Edit Supplier") }}');
+            $('#suppliersModal').modal('show');
+        });
+    }
+
+
+    // Delete
+    function deleteSupplier(id) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '{{ route("admin.suppliers.index") }}/' +
+                        id,
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': $(
+                                'meta[name="csrf-token"]'
+                            )
+                            .attr('content')
+                    },
+                    success: function(response) {
+                        table.ajax.reload();
+                        Swal.fire('Deleted!', response.message, 'success');
+                    }
+                });
+            }
+        });
+    }
+
+    function showSupplier(id) {
+        $.get('{{ route("admin.suppliers.index") }}/' + id , function(data) {
+            $('#showSupplierModal').modal('show');
+            $('#showName').text(data.name);
+            $('#showPhone').text(data.phone);
+            $('#showAddress').text(data.address);
+            $('#showIsAllowed').html(
+                data.is_allowed == 1 ? "<span class='badge bg-success'>{{ __('Allowed') }}</span>" : "<span class='badge bg-danger'>{{ __('Not Allowed') }}</span>"
+            );
+            $('#showStatus').html(
+                data.status == 1 ? "<span class='badge bg-success'>{{ __('Active') }}</span>" : "<span class='badge bg-danger'>{{ __('Inactive') }}</span>"
+            );
+            $('#showUsers').text(data.supplierUsers);
+            $('#showImages').html(data.images.map(function(image) {
+                return '<img src="' + image + '" width="100" height="100">';
+            }));
+            
+        });
+    }
+</script>
+@endpush

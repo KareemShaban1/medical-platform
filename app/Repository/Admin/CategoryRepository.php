@@ -57,38 +57,7 @@ class CategoryRepository implements CategoryRepositoryInterface
         return $this->jsonResponse('success', __('Category deleted successfully'));
     }
 
-    public function trash()
-    {
-        return [];
-    }
-
-    public function trashData()
-    {
-        $categories = Category::onlyTrashed();
-
-        return datatables()->of($categories)
-            ->addColumn('status', fn() => '<span class="badge bg-secondary">Trashed</span>')
-            ->addColumn('action', fn($item) => $this->trashActions($item))
-            ->rawColumns(['status', 'action'])
-            ->make(true);
-    }
-
-    public function restore($id)
-    {
-        $category = Category::onlyTrashed()->findOrFail($id);
-        $category->restore();
-
-        return redirect()->route('admin.categories.index')->with('success', __('Category restored successfully'));
-    }
-
-    public function forceDelete($id)
-    {
-        $category = Category::onlyTrashed()->findOrFail($id);
-        $category->forceDelete();
-
-        return $this->jsonResponse('success', __('Category permanently deleted successfully'));
-    }
-
+   
     /** ---------------------- PRIVATE HELPERS ---------------------- */
 
     private function saveCategory($category, $request, string $action)
@@ -129,17 +98,6 @@ class CategoryRepository implements CategoryRepositoryInterface
         HTML;
     }
 
-    private function trashActions($item): string
-    {
-        return <<<HTML
-        <button class="btn btn-sm btn-success" onclick="restoreCategory({$item->id})">
-            <i class="mdi mdi-restore"></i> Restore
-        </button>
-        <button class="btn btn-sm btn-danger" onclick="forceDeleteCategory({$item->id})">
-            <i class="mdi mdi-delete-forever"></i> Delete
-        </button>
-        HTML;
-    }
 
     private function jsonResponse(string $status, string $message)
     {

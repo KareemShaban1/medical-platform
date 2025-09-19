@@ -2,7 +2,7 @@
 
 namespace App\Repository\Admin;
 
-interface CategoryRepositoryInterface
+interface SupplierRepositoryInterface
 {
     public function index();
     public function data();

@@ -55,11 +55,10 @@ class FortifyServiceProvider extends ServiceProvider
 
 
         //// login response
-        // redirect user (admin/clinic) or supplier after login
+        // redirect user (admin/clinic/supplier) after login
         $this->app->instance(LoginResponse::class, new class implements LoginResponse {
             public function toResponse($request)
             {
-
                 if ($request->user('supplier')) {
                     // redirect supplier to /supplier/dashboard
                     return redirect('/supplier/dashboard');
@@ -111,7 +110,6 @@ class FortifyServiceProvider extends ServiceProvider
         });
 
 
-        ///// custom code
 
         if (Config::get('fortify.guard') == 'admin') {
             //// this method will be used in "web" guard only

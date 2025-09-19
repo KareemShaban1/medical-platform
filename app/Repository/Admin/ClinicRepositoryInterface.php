@@ -2,7 +2,7 @@
 
 namespace App\Repository\Admin;
 
-interface CategoryRepositoryInterface
+interface ClinicRepositoryInterface
 {
     public function index();
     public function data();
