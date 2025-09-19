@@ -31,6 +31,14 @@ Route::group(
         Route::post('categories/update-status', [CategoryController::class, 'updateStatus'])->name('categories.update-status');
         Route::resource('categories', CategoryController::class);
 
+        // Roles Management
+        Route::get('roles/data', [\App\Http\Controllers\Backend\Dashboards\Admin\RoleController::class, 'data'])->name('roles.data');
+        Route::get('roles/trash', [\App\Http\Controllers\Backend\Dashboards\Admin\RoleController::class, 'trash'])->name('roles.trash');
+        Route::get('roles/trash/data', [\App\Http\Controllers\Backend\Dashboards\Admin\RoleController::class, 'trashData'])->name('roles.trash.data');
+        Route::post('roles/{id}/restore', [\App\Http\Controllers\Backend\Dashboards\Admin\RoleController::class, 'restore'])->name('roles.restore');
+        Route::delete('roles/{id}/force-delete', [\App\Http\Controllers\Backend\Dashboards\Admin\RoleController::class, 'forceDelete'])->name('roles.forceDelete');
+        Route::resource('roles', \App\Http\Controllers\Backend\Dashboards\Admin\RoleController::class);
+
         Route::get('clinics/data', [ClinicController::class, 'data'])->name('clinics.data');
         Route::post('clinics/update-status', [ClinicController::class, 'updateStatus'])->name('clinics.update-status');
         Route::resource('clinics', ClinicController::class);
