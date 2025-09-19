@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repository\Supplier;
+namespace App\Interfaces\Clinic;
 
 interface RoleRepositoryInterface
 {

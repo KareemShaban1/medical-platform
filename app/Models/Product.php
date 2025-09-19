@@ -2,16 +2,16 @@
 
 namespace App\Models;
 
-use App\Models\Traits\HasAttachment;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-
-class Product extends Model
+class Product extends Model implements HasMedia
 {
-    use SoftDeletes , HasFactory , HasAttachment;
+    use SoftDeletes , HasFactory , InteractsWithMedia;
 
     const ACTIVE = 1;
     const INACTIVE = 0;
@@ -31,6 +31,20 @@ class Product extends Model
         'reason',
         'status',
     ];
+
+    public $appends = ['images', 'first_image'];
+
+    public function getImagesAttribute()
+    {
+        return $this->getMedia('product_images')->map(function ($media) {
+            return $media->getUrl();
+        })->toArray();
+    }
+
+    public function getFirstImageAttribute()
+    {
+        return $this->images[0];
+    }
 
     protected static function boot()
     {

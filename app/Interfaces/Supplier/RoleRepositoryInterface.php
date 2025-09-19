@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repository\Admin;
+namespace App\Interfaces\Supplier;
 
 interface RoleRepositoryInterface
 {

@@ -10,11 +10,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 
 class Clinic extends Model implements HasMedia
 {
-    use InteractsWithMedia;
-
-    /** @use HasFactory<\Database\Factories\ClinicFactory> */
-    use HasFactory;
-
+    use HasFactory , InteractsWithMedia;
 
     protected $fillable = [
         'name',

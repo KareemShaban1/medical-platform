@@ -8,7 +8,7 @@ use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
-use App\Repository\Admin\CategoryRepositoryInterface;
+use App\Interfaces\Admin\CategoryRepositoryInterface;
 
 class CategoryController extends Controller
 {

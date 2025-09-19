@@ -2,6 +2,7 @@
 
 namespace App\Repository\Admin;
 
+use App\Interfaces\Admin\SupplierRepositoryInterface;
 use App\Models\Supplier;
 
 class SupplierRepository implements SupplierRepositoryInterface
@@ -59,7 +60,7 @@ class SupplierRepository implements SupplierRepositoryInterface
         return $this->jsonResponse('success', __('Supplier deleted successfully'));
     }
 
-   
+
     /** ---------------------- PRIVATE HELPERS ---------------------- */
 
     private function saveSupplier($supplier, $request, string $action)
@@ -112,7 +113,7 @@ class SupplierRepository implements SupplierRepositoryInterface
                        name="is_allowed" value="1" {$checked}>
             </div>
         HTML;
-    } 
+    }
 
 
     private function supplierActions($item): string

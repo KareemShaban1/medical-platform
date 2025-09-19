@@ -2,6 +2,7 @@
 
 namespace App\Repository\Supplier;
 
+use App\Interfaces\Supplier\RoleRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 use App\Models\Role;
 use Spatie\Permission\Models\Permission;

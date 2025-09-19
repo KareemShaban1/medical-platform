@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Backend\Dashboards\Clinic;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Clinic\CreateRoleRequest;
 use App\Http\Requests\Clinic\UpdateRoleRequest;
-use App\Repository\Clinic\RoleRepositoryInterface;
+use App\Interfaces\Clinic\RoleRepositoryInterface;
 use Illuminate\Http\Request;
 
 class RoleController extends Controller

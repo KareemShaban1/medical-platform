@@ -11,15 +11,15 @@ class RepositoryServiceProvider extends ServiceProvider
 
     public function register()
     {
-        $this->app->bind('App\Repository\Admin\CategoryRepositoryInterface', 'App\Repository\Admin\CategoryRepository');
-        $this->app->bind('App\Repository\Admin\ClinicRepositoryInterface', 'App\Repository\Admin\ClinicRepository');
-        $this->app->bind('App\Repository\Admin\SupplierRepositoryInterface', 'App\Repository\Admin\SupplierRepository');
+        $this->app->bind('App\Interfaces\Admin\CategoryRepositoryInterface', 'App\Repository\Admin\CategoryRepository');
+        $this->app->bind('App\Interfaces\Admin\ClinicRepositoryInterface', 'App\Repository\Admin\ClinicRepository');
+        $this->app->bind('App\Interfaces\Admin\SupplierRepositoryInterface', 'App\Repository\Admin\SupplierRepository');
 
         $this->app->bind(ProductRepositoryInterface::class, ProductRepository::class);
         // Role Repositories
-        $this->app->bind('App\Repository\Admin\RoleRepositoryInterface', 'App\Repository\Admin\RoleRepository');
-        $this->app->bind('App\Repository\Supplier\RoleRepositoryInterface', 'App\Repository\Supplier\RoleRepository');
-        $this->app->bind('App\Repository\Clinic\RoleRepositoryInterface', 'App\Repository\Clinic\RoleRepository');
+        $this->app->bind('App\Interfaces\Admin\RoleRepositoryInterface', 'App\Repository\Admin\RoleRepository');
+        $this->app->bind('App\Interfaces\Supplier\RoleRepositoryInterface', 'App\Repository\Supplier\RoleRepository');
+        $this->app->bind('App\Interfaces\Clinic\RoleRepositoryInterface', 'App\Repository\Clinic\RoleRepository');
     }
 
 

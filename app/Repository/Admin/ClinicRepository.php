@@ -2,6 +2,7 @@
 
 namespace App\Repository\Admin;
 
+use App\Interfaces\Admin\ClinicRepositoryInterface;
 use App\Models\Clinic;
 
 class ClinicRepository implements ClinicRepositoryInterface
@@ -59,7 +60,7 @@ class ClinicRepository implements ClinicRepositoryInterface
         return $this->jsonResponse('success', __('Clinic deleted successfully'));
     }
 
-   
+
     /** ---------------------- PRIVATE HELPERS ---------------------- */
 
     private function saveClinic($clinic, $request, string $action)
@@ -111,7 +112,7 @@ class ClinicRepository implements ClinicRepositoryInterface
                        name="is_allowed" value="1" {$checked}>
             </div>
         HTML;
-    } 
+    }
 
 
     private function clinicActions($item): string

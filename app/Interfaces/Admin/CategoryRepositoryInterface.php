@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Repository\Admin;
+namespace App\Interfaces\Admin;
 
-interface SupplierRepositoryInterface
+interface CategoryRepositoryInterface
 {
     public function index();
     public function data();

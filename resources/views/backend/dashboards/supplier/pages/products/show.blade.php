@@ -110,12 +110,12 @@
                 <div class="card-body">
                     <h5 class="card-title mb-3">{{ __('Product Images') }}</h5>
 
-                    @if($product->attachments && $product->attachments->count() > 0)
+                    @if($product->images)
                         <div class="row">
-                            @foreach($product->attachments as $attachment)
+                            @foreach($product->images as $image)
                                 <div class="col-6 mb-3">
                                     <div class="position-relative">
-                                        <img src="{{ asset('storage/' . $attachment->url) }}"
+                                        <img src="{{ $image }}"
                                              alt="Product Image"
                                              class="img-fluid rounded"
                                              style="width: 100%; height: 150px; object-fit: cover;"
@@ -134,7 +134,7 @@
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                             </div>
                                             <div class="modal-body text-center">
-                                                <img src="{{ asset('storage/' . $attachment->path) }}"
+                                                <img src="{{ $image }}"
                                                      alt="Product Image"
                                                      class="img-fluid">
                                             </div>

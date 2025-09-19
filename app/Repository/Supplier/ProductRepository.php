@@ -17,7 +17,7 @@ class ProductRepository implements ProductRepositoryInterface
 
     public function data()
     {
-        $products = Product::with(['categories', 'attachments'])->mine();
+        $products = Product::with(['categories'])->mine();
 
         return datatables()->of($products)
             ->addColumn('images', fn($item) => $this->productImage($item))
@@ -40,7 +40,9 @@ class ProductRepository implements ProductRepositoryInterface
             $product->categories()->sync($data['categories']);
 
             if (!empty($data['attachment'])) {
-                $product->attachAllFiles($data['attachment']);
+                foreach ($data['attachment'] as $attachment) {
+                    $product->addMedia($attachment)->toMediaCollection('product_images');
+                }
             }
 
             return $product;
@@ -49,7 +51,7 @@ class ProductRepository implements ProductRepositoryInterface
 
     public function show($id)
     {
-        return Product::with(['categories', 'attachments', 'supplier'])->findOrFail($id);
+        return Product::with(['categories','supplier'])->findOrFail($id);
     }
 
     public function update($request, $id)
@@ -62,15 +64,15 @@ class ProductRepository implements ProductRepositoryInterface
 
             if (isset($data['removed_images']) && !empty($data['removed_images'])) {
                 foreach ($data['removed_images'] as $attachmentId) {
-                    $product->detachFile(Attachment::find($attachmentId));
+                    $product->deleteMedia($attachmentId);
                 }
             }
 
             if (!empty($data['attachment'])) {
-                $productAttachments = $product->attachments()->pluck('id')->toArray();
+                $productAttachments = $product->getMedia('product_images')->pluck('id')->toArray();
                 $newAttachments = array_diff($data['attachment'], $productAttachments);
                 foreach ($newAttachments as $attachment) {
-                    $product->attachFile($attachment);
+                    $product->addMedia($attachment)->toMediaCollection('product_images');
                 }
             }
 
@@ -96,7 +98,7 @@ class ProductRepository implements ProductRepositoryInterface
 
     public function trashData()
     {
-        $products = Product::onlyTrashed()->with(['categories', 'attachments'])->mine();
+        $products = Product::onlyTrashed()->with(['categories'])->mine();
 
         return datatables()->of($products)
             ->addColumn('image', fn($item) => $this->productImage($item))
@@ -129,9 +131,9 @@ class ProductRepository implements ProductRepositoryInterface
 
     private function productImage($item): string
     {
-        $firstImage = $item->attachments->first();
+        $firstImage = $item->first_image;
         if ($firstImage) {
-            $imageUrl = asset('storage/'.$firstImage->url);
+            $imageUrl = $firstImage;
             return '<img src="' . $imageUrl . '" alt="Product Image" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">';
         }
         return '<span class="badge bg-secondary">No Image</span>';

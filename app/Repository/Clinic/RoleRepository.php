@@ -2,6 +2,7 @@
 
 namespace App\Repository\Clinic;
 
+use App\Interfaces\Clinic\RoleRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 use App\Models\Role;
 use Spatie\Permission\Models\Permission;

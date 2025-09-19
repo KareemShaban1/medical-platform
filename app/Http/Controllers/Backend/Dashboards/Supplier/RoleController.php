@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Backend\Dashboards\Supplier;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Supplier\CreateRoleRequest;
 use App\Http\Requests\Supplier\UpdateRoleRequest;
-use App\Repository\Supplier\RoleRepositoryInterface;
+use App\Interfaces\Supplier\RoleRepositoryInterface;
 use Illuminate\Http\Request;
 
 class RoleController extends Controller

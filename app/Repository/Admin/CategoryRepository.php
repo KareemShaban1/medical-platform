@@ -2,6 +2,7 @@
 
 namespace App\Repository\Admin;
 
+use App\Interfaces\Admin\CategoryRepositoryInterface;
 use App\Models\Category;
 
 class CategoryRepository implements CategoryRepositoryInterface
@@ -57,7 +58,7 @@ class CategoryRepository implements CategoryRepositoryInterface
         return $this->jsonResponse('success', __('Category deleted successfully'));
     }
 
-   
+
     /** ---------------------- PRIVATE HELPERS ---------------------- */
 
     private function saveCategory($category, $request, string $action)

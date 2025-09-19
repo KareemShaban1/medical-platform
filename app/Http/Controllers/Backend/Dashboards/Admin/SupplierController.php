@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Backend\Dashboards\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Repository\Admin\SupplierRepositoryInterface;
+use App\Interfaces\Admin\SupplierRepositoryInterface;
 use App\Http\Requests\Admin\Store\StoreSupplierRequest;
 use App\Http\Requests\Admin\Update\UpdateSupplierRequest;
 use Illuminate\Http\Request;
@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 class SupplierController extends Controller
 {
 
-    
+
     protected $supplierRepo;
 
     public function __construct(SupplierRepositoryInterface $supplierRepo)
@@ -58,5 +58,5 @@ class SupplierController extends Controller
         return $this->supplierRepo->destroy($id);
     }
 
-   
+
 }

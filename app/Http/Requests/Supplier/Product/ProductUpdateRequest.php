@@ -38,7 +38,7 @@ class ProductUpdateRequest extends FormRequest
             'attachment'        => ["nullable","array"],
             'attachment.*'      => ["nullable","image","mimes:jpeg,png,jpg,gif,svg,webp","max:2048"],
             'removed_images'    => ["nullable","array"],
-            'removed_images.*'  => ["nullable","integer","exists:attachments,id"],
+            'removed_images.*'  => ["nullable","integer"],
         ];
     }
 }

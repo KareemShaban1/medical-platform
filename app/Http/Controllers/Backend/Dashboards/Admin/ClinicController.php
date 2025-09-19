@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Backend\Dashboards\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Repository\Admin\ClinicRepositoryInterface;
+use App\Interfaces\Admin\ClinicRepositoryInterface;
 use App\Http\Requests\Admin\Store\StoreClinicRequest;
 use App\Http\Requests\Admin\Update\UpdateClinicRequest;
 use Illuminate\Http\Request;
@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 class ClinicController extends Controller
 {
 
-    
+
     protected $clinicRepo;
 
     public function __construct(ClinicRepositoryInterface $clinicRepo)
@@ -58,5 +58,5 @@ class ClinicController extends Controller
         return $this->clinicRepo->destroy($id);
     }
 
-   
+
 }

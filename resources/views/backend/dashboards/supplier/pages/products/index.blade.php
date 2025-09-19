@@ -323,14 +323,17 @@ function loadExistingImages(attachments) {
                     $('#currentImagesContainer').empty();
 
                     attachments.forEach(function(attachment, index) {
+                        const parts = attachment.split("/");
+
+                        const folderId = parts[parts.length - 2];
                               let imageHtml = `
-                                        <div class="col-3 mb-2 position-relative" id="image-${attachment.id}">
-                                                  <img src="{{ asset('storage/') }}/${attachment.url}" alt="Product Image"
+                                        <div class="col-3 mb-2 position-relative" id="image-${folderId}">
+                                                  <img src="${attachment}" alt="Product Image"
                                                        class="img-fluid rounded"
                                                        style="width: 100%; height: 80px; object-fit: cover;">
                                                   <button type="button" class="btn btn-sm btn-danger position-absolute"
                                                           style="top: 5px; right: 5px; padding: 2px 6px;"
-                                                          onclick="removeExistingImage(${attachment.id})"
+                                                          onclick="removeExistingImage(${folderId})"
                                                           title="Remove Image">
                                                             <i class="fa fa-times"></i>
                                                   </button>
@@ -344,7 +347,7 @@ function loadExistingImages(attachments) {
 }
 
 // Remove existing image
-function removeExistingImage(attachmentId) {
+function removeExistingImage(folderId) {
           Swal.fire({
                     title: 'Are you sure?',
                     text: "This image will be removed from the product!",
@@ -358,9 +361,9 @@ function removeExistingImage(attachmentId) {
                               if (!$('#removedImages').length) {
                                         $('#productsForm').append('<div id="removedImages"></div>');
                               }
-                              $('#removedImages').append(`<input type="hidden" name="removed_images[]" value="${attachmentId}">`);
+                              $('#removedImages').append(`<input type="hidden" name="removed_images[]" value="${folderId}">`);
 
-                              $(`#image-${attachmentId}`).remove();
+                              $(`#image-${folderId}`).remove();
 
                               if ($('#currentImagesContainer').children().length === 0) {
                                         $('#existingImages').hide();
@@ -501,7 +504,7 @@ function editProduct(id) {
                     loadCategoriesForEdit(data.categories);
 
                     // Load existing images
-                    loadExistingImages(data.attachments);
+                    loadExistingImages(data.images);
 
                     $('#attachment').prop('required', false);
                     $('#productsForm').attr('action',
