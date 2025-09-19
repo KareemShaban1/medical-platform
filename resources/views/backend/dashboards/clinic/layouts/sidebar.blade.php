@@ -44,6 +44,7 @@
 
 
 
+                                <!-- Events -->
                                 <li class="side-nav-item">
                                           <a data-bs-toggle="collapse" href="#sidebarEventsReport" aria-expanded="false"
                                                     aria-controls="sidebarEventsReport" class="side-nav-link">
@@ -72,6 +73,7 @@
                                           </div>
                                 </li>
 
+                                <!-- Roles Management -->
                                 <li class="side-nav-item">
                                           <a data-bs-toggle="collapse" href="#sidebarRoles" aria-expanded="false"
                                                     aria-controls="sidebarRoles" class="side-nav-link">

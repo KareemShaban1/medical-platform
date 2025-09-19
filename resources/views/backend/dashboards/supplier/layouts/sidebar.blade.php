@@ -97,28 +97,29 @@
                                     </div>
                           </li>
 
-                                <li class="side-nav-item">
-                                          <a data-bs-toggle="collapse" href="#sidebarRoles" aria-expanded="false"
-                                                    aria-controls="sidebarRoles" class="side-nav-link">
-                                                    <i class="uil-users-alt"></i>
-                                                    <span> {{__('Roles & Permissions')}} </span>
-                                                    <span class="menu-arrow"></span>
-                                          </a>
-                                          <div class="collapse" id="sidebarRoles">
-                                                    <ul class="side-nav-second-level">
-                                                              <li>
-                                                                        <a href="{{ route('supplier.roles.index') }}">
-                                                                                  <span> {{__('Roles')}} </span>
-                                                                        </a>
-                                                              </li>
-                                                              <li>
-                                                                        <a href="{{ route('supplier.roles.trash') }}">
-                                                                                  <span> {{__('Trash Roles')}} </span>
-                                                                        </a>
-                                                              </li>
-                                                    </ul>
-                                          </div>
-                                </li>
+                            <!-- Roles Management -->
+                            <li class="side-nav-item">
+                                        <a data-bs-toggle="collapse" href="#sidebarRoles" aria-expanded="false"
+                                                aria-controls="sidebarRoles" class="side-nav-link">
+                                                <i class="uil-users-alt"></i>
+                                                <span> {{__('Roles & Permissions')}} </span>
+                                                <span class="menu-arrow"></span>
+                                        </a>
+                                        <div class="collapse" id="sidebarRoles">
+                                                <ul class="side-nav-second-level">
+                                                            <li>
+                                                                    <a href="{{ route('supplier.roles.index') }}">
+                                                                                <span> {{__('Roles')}} </span>
+                                                                    </a>
+                                                            </li>
+                                                            <li>
+                                                                    <a href="{{ route('supplier.roles.trash') }}">
+                                                                                <span> {{__('Trash Roles')}} </span>
+                                                                    </a>
+                                                            </li>
+                                                </ul>
+                                        </div>
+                            </li>
 
                       </ul>
 

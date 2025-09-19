@@ -39,11 +39,11 @@
                 </a>
             </li>
 
-
+            <!-- Categories -->
             <li class="side-nav-item">
                 <a data-bs-toggle="collapse" href="#sidebarCategories" aria-expanded="false"
                     aria-controls="sidebarEventsReport" class="side-nav-link">
-                    
+
                     <i class="uil-list-ul"></i>
                     <span> {{__('Categories')}} </span>
                     <span class="menu-arrow"></span>
@@ -57,33 +57,38 @@
                             </a>
                         </li>
 
-                              <li class="side-nav-item">
-                                        <a data-bs-toggle="collapse" href="#sidebarRoles" aria-expanded="false"
-                                                  aria-controls="sidebarRoles" class="side-nav-link">
-                                                  <i class="uil-users-alt"></i>
-                                                  <span> {{__('Roles & Permissions')}} </span>
-                                                  <span class="menu-arrow"></span>
-                                        </a>
-                                        <div class="collapse" id="sidebarRoles">
-                                                  <ul class="side-nav-second-level">
-                                                            <li>
-                                                                      <a href="{{ route('admin.roles.index') }}">
-                                                                                <span> {{__('Roles')}} </span>
-                                                                      </a>
-                                                            </li>
-                                                            <li>
-                                                                      <a href="{{ route('admin.roles.trash') }}">
-                                                                                <span> {{__('Trash Roles')}} </span>
-                                                                      </a>
-                                                            </li>
-                                                  </ul>
-                                        </div>
-                              </li>
+
 
                     </ul>
                 </div>
             </li>
 
+            <!-- Roles Management -->
+            <li class="side-nav-item">
+                <a data-bs-toggle="collapse" href="#sidebarRoles" aria-expanded="false"
+                    aria-controls="sidebarRoles" class="side-nav-link">
+                    <i class="uil-users-alt"></i>
+                    <span> {{__('Roles & Permissions')}} </span>
+                    <span class="menu-arrow"></span>
+                </a>
+            </li>
+            <div class="collapse" id="sidebarRoles">
+                <ul class="side-nav-second-level">
+                    <li>
+                        <a href="{{ route('admin.roles.index') }}">
+                            <span> {{__('Roles')}} </span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('admin.roles.trash') }}">
+                            <span> {{__('Trash Roles')}} </span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            </li>
+
+            <!-- Clinics -->
             <li class="side-nav-item">
                 <a data-bs-toggle="collapse" href="#sidebarClinics" aria-expanded="false"
                     aria-controls="sidebarEventsReport" class="side-nav-link">
@@ -99,11 +104,12 @@
                                 <span> {{__('Clinics')}} </span>
                             </a>
                         </li>
-                       
+
                     </ul>
                 </div>
             </li>
 
+            <!-- Suppliers -->
             <li class="side-nav-item">
                 <a data-bs-toggle="collapse" href="#sidebarSuppliers" aria-expanded="false"
                     aria-controls="sidebarEventsReport" class="side-nav-link">
@@ -119,7 +125,7 @@
                                 <span> {{__('Suppliers')}} </span>
                             </a>
                         </li>
-                       
+
                     </ul>
                 </div>
             </li>
