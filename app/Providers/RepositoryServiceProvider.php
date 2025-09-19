@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Interfaces\Supplier\ProductRepositoryInterface;
+use App\Repository\Supplier\ProductRepository;
 use Illuminate\Support\ServiceProvider;
 
 class RepositoryServiceProvider extends ServiceProvider
@@ -13,6 +15,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind('App\Repository\Admin\ClinicRepositoryInterface', 'App\Repository\Admin\ClinicRepository');
         $this->app->bind('App\Repository\Admin\SupplierRepositoryInterface', 'App\Repository\Admin\SupplierRepository');
 
+        $this->app->bind(ProductRepositoryInterface::class, ProductRepository::class);
     }
 
 
