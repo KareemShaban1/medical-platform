@@ -73,20 +73,27 @@ database tables:
 
 ------------- 🛒 Marketplace Module ------------
 --- required tables in module : 
---- admins, suppliers, suppliers_users, clinic_users, clinics , module_approvement
---- contacts , categories, products , product_categories, cart, cart_items , orders , order_items
+--- admins (d), suppliers (d), suppliers_users (d), clinic_users (d), clinics (d), module_approvement
+--- contacts  , categories(d), products , product_categories, cart, cart_items , orders , order_items
 
-admins (auth)
+--- module_approvement is shared table between modules 
+--- contacts is shared table between modules 
+
+admins (auth) (d)
   id → bigint (PK)
   name → varchar(255)
   email → varchar(255) unique
   password → varchar(255)
+  status → boolean (default true) -- (active or not)
   created_at, updated_at
 
-categories
+categories (d)
   id → bigint (PK)
-  name → varchar(255)
-  slug → varchar(255) unique
+  name_en → varchar(255)
+  name_ar → varchar(255)
+  slug_en → varchar(255) unique
+  slug_ar → varchar(255) unique
+  status → boolean (default true) -- (active or not)
   created_at, updated_at
 
 products
@@ -137,7 +144,7 @@ cart_items
   product_id → bigint (FK → products)
   quantity → int
 
-suppliers (auth)
+suppliers  (d)
   id → bigint (PK)
   name → varchar(255)
   phone → varchar(50)
@@ -145,7 +152,7 @@ suppliers (auth)
   approved → boolean (admin approval)
   created_at, updated_at
 
-supplier_users
+supplier_users (auth) (d)
   id → bigint (PK)
   supplier_id → bigint (FK → suppliers)
   name → varchar(255)
@@ -155,9 +162,9 @@ supplier_users
 
 module_approvement
   id → bigint (PK)
-  module → nullableMorphs (module_type, module_id)
-  approved_by → bigint (FK → admins)
-  status → enum(‘pending’, ‘approved’, ‘rejected’)
+  module → nullableMorphs (module_type, module_id) -- (clinics, suppliers, users, products, jobs)
+  action_by → bigint (FK → admins)
+  action → enum(under_review, approved, rejected)
   notes → text nullable
   created_at, updated_at
 
@@ -179,7 +186,7 @@ contacts
 --- [roles, permissions , media] => packages tables
 
 
-- clinics (auth)
+- clinics (d)
   id → bigint (PK)
   name → varchar(255)
   phone → varchar(50)
@@ -188,7 +195,7 @@ contacts
   status → boolean (default true) -- (active or not)
   created_at, updated_at  
 
-- clinic_users
+- clinic_users (auth) (d)
   id → bigint (PK)
   clinic_id → bigint (FK → clinics)
   email → varchar(255) unique

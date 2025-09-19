@@ -1,66 +1,80 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Backend\Dashboards\Clinic;
 
+use App\Http\Controllers\Controller;
 use App\Models\Clinic;
 use App\Http\Requests\StoreClinicRequest;
 use App\Http\Requests\UpdateClinicRequest;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
+use Illuminate\Http\Request;
+use App\Models\ClinicUser;
 
 class ClinicController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+
+    public function registerClinic(Request $request)
     {
-        //
+        $request->validate([
+            'clinic_name' => 'required',
+            'phone' => 'required',
+            'address' => 'required',
+            'user_name' => 'required',
+            'user_email' => 'required|email',
+            'password' => 'required',
+            'images' => 'required|array',
+            'images.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+        try {
+            DB::beginTransaction();
+
+            // Create the clinic with is_active = false
+            $clinic = Clinic::create([
+                'name' => $request->clinic_name,
+                'phone' => $request->phone,
+                'address' => $request->address,
+                'is_allowed' => false,
+                'status' => false
+            ]);
+
+            if ($request->hasFile('images')) {
+                foreach ($request->file('images') as $image) {
+                    $clinic->addMedia($image)->toMediaCollection('clinic_images');
+                }
+            }
+
+            // Create the user
+            $user = ClinicUser::create([
+                'name' => $request->user_name,
+                'email' => $request->user_email,
+                'password' => Hash::make($request->password),
+                'clinic_id' => $clinic->id
+
+            ]);
+
+            if (Role::where('name', 'clinic-admin')
+                ->where('guard_name', 'clinic')->exists()
+            ) {
+                $user->assignRole('clinic-admin');
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Clinic registered successfully! Your Clinic is under review.'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Registration failed. Please try again.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreClinicRequest $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Clinic $clinic)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Clinic $clinic)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateClinicRequest $request, Clinic $clinic)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Clinic $clinic)
-    {
-        //
-    }
 }

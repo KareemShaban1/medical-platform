@@ -58,24 +58,5 @@ class CategoryController extends Controller
         return $this->categoryRepo->destroy($id);
     }
 
-    public function trash()
-    {
-        return view('backend.dashboards.admin.pages.categories.trash');
-    }
-
-    public function trashData()
-    {
-        return $this->categoryRepo->trashData();
-    }
-
-    public function restore($id)
-    {
-        return $this->categoryRepo->restore($id);
-    }
-
-    public function forceDelete($id)
-    {
-        return $this->categoryRepo->forceDelete($id);
-    }
-
+    
 }

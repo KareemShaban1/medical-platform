@@ -71,6 +71,31 @@
                                                     </ul>
                                           </div>
                                 </li>
+                                <li class="side-nav-item">
+                                    <a data-bs-toggle="collapse" href="#sidebarProducts" aria-expanded="false"
+                                              aria-controls="sidebarProducts" class="side-nav-link">
+                                              <i class="uil-money-withdraw"></i>
+                                              <span> {{__('Products')}} </span>
+                                              <span class="menu-arrow"></span>
+                                    </a>
+                                    <div class="collapse" id="sidebarProducts">
+                                              <ul class="side-nav-second-level">
+                                                        <li>
+
+                                                                  <a href="{{ route('supplier.products.index') }}">
+                                                                            <span> {{__('Products')}} </span>
+                                                                  </a>
+                                                        </li>
+                                                        <li>
+                                                                  <a href="{{ route('supplier.products.trash') }}">
+                                                                            <span> {{__('Trash Products')}}
+                                                                            </span>
+                                                                  </a>
+                                                        </li>
+
+                                              </ul>
+                                    </div>
+                          </li>
 
                                 <li class="side-nav-item">
                                           <a data-bs-toggle="collapse" href="#sidebarRoles" aria-expanded="false"

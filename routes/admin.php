@@ -4,6 +4,10 @@ use App\Http\Controllers\Backend\Dashboards\Admin\DashboardController;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Backend\Dashboards\Admin\CategoryController;
+use App\Http\Controllers\Backend\Dashboards\Admin\ClinicController;
+use App\Http\Controllers\Backend\Dashboards\Admin\SupplierController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 
 Route::group(
@@ -25,10 +29,6 @@ Route::group(
 
         Route::get('categories/data', [CategoryController::class, 'data'])->name('categories.data');
         Route::post('categories/update-status', [CategoryController::class, 'updateStatus'])->name('categories.update-status');
-        Route::get('categories/trash', [CategoryController::class, 'trash'])->name('categories.trash');
-        Route::get('categories/trash/data', [CategoryController::class, 'trashData'])->name('categories.trash.data');
-        Route::post('categories/{id}/restore', [CategoryController::class, 'restore'])->name('categories.restore');
-        Route::delete('categories/{id}/force-delete', [CategoryController::class, 'forceDelete'])->name('categories.forceDelete');
         Route::resource('categories', CategoryController::class);
 
         // Roles Management
@@ -39,5 +39,23 @@ Route::group(
         Route::delete('roles/{id}/force-delete', [\App\Http\Controllers\Backend\Dashboards\Admin\RoleController::class, 'forceDelete'])->name('roles.forceDelete');
         Route::resource('roles', \App\Http\Controllers\Backend\Dashboards\Admin\RoleController::class);
 
+        Route::get('clinics/data', [ClinicController::class, 'data'])->name('clinics.data');
+        Route::post('clinics/update-status', [ClinicController::class, 'updateStatus'])->name('clinics.update-status');
+        Route::resource('clinics', ClinicController::class);
+
+        Route::get('suppliers/data', [SupplierController::class, 'data'])->name('suppliers.data');
+        Route::post('suppliers/update-status', [SupplierController::class, 'updateStatus'])->name('suppliers.update-status');
+        Route::resource('suppliers', SupplierController::class);
+
     }
 );
+
+
+Route::post('/admin/logout', function (Request $request) {
+    Auth::guard('admin')->logout();
+
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
+
+    return redirect()->to('/');
+})->name('admin.logout');

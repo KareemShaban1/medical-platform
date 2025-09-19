@@ -4,10 +4,20 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
-Route::get('/', function () {
-
-    return view('welcome');
-});
+Route::group(
+    [
+        'prefix' => LaravelLocalization::setLocale(),
+        'middleware' => [   
+            'localeCookieRedirect',
+            'localizationRedirect',
+            'localeViewPath'
+        ]
+    ],
+    function () {
+        Route::get('/', function () {
+            return view('home');
+        });
+    });
 
 
 require __DIR__.'/admin.php';     
