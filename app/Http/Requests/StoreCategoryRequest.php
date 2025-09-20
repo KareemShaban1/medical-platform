@@ -23,8 +23,8 @@ class StoreCategoryRequest extends FormRequest
     {
         return [
             //
-            'name_ar' => 'required|string|max:255',
-            'name_en' => 'required|string|max:255',
+            'name_ar' => 'required|string|max:255|unique:categories,name_ar',
+            'name_en' => 'required|string|max:255|unique:categories,name_en',
             'status' => 'required|boolean',
         ];
     }
