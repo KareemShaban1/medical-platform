@@ -47,6 +47,26 @@ Route::group(
         Route::post('suppliers/update-status', [SupplierController::class, 'updateStatus'])->name('suppliers.update-status');
         Route::resource('suppliers', SupplierController::class);
 
+        // Doctor Profiles Management
+        Route::group(['prefix' => 'doctor-profiles'], function () {
+            Route::get('/data', [\App\Http\Controllers\Backend\Dashboards\Admin\DoctorProfileController::class, 'data'])->name('doctor-profiles.data');
+            Route::get('/pending', [\App\Http\Controllers\Backend\Dashboards\Admin\DoctorProfileController::class, 'pending'])->name('doctor-profiles.pending');
+            Route::get('/pending/data', [\App\Http\Controllers\Backend\Dashboards\Admin\DoctorProfileController::class, 'pendingData'])->name('doctor-profiles.pending.data');
+            Route::post('/approve/{id}', [\App\Http\Controllers\Backend\Dashboards\Admin\DoctorProfileController::class, 'approve'])->name('doctor-profiles.approve');
+            Route::post('/reject/{id}', [\App\Http\Controllers\Backend\Dashboards\Admin\DoctorProfileController::class, 'reject'])->name('doctor-profiles.reject');
+            Route::get('/', [\App\Http\Controllers\Backend\Dashboards\Admin\DoctorProfileController::class, 'index'])->name('doctor-profiles.index');
+            Route::get('/{id}', [\App\Http\Controllers\Backend\Dashboards\Admin\DoctorProfileController::class, 'show'])->name('doctor-profiles.show');
+        });
+
+        // Notifications Management
+        Route::group(['prefix' => 'notifications'], function () {
+            Route::get('/', [\App\Http\Controllers\Backend\Dashboards\Admin\NotificationController::class, 'index'])->name('notifications.index');
+            Route::get('/data', [\App\Http\Controllers\Backend\Dashboards\Admin\NotificationController::class, 'data'])->name('notifications.data');
+            Route::get('/latest', [\App\Http\Controllers\Backend\Dashboards\Admin\NotificationController::class, 'getLatest'])->name('notifications.latest');
+            Route::post('/mark-as-read/{id}', [\App\Http\Controllers\Backend\Dashboards\Admin\NotificationController::class, 'markAsRead'])->name('notifications.mark-as-read');
+            Route::post('/mark-all-as-read', [\App\Http\Controllers\Backend\Dashboards\Admin\NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-as-read');
+        });
+
     }
 );
 

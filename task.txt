@@ -1,0 +1,43 @@
+Build a **Clinic User Profile Management** module for a multi-role web inside Clinic Dashboard
+
+Actors & Roles
+• Clinic User (doctor role): can create and edit their own public profile.
+• Admin: reviews, approves, or rejects submitted profiles and provides a rejection reason.
+
+Profile Data Requirements
+- Name (full name)
+- Short bio/summary
+- Contact info (email, phone)
+- Social media links (Twitter, LinkedIn, etc.)
+- Research or published paper links
+- Years of experience + specialties
+- Services offered
+- Profile photo
+- education
+- Experinece
+
+Workflow
+1. Clinic User creates a profile and submits it for approval.
+2. System notifies the Admin of the new submission (data base notification).
+3. Admin can Approve or Reject with a required reason.
+4. If rejected, the Clinic User receives the rejection reason via notification and can edit/resubmit.
+5. Once approved, the profile becomes publicly visible on the website.
+
+Front-End Requirements
+- A dashboard form for Clinic Users with tabs or steps for the profile fields.
+- Public profile page with an eye-catching design: hero image/profile photo, prominent name/title, clean sections for bio, services, research links, etc.
+- Admin panel page listing pending profiles with approve/reject actions and follow the project strcuture of using datatabe.
+- database notifications to Admin and Clinic User so you have to handle it .
+
+Technical Notes
+- Use a database model with a status enum : draft, pending, approved, rejected.
+- Store rejection reason.
+- follow the project strucutre for creating routes and respositories and controllers.
+- Consider using queued notifications or events for approval workflow.
+
+
+Deliverables
+- Backend models, migrations, controllers,repositories,store and update validation requests ,  and routes.
+- frontend for profile creation and update in Clinic dashboard.
+- frontend for profile managment and review in Dashboard dashboard.
+- notification for both admin and doctor

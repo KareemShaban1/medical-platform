@@ -97,6 +97,40 @@
                                           </div>
                                 </li>
 
+
+                                <!-- Doctor Profiles Management -->
+                                <li class="side-nav-item">
+                                          <a data-bs-toggle="collapse" href="#sidebarDoctorProfiles" aria-expanded="false"
+                                                    aria-controls="sidebarDoctorProfiles" class="side-nav-link">
+                                                    <i class="uil-user-md"></i>
+                                                    <span> {{__('Doctor Profiles')}} </span>
+                                                    <span class="menu-arrow"></span>
+                                          </a>
+                                          <div class="collapse" id="sidebarDoctorProfiles">
+                                                    <ul class="side-nav-second-level">
+                                                              <li>
+                                                                        <a href="{{ route('clinic.doctor-profiles.index') }}">
+                                                                                  <span> {{__('Doctor Profiles')}} </span>
+                                                                        </a>
+                                                              </li>
+                                                    </ul>
+                                          </div>
+                                </li>
+
+
+
+
+
+
+                                <!-- Notifications -->
+                                <li class="side-nav-item">
+                                          <a href="{{ route('clinic.notifications.index') }}" class="side-nav-link">
+                                                    <i class="uil-bell"></i>
+                                                    <span> {{__('Notifications')}} </span>
+                                                    <span class="badge bg-danger rounded-pill" id="sidebar-notification-count" style="display: none;">0</span>
+                                          </a>
+                                </li>
+
                                 <!-- Roles Management -->
                                 <li class="side-nav-item">
                                           <a data-bs-toggle="collapse" href="#sidebarRoles" aria-expanded="false"

@@ -21,6 +21,8 @@
         <link href="{{ asset('backend/assets/css/rtl_style.css') }}" rel="stylesheet">
     @endif
 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
 

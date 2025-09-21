@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
 use App\Models\Role;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -13,7 +14,7 @@ use Spatie\Permission\Traits\HasRoles;
 class ClinicUser extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\ClinicUserFactory> */
-    use HasFactory, HasRoles , SoftDeletes;
+    use HasFactory, HasRoles, SoftDeletes, Notifiable;
 
     protected $guard_name = 'clinic';
 
@@ -31,6 +32,11 @@ class ClinicUser extends Authenticatable
     public function clinic()
     {
         return $this->belongsTo(Clinic::class);
+    }
+
+    public function doctorProfile()
+    {
+        return $this->hasOne(DoctorProfile::class);
     }
 
 }
