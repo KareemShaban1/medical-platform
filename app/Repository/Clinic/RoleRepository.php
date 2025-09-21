@@ -16,7 +16,7 @@ class RoleRepository implements RoleRepositoryInterface
 
     public function index()
     {
-        $roles = Role::where('guard_name', $this->guard)->get();
+        $roles = Role::where('guard_name', $this->guard)->where('team_id', auth('clinic')->user()->clinic_id)->get();
         $permissions = Permission::where('guard_name', $this->guard)->get();
 
         return view('backend.dashboards.clinic.pages.roles.index', compact('roles', 'permissions'));
@@ -26,6 +26,7 @@ class RoleRepository implements RoleRepositoryInterface
     {
         $roles = Role::with('permissions')
             ->where('guard_name', $this->guard)
+            ->where('team_id', auth('clinic')->user()->clinic_id)
             ->get();
 
         return DataTables::of($roles)
@@ -46,7 +47,8 @@ class RoleRepository implements RoleRepositoryInterface
         return DB::transaction(function () use ($request) {
             $role = Role::create([
                 'name' => $request->name,
-                'guard_name' => $this->guard
+                'guard_name' => $this->guard,
+                'team_id' => auth('clinic')->user()->clinic_id
             ]);
 
             if ($request->permissions) {
@@ -66,12 +68,12 @@ class RoleRepository implements RoleRepositoryInterface
 
     public function show($id)
     {
-        return Role::where('guard_name', $this->guard)->findOrFail($id);
+        return Role::where('guard_name', $this->guard)->where('team_id', auth('clinic')->user()->clinic_id)->findOrFail($id);
     }
 
     public function edit($id)
     {
-        $role = Role::where('guard_name', $this->guard)->with('permissions')->findOrFail($id);
+        $role = Role::where('guard_name', $this->guard)->where('team_id', auth('clinic')->user()->clinic_id)->with('permissions')->findOrFail($id);
         $permissions = Permission::where('guard_name', $this->guard)->get();
 
         if (request()->ajax()) {
@@ -111,7 +113,7 @@ class RoleRepository implements RoleRepositoryInterface
     public function destroy($id)
     {
         return DB::transaction(function () use ($id) {
-            $role = Role::where('guard_name', $this->guard)->findOrFail($id);
+            $role = Role::where('guard_name', $this->guard)->where('team_id', auth('clinic')->user()->clinic_id)->findOrFail($id);
             $role->delete();
 
             if (request()->ajax()) {
@@ -129,7 +131,7 @@ class RoleRepository implements RoleRepositoryInterface
 
     public function trashData()
     {
-        $roles = Role::onlyTrashed()->where('guard_name', $this->guard);
+        $roles = Role::onlyTrashed()->where('guard_name', $this->guard)->where('team_id', auth('clinic')->user()->clinic_id);
 
         return DataTables::of($roles)
             ->addColumn('status', fn() => '<span class="badge bg-secondary">Trashed</span>')
@@ -141,7 +143,7 @@ class RoleRepository implements RoleRepositoryInterface
     public function restore($id)
     {
         return DB::transaction(function () use ($id) {
-            $role = Role::onlyTrashed()->where('guard_name', $this->guard)->findOrFail($id);
+            $role = Role::onlyTrashed()->where('guard_name', $this->guard)->where('team_id', auth('clinic')->user()->clinic_id)->findOrFail($id);
             $role->restore();
 
             return redirect()->route('clinic.roles.index')->with('success', __('Role restored successfully'));
@@ -151,7 +153,7 @@ class RoleRepository implements RoleRepositoryInterface
     public function forceDelete($id)
     {
         return DB::transaction(function () use ($id) {
-            $role = Role::onlyTrashed()->where('guard_name', $this->guard)->findOrFail($id);
+            $role = Role::onlyTrashed()->where('guard_name', $this->guard)->where('team_id', auth('clinic')->user()->clinic_id)->findOrFail($id);
             $role->forceDelete();
 
             if (request()->ajax()) {

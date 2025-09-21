@@ -7,12 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 use App\Models\Role;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Permission\Traits\HasRoles;
 
 class ClinicUser extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\ClinicUserFactory> */
-    use HasFactory, HasRoles;
+    use HasFactory, HasRoles , SoftDeletes;
 
     protected $guard_name = 'clinic';
 
@@ -20,6 +21,7 @@ class ClinicUser extends Authenticatable
         'clinic_id',
         'name',
         'email',
+        'phone',
         'password',
         'status',
         'salary_frequency',
@@ -29,11 +31,6 @@ class ClinicUser extends Authenticatable
     public function clinic()
     {
         return $this->belongsTo(Clinic::class);
-    }
-
-    public function roles()
-    {
-        return $this->belongsToMany(Role::class, 'model_has_roles', 'model_id', 'role_id');
     }
 
 }

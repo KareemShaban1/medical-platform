@@ -48,6 +48,22 @@ Route::group(
 
         });
 
+        // Users Management
+        Route::group(['prefix' => 'users'], function () {
+            Route::get('/roles', [\App\Http\Controllers\Backend\Dashboards\Supplier\UserController::class, 'roles'])->name('users.roles');
+            Route::get('/data', [\App\Http\Controllers\Backend\Dashboards\Supplier\UserController::class, 'data'])->name('users.data');
+            Route::get('/trash', [\App\Http\Controllers\Backend\Dashboards\Supplier\UserController::class, 'trash'])->name('users.trash');
+            Route::get('/trash/data', [\App\Http\Controllers\Backend\Dashboards\Supplier\UserController::class, 'trashData'])->name('users.trash.data');
+            Route::post('/restore/{id}', [\App\Http\Controllers\Backend\Dashboards\Supplier\UserController::class, 'restore'])->name('users.restore');
+            Route::delete('/force/{id}', [\App\Http\Controllers\Backend\Dashboards\Supplier\UserController::class, 'forceDelete'])->name('users.force.delete');
+            Route::post('/toggle-status/{id}', [\App\Http\Controllers\Backend\Dashboards\Supplier\UserController::class, 'toggleStatus'])->name('users.toggle.status');
+            Route::get('/', [\App\Http\Controllers\Backend\Dashboards\Supplier\UserController::class, 'index'])->name('users.index');
+            Route::post('/', [\App\Http\Controllers\Backend\Dashboards\Supplier\UserController::class, 'store'])->name('users.store');
+            Route::get('/{id}', [\App\Http\Controllers\Backend\Dashboards\Supplier\UserController::class, 'show'])->name('users.show');
+            Route::put('/{id}', [\App\Http\Controllers\Backend\Dashboards\Supplier\UserController::class, 'update'])->name('users.update');
+            Route::delete('/{id}', [\App\Http\Controllers\Backend\Dashboards\Supplier\UserController::class, 'destroy'])->name('users.destroy');
+        });
+
         // Roles Management
         Route::get('roles/data', [\App\Http\Controllers\Backend\Dashboards\Supplier\RoleController::class, 'data'])->name('roles.data');
         Route::get('roles/trash', [\App\Http\Controllers\Backend\Dashboards\Supplier\RoleController::class, 'trash'])->name('roles.trash');

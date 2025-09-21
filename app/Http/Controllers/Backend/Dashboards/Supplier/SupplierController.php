@@ -23,8 +23,8 @@ class SupplierController extends Controller
             'user_name' => 'required',
             'user_email' => 'required|email',
             'password' => 'required',
-            'images' => 'required|array',
-            'images.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'images' => 'nullable|array',
+            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
         try {
             DB::beginTransaction();
@@ -54,11 +54,13 @@ class SupplierController extends Controller
 
             ]);
 
-            if (Role::where('name', 'supplier-admin')
-                ->where('guard_name', 'supplier')->exists()
-            ) {
-                $user->assignRole('supplier-admin');
-            }
+            $role = Role::firstOrCreate([
+                'name' => 'supplier-admin-' . $supplier->id,
+                'guard_name' => 'supplier',
+            ] , ['team_id' => $supplier->id]);
+
+            setPermissionsTeamId($supplier->id);
+            $user->assignRole($role);
 
             DB::commit();
 

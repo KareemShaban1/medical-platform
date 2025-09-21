@@ -1,0 +1,18 @@
+<?php
+
+namespace App\Interfaces\Supplier;
+
+interface UserRepositoryInterface
+{
+    public function index();
+    public function data();
+    public function store($request);
+    public function show($id);
+    public function update($request, $id);
+    public function destroy($id);
+    public function trash();
+    public function trashData();
+    public function restore($id);
+    public function forceDelete($id);
+    public function toggleStatus($id);
+}

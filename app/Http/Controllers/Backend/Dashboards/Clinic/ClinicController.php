@@ -24,8 +24,8 @@ class ClinicController extends Controller
             'user_name' => 'required',
             'user_email' => 'required|email',
             'password' => 'required',
-            'images' => 'required|array',
-            'images.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'images' => 'nullable|array',
+            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
         try {
             DB::beginTransaction();
@@ -53,14 +53,18 @@ class ClinicController extends Controller
                 'clinic_id' => $clinic->id
 
             ]);
+            $role = Role::firstOrCreate([
+                'name' => 'clinic-admin-' . $clinic->id,
+                'guard_name' => 'clinic',
+            ] , ['team_id' => $clinic->id]);
 
-            if (Role::where('name', 'clinic-admin')
-                ->where('guard_name', 'clinic')->exists()
-            ) {
-                $user->assignRole('clinic-admin');
-            }
+            setPermissionsTeamId($clinic->id);
+            $user->assignRole( $role );
+
 
             DB::commit();
+
+
 
             return response()->json([
                 'success' => true,

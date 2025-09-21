@@ -38,7 +38,7 @@ class RoleAndPermissionSeeder extends Seeder
                 'view orders','update order',
             ]),
             [
-                'supplier' => ['view products','create product','update product','view orders','update order'],
+                'supplier-admin' => ['view products','create product','update product','view orders','update order'],
             ]
         );
 
@@ -50,7 +50,7 @@ class RoleAndPermissionSeeder extends Seeder
                 'view appointments','create appointment','update appointment','delete appointment',
             ]),
             [
-                'clinic' => ['view patients','create patient','update patient','view appointments','create appointment'],
+                'clinic-admin' => ['view patients','create patient','update patient','view appointments','create appointment'],
             ]
         );
     }

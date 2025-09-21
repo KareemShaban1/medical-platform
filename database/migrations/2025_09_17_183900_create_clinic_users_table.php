@@ -16,12 +16,14 @@ return new class extends Migration
             $table->foreignId('clinic_id')->constrained('clinics')->onDelete('cascade');
             $table->string('name');
             $table->string('email')->unique();
+            $table->string('phone')->nullable()->unique();
             $table->string('password');
             $table->boolean('status')->default(true);
             $table->enum('salary_frequency', ['daily', 'weekly', 'monthly'])->default('monthly');
             $table->decimal('amount_per_salary_frequency', 10, 2)->default(0);
             $table->rememberToken();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
