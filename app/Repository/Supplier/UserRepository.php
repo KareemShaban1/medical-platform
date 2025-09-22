@@ -17,6 +17,7 @@ class UserRepository implements UserRepositoryInterface
 
     public function data()
     {
+        setPermissionsTeamId(auth('supplier')->user()->supplier_id);
         $users = SupplierUser::with(['roles'])->where('supplier_id', auth('supplier')->user()->supplier_id);
 
         return datatables()->of($users)
@@ -50,6 +51,7 @@ class UserRepository implements UserRepositoryInterface
 
     public function show($id)
     {
+        setPermissionsTeamId(auth('supplier')->user()->supplier_id);
         return SupplierUser::with(['roles', 'supplier'])->where('supplier_id', auth('supplier')->user()->supplier_id)->findOrFail($id);
     }
 
@@ -79,6 +81,10 @@ class UserRepository implements UserRepositoryInterface
     public function destroy($id)
     {
         return DB::transaction(function () use ($id) {
+            if (auth('supplier')->user()->id == $id) {
+                throw new \Exception(__('You cannot delete yourself'));
+            };
+
             $user = SupplierUser::where('supplier_id', auth('supplier')->user()->supplier_id)->findOrFail($id);
             $user->delete();
             return $user;
@@ -92,6 +98,7 @@ class UserRepository implements UserRepositoryInterface
 
     public function trashData()
     {
+        setPermissionsTeamId(auth('supplier')->user()->supplier_id);
         $users = SupplierUser::onlyTrashed()->with(['roles'])->where('supplier_id', auth('supplier')->user()->supplier_id);
 
         return datatables()->of($users)
@@ -114,6 +121,10 @@ class UserRepository implements UserRepositoryInterface
 
     public function forceDelete($id)
     {
+        if (auth('supplier')->user()->id == $id) {
+            throw new \Exception(__('You cannot delete yourself'));
+        };
+
         $user = SupplierUser::onlyTrashed()->where('supplier_id', auth('supplier')->user()->supplier_id)->findOrFail($id);
         return $user->forceDelete();
     }

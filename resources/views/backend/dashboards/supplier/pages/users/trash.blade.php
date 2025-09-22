@@ -164,6 +164,19 @@ function forceDeleteUser(id) {
                                         success: function(response) {
                                                   trashTable.ajax.reload();
                                                   Swal.fire('Deleted!', response.message, 'success');
+                                        },
+                                        error: function(xhr) {
+                                                  let errorMessage = 'Something went wrong';
+                                                  if (xhr.responseJSON && xhr.responseJSON.message) {
+                                                        errorMessage = xhr.responseJSON.message;
+                                                  } else if (xhr.responseText) {
+                                                        try {
+                                                              let response = JSON.parse(xhr.responseText);
+                                                              errorMessage = response.message || errorMessage;
+                                        }
+                                        }
+
+                                                  Swal.fire('Error!', errorMessage, 'error');
                                         }
                               });
                     }

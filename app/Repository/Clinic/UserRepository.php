@@ -17,6 +17,7 @@ class UserRepository implements UserRepositoryInterface
 
     public function data()
     {
+        setPermissionsTeamId(auth('clinic')->user()->clinic_id);
         $users = ClinicUser::with(['roles'])->where('clinic_id', auth('clinic')->user()->clinic_id);
 
         return datatables()->of($users)
@@ -34,7 +35,7 @@ class UserRepository implements UserRepositoryInterface
     {
         return DB::transaction(function () use ($request) {
             $data = $request;
-            $data['clinic_id'] = auth('clinic')->id();
+            $data['clinic_id'] = auth('clinic')->user()->clinic_id;
             $data['password'] = Hash::make($data['password']);
 
             $user = ClinicUser::create($data);
@@ -50,13 +51,14 @@ class UserRepository implements UserRepositoryInterface
 
     public function show($id)
     {
+        setPermissionsTeamId(auth('clinic')->user()->clinic_id);
         return ClinicUser::with(['roles', 'clinic'])->where('clinic_id', auth('clinic')->user()->clinic_id)->findOrFail($id);
     }
 
     public function update($request, $id)
     {
         return DB::transaction(function () use ($request, $id) {
-            $user = ClinicUser::where('clinic_id', auth('clinic')->id())->findOrFail($id);
+            $user = ClinicUser::where('clinic_id', auth('clinic')->user()->clinic_id)->findOrFail($id);
             $data = $request;
 
             if (isset($data['password']) && !empty($data['password'])) {
@@ -79,6 +81,10 @@ class UserRepository implements UserRepositoryInterface
     public function destroy($id)
     {
         return DB::transaction(function () use ($id) {
+            if (auth('clinic')->user()->id == $id) {
+                throw new \Exception(__('You cannot delete yourself'));
+            };
+
             $user = ClinicUser::where('clinic_id', auth('clinic')->user()->clinic_id)->findOrFail($id);
             $user->delete();
             return $user;
@@ -92,6 +98,7 @@ class UserRepository implements UserRepositoryInterface
 
     public function trashData()
     {
+        setPermissionsTeamId(auth('clinic')->user()->clinic_id);
         $users = ClinicUser::onlyTrashed()->with(['roles'])->where('clinic_id', auth('clinic')->user()->clinic_id);
 
         return datatables()->of($users)
@@ -114,6 +121,10 @@ class UserRepository implements UserRepositoryInterface
 
     public function forceDelete($id)
     {
+        if (auth('clinic')->user()->id == $id) {
+            throw new \Exception(__('You cannot delete yourself'));
+        };
+
         $user = ClinicUser::onlyTrashed()->where('clinic_id', auth('clinic')->user()->clinic_id)->findOrFail($id);
         return $user->forceDelete();
     }
