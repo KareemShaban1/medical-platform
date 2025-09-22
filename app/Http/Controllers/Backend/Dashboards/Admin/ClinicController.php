@@ -58,6 +58,11 @@ class ClinicController extends Controller
         return $this->clinicRepo->updateStatus($request);
     }
 
+    public function updateIsAllowed(Request $request)
+    {
+        return $this->clinicRepo->updateIsAllowed($request);
+    }
+
     public function destroy($id)
     {
         return $this->clinicRepo->destroy($id);

@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Backend\Dashboards\Admin\CategoryController;
 use App\Http\Controllers\Backend\Dashboards\Admin\ClinicController;
 use App\Http\Controllers\Backend\Dashboards\Admin\SupplierController;
+use App\Http\Controllers\Backend\Dashboards\Admin\RentalSpaceController;
+use App\Http\Controllers\Backend\Dashboards\Admin\ModuleApprovementController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -28,7 +30,7 @@ Route::group(
             ->name('dashboard');
 
         Route::get('categories/data', [CategoryController::class, 'data'])->name('categories.data');
-        Route::post('categories/update-status', [CategoryController::class, 'updateStatus'])->name('categories.update-status');
+        Route::put('categories/{id}/update-status', [CategoryController::class, 'updateStatus'])->name('categories.update-status');
         Route::resource('categories', CategoryController::class);
 
         // Roles Management
@@ -41,15 +43,30 @@ Route::group(
 
         Route::get('clinics/data', [ClinicController::class, 'data'])->name('clinics.data');
         Route::get('clinics/{id}/users/data', [ClinicController::class, 'clinicUsersData'])->name('clinics.users.data');
-        Route::post('clinics/update-status', [ClinicController::class, 'updateStatus'])->name('clinics.update-status');
+        Route::put('clinics/{id}/update-status', [ClinicController::class, 'updateStatus'])->name('clinics.update-status');
+        Route::put('clinics/{id}/update-is-allowed', [ClinicController::class, 'updateIsAllowed'])->name('clinics.update-is-allowed');
         Route::resource('clinics', ClinicController::class);
 
         Route::get('suppliers/data', [SupplierController::class, 'data'])->name('suppliers.data');
-        Route::post('suppliers/update-status', [SupplierController::class, 'updateStatus'])->name('suppliers.update-status');
+        Route::put('suppliers/{id}/update-status', [SupplierController::class, 'updateStatus'])->name('suppliers.update-status');
+        Route::put('suppliers/{id}/update-is-allowed', [SupplierController::class, 'updateIsAllowed'])->name('suppliers.update-is-allowed');
         Route::resource('suppliers', SupplierController::class);
 
-        // Doctor Profiles Management
-        Route::group(['prefix' => 'doctor-profiles'], function () {
+        // Rental Space Management
+        Route::get('rental-spaces/data', [RentalSpaceController::class, 'data'])->name('rental-spaces.data');
+        Route::get('rental-spaces/trash', [RentalSpaceController::class, 'trash'])->name('rental-spaces.trash');
+        Route::get('rental-spaces/trash/data', [RentalSpaceController::class, 'trashData'])->name('rental-spaces.trash.data');
+        Route::post('rental-spaces/{id}/restore', [RentalSpaceController::class, 'restore'])->name('rental-spaces.restore');
+        Route::put('rental-spaces/{id}/update-status', [RentalSpaceController::class, 'updateStatus'])->name('rental-spaces.update-status');
+        Route::delete('rental-spaces/{id}/force-delete', [RentalSpaceController::class, 'forceDelete'])->name('rental-spaces.force-delete');
+        Route::resource('rental-spaces', RentalSpaceController::class);
+
+        Route::get('approvements/{id}', [ModuleApprovementController::class, 'getApprovement'])->name('approvements.data');
+        Route::post('approvements', [ModuleApprovementController::class, 'storeApprovement'])->name('approvements.store');
+        Route::put('approvements/{id}', [ModuleApprovementController::class, 'updateApprovement'])->name('approvements.update');
+
+         // Doctor Profiles Management
+         Route::group(['prefix' => 'doctor-profiles'], function () {
             Route::get('/data', [\App\Http\Controllers\Backend\Dashboards\Admin\DoctorProfileController::class, 'data'])->name('doctor-profiles.data');
             Route::get('/pending', [\App\Http\Controllers\Backend\Dashboards\Admin\DoctorProfileController::class, 'pending'])->name('doctor-profiles.pending');
             Route::get('/pending/data', [\App\Http\Controllers\Backend\Dashboards\Admin\DoctorProfileController::class, 'pendingData'])->name('doctor-profiles.pending.data');
@@ -68,6 +85,7 @@ Route::group(
             Route::post('/mark-as-read/{id}', [\App\Http\Controllers\Backend\Dashboards\Admin\NotificationController::class, 'markAsRead'])->name('notifications.mark-as-read');
             Route::post('/mark-all-as-read', [\App\Http\Controllers\Backend\Dashboards\Admin\NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-as-read');
         });
+
 
     }
 );

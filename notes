@@ -418,18 +418,22 @@ contacts
 - rentals_availabilities
   id → bigint (PK)
   rental_space_id → bigint (FK → rentals_spaces)
-  start_date → date
-  end_date → date
-  time_start → time
-  time_end → time
+  type → enum(‘daily’, ‘weekly’, ‘monthly’)
+  from_time → time nullable
+  to_time → time nullable
+  from_day → enum(‘monday’, ‘tuesday’, ‘wednesday’, ‘thursday’, ‘friday’, ‘saturday’, ‘sunday’)
+  to_day → enum(‘monday’, ‘tuesday’, ‘wednesday’, ‘thursday’, ‘friday’, ‘saturday’, ‘sunday’)
+  start_date → date nullable
+  end_date → date nullable
   notes → text nullable
-  status → boolean (default true) -- (available or not)
+  status → boolean (default true) -- (available or not) 
   created_at, updated_at
 
 - rental_pricings
   id → bigint (PK)
   rental_space_id → bigint (FK → rentals_spaces)
   price → decimal(10,2)
+  notes → text nullable
   created_at, updated_at
 
 - rental_bookings

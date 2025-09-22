@@ -145,6 +145,30 @@
                     <span> {{__('Notifications')}} </span>
                     <span class="badge bg-danger rounded-pill" id="sidebar-notification-count" style="display: none;">0</span>
                 </a>
+            <!-- Rental Spaces -->
+            <li class="side-nav-item">
+                <a data-bs-toggle="collapse" href="#sidebarRentalSpaces" aria-expanded="false"
+                    aria-controls="sidebarEventsReport" class="side-nav-link">
+                    <i class="uil-home-alt"></i>
+                    <span> {{__('Rental Spaces')}} </span>
+                    <span class="menu-arrow"></span>
+                </a>
+                <div class="collapse" id="sidebarRentalSpaces">
+                    <ul class="side-nav-second-level">
+                        <li>
+
+                            <a href="{{ route('admin.rental-spaces.index') }}">
+                                <span> {{__('Rental Spaces')}} </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.rental-spaces.trash') }}">
+                                <span> {{__('Trash Rental Spaces')}} </span>
+                            </a>
+                        </li>
+
+                    </ul>
+                </div>
             </li>
 
 

@@ -29,6 +29,10 @@
                 name: 'clinic_users'
             },
             {
+                data: 'approval',
+                name: 'approval'
+            },
+            {
                 data: 'action',
                 name: 'action',
                 orderable: false,
@@ -244,5 +248,139 @@
 
         });
     }
+
+    function changeApproval(rentalSpaceId, approvementId) {
+        $('#moduleId').val(rentalSpaceId);
+        $('#approvementId').val(approvementId);
+
+        // Clear old values
+        $('#action').val('');
+        $('#notes').val('');
+
+        if (approvementId && approvementId !== 'null') {
+            // Fetch existing approvement data
+            $.ajax({
+                url: '/admin/approvements/' + approvementId,
+                method: 'GET',
+                success: function(data) {
+                    $('#action').val(data.action);
+                    $('#notes').val(data.notes);
+                }
+            });
+        }
+
+        $('#approvalModal').modal('show');
+    }
+
+    // Handle form submit
+    $('#approvalForm').on('submit', function(e) {
+        e.preventDefault();
+
+        let moduleId = $('#moduleId').val();
+        let approvementId = $('#approvementId').val();
+
+        if (approvementId) {
+            $.ajax({
+                url: '/admin/approvements/' + approvementId,
+                method: 'PUT',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: {
+                    action: $('#action').val(),
+                    notes: $('#notes').val(),
+                },
+                success: function(res) {
+                    $('#approvalModal').modal('hide');
+                    table.ajax.reload();
+                    Swal.fire('Success!', res.message, 'success');
+                },
+                error: function(err) {
+                    Swal.fire('Error!', 'Something went wrong.', 'error');
+                }
+            });
+        } else {
+            $.ajax({
+                url: '/admin/approvements',
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: {
+                    module_id: moduleId,
+                    module_type: 'App\\Models\\Clinic',
+                    action: $('#action').val(),
+                    notes: $('#notes').val(),
+                },
+                success: function(res) {
+                    $('#approvalModal').modal('hide');
+                    table.ajax.reload();
+                    Swal.fire('Success!', res.message, 'success');
+                },
+                error: function(err) {
+                    Swal.fire('Error!', 'Something went wrong.', 'error');
+                }
+            });
+        }
+    });
+
+
+      // change status toggle
+      $(document).on('change', '.toggle-boolean-status', function(e) {
+        let id = $(this).data('id');
+        let field = $(this).data('field');
+        let value = $(this).is(':checked') ? 1 : 0;
+
+        let url = '{{ route("admin.clinics.update-status", ":id") }}'.replace(':id', id);
+
+        $.ajax({
+            url: url,
+            method: 'PUT',
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            data: {
+                id: id,
+                field: field,
+                value: value
+            },
+            success: function(response) {
+                table.ajax.reload(null, false); // reload but keep current page
+                Swal.fire('Success!', response.message, 'success');
+            },
+            error: function() {
+                Swal.fire('Error!', 'Something went wrong', 'error');
+            }
+        });
+    });
+
+    // change is allowed toggle
+    $(document).on('change', '.toggle-boolean-is-allowed', function(e) {
+        let id = $(this).data('id');
+        let field = $(this).data('field');
+        let value = $(this).is(':checked') ? 1 : 0;
+
+        let url = '{{ route("admin.clinics.update-is-allowed", ":id") }}'.replace(':id', id);
+
+        $.ajax({
+            url: url,
+            method: 'PUT',
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            data: {
+                id: id,
+                field: field,
+                value: value
+            },
+            success: function(response) {
+                table.ajax.reload(null, false); // reload but keep current page
+                Swal.fire('Success!', response.message, 'success');
+            },
+            error: function() {
+                Swal.fire('Error!', 'Something went wrong', 'error');
+            }
+        });
+    });
 </script>
 @endpush

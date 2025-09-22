@@ -5,6 +5,8 @@ use App\Http\Controllers\Backend\Dashboards\Clinic\ClinicController;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Backend\Dashboards\Clinic\RoleController;
+use App\Http\Controllers\Backend\Dashboards\Clinic\RentalSpaceController;
 use Illuminate\Support\Facades\Auth;
 
 Route::group(
@@ -24,13 +26,21 @@ Route::group(
             ->name('dashboard');
 
             // Roles Management
-            Route::get('roles/data', [\App\Http\Controllers\Backend\Dashboards\Clinic\RoleController::class, 'data'])->name('roles.data');
-            Route::get('roles/trash', [\App\Http\Controllers\Backend\Dashboards\Clinic\RoleController::class, 'trash'])->name('roles.trash');
-            Route::get('roles/trash/data', [\App\Http\Controllers\Backend\Dashboards\Clinic\RoleController::class, 'trashData'])->name('roles.trash.data');
-            Route::post('roles/{id}/restore', [\App\Http\Controllers\Backend\Dashboards\Clinic\RoleController::class, 'restore'])->name('roles.restore');
-            Route::delete('roles/{id}/force-delete', [\App\Http\Controllers\Backend\Dashboards\Clinic\RoleController::class, 'forceDelete'])->name('roles.forceDelete');
-            Route::resource('roles', \App\Http\Controllers\Backend\Dashboards\Clinic\RoleController::class);
+            Route::get('roles/data', [RoleController::class, 'data'])->name('roles.data');
+            Route::get('roles/trash', [RoleController::class, 'trash'])->name('roles.trash');
+            Route::get('roles/trash/data', [RoleController::class, 'trashData'])->name('roles.trash.data');
+            Route::post('roles/{id}/restore', [RoleController::class, 'restore'])->name('roles.restore');
+            Route::delete('roles/{id}/force-delete', [RoleController::class, 'forceDelete'])->name('roles.forceDelete');
+            Route::resource('roles', RoleController::class);
 
+            // Rental Space Management
+            Route::get('rental-spaces/data', [RentalSpaceController::class, 'data'])->name('rental-spaces.data');
+            Route::get('rental-spaces/trash', [RentalSpaceController::class, 'trash'])->name('rental-spaces.trash');
+            Route::get('rental-spaces/trash/data', [RentalSpaceController::class, 'trashData'])->name('rental-spaces.trash.data');
+            Route::post('rental-spaces/{id}/restore', [RentalSpaceController::class, 'restore'])->name('rental-spaces.restore');
+            Route::delete('rental-spaces/{id}/force-delete', [RentalSpaceController::class, 'forceDelete'])->name('rental-spaces.force-delete');
+            Route::put('rental-spaces/{id}/update-status', [RentalSpaceController::class, 'updateStatus'])->name('rental-spaces.update-status');
+            Route::resource('rental-spaces', RentalSpaceController::class);
 
             // Users Management
             Route::group(['prefix' => 'users'], function () {

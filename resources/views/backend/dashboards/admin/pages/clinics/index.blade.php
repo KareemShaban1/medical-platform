@@ -29,6 +29,7 @@
                                 <th>{{ __('Is Allowed') }}</th>
                                 <th>{{ __('Status') }}</th>
                                 <th>{{ __('Users') }}</th>
+                                <th>{{ __('Approval') }}</th>
                                 <th>{{ __('Actions') }}</th>
                             </tr>
                         </thead>
@@ -169,6 +170,9 @@
         </div>
     </div>
 </div>
+
+<!-- Approval Modal -->
+@include('backend.dashboards.admin.pages.clinics.approval-modal')
 @endsection
 
 
