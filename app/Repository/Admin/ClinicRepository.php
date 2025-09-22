@@ -4,9 +4,11 @@ namespace App\Repository\Admin;
 
 use App\Interfaces\Admin\ClinicRepositoryInterface;
 use App\Models\Clinic;
+use App\Traits\HandlesMediaUploads;
 
 class ClinicRepository implements ClinicRepositoryInterface
 {
+    use HandlesMediaUploads;
     /** ---------------------- PUBLIC METHODS ---------------------- */
 
     public function index()
@@ -22,8 +24,9 @@ class ClinicRepository implements ClinicRepositoryInterface
             ->addColumn('clinic_users', fn($item) => $item->clinicUsers->count())
             ->editColumn('status', fn($item) => $this->clinicStatus($item))
             ->editColumn('is_allowed', fn($item) => $this->clinicIsAllowed($item))
+            ->addColumn('approval', fn($item) => $this->clinicApproval($item))
             ->addColumn('action', fn($item) => $this->clinicActions($item))
-            ->rawColumns(['status', 'is_allowed', 'action'])
+            ->rawColumns(['status', 'is_allowed', 'action', 'approval'])
             ->make(true);
     }
 
@@ -63,15 +66,42 @@ class ClinicRepository implements ClinicRepositoryInterface
     public function updateStatus($request)
     {
         $clinic = Clinic::findOrFail($request->id);
-        $clinic->status = (bool)$request->status;
+
+        // fallback to "status" if field is not sent
+        $field = $request->field ?? 'status';
+        $value = (bool)$request->value;
+
+        $clinic->{$field} = $value;
         $clinic->save();
 
-        return $this->jsonResponse('success', __('Clinic status updated successfully'));
+        return response()->json([
+            'status' => 'success',
+            'message' => __('Clinic status updated successfully'),
+        ]);
+    }
+
+    public function updateIsAllowed($request)
+    {
+        $clinic = Clinic::findOrFail($request->id);
+
+        // fallback to "is_allowed" if field is not sent
+        $field = $request->field ?? 'is_allowed';
+        $value = (bool)$request->value;
+
+        $clinic->{$field} = $value;
+        $clinic->save();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => __('Clinic is allowed updated successfully'),
+        ]);
     }
 
     public function destroy($id)
     {
         $clinic = Clinic::findOrFail($id);
+        // Clear related media before delete
+        $this->clearAllMedia($clinic, ['clinic_images']);
         $clinic->delete();
 
         return $this->jsonResponse('success', __('Clinic deleted successfully'));
@@ -85,15 +115,10 @@ class ClinicRepository implements ClinicRepositoryInterface
         try {
             $clinic->fill($request->validated())->save();
 
-            if ($request->hasFile('images')) {
-                if($action == 'updated') {
-                    // Remove old images
-                    $clinic->clearMediaCollection('clinic_images');
-                }
-                foreach ($request->file('images') as $image) {
-                    $clinic->addMedia($image)->toMediaCollection('clinic_images');
-                }
-            }
+            // Process media using shared trait
+            $this->processMedia($clinic, $request, [
+                ['field' => 'images', 'collection' => 'clinic_images', 'multiple' => true],
+            ], $action);
 
             if ($request->ajax()) {
                 return $this->jsonResponse('success', __('Clinic '.$action.' successfully'));
@@ -109,12 +134,13 @@ class ClinicRepository implements ClinicRepositoryInterface
     {
         $checked = $item->status ? 'checked' : '';
         return <<<HTML
-            <div class="form-check form-switch mt-2">
-                <input type="hidden" name="status" value="0">
-                <input type="checkbox" class="form-check-input toggle-boolean"
-                       data-id="{$item->id}" data-field="status" id="status-{$item->id}"
-                       name="status" value="1" {$checked}>
-            </div>
+        <div class="form-check form-switch mt-2">
+            <input type="checkbox" 
+                   class="form-check-input toggle-boolean-status" 
+                   data-id="{$item->id}" 
+                   data-field="status" 
+                   value="1" {$checked}>
+        </div>
         HTML;
     }
 
@@ -122,15 +148,40 @@ class ClinicRepository implements ClinicRepositoryInterface
     {
         $checked = $item->is_allowed ? 'checked' : '';
         return <<<HTML
-            <div class="form-check form-switch mt-2">
-                <input type="hidden" name="is_allowed" value="0">
-                <input type="checkbox" class="form-check-input toggle-boolean"
-                       data-id="{$item->id}" data-field="is_allowed" id="is_allowed-{$item->id}"
-                       name="is_allowed" value="1" {$checked}>
-            </div>
+        <div class="form-check form-switch mt-2">
+            <input type="checkbox" 
+                   class="form-check-input toggle-boolean-is-allowed" 
+                   data-id="{$item->id}" 
+                   data-field="is_allowed" 
+                   value="1" {$checked}>
+        </div>
         HTML;
     }
 
+    private function clinicApproval($item): string
+    {
+        $approved = $item->approvement?->action;
+
+        $badgeClass = match ($approved) {
+            'under_review' => 'bg-warning',
+            'approved'     => 'bg-success',
+            'rejected'     => 'bg-danger',
+            default        => 'bg-secondary',
+        };
+
+        $label = $approved ?? 'pending';
+        $approvalId = $item->approvement?->id ?? 'null';
+
+        return <<<HTML
+            <div>
+                <span class="badge {$badgeClass}">{$label}</span>
+                <br>
+                <button class="btn btn-sm btn-primary" onclick="changeApproval({$item->id}, {$approvalId})">
+                    Change Approval
+                </button>
+            </div>
+        HTML;
+    }
 
     private function clinicActions($item): string
     {

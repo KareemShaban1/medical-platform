@@ -44,10 +44,18 @@ class CategoryRepository implements CategoryRepositoryInterface
     public function updateStatus($request)
     {
         $category = Category::findOrFail($request->id);
-        $category->status = (bool)$request->status;
+
+        // fallback to "status" if field is not sent
+        $field = $request->field ?? 'status';
+        $value = (bool)$request->value;
+
+        $category->{$field} = $value;
         $category->save();
 
-        return $this->jsonResponse('success', __('Category status updated successfully'));
+        return response()->json([
+            'status' => 'success',
+            'message' => __('Category status updated successfully'),
+        ]);
     }
 
     public function destroy($id)
@@ -55,7 +63,10 @@ class CategoryRepository implements CategoryRepositoryInterface
         $category = Category::findOrFail($id);
         $category->delete();
 
-        return $this->jsonResponse('success', __('Category deleted successfully'));
+        return response()->json([
+            'status' => 'success',
+            'message' => __('Category deleted successfully'),
+        ]);
     }
 
 
@@ -67,12 +78,18 @@ class CategoryRepository implements CategoryRepositoryInterface
             $category->fill($request->validated())->save();
 
             if ($request->ajax()) {
-                return $this->jsonResponse('success', __('Category '.$action.' successfully'));
+                return response()->json([
+                    'status' => 'success',
+                    'message' => __('Category '.$action.' successfully'),
+                ]);
             }
 
             return redirect()->route('admin.categories.index')->with('success', __('Category '.$action.' successfully'));
         } catch (\Throwable $e) {
-            return $this->jsonResponse('error', $e->getMessage());
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+            ]);
         }
     }
 
@@ -80,12 +97,13 @@ class CategoryRepository implements CategoryRepositoryInterface
     {
         $checked = $item->status ? 'checked' : '';
         return <<<HTML
-            <div class="form-check form-switch mt-2">
-                <input type="hidden" name="status" value="0">
-                <input type="checkbox" class="form-check-input toggle-boolean"
-                       data-id="{$item->id}" data-field="status" id="status-{$item->id}"
-                       name="status" value="1" {$checked}>
-            </div>
+        <div class="form-check form-switch mt-2">
+            <input type="checkbox" 
+                   class="form-check-input toggle-boolean" 
+                   data-id="{$item->id}" 
+                   data-field="status" 
+                   value="1" {$checked}>
+        </div>
         HTML;
     }
 

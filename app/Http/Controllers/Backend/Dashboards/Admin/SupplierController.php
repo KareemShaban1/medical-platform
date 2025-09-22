@@ -53,6 +53,11 @@ class SupplierController extends Controller
         return $this->supplierRepo->updateStatus($request);
     }
 
+    public function updateIsAllowed(Request $request)
+    {
+        return $this->supplierRepo->updateIsAllowed($request);
+    }
+
     public function destroy($id)
     {
         return $this->supplierRepo->destroy($id);

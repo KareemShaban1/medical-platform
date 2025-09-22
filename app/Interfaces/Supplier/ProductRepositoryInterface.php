@@ -2,8 +2,6 @@
 
 namespace App\Interfaces\Supplier;
 
-use App\Models\Product;
-
 interface ProductRepositoryInterface
 {
     public function index();
