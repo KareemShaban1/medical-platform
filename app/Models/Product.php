@@ -82,7 +82,7 @@ class Product extends Model implements HasMedia
 
     public function scopeMine($query)
     {
-        return $query->where('supplier_id', auth('supplier')->id());
+        return $query->where('supplier_id', auth('supplier')->user()->supplier_id);
     }
 
 

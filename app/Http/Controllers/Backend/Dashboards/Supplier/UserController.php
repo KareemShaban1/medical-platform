@@ -50,8 +50,12 @@ class UserController extends Controller
 
     public function destroy($id)
     {
-        $this->userRepo->destroy($id);
-        return $this->jsonResponse('success', __('User deleted successfully'));
+        try {
+            $this->userRepo->destroy($id);
+            return $this->jsonResponse('success', __('User deleted successfully'));
+        } catch (\Exception $e) {
+            return $this->jsonResponse('error', $e->getMessage());
+        }
     }
 
     public function trash()
@@ -72,7 +76,12 @@ class UserController extends Controller
 
     public function forceDelete($id)
     {
-        $this->userRepo->forceDelete($id);
+        try {
+            $this->userRepo->forceDelete($id);
+            return $this->jsonResponse('success', __('User permanently deleted successfully'));
+        } catch (\Exception $e) {
+            return $this->jsonResponse('error', $e->getMessage());
+        }
         return $this->jsonResponse('success', __('User permanently deleted successfully'));
     }
 
@@ -91,7 +100,7 @@ class UserController extends Controller
     private function jsonResponse(string $status, string $message)
     {
         if (request()->ajax()) {
-            return response()->json(['status' => $status, 'message' => $message]);
+            return response()->json(['status' => $status, 'message' => $message], $status === 'error' ? 400 : 200);
         }
 
         return redirect()->back()->with($status, $message);

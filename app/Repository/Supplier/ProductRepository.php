@@ -34,7 +34,7 @@ class ProductRepository implements ProductRepositoryInterface
     {
         DB::transaction(function () use ($request) {
             $data = $request;
-            $data['supplier_id'] = auth('supplier')->id();
+            $data['supplier_id'] = auth('supplier')->user()->supplier_id;
 
             $product = Product::create($data);
             $product->categories()->sync($data['categories']);
@@ -51,7 +51,7 @@ class ProductRepository implements ProductRepositoryInterface
 
     public function show($id)
     {
-        return Product::with(['categories','supplier'])->findOrFail($id);
+        return Product::with(['categories','supplier'])->mine()->findOrFail($id);
     }
 
     public function update($request, $id)
@@ -84,7 +84,7 @@ class ProductRepository implements ProductRepositoryInterface
     public function destroy($id)
     {
         DB::transaction(function () use ($id) {
-            $product = Product::findOrFail($id);
+            $product = Product::mine()->findOrFail($id);
             $product->delete();
 
             return $product;
