@@ -10,6 +10,7 @@ interface SupplierRepositoryInterface
     public function store($request);
     public function update($request, $id);
     public function updateStatus($request);
+    public function updateIsAllowed($request);
     public function destroy($id);
 
 }

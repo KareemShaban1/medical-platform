@@ -14,6 +14,8 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind('App\Interfaces\Admin\CategoryRepositoryInterface', 'App\Repository\Admin\CategoryRepository');
         $this->app->bind('App\Interfaces\Admin\ClinicRepositoryInterface', 'App\Repository\Admin\ClinicRepository');
         $this->app->bind('App\Interfaces\Admin\SupplierRepositoryInterface', 'App\Repository\Admin\SupplierRepository');
+        $this->app->bind('App\Interfaces\Admin\RentalSpaceRepositoryInterface', 'App\Repository\Admin\RentalSpaceRepository');
+        $this->app->bind('App\Interfaces\Admin\ModuleApprovementRepositoryInterface', 'App\Repository\Admin\ModuleApprovementRepository');
 
         $this->app->bind(ProductRepositoryInterface::class, ProductRepository::class);
 
@@ -29,7 +31,10 @@ class RepositoryServiceProvider extends ServiceProvider
         // Doctor Profile Repositories
         $this->app->bind('App\Interfaces\Clinic\DoctorProfileRepositoryInterface', 'App\Repository\Clinic\DoctorProfileRepository');
         $this->app->bind('App\Interfaces\Admin\DoctorProfileRepositoryInterface', 'App\Repository\Admin\DoctorProfileRepository');
+        // rental space repository
+        $this->app->bind('App\Interfaces\Clinic\RentalSpaceRepositoryInterface', 'App\Repository\Clinic\RentalSpaceRepository');
     }
+
 
 
     public function boot()

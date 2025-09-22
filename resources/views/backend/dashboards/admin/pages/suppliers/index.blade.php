@@ -29,6 +29,7 @@
                                 <th>{{ __('Is Allowed') }}</th>
                                 <th>{{ __('Status') }}</th>
                                 <th>{{ __('Users') }}</th>
+                                <th>{{ __('Approval') }}</th>
                                 <th>{{ __('Actions') }}</th>
                             </tr>
                         </thead>
@@ -170,6 +171,8 @@
         </div>
     </div>
 </div>
+
+@include('backend.dashboards.admin.pages.suppliers.approval-modal')
 </div>
 
 @endsection

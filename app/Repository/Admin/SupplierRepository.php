@@ -22,8 +22,9 @@ class SupplierRepository implements SupplierRepositoryInterface
             ->addColumn('supplier_users', fn($item) => $item->supplierUsers->count())
             ->editColumn('status', fn($item) => $this->supplierStatus($item))
             ->editColumn('is_allowed', fn($item) => $this->supplierIsAllowed($item))
+            ->addColumn('approval', fn($item) => $this->supplierApproval($item))
             ->addColumn('action', fn($item) => $this->supplierActions($item))
-            ->rawColumns(['status', 'is_allowed', 'action'])
+            ->rawColumns(['status', 'is_allowed', 'action', 'approval'])
             ->make(true);
     }
 
@@ -46,10 +47,35 @@ class SupplierRepository implements SupplierRepositoryInterface
     public function updateStatus($request)
     {
         $supplier = Supplier::findOrFail($request->id);
-        $supplier->status = (bool)$request->status;
+
+        // fallback to "status" if field is not sent
+        $field = $request->field ?? 'status';
+        $value = (bool)$request->value;
+
+        $supplier->{$field} = $value;
         $supplier->save();
 
-        return $this->jsonResponse('success', __('Supplier status updated successfully'));
+        return response()->json([
+            'status' => 'success',
+            'message' => __('Supplier status updated successfully'),
+        ]);
+    }
+
+    public function updateIsAllowed($request)
+    {
+        $supplier = Supplier::findOrFail($request->id);
+
+        // fallback to "is_allowed" if field is not sent
+        $field = $request->field ?? 'is_allowed';
+        $value = (bool)$request->value;
+
+        $supplier->{$field} = $value;
+        $supplier->save();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => __('Supplier is allowed updated successfully'),
+        ]);
     }
 
     public function destroy($id)
@@ -93,12 +119,13 @@ class SupplierRepository implements SupplierRepositoryInterface
     {
         $checked = $item->status ? 'checked' : '';
         return <<<HTML
-            <div class="form-check form-switch mt-2">
-                <input type="hidden" name="status" value="0">
-                <input type="checkbox" class="form-check-input toggle-boolean"
-                       data-id="{$item->id}" data-field="status" id="status-{$item->id}"
-                       name="status" value="1" {$checked}>
-            </div>
+        <div class="form-check form-switch mt-2">
+            <input type="checkbox" 
+                   class="form-check-input toggle-boolean-status" 
+                   data-id="{$item->id}" 
+                   data-field="status" 
+                   value="1" {$checked}>
+        </div>
         HTML;
     }
 
@@ -106,11 +133,37 @@ class SupplierRepository implements SupplierRepositoryInterface
     {
         $checked = $item->is_allowed ? 'checked' : '';
         return <<<HTML
-            <div class="form-check form-switch mt-2">
-                <input type="hidden" name="is_allowed" value="0">
-                <input type="checkbox" class="form-check-input toggle-boolean"
-                       data-id="{$item->id}" data-field="is_allowed" id="is_allowed-{$item->id}"
-                       name="is_allowed" value="1" {$checked}>
+        <div class="form-check form-switch mt-2">
+            <input type="checkbox" 
+                   class="form-check-input toggle-boolean-is-allowed" 
+                   data-id="{$item->id}" 
+                   data-field="is_allowed" 
+                   value="1" {$checked}>
+        </div>
+        HTML;
+    }
+
+    private function supplierApproval($item): string
+    {
+        $approved = $item->approvement?->action;
+
+        $badgeClass = match ($approved) {
+            'under_review' => 'bg-warning',
+            'approved'     => 'bg-success',
+            'rejected'     => 'bg-danger',
+            default        => 'bg-secondary',
+        };
+
+        $label = $approved ?? 'pending';
+        $approvalId = $item->approvement?->id ?? 'null';
+
+        return <<<HTML
+            <div>
+                <span class="badge {$badgeClass}">{$label}</span>
+                <br>
+                <button class="btn btn-sm btn-primary" onclick="changeApproval({$item->id}, {$approvalId})">
+                    Change Approval
+                </button>
             </div>
         HTML;
     }

@@ -37,4 +37,16 @@ class Supplier extends Model implements HasMedia
     {
         return $this->hasMany(SupplierUser::class);
     }
+
+    public function approvement()
+    {
+        return $this->morphOne(ModuleApprovement::class, 'module');
+    }
+
+    public function scopeApproved($query)
+    {
+        return $query->whereHas('approvement', function ($query) {
+            $query->where('action', 'approved');
+        });
+    }
 }

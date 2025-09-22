@@ -317,5 +317,35 @@
             }
         });
     }
+
+    
+      // change status toggle
+      $(document).on('change', '.toggle-boolean', function(e) {
+        let id = $(this).data('id');
+        let field = $(this).data('field');
+        let value = $(this).is(':checked') ? 1 : 0;
+
+        let url = '{{ route("admin.categories.update-status", ":id") }}'.replace(':id', id);
+
+        $.ajax({
+            url: url,
+            method: 'PUT',
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            data: {
+                id: id,
+                field: field,
+                value: value
+            },
+            success: function(response) {
+                table.ajax.reload(null, false); // reload but keep current page
+                Swal.fire('Success!', response.message, 'success');
+            },
+            error: function() {
+                Swal.fire('Error!', 'Something went wrong', 'error');
+            }
+        });
+    });
 </script>
 @endpush

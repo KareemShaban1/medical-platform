@@ -59,20 +59,17 @@ class ClinicController extends Controller
         return $this->clinicRepo->updateStatus($request);
     }
 
+    public function updateIsAllowed(Request $request)
+    {
+        return $this->clinicRepo->updateIsAllowed($request);
+    }
+
     public function toggleStatus($id)
     {
         $clinic = Clinic::findOrFail($id);
         $clinic->update(['status' => !$clinic->status]);
 
         return $this->jsonResponse('success', __('Clinic status updated successfully'));
-    }
-
-    public function toggleIsAllowed($id)
-    {
-        $clinic = Clinic::findOrFail($id);
-        $clinic->update(['is_allowed' => !$clinic->is_allowed]);
-
-        return $this->jsonResponse('success', __('Clinic allowance status updated successfully'));
     }
 
     public function destroy($id)

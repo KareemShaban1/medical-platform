@@ -35,4 +35,16 @@ class Clinic extends Model implements HasMedia
         return $this->hasMany(ClinicUser::class);
     }
 
+    public function approvement()
+    {
+        return $this->morphOne(ModuleApprovement::class, 'module');
+    }
+
+    public function scopeApproved($query)
+    {
+        return $query->whereHas('approvement', function ($query) {
+            $query->where('action', 'approved');
+        });
+    }
+
 }
