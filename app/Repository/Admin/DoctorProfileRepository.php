@@ -17,16 +17,17 @@ class DoctorProfileRepository implements DoctorProfileRepositoryInterface
 
     public function data()
     {
-        $profiles = DoctorProfile::with(['clinicUser', 'reviewer']);
+        $profiles = DoctorProfile::with(['clinicUser', 'reviewer', 'featuredBy']);
 
         return datatables()->of($profiles)
             ->addColumn('profile_photo', fn($item) => $this->profilePhoto($item))
             ->addColumn('doctor_name', fn($item) => $item->name)
             ->addColumn('clinic_user', fn($item) => $item->clinicUser->name ?? 'N/A')
             ->editColumn('status', fn($item) => $item->status_badge)
+            ->addColumn('is_featured', fn($item) => $this->featuredBadge($item))
             ->addColumn('reviewed_by', fn($item) => $item->reviewer->name ?? 'N/A')
             ->addColumn('action', fn($item) => $this->profileActions($item))
-            ->rawColumns(['profile_photo', 'status', 'action'])
+            ->rawColumns(['profile_photo', 'status', 'is_featured', 'action'])
             ->make(true);
     }
 
@@ -48,7 +49,7 @@ class DoctorProfileRepository implements DoctorProfileRepositoryInterface
 
     public function show($id)
     {
-        return DoctorProfile::with(['clinicUser', 'reviewer'])->findOrFail($id);
+        return DoctorProfile::with(['clinicUser', 'reviewer', 'featuredBy'])->findOrFail($id);
     }
 
     public function approve($id)
@@ -87,6 +88,21 @@ class DoctorProfileRepository implements DoctorProfileRepositoryInterface
         });
     }
 
+    public function toggleFeatured($id)
+    {
+        return DB::transaction(function () use ($id) {
+            $profile = DoctorProfile::findOrFail($id);
+
+            if ($profile->status !== DoctorProfile::STATUS_APPROVED) {
+                throw new \Exception('Only approved profiles can be featured');
+            }
+
+            $profile->toggleFeatured(auth('admin')->id());
+
+            return $profile;
+        });
+    }
+
     /** ---------------------- PRIVATE HELPERS ---------------------- */
 
     private function profilePhoto($item): string
@@ -110,16 +126,30 @@ class DoctorProfileRepository implements DoctorProfileRepositoryInterface
         return '<span class="badge bg-secondary">No Specialties</span>';
     }
 
+    private function featuredBadge($item): string
+    {
+        if ($item->is_featured) {
+            return '<span class="badge bg-warning"><i class="fa fa-star"></i> Featured</span>';
+        }
+        return '<span class="badge bg-light text-dark">Not Featured</span>';
+    }
+
     private function profileActions($item): string
     {
         $showUrl = route('admin.doctor-profiles.show', $item->id);
         $actions = '<div class="d-flex gap-2">';
 
-        $actions .= '<a href="' . $showUrl . '" class="btn btn-sm btn-success" title="View"><i class="fa fa-eye"></i></a>';
+        $actions .= '<a href="' . $showUrl . '" class="btn btn-sm btn-info" title="View"><i class="fa fa-eye"></i></a>';
 
         if ($item->status === DoctorProfile::STATUS_PENDING) {
             $actions .= '<button onclick="approveProfile(' . $item->id . ')" class="btn btn-sm btn-success" title="Approve"><i class="fa fa-check"></i></button>';
             $actions .= '<button onclick="rejectProfile(' . $item->id . ')" class="btn btn-sm btn-danger" title="Reject"><i class="fa fa-times"></i></button>';
+        }
+
+        if ($item->status === DoctorProfile::STATUS_APPROVED) {
+            $featuredClass = $item->is_featured ? 'btn-warning' : 'btn-outline-warning';
+            $featuredTitle = $item->is_featured ? 'Remove from Featured' : 'Make Featured';
+            $actions .= '<button onclick="toggleFeatured(' . $item->id . ')" class="btn btn-sm ' . $featuredClass . '" title="' . $featuredTitle . '"><i class="fa fa-star"></i></button>';
         }
 
         $actions .= '</div>';

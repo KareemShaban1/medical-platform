@@ -65,6 +65,20 @@ class DoctorProfileController extends Controller
         }
     }
 
+    public function toggleFeatured($id)
+    {
+        try {
+            $profile = $this->profileRepo->toggleFeatured($id);
+            $message = $profile->is_featured
+                ? __('Profile marked as featured successfully')
+                : __('Profile removed from featured successfully');
+
+            return $this->jsonResponse('success', $message);
+        } catch (\Exception $e) {
+            return $this->jsonResponse('error', $e->getMessage());
+        }
+    }
+
     private function jsonResponse(string $status, string $message)
     {
         if (request()->ajax()) {

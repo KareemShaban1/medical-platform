@@ -28,6 +28,7 @@
                                 <th>{{ __('Clinic User') }}</th>
                                 <th>{{ __('Email') }}</th>
                                 <th>{{ __('Status') }}</th>
+                                <th>{{ __('Featured') }}</th>
                                 <th>{{ __('Reviewed By') }}</th>
                                 <th>{{ __('Created At') }}</th>
                                 <th>{{ __('Actions') }}</th>
@@ -79,6 +80,7 @@ let table = $('#profiles-table').DataTable({
         { data: 'clinic_user', name: 'clinicUser.name' },
         { data: 'email', name: 'email' },
         { data: 'status', name: 'status' },
+        { data: 'is_featured', name: 'is_featured', orderable: false, searchable: false },
         { data: 'reviewed_by', name: 'reviewer.name' },
         { data: 'created_at', name: 'created_at' },
         { data: 'action', name: 'action', orderable: false, searchable: false }
@@ -92,7 +94,7 @@ let table = $('#profiles-table').DataTable({
         {
             extend: 'print',
             exportOptions: {
-                columns: [0, 2, 3, 4, 5, 6, 7]
+                columns: [0, 2, 3, 4, 5, 6, 8]
             }
         },
         {
@@ -100,13 +102,13 @@ let table = $('#profiles-table').DataTable({
             text: 'Excel',
             title: 'Doctor Profiles Data',
             exportOptions: {
-                columns: [0, 2, 3, 4, 5, 6, 7]
+                columns: [0, 2, 3, 4, 5, 6, 8]
             }
         },
         {
             extend: 'copy',
             exportOptions: {
-                columns: [0, 2, 3, 4, 5, 6, 7]
+                columns: [0, 2, 3, 4, 5, 6, 8]
             }
         }
     ],
@@ -192,5 +194,35 @@ $('#rejectForm').on('submit', function(e) {
         }
     });
 });
+
+// Toggle featured status
+function toggleFeatured(id) {
+    Swal.fire({
+        title: 'Toggle Featured Status?',
+        text: "This will change the featured status of the doctor's profile.",
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#ffc107',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, toggle it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: '{{ route("admin.doctor-profiles.toggle-featured", ":id") }}'.replace(':id', id),
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    table.ajax.reload();
+                    Swal.fire('Success!', response.message, 'success');
+                },
+                error: function(xhr) {
+                    Swal.fire('Error!', xhr.responseJSON?.message || 'Something went wrong', 'error');
+                }
+            });
+        }
+    });
+}
 </script>
 @endpush

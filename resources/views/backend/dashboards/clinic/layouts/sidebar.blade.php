@@ -102,7 +102,7 @@
                                 <li class="side-nav-item">
                                           <a data-bs-toggle="collapse" href="#sidebarDoctorProfiles" aria-expanded="false"
                                                     aria-controls="sidebarDoctorProfiles" class="side-nav-link">
-                                                    <i class="uil-user-md"></i>
+                                                    <i class="uil-medical-square"></i> <!-- TODO: Change to medical icon -->
                                                     <span> {{__('Doctor Profiles')}} </span>
                                                     <span class="menu-arrow"></span>
                                           </a>

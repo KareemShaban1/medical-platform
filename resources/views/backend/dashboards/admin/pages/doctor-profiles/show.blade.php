@@ -17,6 +17,11 @@
                             <i class="fa fa-times"></i> {{ __('Reject') }}
                         </button>
                     @endif
+                    @if($profile->status === 'approved')
+                        <button onclick="toggleFeatured({{ $profile->id }})" class="btn {{ $profile->is_featured ? 'btn-warning' : 'btn-outline-warning' }}">
+                            <i class="fa fa-star"></i> {{ $profile->is_featured ? __('Remove Featured') : __('Make Featured') }}
+                        </button>
+                    @endif
                 </div>
                 <h4 class="page-title">{{ __('Doctor Profile Review') }}</h4>
             </div>
@@ -59,6 +64,13 @@
                                     </button>
                                 </div>
                             @endif
+                            @if($profile->status === 'approved')
+                                <div class="text-center mt-3">
+                                    <button onclick="toggleFeatured({{ $profile->id }})" class="btn {{ $profile->is_featured ? 'btn-warning' : 'btn-outline-warning' }}">
+                                        <i class="fa fa-star"></i> {{ $profile->is_featured ? __('Remove Featured') : __('Make Featured') }}
+                                    </button>
+                                </div>
+                            @endif
                         </div>
 
                         <div class="col-lg-9">
@@ -69,8 +81,18 @@
                                         <table class="table table-borderless">
                                             <tbody>
                                                 <tr>
-                                                    <th>{{ __('Clinic User') }}:</th>
-                                                    <td>{{ $profile->clinicUser->name ?? 'N/A' }}</td>
+                                                    <th>{{ __('Clinic') }}:</th>
+                                                    <td>
+                                                        @if($profile->clinicUser && $profile->clinicUser->clinic)
+                                                            <a href="{{ route('admin.clinics.show', $profile->clinicUser->clinic->id) }}" class="text-primary">
+                                                                {{ $profile->clinicUser->clinic->name }}
+                                                            </a>
+                                                            <br>
+                                                            <small class="text-muted">{{ __('User') }}: {{ $profile->clinicUser->name }}</small>
+                                                        @else
+                                                            {{ $profile->clinicUser->name ?? 'N/A' }}
+                                                        @endif
+                                                    </td>
                                                 </tr>
                                                 <tr>
                                                     <th>{{ __('Phone') }}:</th>
@@ -114,6 +136,19 @@
                                                     <td>{{ $profile->reviewer->name }}</td>
                                                 </tr>
                                                 @endif
+                                                <tr>
+                                                    <th>{{ __('Featured Status') }}:</th>
+                                                    <td>
+                                                        @if($profile->is_featured)
+                                                            <span class="badge bg-warning"><i class="fa fa-star"></i> {{ __('Featured') }}</span>
+                                                            @if($profile->featuredBy)
+                                                                <br><small class="text-muted">{{ __('Featured by') }}: {{ $profile->featuredBy->name }}</small>
+                                                            @endif
+                                                        @else
+                                                            <span class="badge bg-light text-dark">{{ __('Not Featured') }}</span>
+                                                        @endif
+                                                    </td>
+                                                </tr>
                                             </tbody>
                                         </table>
                                     </div>
@@ -421,5 +456,41 @@ $('#rejectForm').on('submit', function(e) {
         }
     });
 });
+
+// Toggle featured status
+function toggleFeatured(id) {
+    let isCurrentlyFeatured = {{ $profile->is_featured ? 'true' : 'false' }};
+    let title = isCurrentlyFeatured ? 'Remove from Featured?' : 'Make Featured?';
+    let text = isCurrentlyFeatured
+        ? "This will remove the doctor's profile from featured listings."
+        : "This will make the doctor's profile featured and more visible.";
+
+    Swal.fire({
+        title: title,
+        text: text,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#ffc107',
+        cancelButtonColor: '#d33',
+        confirmButtonText: isCurrentlyFeatured ? 'Yes, remove it!' : 'Yes, make it featured!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: '{{ route("admin.doctor-profiles.toggle-featured", ":id") }}'.replace(':id', id),
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    Swal.fire('Success!', response.message, 'success')
+                        .then(() => location.reload());
+                },
+                error: function(xhr) {
+                    Swal.fire('Error!', xhr.responseJSON?.message || 'Something went wrong', 'error');
+                }
+            });
+        }
+    });
+}
 </script>
 @endpush

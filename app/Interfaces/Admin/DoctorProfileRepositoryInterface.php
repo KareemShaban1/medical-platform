@@ -10,4 +10,5 @@ interface DoctorProfileRepositoryInterface
     public function show($id);
     public function approve($id);
     public function reject($id, $reason);
+    public function toggleFeatured($id);
 }

@@ -32,6 +32,8 @@ class DoctorProfile extends Model implements HasMedia
         'rejection_reason',
         'reviewed_by',
         'reviewed_at',
+        'is_featured',
+        'featured_by',
     ];
 
     protected $casts = [
@@ -66,6 +68,11 @@ class DoctorProfile extends Model implements HasMedia
     public function reviewer()
     {
         return $this->belongsTo(Admin::class, 'reviewed_by');
+    }
+
+    public function featuredBy()
+    {
+        return $this->belongsTo(Admin::class, 'featured_by');
     }
 
     public function registerMediaCollections(): void
@@ -137,6 +144,11 @@ class DoctorProfile extends Model implements HasMedia
         return $query->where('status', self::STATUS_DRAFT);
     }
 
+    public function scopeFeatured($query)
+    {
+        return $query->where('is_featured', true);
+    }
+
     // Helper methods
     public function isDraft()
     {
@@ -189,5 +201,18 @@ class DoctorProfile extends Model implements HasMedia
             'reviewed_at' => now(),
             'rejection_reason' => $reason,
         ]);
+    }
+
+    public function toggleFeatured($adminId)
+    {
+        $this->update([
+            'is_featured' => !$this->is_featured,
+            'featured_by' => !$this->is_featured ? null : $adminId,
+        ]);
+    }
+
+    public function isFeatured()
+    {
+        return $this->is_featured;
     }
 }

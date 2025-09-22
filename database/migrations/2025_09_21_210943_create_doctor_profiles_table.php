@@ -30,10 +30,14 @@ return new class extends Migration
             $table->text('experience')->nullable(); // JSON field for experience details
             $table->enum('status', ['draft', 'pending', 'approved', 'rejected'])->default('draft');
             $table->text('rejection_reason')->nullable();
-            $table->foreignId('reviewed_by')->nullable()->constrained('admins')->onDelete('set null');
+            $table->foreignId('reviewed_by')->nullable()->constrained(table: 'admins')->onDelete('set null');
             $table->timestamp('reviewed_at')->nullable();
-            $table->timestamps();
 
+            // is featured
+            $table->boolean('is_featured')->default(false);
+            $table->foreignId('featured_by')->nullable()->constrained(table: 'admins')->onDelete('set null');
+
+            $table->timestamps();
             $table->index(['clinic_user_id', 'status']);
         });
     }
