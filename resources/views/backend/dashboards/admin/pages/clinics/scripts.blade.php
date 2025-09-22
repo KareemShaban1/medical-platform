@@ -97,6 +97,70 @@
         });
     });
 
+    // Handle status toggle in DataTable
+    $(document).on('change', '.toggle-status', function() {
+        let clinicId = $(this).data('id');
+        let isChecked = $(this).is(':checked');
+
+        $.ajax({
+            url: '{{ route("admin.clinics.toggle.status", ":id") }}'.replace(':id', clinicId),
+            method: 'PATCH',
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                // Update the badge text and class
+                let $label = $(this).siblings('label');
+                let $badge = $label.find('.badge');
+
+                if (isChecked) {
+                    $badge.removeClass('bg-danger').addClass('bg-success').text('Active');
+                } else {
+                    $badge.removeClass('bg-success').addClass('bg-danger').text('Inactive');
+                }
+
+                Swal.fire('Success', response.message, 'success');
+            }.bind(this),
+            error: function(xhr) {
+                // Revert the toggle state
+                $(this).prop('checked', !isChecked);
+                Swal.fire('Error', 'Something went wrong', 'error');
+            }.bind(this)
+        });
+    });
+
+    // Handle is_allowed toggle in DataTable
+    $(document).on('change', '.toggle-is-allowed', function() {
+        let clinicId = $(this).data('id');
+        let isChecked = $(this).is(':checked');
+
+        $.ajax({
+            url: '{{ route("admin.clinics.toggle.is-allowed", ":id") }}'.replace(':id', clinicId),
+            method: 'PATCH',
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                // Update the badge text and class
+                let $label = $(this).siblings('label');
+                let $badge = $label.find('.badge');
+
+                if (isChecked) {
+                    $badge.removeClass('bg-warning').addClass('bg-success').text('Allowed');
+                } else {
+                    $badge.removeClass('bg-success').addClass('bg-warning').text('Not Allowed');
+                }
+
+                Swal.fire('Success', response.message, 'success');
+            }.bind(this),
+            error: function(xhr) {
+                // Revert the toggle state
+                $(this).prop('checked', !isChecked);
+                Swal.fire('Error', 'Something went wrong', 'error');
+            }.bind(this)
+        });
+    });
+
 
     // Reset form
     function resetForm() {

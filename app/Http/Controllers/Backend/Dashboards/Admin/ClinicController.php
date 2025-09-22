@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Interfaces\Admin\ClinicRepositoryInterface;
 use App\Http\Requests\Admin\Store\StoreClinicRequest;
 use App\Http\Requests\Admin\Update\UpdateClinicRequest;
+use App\Models\Clinic;
 use Illuminate\Http\Request;
 
 class ClinicController extends Controller
@@ -58,9 +59,34 @@ class ClinicController extends Controller
         return $this->clinicRepo->updateStatus($request);
     }
 
+    public function toggleStatus($id)
+    {
+        $clinic = Clinic::findOrFail($id);
+        $clinic->update(['status' => !$clinic->status]);
+
+        return $this->jsonResponse('success', __('Clinic status updated successfully'));
+    }
+
+    public function toggleIsAllowed($id)
+    {
+        $clinic = Clinic::findOrFail($id);
+        $clinic->update(['is_allowed' => !$clinic->is_allowed]);
+
+        return $this->jsonResponse('success', __('Clinic allowance status updated successfully'));
+    }
+
     public function destroy($id)
     {
         return $this->clinicRepo->destroy($id);
+    }
+
+    private function jsonResponse(string $status, string $message)
+    {
+        if (request()->ajax()) {
+            return response()->json(['status' => $status, 'message' => $message ], $status === 'error' ? 400 : 200);
+        }
+
+        return redirect()->back()->with($status, $message);
     }
 
 

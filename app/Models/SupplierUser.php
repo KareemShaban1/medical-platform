@@ -30,4 +30,9 @@ class SupplierUser extends Authenticatable
         return $this->belongsTo(Supplier::class);
     }
 
+    public function otps()
+    {
+        return $this->morphMany(UserOtp::class, 'otpable');
+    }
+
 }

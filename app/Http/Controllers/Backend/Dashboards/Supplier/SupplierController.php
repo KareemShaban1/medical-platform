@@ -49,6 +49,7 @@ class SupplierController extends Controller
             $user = SupplierUser::create([
                 'name' => $request->user_name,
                 'email' => $request->user_email,
+                'phone' => $request->phone,
                 'password' => Hash::make($request->password),
                 'supplier_id' => $supplier->id
 

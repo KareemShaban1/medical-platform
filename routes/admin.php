@@ -42,6 +42,8 @@ Route::group(
         Route::get('clinics/data', [ClinicController::class, 'data'])->name('clinics.data');
         Route::get('clinics/{id}/users/data', [ClinicController::class, 'clinicUsersData'])->name('clinics.users.data');
         Route::post('clinics/update-status', [ClinicController::class, 'updateStatus'])->name('clinics.update-status');
+        Route::patch('clinics/{id}/toggle-status', [ClinicController::class, 'toggleStatus'])->name('clinics.toggle.status');
+        Route::patch('clinics/{id}/toggle-is-allowed', [ClinicController::class, 'toggleIsAllowed'])->name('clinics.toggle.is-allowed');
         Route::resource('clinics', ClinicController::class);
 
         Route::get('suppliers/data', [SupplierController::class, 'data'])->name('suppliers.data');

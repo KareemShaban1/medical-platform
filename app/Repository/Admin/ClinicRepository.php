@@ -108,12 +108,17 @@ class ClinicRepository implements ClinicRepositoryInterface
     private function clinicStatus($item): string
     {
         $checked = $item->status ? 'checked' : '';
+        $statusText = $item->status ? 'Active' : 'Inactive';
+        $statusClass = $item->status ? 'success' : 'danger';
+
         return <<<HTML
             <div class="form-check form-switch mt-2">
-                <input type="hidden" name="status" value="0">
-                <input type="checkbox" class="form-check-input toggle-boolean"
-                       data-id="{$item->id}" data-field="status" id="status-{$item->id}"
-                       name="status" value="1" {$checked}>
+                <input type="checkbox" class="form-check-input toggle-status"
+                       data-id="{$item->id}" id="status-{$item->id}"
+                       {$checked}>
+                <label class="form-check-label" for="status-{$item->id}">
+                    <span class="badge bg-{$statusClass}">{$statusText}</span>
+                </label>
             </div>
         HTML;
     }
@@ -121,12 +126,17 @@ class ClinicRepository implements ClinicRepositoryInterface
     private function clinicIsAllowed($item): string
     {
         $checked = $item->is_allowed ? 'checked' : '';
+        $statusText = $item->is_allowed ? 'Allowed' : 'Not Allowed';
+        $statusClass = $item->is_allowed ? 'success' : 'warning';
+
         return <<<HTML
             <div class="form-check form-switch mt-2">
-                <input type="hidden" name="is_allowed" value="0">
-                <input type="checkbox" class="form-check-input toggle-boolean"
-                       data-id="{$item->id}" data-field="is_allowed" id="is_allowed-{$item->id}"
-                       name="is_allowed" value="1" {$checked}>
+                <input type="checkbox" class="form-check-input toggle-is-allowed"
+                       data-id="{$item->id}" id="is_allowed-{$item->id}"
+                       {$checked}>
+                <label class="form-check-label" for="is_allowed-{$item->id}">
+                    <span class="badge bg-{$statusClass}">{$statusText}</span>
+                </label>
             </div>
         HTML;
     }

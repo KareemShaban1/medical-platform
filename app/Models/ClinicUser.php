@@ -39,4 +39,9 @@ class ClinicUser extends Authenticatable
         return $this->hasOne(DoctorProfile::class);
     }
 
+    public function otps()
+    {
+        return $this->morphMany(UserOtp::class, 'otpable');
+    }
+
 }

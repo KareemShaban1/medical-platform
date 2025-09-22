@@ -49,6 +49,7 @@ class ClinicController extends Controller
             $user = ClinicUser::create([
                 'name' => $request->user_name,
                 'email' => $request->user_email,
+                'phone' => $request->phone,
                 'password' => Hash::make($request->password),
                 'clinic_id' => $clinic->id
 
