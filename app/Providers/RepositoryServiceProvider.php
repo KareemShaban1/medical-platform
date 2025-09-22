@@ -25,6 +25,10 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind('App\Interfaces\Admin\RoleRepositoryInterface', 'App\Repository\Admin\RoleRepository');
         $this->app->bind('App\Interfaces\Supplier\RoleRepositoryInterface', 'App\Repository\Supplier\RoleRepository');
         $this->app->bind('App\Interfaces\Clinic\RoleRepositoryInterface', 'App\Repository\Clinic\RoleRepository');
+
+        // Doctor Profile Repositories
+        $this->app->bind('App\Interfaces\Clinic\DoctorProfileRepositoryInterface', 'App\Repository\Clinic\DoctorProfileRepository');
+        $this->app->bind('App\Interfaces\Admin\DoctorProfileRepositoryInterface', 'App\Repository\Admin\DoctorProfileRepository');
     }
 
 

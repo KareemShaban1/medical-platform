@@ -1,16 +1,15 @@
 <?php
 
-namespace App\Interfaces\Admin;
+namespace App\Interfaces\Clinic;
 
-interface ClinicRepositoryInterface
+interface DoctorProfileRepositoryInterface
 {
     public function index();
     public function data();
     public function show($id);
-    public function clinicUsersData($id);
     public function store($request);
     public function update($request, $id);
-    public function updateStatus($request);
     public function destroy($id);
-
+    public function getUserProfile($clinicUserId);
+    public function submitForReview($id);
 }

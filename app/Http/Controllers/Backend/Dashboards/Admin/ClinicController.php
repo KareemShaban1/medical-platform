@@ -29,6 +29,11 @@ class ClinicController extends Controller
         return $this->clinicRepo->data();
     }
 
+    public function clinicUsersData($id)
+    {
+        return $this->clinicRepo->clinicUsersData($id);
+    }
+
     public function store(StoreClinicRequest $request)
     {
         return $this->clinicRepo->store($request);

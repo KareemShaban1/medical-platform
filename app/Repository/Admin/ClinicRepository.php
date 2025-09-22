@@ -34,7 +34,24 @@ class ClinicRepository implements ClinicRepositoryInterface
 
     public function show($id)
     {
-        return Clinic::findOrFail($id);
+        return Clinic::with(['clinicUsers.doctorProfile'])->findOrFail($id);
+    }
+
+    public function clinicUsersData($id)
+    {
+        $clinic = Clinic::findOrFail($id);
+        $clinicUsers = $clinic->clinicUsers()->with(['doctorProfile']);
+
+        return datatables()->of($clinicUsers)
+            ->addColumn('user_name', fn($item) => $item->name)
+            ->addColumn('user_email', fn($item) => $item->email)
+            ->addColumn('user_phone', fn($item) => $item->phone ?: 'N/A')
+            ->addColumn('doctor_profile_status', fn($item) => $this->getDoctorProfileStatus($item))
+            ->addColumn('doctor_specialties', fn($item) => $this->getDoctorSpecialties($item))
+            ->addColumn('user_status', fn($item) => $this->getUserStatus($item))
+            ->addColumn('action', fn($item) => $this->clinicUserActions($item))
+            ->rawColumns(['doctor_profile_status', 'doctor_specialties', 'user_status', 'action'])
+            ->make(true);
     }
 
     public function update($request, $id)
@@ -124,6 +141,67 @@ class ClinicRepository implements ClinicRepositoryInterface
             <button onclick="deleteClinic({$item->id})" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></button>
         </div>
         HTML;
+    }
+
+    private function getDoctorProfileStatus($item): string
+    {
+        if ($item->doctorProfile) {
+            $profile = $item->doctorProfile;
+            $statusClasses = [
+                'draft' => 'bg-secondary',
+                'pending' => 'bg-warning',
+                'approved' => 'bg-success',
+                'rejected' => 'bg-danger',
+            ];
+            $class = $statusClasses[$profile->status] ?? 'bg-secondary';
+            $text = ucfirst($profile->status);
+            return "<span class=\"badge {$class}\">{$text}</span>";
+        }
+        return '<span class="badge bg-light text-dark">No Profile</span>';
+    }
+
+    private function getDoctorSpecialties($item): string
+    {
+        if ($item->doctorProfile && $item->doctorProfile->specialties) {
+            $specialties = collect($item->doctorProfile->specialties)->take(3);
+            $badges = $specialties->map(function ($specialty) {
+                return '<span class="badge bg-primary me-1 mb-1">' . e($specialty) . '</span>';
+            })->implode(' ');
+
+            $remaining = count($item->doctorProfile->specialties) - 3;
+            if ($remaining > 0) {
+                $badges .= '<span class="badge bg-info">+' . $remaining . ' more</span>';
+            }
+
+            return '<div class="d-flex flex-wrap">' . $badges . '</div>';
+        }
+        return '<span class="text-muted">N/A</span>';
+    }
+
+    private function getUserStatus($item): string
+    {
+        $checked = $item->status ? 'checked' : '';
+        return <<<HTML
+            <div class="form-check form-switch">
+                <input type="checkbox" class="form-check-input" {$checked} disabled>
+                <!-- <label class="form-check-label">{($item->status ? 'Active' : 'Inactive')}</label>  -->
+            </div>
+        HTML;
+    }
+
+    private function clinicUserActions($item): string
+    {
+        $actions = '<div class="d-flex gap-2">';
+
+        if ($item->doctorProfile) {
+            $profileUrl = route('admin.doctor-profiles.show', $item->doctorProfile->id);
+            $actions .= '<a href="' . $profileUrl . '" class="btn btn-sm btn-info" title="View Doctor Profile"><i class="fa fa-user-md"></i></a>';
+        }
+
+        $actions .= '<button onclick="viewUser(' . $item->id . ')" class="btn btn-sm btn-primary" title="View User Details"><i class="fa fa-eye"></i></button>';
+        $actions .= '</div>';
+
+        return $actions;
     }
 
 
