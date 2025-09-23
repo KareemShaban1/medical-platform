@@ -171,6 +171,43 @@
                 </div>
             </li>
 
+            <!-- Blogs -->
+            <li class="side-nav-item">
+                <a data-bs-toggle="collapse" href="#sidebarBlogs" aria-expanded="false"
+                    aria-controls="sidebarBlogs" class="side-nav-link">
+                    <i class="uil-book-alt"></i>
+                    <span> {{__('Blogs')}} </span>
+                    <span class="menu-arrow"></span>
+                </a>
+                <div class="collapse" id="sidebarBlogs">
+                    <ul class="side-nav-second-level">
+                        <li>
+
+                            <a href="{{ route('admin.blog-categories.index') }}">
+                                <span> {{__('Blog Categories')}} </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.blog-categories.trash') }}">
+                                <span> {{__('Trash Blog Categories')}} </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.blog-posts.index') }}">
+                                <span> {{__('Blog Posts')}} </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.blog-posts.trash') }}">
+                                <span> {{__('Trash Blog Posts')}} </span>
+                            </a>
+                        </li>
+
+                    </ul>
+                </div>
+            </li>
+
+
 
 
 

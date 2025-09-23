@@ -73,8 +73,8 @@ database tables:
 
 ------------- 🛒 Marketplace Module ------------
 --- required tables in module : 
---- admins (d), suppliers (d), suppliers_users (d), clinic_users (d), clinics (d), module_approvement
---- contacts  , categories(d), products , product_categories, cart, cart_items , orders , order_items
+--- admins (d), suppliers (d), suppliers_users (d), clinic_users (d), clinics (d), module_approvement (d)
+--- contacts  , categories(d), products (d) , product_categories (d), cart, cart_items , orders , order_items
 
 --- module_approvement is shared table between modules 
 --- contacts is shared table between modules 
@@ -96,7 +96,7 @@ categories (d)
   status → boolean (default true) -- (active or not)
   created_at, updated_at
 
-products
+products (d)
   id → bigint (PK, auto increment)
   supplier_id → bigint (FK → suppliers)
   name → varchar(255)
@@ -110,7 +110,7 @@ products
   status → boolean (default true)  -- (active or not)
   created_at, updated_at
 
-product_categories
+product_categories (d)
   id → bigint (PK)
   product_id → bigint (FK → products)
   category_id → bigint (FK → categories)
@@ -160,7 +160,7 @@ supplier_users (auth) (d)
   password → varchar(255)
   created_at, updated_at
 
-module_approvement
+module_approvement (d)
   id → bigint (PK)
   module → nullableMorphs (module_type, module_id) -- (clinics, suppliers, users, products, jobs)
   action_by → bigint (FK → admins)
@@ -181,8 +181,8 @@ contacts
 
 -------------- clinic module ------------
 --- required tables in module : 
---- admins, clinics, clinic_users ,clinic_user_salaries , patients, doctors
---- clinic_inventories, clinic_inventories_movments , appointments, lab_orders,
+--- admins (d), clinics (d), clinic_users (d) ,clinic_user_salaries , patients, doctors
+--- clinic_inventories, clinic_inventories_movments , appointments, lab_orders
 --- [roles, permissions , media] => packages tables
 
 
@@ -308,7 +308,7 @@ contacts
 
 -------------- courses module ------------
 --- required tables in module : 
---- admins, clinics, clinic_users , doctors , courses, course_applications 
+--- admins, clinics, clinic_users , doctors , courses, course_enrollments
 
 - courses
   id → bigint (PK)
@@ -336,23 +336,27 @@ contacts
 
 -------------- Blog module ------------
 --- required tables in module : 
---- admins, blogs
+--- admins, blogs_categories, blogs_posts
 
-- blog_categories
+- blog_categories (d)
   id → bigint (PK)
-  name → varchar(255)
-  slug → varchar(255) unique
-  approved → boolean (default false, admin approval)
+  name_en → varchar(255)
+  name_ar → varchar(255)
+  slug_en → varchar(255) unique
+  slug_ar → varchar(255) unique
   status → boolean (default true) -- (active or not)
   created_at, updated_at
 
-- blog_posts
+- blog_posts (d)
   id → bigint (PK)
   category_id → bigint (FK → blog_categories)
-  title → varchar(255)
-  content → text
+  title_en → varchar(255)
+  title_ar → varchar(255)
+  slug_en → varchar(255) unique
+  slug_ar → varchar(255) unique
+  content_en → text
+  content_ar → text
   image → varchar(255) nullable  -- [media]
-  approved → boolean (default false, admin approval)
   status → boolean (default true) -- (active or not)
   created_at, updated_at
 
@@ -403,9 +407,9 @@ contacts
 -----------------------------------------------------------------------------------------------
 -------------- Rentals module ------------
 --- required tables in module : 
---- admins , clinics , suppliers , rentals_spaces
+--- admins , clinics , suppliers , rentals_spaces (d) , rentals_availabilities (d) , rental_pricings (d) , rental_bookings (d)
 
-- rentals_spaces
+- rentals_spaces (d)
   id → bigint (PK)
   clinic_id → bigint (FK → clinics)
   name → varchar(255)
@@ -415,7 +419,7 @@ contacts
   status → boolean (default true) -- (active or not)
   created_at, updated_at
 
-- rentals_availabilities
+- rentals_availabilities (d)
   id → bigint (PK)
   rental_space_id → bigint (FK → rentals_spaces)
   type → enum(‘daily’, ‘weekly’, ‘monthly’)
@@ -429,7 +433,7 @@ contacts
   status → boolean (default true) -- (available or not) 
   created_at, updated_at
 
-- rental_pricings
+- rental_pricings (d)
   id → bigint (PK)
   rental_space_id → bigint (FK → rentals_spaces)
   price → decimal(10,2)

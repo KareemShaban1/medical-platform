@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Backend\Dashboards\Admin\BlogCategoryController;
 use App\Http\Controllers\Backend\Dashboards\Admin\DashboardController;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 use Illuminate\Support\Facades\Route;
@@ -8,6 +9,7 @@ use App\Http\Controllers\Backend\Dashboards\Admin\ClinicController;
 use App\Http\Controllers\Backend\Dashboards\Admin\SupplierController;
 use App\Http\Controllers\Backend\Dashboards\Admin\RentalSpaceController;
 use App\Http\Controllers\Backend\Dashboards\Admin\ModuleApprovementController;
+use App\Http\Controllers\Backend\Dashboards\Admin\BlogPostController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -85,6 +87,23 @@ Route::group(
             Route::post('/mark-as-read/{id}', [\App\Http\Controllers\Backend\Dashboards\Admin\NotificationController::class, 'markAsRead'])->name('notifications.mark-as-read');
             Route::post('/mark-all-as-read', [\App\Http\Controllers\Backend\Dashboards\Admin\NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-as-read');
         });
+
+        // Blogs Management
+        Route::get('blog-categories/data', [BlogCategoryController::class, 'data'])->name('blog-categories.data');
+        Route::put('blog-categories/{id}/update-status', [BlogCategoryController::class, 'updateStatus'])->name('blog-categories.update-status');
+        Route::get('blog-categories/trash', [BlogCategoryController::class, 'trash'])->name('blog-categories.trash');
+        Route::get('blog-categories/trash/data', [BlogCategoryController::class, 'trashData'])->name('blog-categories.trash.data');
+        Route::post('blog-categories/{id}/restore', [BlogCategoryController::class, 'restore'])->name('blog-categories.restore');
+        Route::delete('blog-categories/{id}/force-delete', [BlogCategoryController::class, 'forceDelete'])->name('blog-categories.force-delete');
+        Route::resource('blog-categories', BlogCategoryController::class);
+       
+        Route::get('blog-posts/data', [BlogPostController::class, 'data'])->name('blog-posts.data');
+        Route::put('blog-posts/{id}/update-status', [BlogPostController::class, 'updateStatus'])->name('blog-posts.update-status');
+        Route::get('blog-posts/trash', [BlogPostController::class, 'trash'])->name('blog-posts.trash');
+        Route::get('blog-posts/trash/data', [BlogPostController::class, 'trashData'])->name('blog-posts.trash.data');
+        Route::post('blog-posts/{id}/restore', [BlogPostController::class, 'restore'])->name('blog-posts.restore');
+        Route::delete('blog-posts/{id}/force-delete', [BlogPostController::class, 'forceDelete'])->name('blog-posts.force-delete');
+        Route::resource('blog-posts', BlogPostController::class);
 
 
     }
