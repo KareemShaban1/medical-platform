@@ -23,6 +23,7 @@ class Clinic extends Model implements HasMedia
     public $appends = ['images'];
 
 
+    // ------- attributes -------
     public function getImagesAttribute()
     {
         return $this->getMedia('clinic_images')->map(function ($media) {
@@ -30,6 +31,15 @@ class Clinic extends Model implements HasMedia
         })->toArray();
     }
 
+    // ------- scopes -------
+    public function scopeApproved($query)
+    {
+        return $query->whereHas('approvement', function ($query) {
+            $query->where('action', 'approved');
+        });
+    }
+
+    // ------- relations -------
     public function clinicUsers()
     {
         return $this->hasMany(ClinicUser::class);
@@ -40,11 +50,5 @@ class Clinic extends Model implements HasMedia
         return $this->morphOne(ModuleApprovement::class, 'module');
     }
 
-    public function scopeApproved($query)
-    {
-        return $query->whereHas('approvement', function ($query) {
-            $query->where('action', 'approved');
-        });
-    }
 
 }
