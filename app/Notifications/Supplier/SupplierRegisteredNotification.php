@@ -12,13 +12,13 @@ use Illuminate\Notifications\Notification;
 class SupplierRegisteredNotification extends Notification
 {
     use Queueable;
-
+    protected $otp;
     /**
      * Create a new notification instance.
      */
-    public function __construct()
+    public function __construct($otp)
     {
-        //
+        $this->otp = $otp;
     }
 
     /**
@@ -37,14 +37,15 @@ class SupplierRegisteredNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->line('The introduction to the notification.')
-            ->action('Notification Action', url('/'))
-            ->line('Thank you for using our application!');
-    }
+        ->subject('Supplier Registration - Email Verification Required')
+        ->greeting('Hello ' . $notifiable->name . '!')
+        ->line('Welcome to ' . config('app.name') . '!')
+        ->line('Thank you for registering as a supplier. To complete your registration, please verify your email address using the OTP below:')
+        ->line('**Your OTP Code: ' . $this->otp->otp . '**')
+        ->line('This OTP will expire in 5 minutes.')
+        ->line('⚠️ **Important:** Do not share this OTP with anyone.')
+        ->line('Once verified, your supplier account will be automatically approved and you can access your dashboard.')
+        ->salutation('Best regards,<br>' . config('app.name') . ' Team');
 
-    // public function toSMS(object $notifiable): PhoneSmsMessage
-    // {
-    //     return (new PhoneSmsMessage)
-    //         ->content("Welcome to application " . config('app.name') . ". Your OTP is {$notifiable->otps->last()->otp} . Don't share this OTP with anyone.");
-    // }
+    }
 }

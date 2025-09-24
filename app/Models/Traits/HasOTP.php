@@ -4,13 +4,7 @@ namespace App\Models\Traits;
 
 
 trait HasOTP {
-    public static function bootHasOtp()
-    {
-        static::creating(function ($model) {
-            $model->otp        = $model->generateOtp();
-            $model->expires_at = now()->addMinutes(5);
-        });
-    }
+ 
 
     public function generateOtp()
     {

@@ -14,11 +14,12 @@ return new class extends Migration
         Schema::create('suppliers', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            
+            $table->string('email')->nullable();
             $table->string('phone');
             $table->text('address');
             $table->boolean('is_allowed')->default(true);
             $table->boolean('status')->default(true);
+            $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

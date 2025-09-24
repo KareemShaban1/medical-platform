@@ -30,6 +30,10 @@ class UserOtp extends Model
         static::addGlobalScope('active', function (Builder $builder) {
             $builder->where('expires_at', '>', now())->where('is_used', false);
         });
+        static::creating(function ($model) {
+            $model->otp = $model->generateOtp();
+            $model->expires_at = now()->addMinutes(5);
+        });
     }
 
     public function otpable()
