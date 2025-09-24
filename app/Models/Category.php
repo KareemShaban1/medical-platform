@@ -21,16 +21,20 @@ class Category extends Model
 
     protected $appends = ['name'];
 
+    // ------- attributes -------
     public function getNameAttribute()
     {
         return app()->getLocale() == 'ar' ? $this->name_ar : $this->name_en;
     }
 
+    // ------- scopes -------
     public function scopeActive($query)
     {
         return $query->where('status', 1);
     }
 
+
+    // -------- relations --------
     public function admin()
     {
         return $this->belongsTo(Admin::class);
@@ -40,4 +44,6 @@ class Category extends Model
     {
         return $this->belongsToMany(Product::class, 'product_categories');
     }
+
+    
 }

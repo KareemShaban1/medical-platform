@@ -10,6 +10,7 @@ use App\Http\Controllers\Backend\Dashboards\Admin\SupplierController;
 use App\Http\Controllers\Backend\Dashboards\Admin\RentalSpaceController;
 use App\Http\Controllers\Backend\Dashboards\Admin\ModuleApprovementController;
 use App\Http\Controllers\Backend\Dashboards\Admin\BlogPostController;
+use App\Http\Controllers\Backend\Dashboards\Admin\CourseController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -104,6 +105,16 @@ Route::group(
         Route::post('blog-posts/{id}/restore', [BlogPostController::class, 'restore'])->name('blog-posts.restore');
         Route::delete('blog-posts/{id}/force-delete', [BlogPostController::class, 'forceDelete'])->name('blog-posts.force-delete');
         Route::resource('blog-posts', BlogPostController::class);
+
+        // Courses Management
+        Route::get('courses/data', [CourseController::class, 'data'])->name('courses.data');
+        Route::put('courses/{id}/update-status', [CourseController::class, 'updateStatus'])->name('courses.update-status');
+        Route::get('courses/trash', [CourseController::class, 'trash'])->name('courses.trash');
+        Route::get('courses/trash/data', [CourseController::class, 'trashData'])->name('courses.trash.data');
+        Route::post('courses/{id}/restore', [CourseController::class, 'restore'])->name('courses.restore');
+        Route::delete('courses/{id}/force-delete', [CourseController::class, 'forceDelete'])->name('courses.force-delete');
+        Route::resource('courses', CourseController::class);
+
 
 
     }

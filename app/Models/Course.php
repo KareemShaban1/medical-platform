@@ -8,48 +8,48 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
-class BlogPost extends Model implements HasMedia
+class Course extends Model implements HasMedia
 {
-    /** @use HasFactory<\Database\Factories\BlogPostFactory> */
-    use HasFactory, SoftDeletes, InteractsWithMedia;
+    /** @use HasFactory<\Database\Factories\CourseFactory> */
+    use HasFactory;
+    use InteractsWithMedia;
+    use SoftDeletes;
 
     protected $fillable = [
-        'blog_category_id',
         'title_en',
         'title_ar',
         'slug_en',
         'slug_ar',
-        'content_en',
-        'content_ar',
+        'description_en',
+        'description_ar',
+        'url',
+        'duration',
+        'start_date',
+        'end_date',
         'status',
     ];
 
-    protected $appends = ['title', 'main_image'];
-
     protected $casts = [
+        'start_date' => 'date',
+        'end_date' => 'date',
         'status' => 'boolean',
     ];
 
-    public function blogCategory()
-    {
-        return $this->belongsTo(BlogCategory::class , 'blog_category_id', 'id');
-    }
+    // appends
+    protected $appends = ['main_image', 'title'];
 
-
-
-    // ----------- attributes -----------
-    // get title based on lang
-    public function getTitleAttribute()
-    {
-        return app()->getLocale() == 'ar' ? $this->title_ar : $this->title_en;
-    }
-
+    // ------- attributes -------
     public function getMainImageAttribute()
     {
         return $this->getMedia('main_image')->first()?->getUrl() ?? null;
     }
 
-    // ----------- scopes -----------
+    public function getTitleAttribute()
+    {
+        return app()->getLocale() == 'ar' ? $this->title_ar : $this->title_en;
+    }
+
+    // ------- scopes -------
     public function scopeActive($query)
     {
         return $query->where('status', true);
