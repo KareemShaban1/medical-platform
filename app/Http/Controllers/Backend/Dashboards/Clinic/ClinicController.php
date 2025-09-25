@@ -23,7 +23,7 @@ class ClinicController extends Controller
         // Check if email is already verified first
         $verifiedUser = ClinicUser::where('email', $request->user_email)
             ->whereHas('clinic', function($query) {
-                $query->where('status', 1);
+                $query->where(['status' => 1, 'is_allowed' => 1]);
             })->first();
 
         if ($verifiedUser) {
@@ -39,7 +39,7 @@ class ClinicController extends Controller
         // Check if email exists but is unverified (allow re-registration)
         $unverifiedUser = ClinicUser::where('email', $request->user_email)
             ->whereHas('clinic', function($query) {
-                $query->where('status', 0);
+                $query->where(['status' => 0, 'is_allowed' => 0]);
             })->first();
 
         // Custom validation with field-specific error handling
@@ -94,7 +94,7 @@ class ClinicController extends Controller
             // Check if clinic user exists but not verified
             $existingUser = ClinicUser::where('email', $request->user_email)
                 ->whereHas('clinic', function($query) {
-                    $query->where('status', 0);
+                    $query->where(['status' => 0, 'is_allowed' => 0]);
                 })->first();
 
             if ($existingUser) {
@@ -190,7 +190,7 @@ class ClinicController extends Controller
             // Verify successfully - activate clinic and create approval
             DB::beginTransaction();
 
-            $clinic->update(['status' => true]);
+            $clinic->update(['status' => true, 'is_allowed' => true]);
             $clinic->clinicUsers()->update(['status' => true]);
 
             // Mark OTP as used and clean up
@@ -201,9 +201,9 @@ class ClinicController extends Controller
             ModuleApprovement::create([
                 'module_type' => Clinic::class,
                 'module_id' => $clinic->id,
-                'action' => 'approved',
+                'action' => 'pending',
                 'action_by' => $systemAdmin ? $systemAdmin->id : 1, // Use system admin
-                'notes' => 'Auto-approved after email verification'
+                'notes' => 'pending approval after email verification'
             ]);
 
             DB::commit();

@@ -17,7 +17,8 @@ class CustomAuthentication
         $password = $request->password;
         $user = ClinicUser::where('email', '=', $email)
         ->whereHas('clinic',function($query){
-            $query->approved();
+            $query->where('status', 1)
+            ->where('is_allowed', 1);
         })
         ->first();
 
@@ -34,7 +35,8 @@ class CustomAuthentication
         $password = $request->password;
         $user = SupplierUser::where('email', '=', $email)
         ->whereHas('supplier',function($query){
-            $query->approved();
+            $query->where(['status' => 1, 'is_allowed' => 1]);
+
         })
         ->first();
 

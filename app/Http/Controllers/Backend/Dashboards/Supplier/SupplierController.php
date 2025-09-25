@@ -20,7 +20,7 @@ class SupplierController extends Controller
         // Check if email is already verified first
         $verifiedUser = SupplierUser::where('email', $request->user_email)
             ->whereHas('supplier', function($query) {
-                $query->where('status', 1);
+                $query->where(['status' => 1, 'is_allowed' => 1]);
             })->first();
 
         if ($verifiedUser) {
@@ -36,7 +36,7 @@ class SupplierController extends Controller
         // Check if email exists but is unverified (allow re-registration)
         $unverifiedUser = SupplierUser::where('email', $request->user_email)
             ->whereHas('supplier', function($query) {
-                $query->where('status', 0);
+                $query->where(['status' => 0, 'is_allowed' => 0]);
             })->first();
 
         // Custom validation with field-specific error handling
@@ -90,7 +90,7 @@ class SupplierController extends Controller
             // Check if supplier user exists but not verified
             $existingUser = SupplierUser::where('email', $request->user_email)
                 ->whereHas('supplier', function($query) {
-                    $query->where('status', 0);
+                    $query->where(['status' => 0, 'is_allowed' => 0]);
                 })->first();
 
             if ($existingUser) {
@@ -186,7 +186,7 @@ class SupplierController extends Controller
             // Verify successfully - activate supplier and create approval
             DB::beginTransaction();
 
-            $supplier->update(['status' => true]);
+            $supplier->update(['status' => true, 'is_allowed' => true]);
             $supplier->supplierUsers()->update(['status' => true]);
 
             // Mark OTP as used and clean up
@@ -197,9 +197,9 @@ class SupplierController extends Controller
             ModuleApprovement::create([
                 'module_type' => Supplier::class,
                 'module_id' => $supplier->id,
-                'action' => 'approved',
+                'action' => 'pending',
                 'action_by' => $systemAdmin ? $systemAdmin->id : 1, // Use system admin
-                'notes' => 'Auto-approved after email verification'
+                'notes' => 'pending approval after email verification'
             ]);
 
             DB::commit();

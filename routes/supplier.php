@@ -34,7 +34,7 @@ Route::group(
 
         Route::post('/verify-otp', [SupplierController::class, 'verifyOtp'])
             ->name('verify-otp')->withoutMiddleware('auth:supplier')
-            ->middleware('throttle:2,5');
+            ->middleware('throttle:3,5');
 
         Route::post('/resend-otp', [SupplierController::class, 'resendOtp'])
             ->name('resend-otp')->withoutMiddleware('auth:supplier')

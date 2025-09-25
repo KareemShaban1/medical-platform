@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->nullableMorphs('module');
             $table->foreignId('action_by')->constrained('admins')->cascadeOnDelete();
-            $table->enum('action', ['under_review', 'approved', 'rejected']);
+            $table->enum('action', [ 'pending', 'under_review', 'approved', 'rejected']);
             $table->text('notes')->nullable();
             $table->softDeletes();
             $table->timestamps();
