@@ -6,6 +6,7 @@ use App\Models\Admin;
 use App\Models\ClinicUser;
 use App\Models\SupplierUser;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 
 class CustomAuthentication
 {
@@ -15,12 +16,25 @@ class CustomAuthentication
     {
         $email = $request->email;
         $password = $request->password;
+
         $user = ClinicUser::where('email', '=', $email)
         ->whereHas('clinic',function($query){
             $query->where('status', 1)
             ->where('is_allowed', 1);
         })
         ->first();
+
+        $unverifiedUser = ClinicUser::where('email', '=', $email)
+        ->whereHas('clinic',function($query){
+            $query->where('is_allowed', 0);
+        })
+        ->first();
+
+        if ($unverifiedUser) {
+            throw ValidationException::withMessages([
+                'email' => 'You are not verified. Please complete your registration to login.',
+            ]);
+        }
 
 
         if ($user && Hash::check($password, $user->password)) {
@@ -40,6 +54,18 @@ class CustomAuthentication
         })
         ->first();
 
+        $unverifiedUser = SupplierUser::where('email', '=', $email)
+        ->whereHas('supplier',function($query){
+            $query->where('is_allowed', 0);
+        })
+        ->first();
+
+
+        if ($unverifiedUser) {
+            throw ValidationException::withMessages([
+                'email' => 'You are not verified. Please complete your registration to login.',
+            ]);
+        }
 
         if ($user && Hash::check($password, $user->password)) {
             return $user;
