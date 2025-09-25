@@ -25,7 +25,7 @@ class Supplier extends Model implements HasMedia
 
     public $appends = ['images'];
 
-    
+
     public function getImagesAttribute()
     {
         return $this->getMedia('supplier_images')->map(function ($media) {
@@ -48,5 +48,15 @@ class Supplier extends Model implements HasMedia
         return $query->whereHas('approvement', function ($query) {
             $query->where('action', 'approved');
         });
+    }
+
+    public function otps()
+    {
+        return $this->morphMany(UserOtp::class, 'otpable');
+    }
+
+    public function isVerified()
+    {
+        return $this->status == 1;
     }
 }

@@ -47,4 +47,14 @@ class Clinic extends Model implements HasMedia
         });
     }
 
+    public function otps()
+    {
+        return $this->morphMany(UserOtp::class, 'otpable');
+    }
+
+    public function isVerified()
+    {
+        return $this->status == 1;
+    }
+
 }
