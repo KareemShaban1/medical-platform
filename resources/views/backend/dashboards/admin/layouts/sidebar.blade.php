@@ -88,6 +88,30 @@
             </div>
             </li>
 
+            <!-- Admin Users -->
+            <li class="side-nav-item">
+                <a data-bs-toggle="collapse" href="#sidebarAdminUsers" aria-expanded="false"
+                    aria-controls="sidebarAdminUsers" class="side-nav-link">
+                    <i class="uil-user"></i>
+                    <span> {{__('Admin Users')}} </span>
+                    <span class="menu-arrow"></span>
+                </a>
+                <div class="collapse" id="sidebarAdminUsers">
+                    <ul class="side-nav-second-level">
+                        <li>
+                            <a href="{{ route('admin.admin-users.index') }}">
+                                <span> {{__('Admin Users')}} </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.admin-users.trash') }}">
+                                <span> {{__('Trash Admin Users')}} </span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+
             <!-- Clinics -->
             <li class="side-nav-item">
                 <a data-bs-toggle="collapse" href="#sidebarClinics" aria-expanded="false"

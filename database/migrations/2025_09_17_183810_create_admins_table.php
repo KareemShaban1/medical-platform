@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('password');
             $table->boolean('status')->default(true);
             $table->rememberToken();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

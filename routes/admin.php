@@ -97,7 +97,7 @@ Route::group(
         Route::post('blog-categories/{id}/restore', [BlogCategoryController::class, 'restore'])->name('blog-categories.restore');
         Route::delete('blog-categories/{id}/force-delete', [BlogCategoryController::class, 'forceDelete'])->name('blog-categories.force-delete');
         Route::resource('blog-categories', BlogCategoryController::class);
-       
+
         Route::get('blog-posts/data', [BlogPostController::class, 'data'])->name('blog-posts.data');
         Route::put('blog-posts/{id}/update-status', [BlogPostController::class, 'updateStatus'])->name('blog-posts.update-status');
         Route::get('blog-posts/trash', [BlogPostController::class, 'trash'])->name('blog-posts.trash');
@@ -105,6 +105,22 @@ Route::group(
         Route::post('blog-posts/{id}/restore', [BlogPostController::class, 'restore'])->name('blog-posts.restore');
         Route::delete('blog-posts/{id}/force-delete', [BlogPostController::class, 'forceDelete'])->name('blog-posts.force-delete');
         Route::resource('blog-posts', BlogPostController::class);
+
+        // Admin Users Management
+        Route::group(['prefix' => 'admin-users'], function () {
+            Route::get('/roles', [\App\Http\Controllers\Backend\Dashboards\Admin\AdminUserController::class, 'roles'])->name('admin-users.roles');
+            Route::get('/data', [\App\Http\Controllers\Backend\Dashboards\Admin\AdminUserController::class, 'data'])->name('admin-users.data');
+            Route::get('/trash', [\App\Http\Controllers\Backend\Dashboards\Admin\AdminUserController::class, 'trash'])->name('admin-users.trash');
+            Route::get('/trash/data', [\App\Http\Controllers\Backend\Dashboards\Admin\AdminUserController::class, 'trashData'])->name('admin-users.trash.data');
+            Route::post('/restore/{id}', [\App\Http\Controllers\Backend\Dashboards\Admin\AdminUserController::class, 'restore'])->name('admin-users.restore');
+            Route::delete('/force/{id}', [\App\Http\Controllers\Backend\Dashboards\Admin\AdminUserController::class, 'forceDelete'])->name('admin-users.force.delete');
+            Route::post('/toggle-status/{id}', [\App\Http\Controllers\Backend\Dashboards\Admin\AdminUserController::class, 'toggleStatus'])->name('admin-users.toggle.status');
+            Route::get('/', [\App\Http\Controllers\Backend\Dashboards\Admin\AdminUserController::class, 'index'])->name('admin-users.index');
+            Route::post('/', [\App\Http\Controllers\Backend\Dashboards\Admin\AdminUserController::class, 'store'])->name('admin-users.store');
+            Route::get('/{id}', [\App\Http\Controllers\Backend\Dashboards\Admin\AdminUserController::class, 'show'])->name('admin-users.show');
+            Route::put('/{id}', [\App\Http\Controllers\Backend\Dashboards\Admin\AdminUserController::class, 'update'])->name('admin-users.update');
+            Route::delete('/{id}', [\App\Http\Controllers\Backend\Dashboards\Admin\AdminUserController::class, 'destroy'])->name('admin-users.destroy');
+        });
 
         // Courses Management
         Route::get('courses/data', [CourseController::class, 'data'])->name('courses.data');
