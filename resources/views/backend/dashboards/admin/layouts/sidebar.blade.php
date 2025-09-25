@@ -208,6 +208,31 @@
             </li>
 
 
+            <!-- Courses -->
+            <li class="side-nav-item">
+                <a data-bs-toggle="collapse" href="#sidebarCourses" aria-expanded="false"
+                    aria-controls="sidebarCourses" class="side-nav-link">
+                    <i class="uil-book-alt"></i>
+                    <span> {{__('Courses')}} </span>
+                    <span class="menu-arrow"></span>
+                </a>
+                <div class="collapse" id="sidebarCourses">
+                    <ul class="side-nav-second-level">
+                        <li>
+
+                            <a href="{{ route('admin.courses.index') }}">
+                                <span> {{__('Courses')}} </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.courses.trash') }}">
+                                <span> {{__('Trash Courses')}} </span>
+                            </a>
+                        </li>
+
+                    </ul>
+                </div>
+            </li>
 
 
 

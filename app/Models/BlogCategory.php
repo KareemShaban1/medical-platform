@@ -25,14 +25,30 @@ class BlogCategory extends Model
         'status' => 'boolean',
     ];
 
-    public function blogPosts()
-    {
-        return $this->hasMany(BlogPost::class);
-    }
 
+    // ----------- attributes -----------
     // get name based on lang
     public function getNameAttribute()
     {
         return app()->getLocale() == 'ar' ? $this->name_ar : $this->name_en;
+    }
+
+    public function getSlugAttribute()
+    {
+        return app()->getLocale() == 'ar' ? $this->slug_ar : $this->slug_en;
+    }
+
+
+    // ----------- scopes -----------
+    public function scopeActive($query)
+    {
+        return $query->where('status', true);
+    }
+
+
+    // ----------- relations -----------
+    public function blogPosts()
+    {
+        return $this->hasMany(BlogPost::class);
     }
 }

@@ -11,6 +11,8 @@ use App\Models\BlogCategory;
 use App\Observers\BlogCategoryObserver;
 use App\Models\BlogPost;
 use App\Observers\BlogPostObserver;
+use App\Models\Course;
+use App\Observers\CourseObserver;
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -33,5 +35,6 @@ class AppServiceProvider extends ServiceProvider
         RentalSpace::observe(RentalSpaceObserver::class);
         BlogCategory::observe(BlogCategoryObserver::class);
         BlogPost::observe(BlogPostObserver::class);
+        Course::observe(CourseObserver::class);
     }
 }

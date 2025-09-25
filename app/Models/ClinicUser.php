@@ -29,6 +29,18 @@ class ClinicUser extends Authenticatable
         'amount_per_salary_frequency',
     ];
 
+
+    // ------- attributes -------
+    
+
+
+    // ------- scopes -------
+    public function scopeActive($query)
+    {
+        return $query->where('status', true);
+    }
+
+    // ------- relations -------
     public function clinic()
     {
         return $this->belongsTo(Clinic::class);
@@ -43,5 +55,6 @@ class ClinicUser extends Authenticatable
     {
         return $this->morphMany(UserOtp::class, 'otpable');
     }
+    
 
 }
