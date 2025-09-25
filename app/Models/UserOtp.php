@@ -40,4 +40,41 @@ class UserOtp extends Model
     {
         return $this->morphTo();
     }
+
+    public function isExpired()
+    {
+        return $this->expires_at < now();
+    }
+
+    public function canResend()
+    {
+        // Simple check - allow resend if OTP is not used and not expired
+        return !$this->is_used && !$this->isExpired();
+    }
+
+    public function verify($inputOtp)
+    {
+        if ($this->isExpired()) {
+            return false;
+        }
+
+        if ($this->is_used) {
+            return false;
+        }
+
+        if ($this->otp !== $inputOtp) {
+            return false;
+        }
+
+        $this->update(['is_used' => true]);
+        return true;
+    }
+
+    public function resend()
+    {
+        // Update expiry time for resend
+        $this->update([
+            'expires_at' => now()->addMinutes(5)
+        ]);
+    }
 }

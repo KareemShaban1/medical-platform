@@ -5,6 +5,7 @@
 	<title>Register Supplier</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="csrf-token" content="{{ csrf_token() }}">
 	<link rel="icon" type="image/png" href="images/icons/favicon.ico" />
 	<link rel="stylesheet" type="text/css" href="{{asset('login/vendor/bootstrap/css/bootstrap.min.css')}}">
 	<link rel="stylesheet" type="text/css"
@@ -51,6 +52,8 @@
 								<div class="step-dot active"
 									data-step="1"></div>
 								<div class="step-dot" data-step="2">
+								</div>
+								<div class="step-dot" data-step="3">
 								</div>
 							</div>
 
@@ -319,6 +322,49 @@
 											{{ __('Register Supplier') }}
 											<i
 												class="fa fa-check"></i>
+										</button>
+									</div>
+								</div>
+
+								<!-- Step 3: OTP Verification -->
+								<div class="step step-3">
+									<div class="step-header">
+										<h4>{{ __('Step 3: Email Verification') }}</h4>
+										<p>{{ __('Please enter the 6-digit code sent to your email') }}</p>
+									</div>
+
+									<input type="hidden" id="supplier_id" name="supplier_id">
+
+									<div class="form-group text-center">
+										<label class="form-label required">{{ __('Verification Code') }}</label>
+										<div class="otp-input-container">
+											<input type="text" class="otp-input" maxlength="1" id="otp1">
+											<input type="text" class="otp-input" maxlength="1" id="otp2">
+											<input type="text" class="otp-input" maxlength="1" id="otp3">
+											<input type="text" class="otp-input" maxlength="1" id="otp4">
+											<input type="text" class="otp-input" maxlength="1" id="otp5">
+											<input type="text" class="otp-input" maxlength="1" id="otp6">
+										</div>
+										<div class="validation-feedback" id="otp_feedback"></div>
+									</div>
+
+									<div class="form-group text-center">
+										<div class="timer-container">
+											<p>{{ __('Code expires in') }}: <span id="timer">05:00</span></p>
+										</div>
+										<button type="button" class="btn btn-link" id="resendBtn" disabled>
+											{{ __('Resend Code') }} (<span id="resendTimer">60</span>s)
+										</button>
+									</div>
+
+									<div class="d-flex justify-content-between">
+										<button type="button" class="btn btn-secondary" id="backToStep2">
+											<i class="fa fa-arrow-left"></i>
+											{{ __('Back') }}
+										</button>
+										<button type="button" class="btn btn-success" id="verifyOtpBtn" disabled>
+											{{ __('Verify & Complete Registration') }}
+											<i class="fa fa-check"></i>
 										</button>
 									</div>
 								</div>

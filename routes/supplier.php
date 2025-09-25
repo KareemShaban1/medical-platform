@@ -32,6 +32,14 @@ Route::group(
         Route::post('/register-supplier', [SupplierController::class, 'registerSupplier'])
             ->name('register-supplier')->withoutMiddleware('auth:supplier');
 
+        Route::post('/verify-otp', [SupplierController::class, 'verifyOtp'])
+            ->name('verify-otp')->withoutMiddleware('auth:supplier')
+            ->middleware('throttle:2,5');
+
+        Route::post('/resend-otp', [SupplierController::class, 'resendOtp'])
+            ->name('resend-otp')->withoutMiddleware('auth:supplier')
+            ->middleware('throttle:1,1');
+
         Route::group(['prefix' => 'products'], function () {
             Route::get('/categories', [ProductController::class, 'categories'])->name('products.categories');
             Route::get('/data', [ProductController::class, 'data'])->name('products.data');

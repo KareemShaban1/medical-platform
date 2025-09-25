@@ -45,6 +45,6 @@ class ClinicRegisteredNotification extends Notification
         ->line('This OTP will expire in 5 minutes.')
         ->line('⚠️ **Important:** Do not share this OTP with anyone.')
         ->line('Once verified, your clinic will be automatically approved and you can access your dashboard.')
-        ->salutation('Best regards,<br>' . config('app.name') . ' Team');
+        ->salutation('Best regards, ' . config('app.name') . ' Team');
     }
 }
