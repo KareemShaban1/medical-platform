@@ -68,8 +68,8 @@
 									<input type="password" name="password" id="password"
 										class="form-control @error('password') is-invalid @enderror"
 										style="padding-right: 45px; border-radius: 0.375rem;" required>
-									<button type="button" class="position-absolute" id="passwordToggle"
-										style="top: 50%; right: 12px; transform: translateY(-50%); border: none; background: transparent; color: #6c757d; z-index: 1000; padding: 4px; display: flex; align-items: center; justify-content: center; width: 24px; height: 24px;">
+									<button type="button" id="passwordToggle"
+										style="position: absolute; top: 50%; right: 12px; transform: translateY(-50%); border: none; background: transparent; color: #6c757d; z-index: 1000; padding: 4px; display: flex; align-items: center; justify-content: center; width: 24px; height: 24px;">
 										<i class="fa fa-eye" style="font-size: 14px;"></i>
 									</button>
 								</div>
@@ -85,7 +85,7 @@
 							<div class="form-group">
 								<div class="d-flex justify-content-between align-items-center">
 									<div class="form-check">
-										<input type="checkbox" class="form-check-input" id="remember" name="remember">
+										<input type="checkbox" class="form-check-input ml-0" id="remember" name="remember">
 										<label class="form-check-label" for="remember">
 											{{ __('Remember me') }}
 										</label>

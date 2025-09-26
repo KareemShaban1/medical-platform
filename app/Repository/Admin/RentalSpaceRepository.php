@@ -207,14 +207,12 @@ class RentalSpaceRepository implements RentalSpaceRepositoryInterface
 
     private function rentalSpaceActions($item): string
     {
-        $editUrl = route('admin.rental-spaces.edit', $item->id);
+        // $editUrl = route('admin.rental-spaces.edit', $item->id);
         $showUrl = route('admin.rental-spaces.show', $item->id);
 
         return <<<HTML
         <div class="d-flex gap-2">
            <a href="{$showUrl}" class="btn btn-sm btn-success"><i class="fa fa-eye"></i></a>
-           <a href="{$editUrl}" class="btn btn-sm btn-info"><i class="fa fa-edit"></i></a>
-           <button onclick="deleteRentalSpace({$item->id})" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>
         </div>
         HTML;
     }

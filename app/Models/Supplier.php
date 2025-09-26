@@ -26,12 +26,29 @@ class Supplier extends Model implements HasMedia
     public $appends = ['images'];
 
 
+    // attributes
     public function getImagesAttribute()
     {
         return $this->getMedia('supplier_images')->map(function ($media) {
             return $media->getUrl();
         })->toArray();
     }
+
+    // scopes
+    public function scopeActive($query)
+    {
+        return $query->where('status', true);
+    }
+
+    public function scopeApproved($query)
+    {
+        return $query->whereHas('approvement', function ($query) {
+            $query->where('action', 'approved');
+        });
+    }
+
+
+    // relationships
 
     public function supplierUsers()
     {
@@ -43,12 +60,6 @@ class Supplier extends Model implements HasMedia
         return $this->morphOne(ModuleApprovement::class, 'module');
     }
 
-    public function scopeApproved($query)
-    {
-        return $query->whereHas('approvement', function ($query) {
-            $query->where('action', 'approved');
-        });
-    }
 
     public function otps()
     {

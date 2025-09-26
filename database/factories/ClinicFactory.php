@@ -18,6 +18,11 @@ class ClinicFactory extends Factory
     {
         return [
             //
+            'name' => fake()->name(),
+            'phone' => fake()->phoneNumber(),
+            'address' => fake()->address(),
+            'is_allowed' => true,
+            'status' => true,    
         ];
     }
 }

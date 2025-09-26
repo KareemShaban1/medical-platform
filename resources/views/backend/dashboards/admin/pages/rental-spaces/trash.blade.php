@@ -111,7 +111,7 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: '{{ route("clinic.rental-spaces.restore", ":id") }}'.replace(':id', id),
+                    url: '{{ route("admin.rental-spaces.restore", ":id") }}'.replace(':id', id),
                     method: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -138,7 +138,7 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: '{{ route("clinic.rental-spaces.force-delete", ":id") }}'.replace(':id', id),
+                    url: '{{ route("admin.rental-spaces.force-delete", ":id") }}'.replace(':id', id),
                     method: 'DELETE',
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')

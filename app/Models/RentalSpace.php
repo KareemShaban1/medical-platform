@@ -6,11 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class RentalSpace extends Model implements HasMedia
 {
     use InteractsWithMedia;
     use SoftDeletes;
+    use HasFactory;
     //
     protected $fillable = [
         'clinic_id',
@@ -21,6 +23,11 @@ class RentalSpace extends Model implements HasMedia
     ];
 
     public $appends = ['main_image', 'images'];
+
+    public function scopeActive($query)
+    {
+        return $query->where('status', true);
+    }
 
     public function scopeApproved($query)
     {

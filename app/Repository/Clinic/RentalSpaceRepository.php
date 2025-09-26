@@ -157,6 +157,7 @@ class RentalSpaceRepository implements RentalSpaceRepositoryInterface
             if ($request->ajax()) {
                 return $this->jsonResponse('success', __('Rental space ' . $action . ' successfully'));
             }
+            DB::commit();
 
             return redirect()->route('clinic.rental-spaces.index')->with('success', __('Rental space ' . $action . ' successfully'));
         } catch (\Exception $e) {
@@ -183,10 +184,12 @@ class RentalSpaceRepository implements RentalSpaceRepositoryInterface
     private function rentalSpaceActions($item): string
     {
         $editUrl = route('clinic.rental-spaces.edit', $item->id);
+        $showUrl = route('clinic.rental-spaces.show', $item->id);
 
         return <<<HTML
         <div class="d-flex gap-2">
-           <a href="{$editUrl}" class="btn btn-sm btn-info"><i class="fa fa-edit"></i></a>
+           <a href="{$showUrl}" class="btn btn-sm btn-info"><i class="fa fa-eye"></i></a>
+           <a href="{$editUrl}" class="btn btn-sm btn-warning text-white"><i class="fa fa-edit"></i></a>
            <button onclick="deleteRentalSpace({$item->id})" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>
         </div>
         HTML;
