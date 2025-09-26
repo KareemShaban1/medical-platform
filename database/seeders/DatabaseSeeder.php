@@ -28,7 +28,16 @@ class DatabaseSeeder extends Seeder
             RoleAndPermissionSeeder::class,
             ClinicUserSeeder::class,
             SupplierUserSeeder::class,
+        ]);
+
+        $this->call([
+           
             CategorySeeder::class,
+            BlogCategorySeeder::class,
+            BlogPostSeeder::class,
+            CourseSeeder::class,
+            JobSeeder::class,
+            RentalSpaceSeeder::class,
         ]);
     }
 }

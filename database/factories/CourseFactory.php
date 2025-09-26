@@ -17,7 +17,17 @@ class CourseFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'title_en' => fake()->sentence(),
+            'title_ar' => fake()->sentence(),
+            'slug_en' => fake()->slug(),
+            'slug_ar' => fake()->slug(),
+            'description_en' => fake()->text(),
+            'description_ar' => fake()->text(),
+            'url' => fake()->url(),
+            'duration' => fake()->numberBetween(1, 10),
+            'start_date' => fake()->date(),
+            'end_date' => fake()->date(),
+            'status' => fake()->boolean(),
         ];
     }
 }

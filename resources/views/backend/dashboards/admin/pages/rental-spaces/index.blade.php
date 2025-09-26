@@ -6,9 +6,9 @@
         <div class="col-12">
             <div class="page-title-box">
                 <div class="page-title-right">
-                    <a href="{{ route('admin.rental-spaces.create') }}" class="btn btn-primary">
+                    <!-- <a href="{{ route('admin.rental-spaces.create') }}" class="btn btn-primary">
                         <i class="mdi mdi-plus"></i> {{ __('Add Rental Space') }}
-                    </a>
+                    </a> -->
                 </div>
                 <h4 class="page-title">{{ __('Rental Spaces') }}</h4>
             </div>

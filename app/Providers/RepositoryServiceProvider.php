@@ -20,6 +20,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind('App\Interfaces\Admin\BlogPostRepositoryInterface', 'App\Repository\Admin\BlogPostRepository');
         $this->app->bind('App\Interfaces\Admin\CourseRepositoryInterface', 'App\Repository\Admin\CourseRepository');
         $this->app->bind('App\Interfaces\Admin\AdminUserRepositoryInterface', 'App\Repository\Admin\AdminUserRepository');
+        $this->app->bind('App\Interfaces\Admin\JobRepositoryInterface', 'App\Repository\Admin\JobRepository');
 
         $this->app->bind(ProductRepositoryInterface::class, ProductRepository::class);
 
@@ -37,6 +38,8 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind('App\Interfaces\Admin\DoctorProfileRepositoryInterface', 'App\Repository\Admin\DoctorProfileRepository');
         // rental space repository
         $this->app->bind('App\Interfaces\Clinic\RentalSpaceRepositoryInterface', 'App\Repository\Clinic\RentalSpaceRepository');
+        // job repository
+        $this->app->bind('App\Interfaces\Clinic\JobRepositoryInterface', 'App\Repository\Clinic\JobRepository');
     }
 
 

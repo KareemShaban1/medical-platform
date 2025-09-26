@@ -9,7 +9,9 @@ class RentalSpaceObserver
     //
     public function creating(RentalSpace $rentalSpace)
     {
-        $rentalSpace->clinic_id = auth()->guard('clinic')->user()->clinic_id;
+        if (!app()->runningInConsole()) {
+            $rentalSpace->clinic_id = auth()->guard('clinic')->user()->clinic_id;
+        }
     }
     
 }

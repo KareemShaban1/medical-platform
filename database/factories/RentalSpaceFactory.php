@@ -3,11 +3,12 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Models\Clinic;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Supplier>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\RentalSpace>
  */
-class SupplierFactory extends Factory
+class RentalSpaceFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -17,11 +18,10 @@ class SupplierFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'clinic_id' => Clinic::inRandomOrder()->first()->id,
             'name' => fake()->company(),
-            'phone' => fake()->phoneNumber(),
-            'address' => fake()->address(),
-            'is_allowed' => true,
+            'location' => fake()->address(),
+            'description' => fake()->paragraph(),
             'status' => true,
         ];
     }

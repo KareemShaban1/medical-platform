@@ -54,4 +54,5 @@ class Course extends Model implements HasMedia
     {
         return $query->where('status', true);
     }
+    
 }

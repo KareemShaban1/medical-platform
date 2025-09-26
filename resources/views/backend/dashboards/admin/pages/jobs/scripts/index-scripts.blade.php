@@ -1,16 +1,16 @@
 @push('scripts')
 <script>
-    let table = $('#rental-space-table').DataTable({
+    let table = $('#job-table').DataTable({
         processing: true,
         serverSide: true,
-        ajax: '{{ route("admin.rental-spaces.data") }}',
+        ajax: '{{ route("admin.jobs.data") }}',
         columns: [{
                 data: 'id',
                 name: 'id'
             },
             {
-                data: 'name',
-                name: 'name'
+                data: 'title',
+                name: 'title'
             },
             {
                 data: 'location',
@@ -48,7 +48,7 @@
             {
                 extend: 'excel',
                 text: 'Excel',
-                title: 'Rental Spaces Data',
+                title: 'Jobs Data',
                 exportOptions: {
                     columns: [0, 1, 2]
                 }
@@ -67,7 +67,7 @@
     });
 
     // Delete
-    function deleteRentalSpace(id) {
+    function deleteJob(id) {
         Swal.fire({
             title: 'Are you sure?',
             text: "You won't be able to revert this!",
@@ -79,7 +79,7 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: '{{ route("admin.rental-spaces.destroy", ":id") }}'.replace(':id', id),
+                    url: '{{ route("admin.jobs.destroy", ":id") }}'.replace(':id', id),
                     method: 'DELETE',
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -97,8 +97,8 @@
     }
 
 
-    function changeApproval(rentalSpaceId, approvementId) {
-        $('#moduleId').val(rentalSpaceId);
+    function changeApproval(jobId, approvementId) {
+        $('#moduleId').val(jobId);
         $('#approvementId').val(approvementId);
 
         // Clear old values
@@ -156,7 +156,7 @@
                 },
                 data: {
                     module_id: moduleId,
-                    module_type: 'App\\Models\\RentalSpace',
+                    module_type: 'App\\Models\\Job',
                     action: $('#action').val(),
                     notes: $('#notes').val(),
                 },
@@ -178,7 +178,7 @@
         let field = $(this).data('field');
         let value = $(this).is(':checked') ? 1 : 0;
 
-        let url = '{{ route("admin.rental-spaces.update-status", ":id") }}'.replace(':id', id);
+        let url = '{{ route("admin.jobs.update-status", ":id") }}'.replace(':id', id);
 
         $.ajax({
             url: url,

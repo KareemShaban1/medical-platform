@@ -18,6 +18,11 @@ class BlogCategoryFactory extends Factory
     {
         return [
             //
+            'name_en' => $this->faker->unique()->word,
+            'name_ar' => $this->faker->unique()->word,
+            'slug_ar' => $this->faker->unique()->slug,
+            'slug_en' => $this->faker->unique()->slug,
+            'status' => $this->faker->boolean,
         ];
     }
 }

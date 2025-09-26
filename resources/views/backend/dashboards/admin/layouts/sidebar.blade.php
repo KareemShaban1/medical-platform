@@ -138,6 +138,32 @@
                 </div>
             </li>
 
+            <!-- Jobs -->
+            <li class="side-nav-item">
+                <a data-bs-toggle="collapse" href="#sidebarJobs" aria-expanded="false"
+                    aria-controls="sidebarJobs" class="side-nav-link">
+                    <i class="uil-user"></i>
+                    <span> {{__('Jobs')}} </span>
+                    <span class="menu-arrow"></span>
+                </a>
+                <div class="collapse" id="sidebarJobs">
+                    <ul class="side-nav-second-level">
+                        <li>
+
+                            <a href="{{ route('admin.jobs.index') }}">
+                                <span> {{__('Jobs')}} </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.jobs.trash') }}">
+                                <span> {{__('Trash Jobs')}} </span>
+                            </a>
+                        </li>
+
+                    </ul>
+                </div>
+            </li>
+
 
 
 
@@ -236,7 +262,7 @@
             <li class="side-nav-item">
                 <a data-bs-toggle="collapse" href="#sidebarCourses" aria-expanded="false"
                     aria-controls="sidebarCourses" class="side-nav-link">
-                    <i class="uil-book-alt"></i>
+                    <i class="uil-book-open"></i>
                     <span> {{__('Courses')}} </span>
                     <span class="menu-arrow"></span>
                 </a>
