@@ -11,6 +11,7 @@ use App\Http\Controllers\Backend\Dashboards\Admin\RentalSpaceController;
 use App\Http\Controllers\Backend\Dashboards\Admin\ModuleApprovementController;
 use App\Http\Controllers\Backend\Dashboards\Admin\BlogPostController;
 use App\Http\Controllers\Backend\Dashboards\Admin\CourseController;
+use App\Http\Controllers\Backend\Dashboards\Admin\JobController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -68,8 +69,8 @@ Route::group(
         Route::post('approvements', [ModuleApprovementController::class, 'storeApprovement'])->name('approvements.store');
         Route::put('approvements/{id}', [ModuleApprovementController::class, 'updateApprovement'])->name('approvements.update');
 
-         // Doctor Profiles Management
-         Route::group(['prefix' => 'doctor-profiles'], function () {
+        // Doctor Profiles Management
+        Route::group(['prefix' => 'doctor-profiles'], function () {
             Route::get('/data', [\App\Http\Controllers\Backend\Dashboards\Admin\DoctorProfileController::class, 'data'])->name('doctor-profiles.data');
             Route::get('/pending', [\App\Http\Controllers\Backend\Dashboards\Admin\DoctorProfileController::class, 'pending'])->name('doctor-profiles.pending');
             Route::get('/pending/data', [\App\Http\Controllers\Backend\Dashboards\Admin\DoctorProfileController::class, 'pendingData'])->name('doctor-profiles.pending.data');
@@ -131,9 +132,16 @@ Route::group(
         Route::post('courses/{id}/restore', [CourseController::class, 'restore'])->name('courses.restore');
         Route::delete('courses/{id}/force-delete', [CourseController::class, 'forceDelete'])->name('courses.force-delete');
         Route::resource('courses', CourseController::class);
+    
 
-
-
+        // jobs Management
+        Route::get('jobs/data', [JobController::class, 'data'])->name('jobs.data');
+        Route::put('jobs/{id}/update-status', [JobController::class, 'updateStatus'])->name('jobs.update-status');
+        Route::get('jobs/trash', [JobController::class, 'trash'])->name('jobs.trash');
+        Route::get('jobs/trash/data', [JobController::class, 'trashData'])->name('jobs.trash.data');
+        Route::post('jobs/{id}/restore', [JobController::class, 'restore'])->name('jobs.restore');
+        Route::delete('jobs/{id}/force-delete', [JobController::class, 'forceDelete'])->name('jobs.force-delete');
+        Route::resource('jobs', JobController::class);
     }
 );
 

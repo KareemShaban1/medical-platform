@@ -13,6 +13,8 @@ use App\Models\BlogPost;
 use App\Observers\BlogPostObserver;
 use App\Models\Course;
 use App\Observers\CourseObserver;
+use App\Models\Job;
+use App\Observers\JobObserver;
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -36,5 +38,6 @@ class AppServiceProvider extends ServiceProvider
         BlogCategory::observe(BlogCategoryObserver::class);
         BlogPost::observe(BlogPostObserver::class);
         Course::observe(CourseObserver::class);
+        Job::observe(JobObserver::class);
     }
 }
