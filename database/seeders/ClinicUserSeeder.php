@@ -21,6 +21,7 @@ class ClinicUserSeeder extends Seeder
             'name' => 'Clinic Admin',
             'email' => 'admin@clinic1.com',
             'password' => Hash::make('password'),
+            'phone' => '01034113921',
             'status' => true,
             'salary_frequency' => 'monthly',
             'amount_per_salary_frequency' => 2000,
@@ -33,6 +34,7 @@ class ClinicUserSeeder extends Seeder
             'email' => 'doctor@clinic1.com',
             'password' => Hash::make('password'),
             'status' => true,
+            'phone' => '01264313921',
             'salary_frequency' => 'monthly',
             'amount_per_salary_frequency' => 5000,
         ]);
