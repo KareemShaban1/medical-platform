@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Backend\Dashboards\Clinic\RoleController;
 use App\Http\Controllers\Backend\Dashboards\Clinic\RentalSpaceController;
+use App\Http\Controllers\Backend\Dashboards\Clinic\JobController;
 use Illuminate\Support\Facades\Auth;
 
 Route::group(
@@ -94,6 +95,16 @@ Route::group(
                 Route::post('/mark-as-read/{id}', [\App\Http\Controllers\Backend\Dashboards\Clinic\NotificationController::class, 'markAsRead'])->name('notifications.mark-as-read');
                 Route::post('/mark-all-as-read', [\App\Http\Controllers\Backend\Dashboards\Clinic\NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-as-read');
             });
+
+            // Jobs Management
+            Route::get('jobs/data', [JobController::class, 'data'])->name('jobs.data');
+            Route::get('jobs/trash', [JobController::class, 'trash'])->name('jobs.trash');
+            Route::get('jobs/trash/data', [JobController::class, 'trashData'])->name('jobs.trash.data');
+            Route::post('jobs/{id}/restore', [JobController::class, 'restore'])->name('jobs.restore');
+            Route::delete('jobs/{id}/force-delete', [JobController::class, 'forceDelete'])->name('jobs.force-delete');
+            Route::put('jobs/{id}/update-status', [JobController::class, 'updateStatus'])->name('jobs.update-status');
+            Route::resource('jobs', JobController::class);
+    
     }
 );
 
