@@ -79,6 +79,20 @@ class DoctorProfileController extends Controller
         }
     }
 
+    public function toggleLockForEdit($id)
+    {
+        try {
+            $profile = $this->profileRepo->toggleLockForEdit($id);
+            $message = $profile->locked_for_edit
+                ? __('Profile locked for editing successfully')
+                : __('Profile unlocked for editing successfully');
+
+            return $this->jsonResponse('success', $message);
+        } catch (\Exception $e) {
+            return $this->jsonResponse('error', $e->getMessage());
+        }
+    }
+
     private function jsonResponse(string $status, string $message)
     {
         if (request()->ajax()) {

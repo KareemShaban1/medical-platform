@@ -390,10 +390,17 @@ $('#profile_photo').on('change', function() {
     if (file) {
         const reader = new FileReader();
         reader.onload = function(e) {
-            $('#photoPreview').attr('src', e.target.result).show();
-            $('#photoPlaceholder').hide();
+            $('#photoPreview').attr('src', e.target.result).attr('style', 'width: 200px; height: 200px; object-fit: cover; border-radius: 50%; display: block !important;');
+            $('#photoPlaceholder').attr('style', 'width: 200px; height: 200px; color: white; font-size: 48px; display: none !important;');
         };
         reader.readAsDataURL(file);
+    } else {
+        // If no file selected, revert to original state
+        const hasExistingPhoto = $('#photoPreview').attr('src') && $('#photoPreview').attr('src') !== '#';
+        if (!hasExistingPhoto) {
+            $('#photoPreview').attr('style', 'width: 200px; height: 200px; object-fit: cover; border-radius: 50%; display: none !important;');
+            $('#photoPlaceholder').attr('style', 'width: 200px; height: 200px; color: white; font-size: 48px; display: flex !important;');
+        }
     }
 });
 

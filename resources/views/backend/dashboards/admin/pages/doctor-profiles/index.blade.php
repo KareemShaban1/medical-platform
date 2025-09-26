@@ -29,6 +29,7 @@
                                 <th>{{ __('Email') }}</th>
                                 <th>{{ __('Status') }}</th>
                                 <th>{{ __('Featured') }}</th>
+                                <th>{{ __('Lock Status') }}</th>
                                 <th>{{ __('Reviewed By') }}</th>
                                 <th>{{ __('Created At') }}</th>
                                 <th>{{ __('Actions') }}</th>
@@ -81,6 +82,7 @@ let table = $('#profiles-table').DataTable({
         { data: 'email', name: 'email' },
         { data: 'status', name: 'status' },
         { data: 'is_featured', name: 'is_featured', orderable: false, searchable: false },
+        { data: 'lock_status', name: 'locked_for_edit', orderable: false, searchable: false },
         { data: 'reviewed_by', name: 'reviewer.name' },
         { data: 'created_at', name: 'created_at' },
         { data: 'action', name: 'action', orderable: false, searchable: false }
@@ -94,7 +96,7 @@ let table = $('#profiles-table').DataTable({
         {
             extend: 'print',
             exportOptions: {
-                columns: [0, 2, 3, 4, 5, 6, 8]
+                columns: [0, 2, 3, 4, 5, 6, 7, 9]
             }
         },
         {
@@ -102,13 +104,13 @@ let table = $('#profiles-table').DataTable({
             text: 'Excel',
             title: 'Doctor Profiles Data',
             exportOptions: {
-                columns: [0, 2, 3, 4, 5, 6, 8]
+                columns: [0, 2, 3, 4, 5, 6, 7, 9]
             }
         },
         {
             extend: 'copy',
             exportOptions: {
-                columns: [0, 2, 3, 4, 5, 6, 8]
+                columns: [0, 2, 3, 4, 5, 6, 7, 9]
             }
         }
     ],
@@ -209,6 +211,36 @@ function toggleFeatured(id) {
         if (result.isConfirmed) {
             $.ajax({
                 url: '{{ route("admin.doctor-profiles.toggle-featured", ":id") }}'.replace(':id', id),
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    table.ajax.reload();
+                    Swal.fire('Success!', response.message, 'success');
+                },
+                error: function(xhr) {
+                    Swal.fire('Error!', xhr.responseJSON?.message || 'Something went wrong', 'error');
+                }
+            });
+        }
+    });
+}
+
+// Toggle lock for edit status
+function toggleLockForEdit(id) {
+    Swal.fire({
+        title: 'Toggle Lock Status?',
+        text: "This will change the lock status for editing the doctor's profile.",
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, toggle it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: '{{ route("admin.doctor-profiles.toggle-lock", ":id") }}'.replace(':id', id),
                 method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')

@@ -34,6 +34,7 @@ class DoctorProfile extends Model implements HasMedia
         'reviewed_at',
         'is_featured',
         'featured_by',
+        'locked_for_edit',
     ];
 
     protected $casts = [
@@ -172,7 +173,22 @@ class DoctorProfile extends Model implements HasMedia
 
     public function canBeEdited()
     {
-        return in_array($this->status, [self::STATUS_DRAFT, self::STATUS_REJECTED]);
+        // If locked for edit, prevent editing regardless of status
+        if ($this->locked_for_edit) {
+            return false;
+        }
+
+        // Allow editing for draft and rejected profiles
+        if (in_array($this->status, [self::STATUS_DRAFT, self::STATUS_REJECTED])) {
+            return true;
+        }
+
+        // For approved profiles, only allow if not locked
+        if ($this->status === self::STATUS_APPROVED && !$this->locked_for_edit) {
+            return true;
+        }
+
+        return false;
     }
 
     public function submitForReview()
@@ -208,6 +224,13 @@ class DoctorProfile extends Model implements HasMedia
         $this->update([
             'is_featured' => !$this->is_featured,
             'featured_by' => !$this->is_featured ? null : $adminId,
+        ]);
+    }
+
+    public function toggleLockForEdit()
+    {
+        $this->update([
+            'locked_for_edit' => !$this->locked_for_edit,
         ]);
     }
 

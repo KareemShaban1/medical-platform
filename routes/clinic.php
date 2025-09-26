@@ -66,12 +66,12 @@ Route::group(
                 ->name('register-clinic')->withoutMiddleware('auth:clinic');
 
             Route::post('/verify-otp', [ClinicController::class, 'verifyOtp'])
-                ->name('verify-otp')->withoutMiddleware('auth:clinic')
-                ->middleware('throttle:2,5');
+                ->name('verify-otp')->withoutMiddleware('auth:clinic');
+                //->middleware('throttle:2,5');
 
             Route::post('/resend-otp', [ClinicController::class, 'resendOtp'])
-                ->name('resend-otp')->withoutMiddleware('auth:clinic')
-                ->middleware('throttle:1,1');
+                ->name('resend-otp')->withoutMiddleware('auth:clinic');
+               // ->middleware('throttle:1,1');
 
             // Doctor Profiles Management
             Route::group(['prefix' => 'doctor-profiles'], function () {

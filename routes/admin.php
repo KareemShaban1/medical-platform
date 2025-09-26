@@ -76,6 +76,7 @@ Route::group(
             Route::post('/approve/{id}', [\App\Http\Controllers\Backend\Dashboards\Admin\DoctorProfileController::class, 'approve'])->name('doctor-profiles.approve');
             Route::post('/reject/{id}', [\App\Http\Controllers\Backend\Dashboards\Admin\DoctorProfileController::class, 'reject'])->name('doctor-profiles.reject');
             Route::post('/toggle-featured/{id}', [\App\Http\Controllers\Backend\Dashboards\Admin\DoctorProfileController::class, 'toggleFeatured'])->name('doctor-profiles.toggle-featured');
+            Route::post('/toggle-lock/{id}', [\App\Http\Controllers\Backend\Dashboards\Admin\DoctorProfileController::class, 'toggleLockForEdit'])->name('doctor-profiles.toggle-lock');
             Route::get('/', [\App\Http\Controllers\Backend\Dashboards\Admin\DoctorProfileController::class, 'index'])->name('doctor-profiles.index');
             Route::get('/{id}', [\App\Http\Controllers\Backend\Dashboards\Admin\DoctorProfileController::class, 'show'])->name('doctor-profiles.show');
         });

@@ -44,6 +44,9 @@
 
                             <div class="mb-3">
                                 {!! $profile->status_badge !!}
+                                @if($profile->locked_for_edit && $profile->status === 'approved')
+                                    <br><span class="badge bg-danger mt-1"><i class="fa fa-lock"></i> {{ __('Locked for Edit') }}</span>
+                                @endif
                             </div>
 
                             @if(in_array($profile->status, ['draft', 'rejected']))

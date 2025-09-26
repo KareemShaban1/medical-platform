@@ -25,9 +25,10 @@ class DoctorProfileRepository implements DoctorProfileRepositoryInterface
             ->addColumn('clinic_user', fn($item) => $item->clinicUser->name ?? 'N/A')
             ->editColumn('status', fn($item) => $item->status_badge)
             ->addColumn('is_featured', fn($item) => $this->featuredBadge($item))
+            ->addColumn('lock_status', fn($item) => $this->lockStatusBadge($item))
             ->addColumn('reviewed_by', fn($item) => $item->reviewer->name ?? 'N/A')
             ->addColumn('action', fn($item) => $this->profileActions($item))
-            ->rawColumns(['profile_photo', 'status', 'is_featured', 'action'])
+            ->rawColumns(['profile_photo', 'status', 'is_featured', 'lock_status', 'action'])
             ->make(true);
     }
 
@@ -103,6 +104,17 @@ class DoctorProfileRepository implements DoctorProfileRepositoryInterface
         });
     }
 
+    public function toggleLockForEdit($id)
+    {
+        return DB::transaction(function () use ($id) {
+            $profile = DoctorProfile::findOrFail($id);
+
+            $profile->toggleLockForEdit();
+
+            return $profile;
+        });
+    }
+
     /** ---------------------- PRIVATE HELPERS ---------------------- */
 
     private function profilePhoto($item): string
@@ -134,6 +146,14 @@ class DoctorProfileRepository implements DoctorProfileRepositoryInterface
         return '<span class="badge bg-light text-dark">Not Featured</span>';
     }
 
+    private function lockStatusBadge($item): string
+    {
+        if ($item->locked_for_edit) {
+            return '<span class="badge bg-danger"><i class="fa fa-lock"></i> Locked</span>';
+        }
+        return '<span class="badge bg-success"><i class="fa fa-unlock"></i> Unlocked</span>';
+    }
+
     private function profileActions($item): string
     {
         $showUrl = route('admin.doctor-profiles.show', $item->id);
@@ -150,6 +170,14 @@ class DoctorProfileRepository implements DoctorProfileRepositoryInterface
             $featuredClass = $item->is_featured ? 'btn-warning' : 'btn-outline-warning';
             $featuredTitle = $item->is_featured ? 'Remove from Featured' : 'Make Featured';
             $actions .= '<button onclick="toggleFeatured(' . $item->id . ')" class="btn btn-sm ' . $featuredClass . '" title="' . $featuredTitle . '"><i class="fa fa-star"></i></button>';
+        }
+
+        // Lock/Unlock toggle button for approved profiles
+        if ($item->status === DoctorProfile::STATUS_APPROVED) {
+            $lockClass = $item->locked_for_edit ? 'btn-danger' : 'btn-success';
+            $lockIcon = $item->locked_for_edit ? 'fa-lock' : 'fa-unlock';
+            $lockTitle = $item->locked_for_edit ? 'Unlock for Edit' : 'Lock for Edit';
+            $actions .= '<button onclick="toggleLockForEdit(' . $item->id . ')" class="btn btn-sm ' . $lockClass . '" title="' . $lockTitle . '"><i class="fa ' . $lockIcon . '"></i></button>';
         }
 
         $actions .= '</div>';

@@ -37,6 +37,9 @@ return new class extends Migration
             $table->boolean('is_featured')->default(false);
             $table->foreignId('featured_by')->nullable()->constrained(table: 'admins')->onDelete('set null');
 
+            // locked for edit
+            $table->boolean('locked_for_edit')->default(false);
+
             $table->timestamps();
             $table->index(['clinic_user_id', 'status']);
         });
