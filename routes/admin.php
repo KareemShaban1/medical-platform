@@ -49,11 +49,13 @@ Route::group(
         Route::get('clinics/{id}/users/data', [ClinicController::class, 'clinicUsersData'])->name('clinics.users.data');
         Route::put('clinics/{id}/update-status', [ClinicController::class, 'updateStatus'])->name('clinics.update-status');
         Route::put('clinics/{id}/update-is-allowed', [ClinicController::class, 'updateIsAllowed'])->name('clinics.update-is-allowed');
+        Route::get('clinics/{id}/approval', [ClinicController::class, 'showApproval'])->name('clinics.approval');
         Route::resource('clinics', ClinicController::class);
 
         Route::get('suppliers/data', [SupplierController::class, 'data'])->name('suppliers.data');
         Route::put('suppliers/{id}/update-status', [SupplierController::class, 'updateStatus'])->name('suppliers.update-status');
         Route::put('suppliers/{id}/update-is-allowed', [SupplierController::class, 'updateIsAllowed'])->name('suppliers.update-is-allowed');
+        Route::get('suppliers/{id}/approval', [SupplierController::class, 'showApproval'])->name('suppliers.approval');
         Route::resource('suppliers', SupplierController::class);
 
         // Rental Space Management
@@ -132,7 +134,7 @@ Route::group(
         Route::post('courses/{id}/restore', [CourseController::class, 'restore'])->name('courses.restore');
         Route::delete('courses/{id}/force-delete', [CourseController::class, 'forceDelete'])->name('courses.force-delete');
         Route::resource('courses', CourseController::class);
-    
+
 
         // jobs Management
         Route::get('jobs/data', [JobController::class, 'data'])->name('jobs.data');

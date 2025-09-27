@@ -23,8 +23,9 @@ class SupplierRepository implements SupplierRepositoryInterface
             ->editColumn('status', fn($item) => $this->supplierStatus($item))
             ->editColumn('is_allowed', fn($item) => $this->supplierIsAllowed($item))
             ->addColumn('approval', fn($item) => $this->supplierApproval($item))
+            ->addColumn('attachments', fn($item) => $this->supplierAttachments($item))
             ->addColumn('action', fn($item) => $this->supplierActions($item))
-            ->rawColumns(['status', 'is_allowed', 'action', 'approval'])
+            ->rawColumns(['status', 'is_allowed', 'action', 'approval', 'attachments'])
             ->make(true);
     }
 
@@ -86,6 +87,17 @@ class SupplierRepository implements SupplierRepositoryInterface
         return $this->jsonResponse('success', __('Supplier deleted successfully'));
     }
 
+    public function showApproval($id)
+    {
+        $supplier = Supplier::with('approvement')->findOrFail($id);
+        $currentDocuments = $supplier->getMedia('approval_documents');
+        $rejectedDocuments = $supplier->getMedia('approval_documents_rejected');
+        return view('backend.dashboards.admin.pages.suppliers.approval', compact(
+            'supplier',
+            'currentDocuments',
+            'rejectedDocuments'
+        ));
+    }
 
     /** ---------------------- PRIVATE HELPERS ---------------------- */
 
@@ -95,7 +107,7 @@ class SupplierRepository implements SupplierRepositoryInterface
             $supplier->fill($request->validated())->save();
 
             if ($request->hasFile('images')) {
-                if($action == 'updated') {
+                if ($action == 'updated') {
                     // Remove old images
                     $supplier->clearMediaCollection('supplier_images');
                 }
@@ -106,10 +118,10 @@ class SupplierRepository implements SupplierRepositoryInterface
 
 
             if ($request->ajax()) {
-                return $this->jsonResponse('success', __('Supplier '.$action.' successfully'));
+                return $this->jsonResponse('success', __('Supplier ' . $action . ' successfully'));
             }
 
-            return redirect()->route('admin.suppliers.index')->with('success', __('Supplier '.$action.' successfully'));
+            return redirect()->route('admin.suppliers.index')->with('success', __('Supplier ' . $action . ' successfully'));
         } catch (\Throwable $e) {
             return $this->jsonResponse('error', $e->getMessage());
         }
@@ -120,10 +132,10 @@ class SupplierRepository implements SupplierRepositoryInterface
         $checked = $item->status ? 'checked' : '';
         return <<<HTML
         <div class="form-check form-switch mt-2">
-            <input type="checkbox" 
-                   class="form-check-input toggle-boolean-status" 
-                   data-id="{$item->id}" 
-                   data-field="status" 
+            <input type="checkbox"
+                   class="form-check-input toggle-boolean-status"
+                   data-id="{$item->id}"
+                   data-field="status"
                    value="1" {$checked}>
         </div>
         HTML;
@@ -134,10 +146,10 @@ class SupplierRepository implements SupplierRepositoryInterface
         $checked = $item->is_allowed ? 'checked' : '';
         return <<<HTML
         <div class="form-check form-switch mt-2">
-            <input type="checkbox" 
-                   class="form-check-input toggle-boolean-is-allowed" 
-                   data-id="{$item->id}" 
-                   data-field="is_allowed" 
+            <input type="checkbox"
+                   class="form-check-input toggle-boolean-is-allowed"
+                   data-id="{$item->id}"
+                   data-field="is_allowed"
                    value="1" {$checked}>
         </div>
         HTML;
@@ -164,6 +176,35 @@ class SupplierRepository implements SupplierRepositoryInterface
                 <button class="btn btn-sm btn-primary" onclick="changeApproval({$item->id}, {$approvalId})">
                     Change Approval
                 </button>
+            </div>
+        HTML;
+    }
+
+    private function supplierAttachments($item): string
+    {
+        $currentDocs = $item->getMedia('approval_documents');
+        $rejectedDocs = $item->getMedia('approval_documents_rejected');
+
+        $totalDocs = $currentDocs->count() + $rejectedDocs->count();
+
+        if ($totalDocs === 0) {
+            return '<span class="badge bg-secondary">No Documents</span>';
+        }
+
+        $currentBadge = $currentDocs->count() > 0 ?
+            '<span class="badge bg-success me-1">' . $currentDocs->count() . ' Current</span>' : '';
+
+        $rejectedBadge = $rejectedDocs->count() > 0 ?
+            '<span class="badge bg-danger me-1">' . $rejectedDocs->count() . ' Rejected</span>' : '';
+
+        return <<<HTML
+            <div>
+                {$currentBadge}
+                {$rejectedBadge}
+                <br>
+                <a href="/admin/suppliers/{$item->id}/approval" class="btn btn-sm btn-info mt-1">
+                    <i class="fa fa-paperclip"></i> View Docs
+                </a>
             </div>
         HTML;
     }

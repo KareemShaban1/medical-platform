@@ -3,11 +3,11 @@
 use App\Http\Controllers\Backend\Dashboards\Supplier\DashboardController;
 use App\Http\Controllers\Backend\Dashboards\Supplier\SupplierController;
 use App\Http\Controllers\Backend\Dashboards\Supplier\ProductController;
+use App\Http\Controllers\Backend\Dashboards\Supplier\ApprovalController;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
 
 Route::group(
     [
@@ -18,27 +18,39 @@ Route::group(
             'auth:supplier',
             'localeCookieRedirect',
             'localizationRedirect',
-            'localeViewPath'
+            'localeViewPath',
+            'check.supplier.approval'
         ]
     ],
     function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])
             ->name('dashboard');
 
+        // Add other supplier dashboard routes here...
+
         Route::get('/register-supplier', function () {
             return view('backend.dashboards.supplier.auth.register-supplier');
-        })->name('register-supplier')->withoutMiddleware('auth:supplier');
+        })->name('register-supplier')->withoutMiddleware(['auth:supplier' , 'check.supplier.approval']);
 
         Route::post('/register-supplier', [SupplierController::class, 'registerSupplier'])
-            ->name('register-supplier')->withoutMiddleware('auth:supplier');
+            ->name('register-supplier')->withoutMiddleware(['auth:supplier' , 'check.supplier.approval']);
 
         Route::post('/verify-otp', [SupplierController::class, 'verifyOtp'])
-            ->name('verify-otp')->withoutMiddleware('auth:supplier')
+            ->name('verify-otp')->withoutMiddleware(['auth:supplier' , 'check.supplier.approval'])
             ->middleware('throttle:3,5');
 
         Route::post('/resend-otp', [SupplierController::class, 'resendOtp'])
-            ->name('resend-otp')->withoutMiddleware('auth:supplier')
+            ->name('resend-otp')->withoutMiddleware(['auth:supplier' , 'check.supplier.approval'])
             ->middleware('throttle:1,1');
+
+
+        // Approval routes (without approval middleware)
+        Route::get('/approval', [ApprovalController::class, 'show'])
+        ->name('approval.show')->withoutMiddleware('check.supplier.approval');
+
+        Route::post('/approval/upload', [ApprovalController::class, 'upload'])
+        ->name('approval.upload')->withoutMiddleware('check.supplier.approval');
+
 
         Route::group(['prefix' => 'products'], function () {
             Route::get('/categories', [ProductController::class, 'categories'])->name('products.categories');
@@ -79,6 +91,7 @@ Route::group(
         Route::post('roles/{id}/restore', [\App\Http\Controllers\Backend\Dashboards\Supplier\RoleController::class, 'restore'])->name('roles.restore');
         Route::delete('roles/{id}/force-delete', [\App\Http\Controllers\Backend\Dashboards\Supplier\RoleController::class, 'forceDelete'])->name('roles.forceDelete');
         Route::resource('roles', \App\Http\Controllers\Backend\Dashboards\Supplier\RoleController::class);
+
 
     }
 );
