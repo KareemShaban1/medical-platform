@@ -29,7 +29,7 @@ class ProductFactory extends Factory
             'price_after' => fake()->randomFloat(2, 10, 100),
             'discount_value' => fake()->randomFloat(2, 10, 100),
             'stock' => fake()->randomNumber(2),
-            'approved' => true,
+            // 'approved' => true,
             'reason' => fake()->text(),
             'status' => true,
         ];
