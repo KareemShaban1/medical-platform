@@ -20,72 +20,72 @@
             @csrf
             @method('PUT')
 
-            <div class="mb-4 border p-3 rounded">
-                <div class="row mb-3" style="display: flex; align-items: center;">
-                    <!-- Name -->
-                    <div class="col-md-6 mb-3">
-                        <label for="name" class="form-label">{{ __('Name') }}</label>
-                        <input type="text" name="name" id="name" class="form-control" value="{{ old('name', $rentalSpace->name) }}" required>
-                        @error('name') <span class="text-danger">{{ $message }}</span> @enderror
-                    </div>
-
-                    <!-- Status -->
-                    <div class="col-md-4 form-check form-switch mx-3">
-                        <input type="hidden" name="status" value="0">
-                        <input type="checkbox" class="form-check-input" id="statusToggle" name="status" value="1" {{ old('status', $rentalSpace->status) ? 'checked' : '' }}>
-                        <label class="form-check-label" for="statusToggle">{{ __('Status') }}</label>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <!-- Location -->
-                    <div class="col-md-6 mb-3">
-                        <label for="location" class="form-label">{{ __('Location') }}</label>
-                        <textarea name="location" id="location" class="form-control" required>{{ old('location', $rentalSpace->location) }}</textarea>
-                        @error('location') <span class="text-danger">{{ $message }}</span> @enderror
-                    </div>
-
-                    <!-- Description -->
-                    <div class="col-md-6 mb-3">
-                        <label for="description" class="form-label">{{ __('Description') }}</label>
-                        <textarea name="description" id="description" class="form-control" required>{{ old('description', $rentalSpace->description) }}</textarea>
-                        @error('description') <span class="text-danger">{{ $message }}</span> @enderror
-                    </div>
-                </div>
-
-
-
-                <div class="row">
-                    <!-- Main Image -->
-                    <div class="col-md-6 mb-3">
-                        <label for="main_image" class="form-label">{{ __('Main Image') }}</label><br>
-
-                        @if($rentalSpace->main_image)
-                        <div class="d-flex align-items-center gap-3 mb-2">
-                            <img src="{{ $rentalSpace->main_image }}" class="img-thumbnail" style="max-height:150px;">
+            <div class="row d-flex justify-content-between gap-4">
+                <div class="col-md-7 mb-4 border p-3 rounded">
+                    <div class="row mb-3" style="display: flex; align-items: center;">
+                        <!-- Name -->
+                        <div class="col-md-6 mb-3">
+                            <label for="name" class="form-label">{{ __('Name') }}</label>
+                            <input type="text" name="name" id="name" class="form-control" value="{{ old('name', $rentalSpace->name) }}" required>
+                            @error('name') <span class="text-danger">{{ $message }}</span> @enderror
                         </div>
-                        @endif
 
-                        <input type="file" name="main_image" id="main_image" class="form-control" accept="image/*">
-                        <img id="main_image_preview" class="mt-2 img-thumbnail" style="max-height: 200px; display:none;">
-                        @error('main_image') <span class="text-danger">{{ $message }}</span> @enderror
+                        <!-- Status -->
+                        <div class="col-md-4 form-check form-switch mx-3">
+                            <input type="hidden" name="status" value="0">
+                            <input type="checkbox" class="form-check-input" id="statusToggle" name="status" value="1" {{ old('status', $rentalSpace->status) ? 'checked' : '' }}>
+                            <label class="form-check-label" for="statusToggle">{{ __('Status') }}</label>
+                        </div>
                     </div>
 
-                    <!-- Additional Images -->
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">{{ __('Additional Images') }}</label>
-                        <div class="d-flex flex-wrap gap-2 mb-2">
-                            @foreach($rentalSpace->images as $image)
-                            <div class="position-relative">
-                                <img src="{{ $image }}" class="img-thumbnail" style="max-height: 120px;">
+                    <div class="row">
+                        <!-- Location -->
+                        <div class="col-md-12 mb-3">
+                            <label for="location" class="form-label">{{ __('Location') }}</label>
+                            <textarea name="location" id="location" class="form-control" required>{{ old('location', $rentalSpace->location) }}</textarea>
+                            @error('location') <span class="text-danger">{{ $message }}</span> @enderror
+                        </div>
 
+                        <!-- Description -->
+                        <div class="col-md-12 mb-3">
+                            <label for="description" class="form-label">{{ __('Description') }}</label>
+                            <textarea name="description" id="description" class="form-control" required>{{ old('description', $rentalSpace->description) }}</textarea>
+                            @error('description') <span class="text-danger">{{ $message }}</span> @enderror
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-md-4 mb-4 border p-3 rounded">
+                      <!-- Main Image -->
+                      <div class="col-md-12 mb-3">
+                            <label for="main_image" class="form-label">{{ __('Main Image') }}</label><br>
+
+                            @if($rentalSpace->main_image)
+                            <div class="d-flex align-items-center gap-3 mb-2">
+                                <img src="{{ $rentalSpace->main_image }}" class="img-thumbnail" style="max-height:150px;">
                             </div>
-                            @endforeach
+                            @endif
+
+                            <input type="file" name="main_image" id="main_image" class="form-control" accept="image/*">
+                            <img id="main_image_preview" class="mt-2 img-thumbnail" style="max-height: 200px; display:none;">
+                            @error('main_image') <span class="text-danger">{{ $message }}</span> @enderror
                         </div>
-                        <input type="file" name="images[]" id="images" class="form-control" accept="image/*" multiple>
-                        <div id="images_preview" class="d-flex flex-wrap gap-2 mt-2"></div>
-                        @error('images') <span class="text-danger">{{ $message }}</span> @enderror
-                    </div>
+
+                        <!-- Additional Images -->
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label">{{ __('Additional Images') }}</label>
+                            <div class="d-flex flex-wrap gap-2 mb-2">
+                                @foreach($rentalSpace->images as $image)
+                                <div class="position-relative">
+                                    <img src="{{ $image }}" class="img-thumbnail" style="max-height: 120px;">
+
+                                </div>
+                                @endforeach
+                            </div>
+                            <input type="file" name="images[]" id="images" class="form-control" accept="image/*" multiple>
+                            <div id="images_preview" class="d-flex flex-wrap gap-2 mt-2"></div>
+                            @error('images') <span class="text-danger">{{ $message }}</span> @enderror
+                        </div>
                 </div>
             </div>
 
@@ -162,10 +162,9 @@
                         <input type="number" step="0.01" name="pricing[price]" class="form-control"
                             value="{{ old('pricing.price', $rentalSpace->pricing->price ?? '') }}">
                     </div>
-                    <div class="col-md-6 mb-2">
+                    <div class="col-md-12 mb-2">
                         <label>{{ __('Notes') }}</label>
-                        <input type="text" name="pricing[notes]" class="form-control"
-                            value="{{ old('pricing.notes', $rentalSpace->pricing->notes ?? '') }}">
+                        <textarea name="pricing[notes]" id="pricing_notes" class="form-control">{{ old('pricing.notes', $rentalSpace->pricing->notes ?? '') }}</textarea>
                     </div>
                 </div>
             </div>

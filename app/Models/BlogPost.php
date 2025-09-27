@@ -46,7 +46,7 @@ class BlogPost extends Model implements HasMedia
 
     public function getMainImageAttribute()
     {
-        return $this->getMedia('main_image')->first()?->getUrl() ?? null;
+        return $this->getMedia('main_image')->first()?->getUrl() ?? 'https://placehold.co/350x263';
     }
 
     // ----------- scopes -----------

@@ -9,7 +9,7 @@
 		<div class="swiper-wrapper">
 			<div class="swiper-slide">
 				<div
-					class="relative h-96 bg-gradient-to-r from-blue-600 to-blue-800 flex items-center justify-center">
+					class="relative h-96 bg-gradient-primary flex items-center justify-center">
 					<div class="text-center text-white">
 						<h1 class="text-4xl font-bold mb-4">
 							Welcome to Medical Platform
@@ -21,7 +21,7 @@
 			</div>
 			<div class="swiper-slide">
 				<div
-					class="relative h-96 bg-gradient-to-r from-green-600 to-green-800 flex items-center justify-center">
+					class="relative h-96 bg-gradient-primary-light flex items-center justify-center">
 					<div class="text-center text-white">
 						<h1 class="text-4xl font-bold mb-4">
 							Quality Healthcare</h1>
@@ -32,7 +32,7 @@
 			</div>
 			<div class="swiper-slide">
 				<div
-					class="relative h-96 bg-gradient-to-r from-purple-600 to-purple-800 flex items-center justify-center">
+					class="relative h-96 bg-gradient-primary-dark flex items-center justify-center">
 					<div class="text-center text-white">
 						<h1 class="text-4xl font-bold mb-4">
 							Advanced Technology</h1>
@@ -43,7 +43,7 @@
 			</div>
 			<div class="swiper-slide">
 				<div
-					class="relative h-96 bg-gradient-to-r from-red-600 to-red-800 flex items-center justify-center">
+					class="relative h-96 bg-gradient-primary flex items-center justify-center">
 					<div class="text-center text-white">
 						<h1 class="text-4xl font-bold mb-4">
 							Emergency Care</h1>
@@ -54,7 +54,7 @@
 			</div>
 			<div class="swiper-slide">
 				<div
-					class="relative h-96 bg-gradient-to-r from-indigo-600 to-indigo-800 flex items-center justify-center">
+					class="relative h-96 bg-gradient-primary-light flex items-center justify-center">
 					<div class="text-center text-white">
 						<h1 class="text-4xl font-bold mb-4">
 							Specialized Treatment</h1>
@@ -81,7 +81,7 @@
 			</div>
 			<div class="text-center mt-8">
 				<a href="{{ route('products') }}"
-					class="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition">
+					class="btn-primary">
 					View All Products
 					<i class="fas fa-arrow-right ml-2"></i>
 				</a>
@@ -89,7 +89,7 @@
 		</div>
 		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
 			@for($i = 1; $i <= 12; $i++) <div
-				class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+				class="card overflow-hidden">
 				<div class="h-48 bg-gray-200 flex items-center justify-center">
 					<i class="fas fa-pills text-4xl text-gray-400"></i>
 				</div>
@@ -100,9 +100,8 @@
 					<p class="text-gray-600 text-sm mb-3">High-quality
 						medical product</p>
 					<div class="flex justify-between items-center">
-						<span class="text-xl font-bold text-blue-600">$99.99</span>
-						<button
-							class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">Add
+						<span class="text-xl font-bold text-primary">$99.99</span>
+						<button class="btn-primary">Add
 							to Cart</button>
 					</div>
 				</div>
@@ -117,17 +116,17 @@
 <section class="py-16 bg-white">
 	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 		<div class="flex justify-between items-center mb-12">
-		<div class="text-center">
-			<h2 class="text-3xl font-bold text-gray-900 mb-4">Our Clinics</h2>
-			<p class="text-lg text-gray-600">Professional medical clinics near you</p>
-		</div>
-		<div class="text-center mt-8">
-		<a href="{{ route('clinics') }}"
-			class="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition">
-			View All Clinics
-			<i class="fas fa-arrow-right ml-2"></i>
-		</a>
-	</div>
+			<div class="">
+				<h2 class="text-3xl font-bold text-gray-900 mb-4">Our Clinics</h2>
+				<p class="text-lg text-gray-600">Professional medical clinics near you</p>
+			</div>
+			<div class="text-center mt-8">
+				<a href="{{ route('clinics') }}"
+					class="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition">
+					View All Clinics
+					<i class="fas fa-arrow-right ml-2"></i>
+				</a>
+			</div>
 		</div>
 		<div class="swiper clinicsSwiper">
 			<div class="swiper-wrapper">
@@ -159,9 +158,9 @@
 			</div>
 			@endfor
 		</div>
-		<div class="swiper-pagination"></div>
+		<!-- <div class="swiper-pagination"></div> -->
 	</div>
-	
+
 	</div>
 </section>
 
@@ -169,7 +168,7 @@
 <section class="py-16 bg-gray-50">
 	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 		<div class="flex justify-between items-center mb-12">
-			<div class="text-center">
+			<div class="">
 				<h2 class="text-3xl font-bold text-gray-900 mb-4">Medical Suppliers
 				</h2>
 				<p class="text-lg text-gray-600">Trusted suppliers for medical
@@ -226,11 +225,11 @@
 <section class="py-16 bg-white">
 	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 		<div class="flex justify-between items-center mb-12">
-			<div class="text-center mb-12">
+			<div class="">
 				<h2 class="text-3xl font-bold text-gray-900 mb-4">Medical Jobs</h2>
 				<p class="text-lg text-gray-600">Find your next career opportunity</p>
 			</div>
-			<div class="text-center mt-8">
+			<div class="">
 				<a href="{{ route('jobs') }}"
 					class="inline-flex items-center px-6 py-3 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition">
 					View All Jobs
@@ -280,11 +279,11 @@
 <section class="py-16 bg-gray-50">
 	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 		<div class="flex justify-between items-center mb-12">
-			<div class="text-center">
+			<div class="">
 				<h2 class="text-3xl font-bold text-gray-900 mb-4">Rental Spaces</h2>
 				<p class="text-lg text-gray-600">Medical office spaces for rent</p>
 			</div>
-			<div class="text-center mt-8">
+			<div class="">
 				<a href="#"
 					class="inline-flex items-center px-6 py-3 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition">
 					View All Rental Spaces
@@ -310,12 +309,26 @@
 							<div
 								class="flex items-center text-sm text-gray-500 mb-3">
 								<i
-									class="fas fa-map-marker-alt mr-2 truncate"></i>
-								<span>{{ $rentalSpace->location }}</span>
+									class="fas fa-map-marker-alt mr-2"></i>
+								<span class="truncate">{{ $rentalSpace->location }}</span>
 							</div>
+
+							<!-- availability -->
+							<div class="flex items-center text-sm text-gray-500 mb-3">
+								<i
+									class="fas fa-calendar-alt mr-2"></i>
+								<span>{{ $rentalSpace->availability->type }}</span>
+							</div>
+
+							<!-- pricing -->
+							<div class="flex items-center text-sm text-gray-500 mb-3">
+								<i
+									class="fas fa-dollar-sign mr-2"></i>
+								<span>{{ $rentalSpace->pricing->price }}</span>
+							</div>
+
+
 							<div class="flex justify-between items-center">
-								<span
-									class="text-lg font-bold text-green-600">${{ $rentalSpace->pricing->price }}/month</span>
 								<button
 									class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">View
 									Details</button>
@@ -335,11 +348,11 @@
 <section class="py-16 bg-white">
 	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 		<div class="flex justify-between items-center mb-12">
-			<div class="text-center">
+			<div class="">
 				<h2 class="text-3xl font-bold text-gray-900 mb-4">Medical Courses</h2>
 				<p class="text-lg text-gray-600">Enhance your medical knowledge</p>
 			</div>
-			<div class="text-center mt-8">
+			<div class="">
 				<a href="{{ route('courses') }}"
 					class="inline-flex items-center px-6 py-3 bg-orange-600 text-white font-medium rounded-lg hover:bg-orange-700 transition">
 					View All Courses
@@ -347,7 +360,7 @@
 				</a>
 			</div>
 		</div>
-		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 			@foreach($courses as $course)
 			<div
 				class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
@@ -422,7 +435,7 @@
 				spaceBetween: 30,
 			},
 			1024: {
-				slidesPerView: 3,
+				slidesPerView: 4,
 				spaceBetween: 40,
 			},
 		},
@@ -503,7 +516,7 @@
 				spaceBetween: 30,
 			},
 			1024: {
-				slidesPerView: 3,
+				slidesPerView: 4,
 				spaceBetween: 40,
 			},
 		},

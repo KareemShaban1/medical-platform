@@ -9,42 +9,45 @@
         <form action="{{ route('clinic.rental-spaces.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
 
-            <div class="mb-4 border p-3 rounded">
-                <div class="row" style="display: flex; align-items: center;">
-                    <!-- Name -->
-                    <div class="col-md-6 mb-3">
-                        <label for="name" class="form-label">{{ __('Name') }}</label>
-                        <input type="text" name="name" id="name" class="form-control" value="{{ old('name') }}" required>
-                        @error('name') <span class="text-danger">{{ $message }}</span> @enderror
+            <div class="row d-flex justify-content-between gap-4">
+                <div class="col-md-7 mb-4 border p-3 rounded">
+                    <div class="row" style="display: flex; align-items: center;">
+                        <!-- Name -->
+                        <div class="col-md-6 mb-3">
+                            <label for="name" class="form-label">{{ __('Name') }}</label>
+                            <input type="text" name="name" id="name" class="form-control" value="{{ old('name') }}" required>
+                            @error('name') <span class="text-danger">{{ $message }}</span> @enderror
+                        </div>
+
+                        <!-- Status -->
+                        <div class="col-md-4 form-check form-switch mx-4">
+                            <input type="hidden" name="status" value="0">
+                            <input type="checkbox" class="form-check-input" id="statusToggle" name="status" value="1" {{ old('status') ? 'checked' : '' }}>
+                            <label class="form-check-label" for="statusToggle">{{ __('Status') }}</label>
+                        </div>
                     </div>
 
-                    <!-- Status -->
-                    <div class="col-md-4 form-check form-switch mx-4">
-                        <input type="hidden" name="status" value="0">
-                        <input type="checkbox" class="form-check-input" id="statusToggle" name="status" value="1" {{ old('status') ? 'checked' : '' }}>
-                        <label class="form-check-label" for="statusToggle">{{ __('Status') }}</label>
+                    <div class="row">
+                        <!-- Location -->
+                        <div class="col-md-12 mb-3">
+                            <label for="location" class="form-label">{{ __('Location') }}</label>
+                            <textarea name="location" id="location" class="form-control" required>{{ old('location') }}</textarea>
+                            @error('location') <span class="text-danger">{{ $message }}</span> @enderror
+                        </div>
+
+                        <!-- Description -->
+                        <div class="col-md-12 mb-3">
+                            <label for="description" class="form-label">{{ __('Description') }}</label>
+                            <textarea name="description" id="description" class="form-control" required>{{ old('description') }}</textarea>
+                            @error('description') <span class="text-danger">{{ $message }}</span> @enderror
+                        </div>
                     </div>
+
+
                 </div>
-
-                <div class="row">
-                    <!-- Location -->
-                    <div class="col-md-6 mb-3">
-                        <label for="location" class="form-label">{{ __('Location') }}</label>
-                        <textarea name="location" id="location" class="form-control" required>{{ old('location') }}</textarea>
-                        @error('location') <span class="text-danger">{{ $message }}</span> @enderror
-                    </div>
-
-                    <!-- Description -->
-                    <div class="col-md-6 mb-3">
-                        <label for="description" class="form-label">{{ __('Description') }}</label>
-                        <textarea name="description" id="description" class="form-control" required>{{ old('description') }}</textarea>
-                        @error('description') <span class="text-danger">{{ $message }}</span> @enderror
-                    </div>
-                </div>
-
-                <div class="row">
+                <div class="col-md-4 mb-4 border p-3 rounded">
                     <!-- Main Image -->
-                    <div class="col-md-6 mb-3">
+                    <div class="col-md-12 mb-3">
                         <label for="main_image" class="form-label">{{ __('Main Image') }}</label>
                         <input type="file" name="main_image" id="main_image" class="form-control" accept="image/*" required>
                         <img id="main_image_preview" class="mt-2 img-thumbnail" style="max-height: 200px; display:none;">
@@ -52,14 +55,13 @@
                     </div>
 
                     <!-- Images -->
-                    <div class="col-md-6 mb-3">
+                    <div class="col-md-12 mb-3">
                         <label for="images" class="form-label">{{ __('Additional Images') }}</label>
                         <input type="file" name="images[]" id="images" class="form-control" accept="image/*" multiple>
                         <div id="images_preview" class="d-flex flex-wrap gap-2 mt-2"></div>
                         @error('images') <span class="text-danger">{{ $message }}</span> @enderror
                     </div>
                 </div>
-
             </div>
 
             <div class="mb-4 border p-3 rounded">
@@ -135,9 +137,9 @@
                         <label>{{ __('Price') }}</label>
                         <input type="number" step="0.01" name="pricing[price]" class="form-control">
                     </div>
-                    <div class="col-md-6 mb-2">
+                    <div class="col-md-12 mb-2">
                         <label>{{ __('Notes') }}</label>
-                        <input type="text" name="pricing[notes]" class="form-control">
+                        <textarea name="pricing[notes]" id="pricing_notes" class="form-control"></textarea>
                     </div>
                 </div>
             </div>
