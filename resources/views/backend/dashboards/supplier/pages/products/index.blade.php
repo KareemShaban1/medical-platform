@@ -34,7 +34,7 @@
                                 <th>{{ __('Price After') }}</th>
                                 <th>{{ __('Stock') }}</th>
                                 <th>{{ __('Categories') }}</th>
-                                <th>{{ __('Approved') }}</th>
+                                <th>{{ __('Approval') }}</th>
                                 <th>{{ __('Status') }}</th>
                                 <th>{{ __('Actions') }}</th>
                             </tr>
@@ -228,8 +228,8 @@
                 searchable: false
             },
             {
-                data: 'approved',
-                name: 'approved'
+                data: 'approval_status',
+                name: 'approval_status'
             },
             {
                 data: 'status',

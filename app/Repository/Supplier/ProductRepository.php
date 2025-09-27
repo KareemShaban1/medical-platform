@@ -3,8 +3,11 @@
 namespace App\Repository\Supplier;
 
 use App\Interfaces\Supplier\ProductRepositoryInterface;
-use App\Models\Attachment;
+use App\Models\Admin;
 use App\Models\Product;
+use App\Models\ModuleApprovement;
+use App\Notifications\Admin\NewProductSubmittedNotification;
+use App\Notifications\Admin\ProductUpdatedForReviewNotification;
 use Illuminate\Support\Facades\DB;
 
 class ProductRepository implements ProductRepositoryInterface
@@ -23,16 +26,17 @@ class ProductRepository implements ProductRepositoryInterface
             ->addColumn('images', fn($item) => $this->productImage($item))
             ->addColumn('name', fn($item) => $item->name)
             ->editColumn('status', fn($item) => $this->productStatus($item))
-            ->editColumn('approved', fn($item) => $this->productApproved($item))
+            // ->editColumn('approved', fn($item) => $this->productApproved($item))
+            ->addColumn('approval_status', fn($item) => $this->productApprovalStatus($item))
             ->addColumn('categories', fn($item) => $this->productCategories($item))
             ->addColumn('action', fn($item) => $this->productActions($item))
-            ->rawColumns(['images', 'status', 'approved', 'categories', 'action'])
+            ->rawColumns(['images', 'status', 'approval_status', 'categories', 'action'])
             ->make(true);
     }
 
     public function store($request)
     {
-        DB::transaction(function () use ($request) {
+        return DB::transaction(function () use ($request) {
             $data = $request;
             $data['supplier_id'] = auth('supplier')->user()->supplier_id;
 
@@ -45,13 +49,26 @@ class ProductRepository implements ProductRepositoryInterface
                 }
             }
 
+            ModuleApprovement::create([
+                'module_type' => Product::class,
+                'module_id' => $product->id,
+                'action' => 'under_review',
+                'action_by' => auth('supplier')->user()->supplier_id,
+                'notes' => 'New product submitted for review'
+            ]);
+
+            $adminUsers = Admin::all();
+            foreach ($adminUsers as $admin) {
+                $admin->notify(new NewProductSubmittedNotification($product));
+            }
+
             return $product;
         });
     }
 
     public function show($id)
     {
-        return Product::with(['categories','supplier'])->mine()->findOrFail($id);
+        return Product::with(['categories', 'supplier'])->mine()->findOrFail($id);
     }
 
     public function update($request, $id)
@@ -65,6 +82,17 @@ class ProductRepository implements ProductRepositoryInterface
             if (isset($data['removed_images']) && !empty($data['removed_images'])) {
                 foreach ($data['removed_images'] as $attachmentId) {
                     $product->deleteMedia($attachmentId);
+                }
+            }
+            if ($product->approvement) {
+                $product->approvement->update([
+                    'action' => 'under_review',
+                    'action_by' => auth('supplier')->user()->supplier_id,
+                    'notes' => 'Product updated for review'
+                ]);
+                $adminUsers = Admin::all();
+                foreach ($adminUsers as $admin) {
+                    $admin->notify(new ProductUpdatedForReviewNotification($product));
                 }
             }
 
@@ -137,6 +165,26 @@ class ProductRepository implements ProductRepositoryInterface
             return '<img src="' . $imageUrl . '" alt="Product Image" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">';
         }
         return '<span class="badge bg-secondary">No Image</span>';
+    }
+
+
+    private function productApprovalStatus($item): string
+    {
+        $approval = $item->approvement;
+        if (!$approval) {
+            return '<span class="badge bg-secondary">No Record</span>';
+        }
+
+        $badges = [
+            'pending' => 'warning',
+            'under_review' => 'info',
+            'approved' => 'success',
+            'rejected' => 'danger'
+        ];
+
+        $class = $badges[$approval->action] ?? 'secondary';
+        $notes = $approval->notes ? '<br><i class="fa fa-info-circle"></i> ' . $approval->notes : '';
+        return '<span class="badge bg-' . $class . '">' . ucfirst(str_replace('_', ' ', $approval->action)) . '</span> ' . $notes;
     }
 
     private function productStatus($item): string

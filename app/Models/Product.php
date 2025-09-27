@@ -11,7 +11,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 
 class Product extends Model implements HasMedia
 {
-    use SoftDeletes , HasFactory , InteractsWithMedia;
+    use SoftDeletes, HasFactory, InteractsWithMedia;
 
     const ACTIVE = 1;
     const INACTIVE = 0;
@@ -27,7 +27,6 @@ class Product extends Model implements HasMedia
         'price_after',
         'discount_value',
         'stock',
-        'approved',
         'reason',
         'status',
     ];
@@ -51,11 +50,11 @@ class Product extends Model implements HasMedia
         parent::boot();
         static::creating(function ($product) {
             $product->slug_en = Str::slug($product->name_en);
-            $product->slug_ar = Str::slug($product->name_ar , '-');
+            $product->slug_ar = Str::slug($product->name_ar, '-');
         });
         static::updating(function ($product) {
             $product->slug_en = Str::slug($product->name_en);
-            $product->slug_ar = Str::slug($product->name_ar , '-');
+            $product->slug_ar = Str::slug($product->name_ar, '-');
         });
     }
 
@@ -77,6 +76,11 @@ class Product extends Model implements HasMedia
     public function categories()
     {
         return $this->belongsToMany(Category::class, 'product_categories');
+    }
+
+    public function approvement()
+    {
+        return $this->morphOne(ModuleApprovement::class, 'module');
     }
 
 
