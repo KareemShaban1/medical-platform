@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Backend\Dashboards\Admin\CategoryController;
 use App\Http\Controllers\Backend\Dashboards\Admin\ClinicController;
 use App\Http\Controllers\Backend\Dashboards\Admin\SupplierController;
+use App\Http\Controllers\Backend\Dashboards\Admin\SupplierProductController;
 use App\Http\Controllers\Backend\Dashboards\Admin\RentalSpaceController;
 use App\Http\Controllers\Backend\Dashboards\Admin\ModuleApprovementController;
 use App\Http\Controllers\Backend\Dashboards\Admin\BlogPostController;
@@ -57,6 +58,15 @@ Route::group(
         Route::put('suppliers/{id}/update-is-allowed', [SupplierController::class, 'updateIsAllowed'])->name('suppliers.update-is-allowed');
         Route::get('suppliers/{id}/approval', [SupplierController::class, 'showApproval'])->name('suppliers.approval');
         Route::resource('suppliers', SupplierController::class);
+
+        // Supplier Products Management
+        Route::group(['prefix' => 'supplier-products'], function () {
+            Route::get('/', [\App\Http\Controllers\Backend\Dashboards\Admin\SupplierProductController::class, 'index'])->name('supplier-products.index');
+            Route::get('/data', [\App\Http\Controllers\Backend\Dashboards\Admin\SupplierProductController::class, 'data'])->name('supplier-products.data');
+            Route::get('/{id}', [\App\Http\Controllers\Backend\Dashboards\Admin\SupplierProductController::class, 'show'])->name('supplier-products.show');
+            Route::put('/{id}/approval-status', [\App\Http\Controllers\Backend\Dashboards\Admin\SupplierProductController::class, 'updateApprovalStatus'])->name('supplier-products.update-approval-status');
+            Route::get('/supplier/{supplierId}', [\App\Http\Controllers\Backend\Dashboards\Admin\SupplierProductController::class, 'supplierProducts'])->name('supplier-products.by-supplier');
+        });
 
         // Rental Space Management
         Route::get('rental-spaces/data', [RentalSpaceController::class, 'data'])->name('rental-spaces.data');

@@ -212,11 +212,13 @@ class SupplierRepository implements SupplierRepositoryInterface
 
     private function supplierActions($item): string
     {
+        $productsUrl = route('admin.supplier-products.by-supplier', $item->id);
         return <<<HTML
         <div class="d-flex gap-2">
-            <button onclick="showSupplier({$item->id})" class="btn btn-sm btn-info"><i class="fa fa-eye"></i></button>
-            <button onclick="editSupplier({$item->id})" class="btn btn-sm btn-warning"><i class="fa fa-edit"></i></button>
-            <button onclick="deleteSupplier({$item->id})" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></button>
+            <button onclick="showSupplier({$item->id})" class="btn btn-sm btn-info" title="View Details"><i class="fa fa-eye"></i></button>
+            <a href="{$productsUrl}" class="btn btn-sm btn-success" title="View Products"><i class="fa fa-box"></i></a>
+            <button onclick="editSupplier({$item->id})" class="btn btn-sm btn-warning" title="Edit"><i class="fa fa-edit"></i></button>
+            <button onclick="deleteSupplier({$item->id})" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>
         </div>
         HTML;
     }

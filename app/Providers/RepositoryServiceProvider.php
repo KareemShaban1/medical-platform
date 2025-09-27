@@ -40,6 +40,8 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind('App\Interfaces\Clinic\RentalSpaceRepositoryInterface', 'App\Repository\Clinic\RentalSpaceRepository');
         // job repository
         $this->app->bind('App\Interfaces\Clinic\JobRepositoryInterface', 'App\Repository\Clinic\JobRepository');
+        // supplier product repository
+        $this->app->bind('App\Interfaces\Admin\SupplierProductRepositoryInterface', 'App\Repository\Admin\SupplierProductRepository');
     }
 
 
