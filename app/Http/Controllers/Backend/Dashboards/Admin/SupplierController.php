@@ -63,5 +63,8 @@ class SupplierController extends Controller
         return $this->supplierRepo->destroy($id);
     }
 
-
+    public function showApproval($id)
+    {
+        return $this->supplierRepo->showApproval($id);
+    }
 }

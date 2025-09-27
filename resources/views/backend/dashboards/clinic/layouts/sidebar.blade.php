@@ -99,9 +99,9 @@
 
         <!-- Roles Management -->
         <li class="side-nav-item">
-          <a data-bs-toggle="collapse" href="#sidebarRoles" aria-expanded="false"
-            aria-controls="sidebarRoles" class="side-nav-link">
-            <i class="uil-shield"></i>
+            <a data-bs-toggle="collapse" href="#sidebarRoles" aria-expanded="false"
+              aria-controls="sidebarRoles" class="side-nav-link">
+              <i class="uil-shield"></i>
             <span> {{__('Roles & Permissions')}} </span>
             <span class="menu-arrow"></span>
           </a>
@@ -176,7 +176,7 @@
       <div class="clearfix"></div>
 
     </div>
-   
+
     <!-- Sidebar -left -->
   </div>
   <!-- Left Sidebar End -->

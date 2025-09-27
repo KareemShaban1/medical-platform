@@ -19,7 +19,8 @@ Route::group(
             'auth:clinic',
             'localeCookieRedirect',
             'localizationRedirect',
-            'localeViewPath'
+            'localeViewPath',
+            'check.clinic.approval'
         ]
     ],
     function () {
@@ -61,18 +62,25 @@ Route::group(
 
             Route::get('/register-clinic', function () {
                 return view('backend.dashboards.clinic.auth.register-clinic');
-            })->name('register-clinic')->withoutMiddleware('auth:clinic');
+            })->name('register-clinic')->withoutMiddleware(['auth:clinic' , 'check.clinic.approval']);
 
             Route::post('/register-clinic', [ClinicController::class, 'registerClinic'])
-                ->name('register-clinic')->withoutMiddleware('auth:clinic');
+                ->name('register-clinic')->withoutMiddleware(['auth:clinic' , 'check.clinic.approval']);
 
             Route::post('/verify-otp', [ClinicController::class, 'verifyOtp'])
-                ->name('verify-otp')->withoutMiddleware('auth:clinic');
+                ->name('verify-otp')->withoutMiddleware(['auth:clinic' , 'check.clinic.approval']);
                 //->middleware('throttle:2,5');
 
             Route::post('/resend-otp', [ClinicController::class, 'resendOtp'])
-                ->name('resend-otp')->withoutMiddleware('auth:clinic');
+                ->name('resend-otp')->withoutMiddleware(['auth:clinic' , 'check.clinic.approval']);
                // ->middleware('throttle:1,1');
+
+            // Approval routes (without approval middleware)
+            Route::get('/approval', [\App\Http\Controllers\Backend\Dashboards\Clinic\ApprovalController::class, 'show'])
+            ->name('approval.show')->withoutMiddleware('check.clinic.approval');
+
+            Route::post('/approval/upload', [\App\Http\Controllers\Backend\Dashboards\Clinic\ApprovalController::class, 'upload'])
+            ->name('approval.upload')->withoutMiddleware('check.clinic.approval');
 
             // Doctor Profiles Management
             Route::group(['prefix' => 'doctor-profiles'], function () {
@@ -104,7 +112,7 @@ Route::group(
             Route::delete('jobs/{id}/force-delete', [JobController::class, 'forceDelete'])->name('jobs.force-delete');
             Route::put('jobs/{id}/update-status', [JobController::class, 'updateStatus'])->name('jobs.update-status');
             Route::resource('jobs', JobController::class);
-    
+
     }
 );
 

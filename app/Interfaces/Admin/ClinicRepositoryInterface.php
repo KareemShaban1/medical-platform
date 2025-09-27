@@ -13,5 +13,5 @@ interface ClinicRepositoryInterface
     public function updateStatus($request);
     public function updateIsAllowed($request);
     public function destroy($id);
-
+    public function showApproval($id);
 }

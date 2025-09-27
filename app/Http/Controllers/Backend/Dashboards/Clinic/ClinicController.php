@@ -203,7 +203,7 @@ class ClinicController extends Controller
                 'module_id' => $clinic->id,
                 'action' => 'pending',
                 'action_by' => $systemAdmin ? $systemAdmin->id : 1, // Use system admin
-                'notes' => 'pending approval after email verification'
+                'notes' => 'Please upload required documents for approval'
             ]);
 
             DB::commit();

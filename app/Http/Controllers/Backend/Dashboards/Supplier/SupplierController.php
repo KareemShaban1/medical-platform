@@ -199,7 +199,7 @@ class SupplierController extends Controller
                 'module_id' => $supplier->id,
                 'action' => 'pending',
                 'action_by' => $systemAdmin ? $systemAdmin->id : 1, // Use system admin
-                'notes' => 'pending approval after email verification'
+                'notes' => 'Please upload required documents for approval'
             ]);
 
             DB::commit();

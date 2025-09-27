@@ -25,8 +25,9 @@ class ClinicRepository implements ClinicRepositoryInterface
             ->editColumn('status', fn($item) => $this->clinicStatus($item))
             ->editColumn('is_allowed', fn($item) => $this->clinicIsAllowed($item))
             ->addColumn('approval', fn($item) => $this->clinicApproval($item))
+            ->addColumn('attachments', fn($item) => $this->clinicAttachments($item))
             ->addColumn('action', fn($item) => $this->clinicActions($item))
-            ->rawColumns(['status', 'is_allowed', 'action', 'approval'])
+            ->rawColumns(['status', 'is_allowed', 'action', 'approval', 'attachments'])
             ->make(true);
     }
 
@@ -107,6 +108,20 @@ class ClinicRepository implements ClinicRepositoryInterface
         return $this->jsonResponse('success', __('Clinic deleted successfully'));
     }
 
+    public function showApproval($id)
+    {
+        $clinic = Clinic::with('approvement')->findOrFail($id);
+
+        $currentDocuments = $clinic->getMedia('approval_documents');
+        $rejectedDocuments = $clinic->getMedia('approval_documents_rejected');
+
+        return view('backend.dashboards.admin.pages.clinics.approval', compact(
+            'clinic',
+            'currentDocuments',
+            'rejectedDocuments'
+        ));
+    }
+
 
     /** ---------------------- PRIVATE HELPERS ---------------------- */
 
@@ -121,10 +136,10 @@ class ClinicRepository implements ClinicRepositoryInterface
             ], $action);
 
             if ($request->ajax()) {
-                return $this->jsonResponse('success', __('Clinic '.$action.' successfully'));
+                return $this->jsonResponse('success', __('Clinic ' . $action . ' successfully'));
             }
 
-            return redirect()->route('admin.clinics.index')->with('success', __('Clinic '.$action.' successfully'));
+            return redirect()->route('admin.clinics.index')->with('success', __('Clinic ' . $action . ' successfully'));
         } catch (\Throwable $e) {
             return $this->jsonResponse('error', $e->getMessage());
         }
@@ -185,6 +200,35 @@ class ClinicRepository implements ClinicRepositoryInterface
                 <button class="btn btn-sm btn-primary" onclick="changeApproval({$item->id}, {$approvalId})">
                     Change Approval
                 </button>
+            </div>
+        HTML;
+    }
+
+    private function clinicAttachments($item): string
+    {
+        $currentDocs = $item->getMedia('approval_documents');
+        $rejectedDocs = $item->getMedia('approval_documents_rejected');
+
+        $totalDocs = $currentDocs->count() + $rejectedDocs->count();
+
+        if ($totalDocs === 0) {
+            return '<span class="badge bg-secondary">No Documents</span>';
+        }
+
+        $currentBadge = $currentDocs->count() > 0 ?
+            '<span class="badge bg-success me-1">' . $currentDocs->count() . ' Current</span>' : '';
+
+        $rejectedBadge = $rejectedDocs->count() > 0 ?
+            '<span class="badge bg-danger me-1">' . $rejectedDocs->count() . ' Rejected</span>' : '';
+
+        return <<<HTML
+            <div>
+                {$currentBadge}
+                {$rejectedBadge}
+                <br>
+                <a href="/admin/clinics/{$item->id}/approval" class="btn btn-sm btn-info mt-1">
+                    <i class="fa fa-paperclip"></i> View Docs
+                </a>
             </div>
         HTML;
     }
