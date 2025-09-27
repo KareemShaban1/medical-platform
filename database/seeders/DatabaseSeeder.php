@@ -28,11 +28,12 @@ class DatabaseSeeder extends Seeder
             RoleAndPermissionSeeder::class,
             ClinicUserSeeder::class,
             SupplierUserSeeder::class,
+            CategorySeeder::class,
+            ProductSeeder::class,
         ]);
 
         $this->call([
            
-            CategorySeeder::class,
             BlogCategorySeeder::class,
             BlogPostSeeder::class,
             CourseSeeder::class,

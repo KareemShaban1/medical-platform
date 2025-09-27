@@ -42,7 +42,7 @@ class Product extends Model implements HasMedia
 
     public function getFirstImageAttribute()
     {
-        return $this->images[0];
+        return $this->images[0] ?? 'https://placehold.co/350x263';
     }
 
     protected static function boot()
