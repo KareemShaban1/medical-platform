@@ -19,6 +19,13 @@ class ProductSeeder extends Seeder
 
         foreach (Product::all() as $product) {
             $product->categories()->attach(Category::inRandomOrder()->first()->id);
+            $product->approvement()->create([
+                'module_type' => Product::class,
+                'module_id' => $product->id,
+                'action_by' => 1,
+                'action' => 'approved',
+                'notes' => 'Approved by admin',
+            ]);
         }
     }
 }

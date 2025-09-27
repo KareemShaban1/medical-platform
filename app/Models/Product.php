@@ -102,11 +102,16 @@ class Product extends Model implements HasMedia
 
     public function scopeApproved($query)
     {
-        return $query->where('approved', true);
+        return $query->whereHas('approvement', function ($query) {
+            $query->where('action', 'approved');
+        });
     }
 
     public function scopeNotApproved($query)
     {
-        return $query->where('approved', false);
+        return $query->whereHas('approvement', function ($query) {
+            $query->whereNot('action', 'approved');
+        });
     }
+   
 }
