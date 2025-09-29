@@ -30,6 +30,7 @@ class CreateRoleRequest extends FormRequest
                     // Check if role name exists for clinic guard specifically
                     $existingRole = \Spatie\Permission\Models\Role::where('name', $value)
                         ->where('guard_name', 'clinic')
+                        ->where('team_id', auth('clinic')->user()->clinic_id)
                         ->first();
 
                     if ($existingRole) {

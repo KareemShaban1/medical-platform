@@ -56,6 +56,11 @@ class Clinic extends Model implements HasMedia
         return $this->morphMany(UserOtp::class, 'otpable');
     }
 
+    public function requests()
+    {
+        return $this->hasMany(Request::class);
+    }
+
     public function isVerified()
     {
         return $this->status == 1;
