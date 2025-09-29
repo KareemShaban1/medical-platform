@@ -1,0 +1,139 @@
+@extends('backend.dashboards.supplier.layouts.app')
+
+@section('title', __('My Offers'))
+
+@section('content')
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box">
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item"><a href="{{ route('supplier.dashboard') }}">{{ __('Dashboard') }}</a></li>
+                        <li class="breadcrumb-item active">{{ __('My Offers') }}</li>
+                    </ol>
+                </div>
+                <h4 class="page-title">{{ __('My Offers') }}</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row mb-2">
+                        <div class="col-sm-4">
+                            <a href="{{ route('supplier.available-requests.index') }}" class="btn btn-primary mb-2">
+                                <i class="mdi mdi-eye me-2"></i> {{ __('Browse Available Requests') }}
+                            </a>
+                        </div>
+                        <div class="col-sm-8">
+                            <div class="text-sm-end">
+                                <button type="button" class="btn btn-success mb-2 me-1" onclick="refreshTable()">
+                                    <i class="mdi mdi-refresh"></i> {{ __('Refresh') }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table id="offers-table" class="table table-centered w-100 dt-responsive nowrap">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>{{ __('ID') }}</th>
+                                    <th>{{ __('Request') }}</th>
+                                    <th>{{ __('Clinic') }}</th>
+                                    <th>{{ __('Categories') }}</th>
+                                    <th>{{ __('Final Price') }}</th>
+                                    <th>{{ __('Delivery') }}</th>
+                                    <th>{{ __('Status') }}</th>
+                                    <th>{{ __('Created') }}</th>
+                                    <th style="width: 85px;">{{ __('Action') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
+
+@push('scripts')
+<script>
+$(document).ready(function() {
+    var table = $('#offers-table').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: "{{ route('supplier.offers.data') }}",
+        columns: [
+            {data: 'id', name: 'id'},
+            {data: 'request_description', name: 'request_description'},
+            {data: 'clinic_name', name: 'clinic_name'},
+            {data: 'categories', name: 'categories'},
+            {data: 'final_price', name: 'final_price'},
+            {data: 'delivery_time', name: 'delivery_time'},
+            {data: 'status', name: 'status'},
+            {data: 'created_at', name: 'created_at'},
+            {data: 'action', name: 'action', orderable: false, searchable: false}
+        ],
+        order: [[0, 'desc']],
+        responsive: true,
+        language: {
+            paginate: {
+                previous: "<i class='mdi mdi-chevron-left'>",
+                next: "<i class='mdi mdi-chevron-right'>"
+            }
+        },
+        drawCallback: function () {
+            $('.dataTables_paginate > .pagination').addClass('pagination-rounded');
+        }
+    });
+});
+
+function refreshTable() {
+    $('#offers-table').DataTable().ajax.reload();
+}
+
+function editOffer(id) {
+    window.location.href = "{{ route('supplier.offers.edit', ':id') }}".replace(':id', id);
+}
+
+function deleteOffer(id) {
+    Swal.fire({
+        title: '{{ __("Are you sure?") }}',
+        text: '{{ __("You won\'t be able to revert this!") }}',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: '{{ __("Yes, delete it!") }}',
+        cancelButtonText: '{{ __("Cancel") }}'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: "{{ route('supplier.offers.destroy', ':id') }}".replace(':id', id),
+                type: 'DELETE',
+                data: {
+                    "_token": "{{ csrf_token() }}"
+                },
+                success: function(response) {
+                    if (response.success) {
+                        Swal.fire('{{ __("Deleted!") }}', response.message, 'success');
+                        refreshTable();
+                    } else {
+                        Swal.fire('{{ __("Error!") }}', response.message, 'error');
+                    }
+                },
+                error: function(xhr) {
+                    Swal.fire('{{ __("Error!") }}', xhr.responseJSON?.message || '{{ __("Something went wrong!") }}', 'error');
+                }
+            });
+        }
+    });
+}
+</script>
+@endpush

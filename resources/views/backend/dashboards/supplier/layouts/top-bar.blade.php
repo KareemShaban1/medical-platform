@@ -1,7 +1,7 @@
    <!-- Topbar Start -->
    <div class="navbar-custom">
        <ul class="list-unstyled topbar-menu float-end mb-0">
-           
+
            <li class="dropdown notification-list topbar-dropdown">
                <a class="nav-link dropdown-toggle arrow-none" data-bs-toggle="dropdown" href="#"
                    role="button" aria-haspopup="false" aria-expanded="false">
@@ -34,9 +34,9 @@
            <!-- Notifications -->
            <li class="dropdown notification-list">
                <a class="nav-link dropdown-toggle arrow-none" data-bs-toggle="dropdown" href="#"
-                   role="button" aria-haspopup="false" aria-expanded="false">
+                   role="button" aria-haspopup="false" aria-expanded="false" id="notification-bell">
                    <i class="dripicons-bell noti-icon"></i>
-                   <span class="noti-icon-badge"></span>
+                   <span class="noti-icon-badge" id="notification-count" style="display: none;">0</span>
                </a>
                <div class="dropdown-menu dropdown-menu-end dropdown-menu-animated dropdown-lg">
 
@@ -44,20 +44,22 @@
                    <div class="dropdown-item noti-title">
                        <h5 class="m-0">
                            <span class="float-end">
-                               <a href="javascript: void(0);" class="text-dark">
+                               <a href="javascript: void(0);" class="text-dark" onclick="markAllAsRead()">
                                    <small>Clear All</small>
                                </a>
-                           </span>Notification
+                           </span>{{ __('Notifications') }}
                        </h5>
                    </div>
 
                    <div id="notifications-list" style="max-height: 230px;" data-simplebar="">
-
+                       <div class="text-center p-3" id="loading-state">
+                           <i class="mdi mdi-loading mdi-spin"></i> {{ __('Loading ...') }}
+                       </div>
                    </div>
 
                    <!-- All-->
-                   <a href="javascript:void(0);" class="dropdown-item text-center text-primary notify-item notify-all">
-                       View All
+                   <a href="{{ route('supplier.notifications.index') }}" class="dropdown-item text-center text-primary notify-item notify-all">
+                       {{ __('View All') }}
                    </a>
 
                </div>

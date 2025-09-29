@@ -30,6 +30,7 @@ class CreateRoleRequest extends FormRequest
                     // Check if role name exists for supplier guard specifically
                     $existingRole = \Spatie\Permission\Models\Role::where('name', $value)
                         ->where('guard_name', 'supplier')
+                        ->where('team_id', auth('supplier')->user()->supplier_id)
                         ->first();
 
                     if ($existingRole) {

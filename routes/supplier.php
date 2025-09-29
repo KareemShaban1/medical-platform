@@ -92,6 +92,46 @@ Route::group(
         Route::delete('roles/{id}/force-delete', [\App\Http\Controllers\Backend\Dashboards\Supplier\RoleController::class, 'forceDelete'])->name('roles.forceDelete');
         Route::resource('roles', \App\Http\Controllers\Backend\Dashboards\Supplier\RoleController::class);
 
+        // Specialized Categories Management
+        Route::group(['prefix' => 'specialized-categories'], function () {
+            Route::get('/data', [\App\Http\Controllers\Backend\Dashboards\Supplier\SpecializedCategoryController::class, 'data'])->name('specialized-categories.data');
+            Route::get('/available', [\App\Http\Controllers\Backend\Dashboards\Supplier\SpecializedCategoryController::class, 'getAvailableCategories'])->name('specialized-categories.available');
+            Route::post('/attach', [\App\Http\Controllers\Backend\Dashboards\Supplier\SpecializedCategoryController::class, 'attachToCategory'])->name('specialized-categories.attach');
+            Route::get('/', [\App\Http\Controllers\Backend\Dashboards\Supplier\SpecializedCategoryController::class, 'index'])->name('specialized-categories.index');
+            Route::post('/', [\App\Http\Controllers\Backend\Dashboards\Supplier\SpecializedCategoryController::class, 'store'])->name('specialized-categories.store');
+            Route::get('/{id}', [\App\Http\Controllers\Backend\Dashboards\Supplier\SpecializedCategoryController::class, 'show'])->name('specialized-categories.show');
+            Route::put('/{id}', [\App\Http\Controllers\Backend\Dashboards\Supplier\SpecializedCategoryController::class, 'update'])->name('specialized-categories.update');
+            Route::delete('/{id}', [\App\Http\Controllers\Backend\Dashboards\Supplier\SpecializedCategoryController::class, 'destroy'])->name('specialized-categories.destroy');
+        });
+
+        // Available Requests (for suppliers to view and submit offers)
+        Route::group(['prefix' => 'available-requests'], function () {
+            Route::get('/data', [\App\Http\Controllers\Backend\Dashboards\Supplier\OfferController::class, 'availableRequestsData'])->name('available-requests.data');
+            Route::get('/', [\App\Http\Controllers\Backend\Dashboards\Supplier\OfferController::class, 'availableRequests'])->name('available-requests.index');
+            Route::get('/{id}', [\App\Http\Controllers\Backend\Dashboards\Supplier\OfferController::class, 'showAvailableRequest'])->name('available-requests.show');
+            Route::get('/{id}/create-offer', [\App\Http\Controllers\Backend\Dashboards\Supplier\OfferController::class, 'createOfferForRequest'])->name('available-requests.create-offer');
+        });
+
+        // Offers Management
+        Route::group(['prefix' => 'offers'], function () {
+            Route::get('/data', [\App\Http\Controllers\Backend\Dashboards\Supplier\OfferController::class, 'data'])->name('offers.data');
+            Route::get('/', [\App\Http\Controllers\Backend\Dashboards\Supplier\OfferController::class, 'index'])->name('offers.index');
+            Route::post('/', [\App\Http\Controllers\Backend\Dashboards\Supplier\OfferController::class, 'store'])->name('offers.store');
+            Route::get('/{id}', [\App\Http\Controllers\Backend\Dashboards\Supplier\OfferController::class, 'show'])->name('offers.show');
+            Route::get('/{id}/edit', [\App\Http\Controllers\Backend\Dashboards\Supplier\OfferController::class, 'edit'])->name('offers.edit');
+            Route::put('/{id}', [\App\Http\Controllers\Backend\Dashboards\Supplier\OfferController::class, 'update'])->name('offers.update');
+            Route::delete('/{id}', [\App\Http\Controllers\Backend\Dashboards\Supplier\OfferController::class, 'destroy'])->name('offers.destroy');
+        });
+
+        // Notifications Management
+        Route::group(['prefix' => 'notifications'], function () {
+            Route::get('/', [\App\Http\Controllers\Backend\Dashboards\Supplier\NotificationController::class, 'index'])->name('notifications.index');
+            Route::get('/data', [\App\Http\Controllers\Backend\Dashboards\Supplier\NotificationController::class, 'data'])->name('notifications.data');
+            Route::get('/latest', [\App\Http\Controllers\Backend\Dashboards\Supplier\NotificationController::class, 'getLatest'])->name('notifications.latest');
+            Route::post('/mark-as-read/{id}', [\App\Http\Controllers\Backend\Dashboards\Supplier\NotificationController::class, 'markAsRead'])->name('notifications.mark-as-read');
+            Route::post('/mark-all-as-read', [\App\Http\Controllers\Backend\Dashboards\Supplier\NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-as-read');
+        });
+
 
     }
 );
