@@ -71,4 +71,151 @@ const languages = {
 const language = '{{ App::getLocale() }}';
  </script>
 
+ <!-- Supplier Notification System -->
+ <script>
+ // Notification functionality
+ let notificationDropdownOpen = false;
+ let notificationsLoaded = false;
+
+ $(document).ready(function() {
+
+  // Load notifications only once on page load
+     loadNotifications();
+
+     // Load notifications when dropdown is opened for the first time
+     $('#notification-bell').on('click', function() {
+         if (!notificationDropdownOpen && !notificationsLoaded) {
+             loadNotifications();
+             notificationDropdownOpen = true;
+         }
+     });
+
+     // Reset dropdown state when closed
+     $(document).on('click', function(e) {
+         if (!$(e.target).closest('.notification-list').length) {
+             notificationDropdownOpen = false;
+         }
+     });
+ });
+
+ function loadNotifications() {
+     console.log('Loading notifications...');
+     $.get('{{ route("supplier.notifications.latest") }}')
+         .done(function(response) {
+             console.log('Notifications loaded:', response);
+             updateNotificationBadge(response.unread_count);
+             displayNotifications(response.notifications);
+             notificationsLoaded = true;
+         })
+         .fail(function(xhr) {
+             console.error('Failed to load notifications:', xhr.status, xhr.responseText);
+             $('#notifications-list').html(`
+                 <div class="text-center p-3 text-muted">
+                     <i class="mdi mdi-alert-circle display-4"></i>
+                     <p class="mt-2 mb-0">{{ __('Failed to load notifications') }}</p>
+                     <small class="d-block">Error: ${xhr.status}</small>
+                 </div>
+             `);
+         });
+ }
+
+ function updateNotificationBadge(count) {
+     const badge = $('#notification-count');
+     const sidebarBadge = $('#sidebar-notification-count');
+
+     if (count > 0) {
+         const displayCount = count > 99 ? '99+' : count;
+         badge.text(displayCount).show();
+         sidebarBadge.text(displayCount).show();
+     } else {
+         badge.hide();
+         sidebarBadge.hide();
+     }
+ }
+
+ function displayNotifications(notifications) {
+     const container = $('#notifications-list');
+     console.log('Displaying notifications:', notifications);
+
+     if (!notifications || notifications.length === 0) {
+         container.html(`
+             <div class="text-center p-3 text-muted">
+                 <i class="mdi mdi-bell-off display-4"></i>
+                 <p class="mt-2 mb-0">{{ __('No notifications') }}</p>
+             </div>
+         `);
+         return;
+     }
+
+     let html = '';
+     notifications.forEach(function(notification, index) {
+         console.log('Processing notification:', index, notification);
+
+         const typeIcons = {
+             'new_request': 'mdi-clipboard-text text-info',
+             'offer_accepted': 'mdi-check-circle text-success',
+             'offer_declined': 'mdi-close-circle text-danger',
+             'profile_submitted': 'mdi-account-plus text-warning',
+             'profile_approved': 'mdi-check-circle text-success',
+             'profile_rejected': 'mdi-close-circle text-danger',
+             'info': 'mdi-information text-info'
+         };
+
+         const icon = typeIcons[notification.type] || 'mdi-bell text-secondary';
+         const readClass = notification.read_at ? 'text-muted' : '';
+         const actionUrl = notification.action_url || '#';
+
+         html += `
+             <div class="dropdown-item notify-item ${readClass}" style="cursor: pointer;"
+                  onclick="handleNotificationClick('${notification.id}', '${actionUrl}')">
+                 <div class="notify-icon bg-light rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                     <i class="mdi ${icon}"></i>
+                 </div>
+                 <div class="notify-details">
+                     <strong>${notification.title || 'Notification'}</strong><br>
+                     <small class="text-muted">${notification.message || ''}</small><br>
+                     <small class="text-muted">${notification.created_at || ''}</small>
+                 </div>
+             </div>
+         `;
+     });
+
+     container.html(html);
+ }
+
+ function handleNotificationClick(notificationId, actionUrl) {
+     // Mark notification as read
+     $.post('{{ route("supplier.notifications.mark-as-read", ":id") }}'.replace(':id', notificationId), {
+         _token: '{{ csrf_token() }}'
+     }).done(function(response) {
+         if (response.status === 'success') {
+             // Refresh notifications to update the badge
+             loadNotifications();
+
+             // Redirect to the action URL
+             if (actionUrl && actionUrl !== '#') {
+                 window.location.href = actionUrl;
+             }
+         }
+     });
+ }
+
+ function markAllAsRead() {
+     $.post('{{ route("supplier.notifications.mark-all-as-read") }}', {
+         _token: '{{ csrf_token() }}'
+     }).done(function(response) {
+         if (response.status === 'success') {
+             loadNotifications();
+             Swal.fire({
+                 icon: 'success',
+                 title: '{{ __("Success") }}',
+                 text: '{{ __("All notifications marked as read") }}',
+                 timer: 2000,
+                 showConfirmButton: false
+             });
+         }
+     });
+ }
+ </script>
+
  @stack('scripts')

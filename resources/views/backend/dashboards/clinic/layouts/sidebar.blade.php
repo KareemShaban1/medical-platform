@@ -169,6 +169,30 @@
           </div>
         </li>
 
+        <!-- Requests Management (Tickets System) -->
+        <li class="side-nav-item">
+          <a data-bs-toggle="collapse" href="#sidebarRequests" aria-expanded="false"
+            aria-controls="sidebarRequests" class="side-nav-link">
+            <i class="uil-clipboard-notes"></i>
+            <span> {{__('Purchase Requests')}} </span>
+            <span class="menu-arrow"></span>
+          </a>
+          <div class="collapse" id="sidebarRequests">
+            <ul class="side-nav-second-level">
+              <li>
+                <a href="{{ route('clinic.requests.index') }}">
+                  <span> {{__('My Requests')}} </span>
+                </a>
+              </li>
+              <li>
+                <a href="{{ route('clinic.requests.create') }}">
+                  <span> {{__('Create Request')}} </span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </li>
+
       </ul>
 
       <!-- End Sidebar -->

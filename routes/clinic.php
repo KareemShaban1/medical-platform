@@ -113,6 +113,21 @@ Route::group(
             Route::put('jobs/{id}/update-status', [JobController::class, 'updateStatus'])->name('jobs.update-status');
             Route::resource('jobs', JobController::class);
 
+            // Requests Management (Tickets System)
+            Route::group(['prefix' => 'requests'], function () {
+                Route::get('/data', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'data'])->name('requests.data');
+                Route::get('/categories', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'getCategories'])->name('requests.categories');
+                Route::post('/{id}/accept-offer', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'acceptOffer'])->name('requests.accept-offer');
+                Route::post('/{id}/cancel', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'cancel'])->name('requests.cancel');
+                Route::get('/', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'index'])->name('requests.index');
+                Route::get('/create', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'create'])->name('requests.create');
+                Route::post('/', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'store'])->name('requests.store');
+                Route::get('/{id}', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'show'])->name('requests.show');
+                Route::get('/{id}/edit', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'edit'])->name('requests.edit');
+                Route::put('/{id}', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'update'])->name('requests.update');
+                Route::delete('/{id}', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'destroy'])->name('requests.destroy');
+            });
+
     }
 );
 

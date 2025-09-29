@@ -66,6 +66,22 @@ class Supplier extends Model implements HasMedia
         return $this->morphMany(UserOtp::class, 'otpable');
     }
 
+    public function specializedCategories()
+    {
+        return $this->belongsToMany(SupplierSpecializedCategory::class, 'supplier_category_pivot')
+                    ->withTimestamps();
+    }
+
+    public function offers()
+    {
+        return $this->hasMany(Offer::class);
+    }
+
+    public function products()
+    {
+        return $this->hasMany(Product::class);
+    }
+
     public function isVerified()
     {
         return $this->status == 1;

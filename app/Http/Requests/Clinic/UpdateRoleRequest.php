@@ -30,6 +30,7 @@ class UpdateRoleRequest extends FormRequest
                     // Check if role name exists for clinic guard specifically, excluding current role
                     $existingRole = \Spatie\Permission\Models\Role::where('name', $value)
                         ->where('guard_name', 'clinic')
+                        ->where('team_id', auth('clinic')->user()->clinic_id)
                         ->where('id', '!=', $this->route('role'))
                         ->first();
 
