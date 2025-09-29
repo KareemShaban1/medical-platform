@@ -7,18 +7,18 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="csrf-token" content="{{ csrf_token() }}">
 	<link rel="icon" type="image/png" href="images/icons/favicon.ico" />
-	<link rel="stylesheet" type="text/css" href="{{asset('login/vendor/bootstrap/css/bootstrap.min.css')}}">
+	<link rel="stylesheet" type="text/css" href="{{asset('auth/vendor/bootstrap/css/bootstrap.min.css')}}">
 	<link rel="stylesheet" type="text/css"
-		href="{{asset('login/fonts/font-awesome-4.7.0/css/font-awesome.min.css')}}">
+		href="{{asset('auth/fonts/font-awesome-4.7.0/css/font-awesome.min.css')}}">
 	<link rel="stylesheet" type="text/css"
-		href="{{asset('login/fonts/iconic/css/material-design-iconic-font.min.css')}}">
-	<link rel="stylesheet" type="text/css" href="{{asset('login/vendor/animate/animate.css')}}">
+		href="{{asset('auth/fonts/iconic/css/material-design-iconic-font.min.css')}}">
+	<link rel="stylesheet" type="text/css" href="{{asset('auth/vendor/animate/animate.css')}}">
 	<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
 
 	@if (app()->getLocale() == 'ar')
-	<link rel="stylesheet" type="text/css" href="{{asset('login/css/ar_style.css')}}">
+	<link rel="stylesheet" type="text/css" href="{{asset('auth/css/ar_style.css')}}">
 	@else
-	<link rel="stylesheet" type="text/css" href="{{asset('login/css/en_style.css')}}">
+	<link rel="stylesheet" type="text/css" href="{{asset('auth/css/en_style.css')}}">
 	@endif
 </head>
 
@@ -115,9 +115,9 @@
 	</div>
 
 
-	<script src="{{asset('login/vendor/jquery/jquery-3.2.1.min.js')}}"></script>
-	<script src="{{asset('login/vendor/bootstrap/js/bootstrap.min.js')}}"></script>
-	<script src="{{asset('login/js/main.js')}}"></script>
+	<script src="{{asset('auth/vendor/jquery/jquery-3.2.1.min.js')}}"></script>
+	<script src="{{asset('auth/vendor/bootstrap/js/bootstrap.min.js')}}"></script>
+	<script src="{{asset('auth/js/main.js')}}"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
 	<script>

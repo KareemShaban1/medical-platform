@@ -1,6 +1,6 @@
-<script src="{{asset('login/vendor/jquery/jquery-3.2.1.min.js')}}"></script>
-<script src="{{asset('login/vendor/bootstrap/js/bootstrap.min.js')}}"></script>
-<script src="{{asset('login/js/main.js')}}"></script>
+<script src="{{asset('auth/vendor/jquery/jquery-3.2.1.min.js')}}"></script>
+<script src="{{asset('auth/vendor/bootstrap/js/bootstrap.min.js')}}"></script>
+<script src="{{asset('auth/js/main.js')}}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
 <script>

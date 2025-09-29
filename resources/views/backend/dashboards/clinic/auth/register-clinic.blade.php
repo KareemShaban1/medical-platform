@@ -6,19 +6,19 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="icon" type="image/png" href="images/icons/favicon.ico" />
-	<link rel="stylesheet" type="text/css" href="{{asset('login/vendor/bootstrap/css/bootstrap.min.css')}}">
+	<link rel="stylesheet" type="text/css" href="{{asset('auth/vendor/bootstrap/css/bootstrap.min.css')}}">
 	<link rel="stylesheet" type="text/css"
-		href="{{asset('login/fonts/font-awesome-4.7.0/css/font-awesome.min.css')}}">
+		href="{{asset('auth/fonts/font-awesome-4.7.0/css/font-awesome.min.css')}}">
 	<link rel="stylesheet" type="text/css"
-		href="{{asset('login/fonts/iconic/css/material-design-iconic-font.min.css')}}">
-	<link rel="stylesheet" type="text/css" href="{{asset('login/vendor/animate/animate.css')}}">
+		href="{{asset('auth/fonts/iconic/css/material-design-iconic-font.min.css')}}">
+	<link rel="stylesheet" type="text/css" href="{{asset('auth/vendor/animate/animate.css')}}">
 	<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
 	@if (app()->getLocale() == 'ar')
-	<link rel="stylesheet" type="text/css" href="{{asset('login/css/ar_style.css')}}">
+	<link rel="stylesheet" type="text/css" href="{{asset('auth/css/ar_style.css')}}">
 	@else
-	<link rel="stylesheet" type="text/css" href="{{asset('login/css/en_style.css')}}">
+	<link rel="stylesheet" type="text/css" href="{{asset('auth/css/en_style.css')}}">
 	@endif
 
 </head>
