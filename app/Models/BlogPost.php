@@ -44,6 +44,11 @@ class BlogPost extends Model implements HasMedia
         return app()->getLocale() == 'ar' ? $this->title_ar : $this->title_en;
     }
 
+    public function getContentAttribute()
+    {
+        return app()->getLocale() == 'ar' ? $this->content_ar : $this->content_en;
+    }
+
     public function getMainImageAttribute()
     {
         return $this->getMedia('main_image')->first()?->getUrl() ?? 'https://placehold.co/350x263';

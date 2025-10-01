@@ -39,6 +39,11 @@ class Clinic extends Model implements HasMedia
         });
     }
 
+    public function scopeActive($query)
+    {
+        return $query->where('status', true);
+    }
+
     // ------- relations -------
     public function clinicUsers()
     {

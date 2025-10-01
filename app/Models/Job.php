@@ -18,6 +18,7 @@ class Job extends Model implements HasMedia
 
     protected $fillable = [
         'title',
+        'type',
         'description',
         'location',
         'salary',

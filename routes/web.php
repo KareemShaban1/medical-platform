@@ -23,6 +23,7 @@ Route::group(
         Route::get('/', [HomeController::class, 'index'])->name('home');
 
 		Route::get('/products', [ProductController::class, 'index'])->name('products');
+		Route::get('/products/{id}', [ProductController::class, 'show'])->name('products.show');
 		Route::post('/products/filter', [ProductController::class, 'filter'])->name('products.filter');
 		Route::get('/products/category/{categoryId}', [ProductController::class, 'category'])->name('products.category');
 		Route::get('/products/supplier/{supplierId}', [ProductController::class, 'supplier'])->name('products.supplier');
@@ -31,18 +32,23 @@ Route::group(
 		Route::get('/products/recent', [ProductController::class, 'recent'])->name('products.recent');
 
 		Route::get('/clinics', [ClinicController::class, 'index'])->name('clinics');
+		Route::get('/clinics/{id}', [ClinicController::class, 'show'])->name('clinics.show');
 		Route::post('/clinics/filter', [ClinicController::class, 'filter'])->name('clinics.filter');
 
 		Route::get('/suppliers', [SupplierController::class, 'index'])->name('suppliers');
+		Route::get('/suppliers/{id}', [SupplierController::class, 'show'])->name('suppliers.show');
 		Route::post('/suppliers/filter', [SupplierController::class, 'filter'])->name('suppliers.filter');
 
 		Route::get('/jobs', [JobController::class, 'index'])->name('jobs');
+		Route::get('/jobs/{id}', [JobController::class, 'show'])->name('jobs.show');
 		Route::post('/jobs/filter', [JobController::class, 'filter'])->name('jobs.filter');
 
-		Route::get('/blog', [BlogController::class, 'index'])->name('blog');
-		Route::post('/blog/filter', [BlogController::class, 'filter'])->name('blog.filter');
+		Route::get('/blogs', [BlogController::class, 'index'])->name('blogs');
+		Route::get('/blogs/{id}', [BlogController::class, 'show'])->name('blogs.show');
+		Route::post('/blogs/filter', [BlogController::class, 'filter'])->name('blogs.filter');
 
 		Route::get('/courses', [CourseController::class, 'index'])->name('courses');
+		Route::get('/courses/{id}', [CourseController::class, 'show'])->name('courses.show');
 		Route::post('/courses/filter', [CourseController::class, 'filter'])->name('courses.filter');
     });
 

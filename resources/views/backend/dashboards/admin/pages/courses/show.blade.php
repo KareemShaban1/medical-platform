@@ -54,6 +54,11 @@
                                         </tr>
 
                                         <tr>
+                                            <th scope="row">{{ __('Level') }}:</th>
+                                            <td>{{ $course->level }}</td>
+                                        </tr>
+
+                                        <tr>
                                             <th scope="row">{{ __('Start Date') }}:</th>
                                             <td>{{ $course->start_date->format('Y-m-d') }}</td>
                                         </tr>

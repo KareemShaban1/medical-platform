@@ -18,17 +18,11 @@ class BlogController extends Controller
 
         // Get filter options for the form
         $categories = BlogCategory::active()->select('id', 'name_ar', 'name_en')->get();
-        $authors = ['dr-smith', 'dr-johnson', 'dr-williams', 'medical-team'];
-        $dateRanges = ['week', 'month', 'year'];
-        $tags = ['covid', 'vaccine', 'heart', 'mental', 'cancer'];
+       
 
-        return view('frontend.pages.blogs', compact(
+        return view('frontend.pages.blogs.index', compact(
             'blogPosts',
-            'categories',
-            'authors',
-            'dateRanges',
-            'tags'
-        ));
+            'categories'        ));
     }
 
     public function filter(Request $request)
@@ -54,36 +48,7 @@ class BlogController extends Controller
                 $query->where('blog_category_id', $categoryId);
             }
 
-            // Author filter (we'll add author field to the model later)
-            if ($request->filled('author')) {
-                $query->where('author', $request->get('author'));
-            }
-
-            // Date filter
-            if ($request->filled('date')) {
-                $dateRange = $request->get('date');
-                switch ($dateRange) {
-                    case 'week':
-                        $query->where('created_at', '>=', now()->subWeek());
-                        break;
-                    case 'month':
-                        $query->where('created_at', '>=', now()->subMonth());
-                        break;
-                    case 'year':
-                        $query->where('created_at', '>=', now()->subYear());
-                        break;
-                }
-            }
-
-            // Tags filter (we'll add tags field to the model later)
-            if ($request->filled('tags')) {
-                $tags = is_array($request->tags) ? $request->tags : [$request->tags];
-                $query->where(function ($q) use ($tags) {
-                    foreach ($tags as $tag) {
-                        $q->orWhere('tags', 'like', '%' . $tag . '%');
-                    }
-                });
-            }
+           
 
             // Sort by
             $sortBy = $request->get('sort', 'newest');
@@ -116,14 +81,14 @@ class BlogController extends Controller
             if ($request->ajax()) {
                 return response()->json([
                     'success' => true,
-                    'html' => view('frontend.partials.blog-grid', compact('blogPosts'))->render(),
-                    'pagination' => $blogPosts->links()->toHtml(),
+                    'html' => view('frontend.pages.blogs.partials.blog-grid', compact('blogPosts'))->render(),
+                    'pagination' => view('frontend.pages.blogs.partials.pagination', compact('blogPosts'))->render(),
                     'count' => $blogPosts->total(),
                     'data' => $additionalData
                 ]);
             }
 
-            return view('frontend.pages.blogs', compact('blogPosts', 'additionalData'));
+            return view('frontend.pages.blogs.index', compact('blogPosts', 'additionalData'));
         } catch (\Exception $e) {
             if ($request->ajax()) {
                 return response()->json([
@@ -154,22 +119,7 @@ class BlogController extends Controller
             }
         }
 
-        if ($request->filled('author')) {
-            $filters['author'] = ucfirst(str_replace('-', ' ', $request->author));
-        }
-
-        if ($request->filled('date')) {
-            $dateLabels = [
-                'week' => 'This Week',
-                'month' => 'This Month',
-                'year' => 'This Year'
-            ];
-            $filters['date'] = $dateLabels[$request->date] ?? $request->date;
-        }
-
-        if ($request->filled('tags')) {
-            $filters['tags'] = is_array($request->tags) ? $request->tags : [$request->tags];
-        }
+       
 
         if ($request->filled('sort')) {
             $sortLabels = [
@@ -182,5 +132,36 @@ class BlogController extends Controller
         }
 
         return $filters;
+    }
+
+    /**
+     * Show blog post details
+     */
+    public function show($id)
+    {
+        $blogPost = BlogPost::with(['blogCategory'])
+            ->active()
+            ->findOrFail($id);
+
+        // Get related posts from the same category
+        $relatedPosts = BlogPost::with('blogCategory')
+            ->active()
+            ->where('id', '!=', $id)
+            ->where('blog_category_id', $blogPost->blog_category_id)
+            ->limit(4)
+            ->get();
+
+        // Get recent posts
+        $recentPosts = BlogPost::with('blogCategory')
+            ->active()
+            ->where('id', '!=', $id)
+            ->orderBy('created_at', 'desc')
+            ->limit(4)
+            ->get();
+
+        // Get categories for sidebar
+        $categories = BlogCategory::active()->select('id', 'name_ar', 'name_en')->get();
+
+        return view('frontend.pages.blogs.show', compact('blogPost', 'relatedPosts', 'recentPosts', 'categories'));
     }
 }

@@ -24,6 +24,7 @@ class UpdateJobRequest extends FormRequest
         return [
             //
             'title' => 'required|string|max:255',
+            'type' => 'required|in:full-time,part-time,contract,temporary,internship',
             'description' => 'required|string',
             'location' => 'required|string|max:255',
             'salary' => 'required|numeric',

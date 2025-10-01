@@ -22,6 +22,7 @@ class Course extends Model implements HasMedia
         'slug_ar',
         'description_en',
         'description_ar',
+        'level',
         'url',
         'duration',
         'start_date',
@@ -49,6 +50,11 @@ class Course extends Model implements HasMedia
         return app()->getLocale() == 'ar' ? $this->title_ar : $this->title_en;
     }
 
+    public function getDescriptionAttribute()   
+    {
+        return app()->getLocale() == 'ar' ? $this->description_ar : $this->description_en;
+    }
+    
     // ------- scopes -------
     public function scopeActive($query)
     {

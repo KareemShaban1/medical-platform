@@ -14,7 +14,7 @@ class ProductController extends Controller
     {
         $products = Product::approved()->active()->with('categories')->paginate(20);
         $categories = Category::active()->select('id', 'name_ar', 'name_en')->get();
-        return view('frontend.pages.products', compact('products', 'categories'));
+        return view('frontend.pages.products.index', compact('products', 'categories'));
     }
 
     public function filter(Request $request)
@@ -125,14 +125,14 @@ class ProductController extends Controller
             if ($request->ajax()) {
                 return response()->json([
                     'success' => true,
-                    'html' => view('frontend.partials.products-grid', compact('products'))->render(),
-                    'pagination' => $products->links()->render(),
+                    'html' => view('frontend.pages.products.partials.products-grid', compact('products'))->render(),
+                    'pagination' => view('frontend.pages.products.partials.pagination', compact('products'))->render(),
                     'count' => $products->total(),
                     'data' => $additionalData
                 ]);
             }
 
-            return view('frontend.pages.products', compact('products', 'additionalData'));
+            return view('frontend.pages.products.index', compact('products', 'additionalData'));
         } catch (\Exception $e) {
             if ($request->ajax()) {
                 return response()->json([
@@ -189,7 +189,7 @@ class ProductController extends Controller
 
         $categories = Category::active()->select('id', 'name_ar', 'name_en')->get();
 
-        return view('frontend.pages.products', compact('products', 'categories', 'category'));
+        return view('frontend.pages.products.index', compact('products', 'categories', 'category'));
     }
 
     /**
@@ -204,7 +204,7 @@ class ProductController extends Controller
 
         $categories = Category::active()->select('id', 'name_ar', 'name_en')->get();
 
-        return view('frontend.pages.products', compact('products', 'categories'));
+        return view('frontend.pages.products.index', compact('products', 'categories'));
     }
 
     /**
@@ -220,7 +220,7 @@ class ProductController extends Controller
 
         $categories = Category::active()->select('id', 'name_ar', 'name_en')->get();
 
-        return view('frontend.pages.products', compact('products', 'categories'));
+        return view('frontend.pages.products.index', compact('products', 'categories'));
     }
 
     /**
@@ -236,7 +236,7 @@ class ProductController extends Controller
 
         $categories = Category::active()->select('id', 'name_ar', 'name_en')->get();
 
-        return view('frontend.pages.products', compact('products', 'categories'));
+        return view('frontend.pages.products.index', compact('products', 'categories'));
     }
 
     /**
@@ -251,6 +251,36 @@ class ProductController extends Controller
 
         $categories = Category::active()->select('id', 'name_ar', 'name_en')->get();
 
-        return view('frontend.pages.products', compact('products', 'categories'));
+        return view('frontend.pages.products.index', compact('products', 'categories'));
+    }
+
+    /**
+     * Show product details
+     */
+    public function show($id)
+    {
+        $product = Product::approved()->active()
+            ->with(['categories', 'supplier'])
+            ->findOrFail($id);
+
+        // Get related products from the same category
+        $relatedProducts = Product::approved()->active()
+            ->where('id', '!=', $id)
+            ->whereHas('categories', function ($query) use ($product) {
+                $query->whereIn('categories.id', $product->categories->pluck('id'));
+            })
+            ->with('categories')
+            ->limit(8)
+            ->get();
+
+        // Get products from the same supplier
+        $supplierProducts = Product::approved()->active()
+            ->where('id', '!=', $id)
+            ->where('supplier_id', $product->supplier_id)
+            ->with('categories')
+            ->limit(4)
+            ->get();
+
+        return view('frontend.pages.products.show', compact('product', 'relatedProducts', 'supplierProducts'));
     }
 }
