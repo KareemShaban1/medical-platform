@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use App\Models\Job;
 use App\Models\Supplier;
 use App\Models\RentalSpace;
+use App\Models\Product;
+use App\Models\Clinic;
 
 class HomeController extends Controller
 {
@@ -17,7 +19,9 @@ class HomeController extends Controller
         $suppliers = Supplier::approved()->active()->get();
         $rentalSpaces = RentalSpace::approved()->active()->get();
         $courses = Course::active()->get();
-        return view('frontend.pages.home', compact('jobs', 'suppliers', 'rentalSpaces', 'courses'));
+		$products = Product::approved()->active()->get();
+        $clinics = Clinic::approved()->active()->get();
+		return view('frontend.pages.home.index', compact('jobs', 'suppliers', 'rentalSpaces', 'courses', 'products','clinics'));
     }
 }
 

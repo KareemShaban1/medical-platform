@@ -22,4 +22,6 @@
 	@else
 	<link rel="stylesheet" href="{{ asset('frontend/css/ltr.css') }}">
 	@endif
+
+	@stack('styles')
 </head>

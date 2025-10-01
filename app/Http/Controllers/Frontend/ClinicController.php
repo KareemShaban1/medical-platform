@@ -16,42 +16,7 @@ class ClinicController extends Controller
 			->with(['approvement'])
 			->paginate(12);
 
-		// Get filter options
-		$specializations = [
-			'general' => 'General Practice',
-			'cardiology' => 'Cardiology',
-			'dermatology' => 'Dermatology',
-			'orthopedics' => 'Orthopedics',
-			'pediatrics' => 'Pediatrics',
-			'neurology' => 'Neurology',
-			'oncology' => 'Oncology',
-			'gynecology' => 'Gynecology',
-			'psychiatry' => 'Psychiatry',
-			'ophthalmology' => 'Ophthalmology'
-		];
-
-		$locations = [
-			'downtown' => 'Downtown',
-			'suburbs' => 'Suburbs',
-			'medical-district' => 'Medical District',
-			'university-area' => 'University Area',
-			'business-district' => 'Business District'
-		];
-
-		$ratings = [
-			'5' => '5 Stars',
-			'4' => '4+ Stars',
-			'3' => '3+ Stars',
-			'2' => '2+ Stars',
-			'1' => '1+ Stars'
-		];
-
-		return view('frontend.pages.clinics', compact(
-			'clinics',
-			'specializations',
-			'locations',
-			'ratings'
-		));
+		return view('frontend.pages.clinics.index', compact('clinics'));
 	}
 
 	public function filter(Request $request)
@@ -69,43 +34,18 @@ class ClinicController extends Controller
 			});
 		}
 
-		// Specialization filter
-		if ($request->filled('specialization')) {
-			$query->where('specialization', $request->specialization);
-		}
-
-		// Location filter
-		if ($request->filled('location')) {
-			$query->where('location', $request->location);
-		}
-
-		// Rating filter
-		if ($request->filled('rating')) {
-			$minRating = (float) $request->rating;
-			$query->where('rating', '>=', $minRating);
-		}
-
-		// Status filter
-		if ($request->filled('status')) {
-			$query->where('status', $request->status === 'open' ? true : false);
-		}
+	
 
 		// Sort options
 		switch ($request->get('sort', 'name')) {
 			case 'name':
 				$query->orderBy('name', 'asc');
 				break;
-			case 'rating':
-				$query->orderBy('rating', 'desc');
-				break;
 			case 'newest':
 				$query->orderBy('created_at', 'desc');
 				break;
 			case 'oldest':
 				$query->orderBy('created_at', 'asc');
-				break;
-			case 'location':
-				$query->orderBy('address', 'asc');
 				break;
 			default:
 				$query->orderBy('name', 'asc');
@@ -116,14 +56,14 @@ class ClinicController extends Controller
 		if ($request->ajax()) {
 			return response()->json([
 				'success' => true,
-				'html' => view('frontend.partials.clinics-grid', ['clinics' => $clinics])->render(),
-				'pagination' => $clinics->links()->toHtml(),
+				'html' => view('frontend.pages.clinics.partials.clinics-grid', ['clinics' => $clinics])->render(),
+				'pagination' => view('frontend.pages.clinics.partials.pagination', ['clinics' => $clinics])->render(),
 				'count' => $clinics->total(),
 				'applied_filters' => $this->getAppliedFilters($request)
 			]);
 		}
 
-		return view('frontend.pages.clinics', compact('clinics'));
+		return view('frontend.pages.clinics.index', compact('clinics'));
 	}
 
 	private function getAppliedFilters(Request $request)
@@ -138,57 +78,35 @@ class ClinicController extends Controller
 			];
 		}
 
-		if ($request->filled('specialization')) {
-			$specializations = [
-				'general' => 'General Practice',
-				'cardiology' => 'Cardiology',
-				'dermatology' => 'Dermatology',
-				'orthopedics' => 'Orthopedics',
-				'pediatrics' => 'Pediatrics',
-				'neurology' => 'Neurology',
-				'oncology' => 'Oncology',
-				'gynecology' => 'Gynecology',
-				'psychiatry' => 'Psychiatry',
-				'ophthalmology' => 'Ophthalmology'
-			];
-			$filters[] = [
-				'label' => 'Specialization',
-				'value' => $specializations[$request->specialization] ?? $request->specialization,
-				'type' => 'specialization'
-			];
-		}
 
-		if ($request->filled('location')) {
-			$locations = [
-				'downtown' => 'Downtown',
-				'suburbs' => 'Suburbs',
-				'medical-district' => 'Medical District',
-				'university-area' => 'University Area',
-				'business-district' => 'Business District'
-			];
-			$filters[] = [
-				'label' => 'Location',
-				'value' => $locations[$request->location] ?? $request->location,
-				'type' => 'location'
-			];
-		}
-
-		if ($request->filled('rating')) {
-			$filters[] = [
-				'label' => 'Minimum Rating',
-				'value' => $request->rating . '+ Stars',
-				'type' => 'rating'
-			];
-		}
-
-		if ($request->filled('status')) {
-			$filters[] = [
-				'label' => 'Status',
-				'value' => $request->status === 'open' ? 'Open' : 'Closed',
-				'type' => 'status'
-			];
-		}
 
 		return $filters;
+	}
+
+	/**
+	 * Show clinic details
+	 */
+	public function show($id)
+	{
+		$clinic = Clinic::approved()
+			->where('status', true)
+			->with(['approvement'])
+			->findOrFail($id);
+
+		// Get related clinics with same specialization
+		$relatedClinics = Clinic::approved()
+			->where('status', true)
+			->where('id', '!=', $id)
+			->limit(4)
+			->get();
+
+		// Get nearby clinics
+		$nearbyClinics = Clinic::approved()
+			->where('status', true)
+			->where('id', '!=', $id)
+			->limit(4)
+			->get();
+
+		return view('frontend.pages.clinics.show', compact('clinic', 'relatedClinics', 'nearbyClinics'));
 	}
 }

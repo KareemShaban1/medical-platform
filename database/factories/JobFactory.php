@@ -20,6 +20,7 @@ class JobFactory extends Factory
         return [
             //
             'title' => fake()->sentence(),
+            'type' => fake()->randomElement(['full-time', 'part-time', 'contract','temporary', 'internship']),
             'description' => fake()->text(),
             'location' => fake()->city(),
             'salary' => fake()->numberBetween(1000, 10000),

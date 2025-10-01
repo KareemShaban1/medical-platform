@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('slug_ar')->unique();
             $table->text('description_en');
             $table->text('description_ar');
+            $table->enum('level',['beginner','intermediate','advanced','expert'])->default('beginner');
             $table->string('url');
             $table->string('duration');
             $table->date('start_date')->nullable();

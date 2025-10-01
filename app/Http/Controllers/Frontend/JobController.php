@@ -22,15 +22,13 @@ class JobController extends Controller
 		$specializations = ['nursing', 'physician', 'technician', 'therapist', 'administrative', 'pharmacy'];
 		$experienceLevels = ['entry', 'mid', 'senior'];
 		$locations = Job::distinct()->pluck('location')->filter()->values();
-		$salaryRanges = ['30-50', '50-80', '80+'];
 
-		return view('frontend.pages.jobs', compact(
+		return view('frontend.pages.jobs.index', compact(
 			'jobs',
 			'jobTypes',
 			'specializations',
 			'experienceLevels',
 			'locations',
-			'salaryRanges'
 		));
 	}
 
@@ -54,8 +52,8 @@ class JobController extends Controller
 			}
 
 			// Job type filter
-			if ($request->filled('job_type')) {
-				$query->where('job_type', $request->get('job_type'));
+			if ($request->filled('type')) {
+				$query->where('type', $request->get('type'));
 			}
 
 			// Specialization filter
@@ -68,22 +66,8 @@ class JobController extends Controller
 				$query->where('experience_level', $request->get('experience'));
 			}
 
-			// Location filter
-			if ($request->filled('location')) {
-				$query->where('location', 'like', "%{$request->get('location')}%");
-			}
-
-			// Salary range filter
-			if ($request->filled('salary')) {
-				$salaryRange = $request->get('salary');
-				if ($salaryRange === '30-50') {
-					$query->whereBetween('salary', [30000, 50000]);
-				} elseif ($salaryRange === '50-80') {
-					$query->whereBetween('salary', [50000, 80000]);
-				} elseif ($salaryRange === '80+') {
-					$query->where('salary', '>=', 80000);
-				}
-			}
+			
+			
 
 			// Sort by
 			$sortBy = $request->get('sort', 'newest');
@@ -116,14 +100,14 @@ class JobController extends Controller
 			if ($request->ajax()) {
 				return response()->json([
 					'success' => true,
-					'html' => view('frontend.partials.jobs-grid', compact('jobs'))->render(),
-					'pagination' => $jobs->links()->toHtml(),
+					'html' => view('frontend.pages.jobs.partials.jobs-grid', compact('jobs'))->render(),
+					'pagination' => view('frontend.pages.jobs.partials.pagination', compact('jobs'))->render(),
 					'count' => $jobs->total(),
 					'data' => $additionalData
 				]);
 			}
 
-			return view('frontend.pages.jobs', compact('jobs', 'additionalData'));
+			return view('frontend.pages.jobs.index', compact('jobs', 'additionalData'));
 		} catch (\Exception $e) {
 			if ($request->ajax()) {
 				return response()->json([
@@ -147,8 +131,8 @@ class JobController extends Controller
 			$filters['search'] = $request->search;
 		}
 
-		if ($request->filled('job_type')) {
-			$filters['job_type'] = ucfirst(str_replace('-', ' ', $request->job_type));
+		if ($request->filled('type')) {
+			$filters['type'] = ucfirst(str_replace('-', ' ', $request->type));
 		}
 
 		if ($request->filled('specialization')) {
@@ -163,9 +147,7 @@ class JobController extends Controller
 			$filters['location'] = $request->location;
 		}
 
-		if ($request->filled('salary')) {
-			$filters['salary'] = '$' . $request->salary . 'k' . ($request->salary === '80+' ? '+' : '');
-		}
+	
 
 		if ($request->filled('sort')) {
 			$sortLabels = [
@@ -178,5 +160,36 @@ class JobController extends Controller
 		}
 
 		return $filters;
+	}
+
+	/**
+	 * Show job details
+	 */
+	public function show($id)
+	{
+		$job = Job::with(['clinic'])
+			->active()
+			->approved()
+			->findOrFail($id);
+
+		// Get related jobs from the same clinic
+		$relatedJobs = Job::with('clinic')
+			->active()
+			->approved()
+			->where('id', '!=', $id)
+			->where('clinic_id', $job->clinic_id)
+			->limit(4)
+			->get();
+
+		// Get jobs with similar specialization
+		$similarJobs = Job::with('clinic')
+			->active()
+			->approved()
+			->where('id', '!=', $id)
+			// ->where('specialization', $job->specialization)
+			->limit(4)
+			->get();
+
+		return view('frontend.pages.jobs.show', compact('job', 'relatedJobs', 'similarJobs'));
 	}
 }

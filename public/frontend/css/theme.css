@@ -1,6 +1,7 @@
 /* Medical Platform Theme - Gradient Color Scheme */
 :root {
-	--primary-gradient: linear-gradient(rgba(0, 0, 0, 0.7), #079184);
+	/* --primary-gradient: linear-gradient(rgba(0, 0, 0, 0.7), #079184); */
+	--primary-gradient: linear-gradient(#079184, #079184);
 	--primary-color: #079184;
 	--primary-dark: #056b5f;
 	--primary-light: #0aa896;
@@ -344,4 +345,185 @@ body {
 		border-color: var(--border-color);
 		color: var(--text-primary);
 	}
+}
+
+/* Custom Swiper Navigation Buttons */
+.swiper-button-next,
+.swiper-button-prev {
+	width: 50px !important;
+	height: 50px !important;
+	background: var(--primary-color) !important;
+	border-radius: 50% !important;
+	box-shadow: 0 4px 15px rgba(7, 145, 132, 0.2) !important;
+	transition: all 0.3s ease !important;
+	position: absolute !important;
+	top: 50% !important;
+	transform: translateY(-50%) !important;
+	z-index: 10 !important;
+	overflow: hidden !important;
+}
+
+/* Position Next Button on Right */
+.swiper-button-next {
+	right: 10px !important;
+}
+
+/* Position Prev Button on Left */
+.swiper-button-prev {
+	left: 10px !important;
+}
+
+.swiper-button-next:after,
+.swiper-button-prev:after {
+	font-size: 18px !important;
+	font-weight: bold !important;
+	color: white !important;
+	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+}
+
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+	transform: scale(1.1) !important;
+	box-shadow: 0 8px 25px rgba(7, 145, 132, 0.3) !important;
+}
+
+.swiper-button-next:active,
+.swiper-button-prev:active {
+	transform: scale(0.95) !important;
+}
+
+/* Swiper Button Pseudo Elements for Enhanced Effects */
+.swiper-button-next::before,
+.swiper-button-prev::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: linear-gradient(45deg, rgba(255, 255, 255, 0.1), transparent);
+	border-radius: 50%;
+	opacity: 0;
+	transition: opacity 0.3s ease;
+}
+
+.swiper-button-next:hover::before,
+.swiper-button-prev:hover::before {
+	opacity: 1;
+}
+
+/* Custom Pagination Bullets */
+.custom-pagination-bullet {
+	width: 12px !important;
+	height: 12px !important;
+	background: rgba(7, 145, 132, 0.3) !important;
+	border-radius: 50% !important;
+	opacity: 1 !important;
+	transition: all 0.3s ease !important;
+	margin: 0 6px !important;
+}
+
+.custom-pagination-bullet-active {
+	background: var(--primary-color) !important;
+	transform: scale(1.2) !important;
+	box-shadow: 0 2px 8px rgba(7, 145, 132, 0.4) !important;
+}
+
+.custom-pagination-bullet:hover {
+	background: var(--primary-light) !important;
+	transform: scale(1.1) !important;
+}
+
+/* Swiper Pagination Container */
+.swiper-pagination {
+	bottom: 20px !important;
+}
+
+.swiper-pagination-bullets {
+	display: flex !important;
+	justify-content: center !important;
+	align-items: center !important;
+	gap: 8px !important;
+}
+
+/* Enhanced Swiper Container */
+.swiper {
+	position: relative;
+	overflow: hidden;
+}
+
+.swiper::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 0%, transparent 50%, rgba(255, 255, 255, 0.1) 100%);
+	pointer-events: none;
+	z-index: 1;
+}
+
+/* Swiper Slide Enhancements */
+.swiper-slide {
+	transition: all 0.3s ease;
+}
+
+.swiper-slide:hover {
+	transform: translateY(-5px);
+}
+
+/* Mobile Swiper Adjustments */
+@media (max-width: 768px) {
+
+	.swiper-button-next,
+	.swiper-button-prev {
+		width: 40px !important;
+		height: 40px !important;
+	}
+
+	.swiper-button-next:after,
+	.swiper-button-prev:after {
+		font-size: 14px !important;
+	}
+
+	.custom-pagination-bullet {
+		width: 10px !important;
+		height: 10px !important;
+		margin: 0 4px !important;
+	}
+}
+
+/* Swiper Loading Animation */
+.swiper-slide-active {
+	animation: slideInUp 0.6s ease-out;
+}
+
+@keyframes slideInUp {
+	from {
+		opacity: 0;
+		transform: translateY(30px);
+	}
+
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+/* Swiper Autoplay Progress */
+.swiper-autoplay-progress {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	height: 3px;
+	background: rgba(7, 145, 132, 0.2);
+	z-index: 2;
+}
+
+.swiper-autoplay-progress-bar {
+	height: 100%;
+	background: var(--primary-gradient);
+	transition: width 0.1s linear;
 }
