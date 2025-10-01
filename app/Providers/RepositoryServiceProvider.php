@@ -50,6 +50,9 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind('App\Interfaces\Clinic\RequestRepositoryInterface', 'App\Repository\Clinic\RequestRepository');
         $this->app->bind('App\Interfaces\Supplier\OfferRepositoryInterface', 'App\Repository\Supplier\OfferRepository');
         $this->app->bind('App\Interfaces\Supplier\SpecializedCategoryRepositoryInterface', 'App\Repository\Supplier\SpecializedCategoryRepository');
+
+        // Job Application Field Repository
+        $this->app->bind('App\Interfaces\Clinic\JobApplicationFieldRepositoryInterface', 'App\Repository\Clinic\JobApplicationFieldRepository');
     }
 
 
@@ -59,4 +62,3 @@ class RepositoryServiceProvider extends ServiceProvider
         //
     }
 }
-

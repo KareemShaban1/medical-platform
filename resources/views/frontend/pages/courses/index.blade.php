@@ -2,381 +2,381 @@
 
 @push('styles')
 <style>
-/* Custom Animations */
-@keyframes fadeInUp {
-	from {
+	/* Custom Animations */
+	@keyframes fadeInUp {
+		from {
+			opacity: 0;
+			transform: translateY(30px);
+		}
+
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	@keyframes slideInLeft {
+		from {
+			opacity: 0;
+			transform: translateX(-50px);
+		}
+
+		to {
+			opacity: 1;
+			transform: translateX(0);
+		}
+	}
+
+	@keyframes slideInRight {
+		from {
+			opacity: 0;
+			transform: translateX(50px);
+		}
+
+		to {
+			opacity: 1;
+			transform: translateX(0);
+		}
+	}
+
+	@keyframes float {
+
+		0%,
+		100% {
+			transform: translateY(0px);
+		}
+
+		50% {
+			transform: translateY(-10px);
+		}
+	}
+
+	@keyframes pulse {
+
+		0%,
+		100% {
+			transform: scale(1);
+		}
+
+		50% {
+			transform: scale(1.05);
+		}
+	}
+
+	@keyframes rotate {
+		from {
+			transform: rotate(0deg);
+		}
+
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	@keyframes bounce {
+
+		0%,
+		20%,
+		53%,
+		80%,
+		100% {
+			transform: translate3d(0, 0, 0);
+		}
+
+		40%,
+		43% {
+			transform: translate3d(0, -8px, 0);
+		}
+
+		70% {
+			transform: translate3d(0, -4px, 0);
+		}
+
+		90% {
+			transform: translate3d(0, -2px, 0);
+		}
+	}
+
+	.animate-fade-in-up {
+		animation: fadeInUp 0.8s ease-out forwards;
 		opacity: 0;
-		transform: translateY(30px);
 	}
 
-	to {
-		opacity: 1;
-		transform: translateY(0);
-	}
-}
-
-@keyframes slideInLeft {
-	from {
+	.animate-slide-in-left {
+		animation: slideInLeft 0.8s ease-out forwards;
 		opacity: 0;
-		transform: translateX(-50px);
 	}
 
-	to {
-		opacity: 1;
-		transform: translateX(0);
-	}
-}
-
-@keyframes slideInRight {
-	from {
+	.animate-slide-in-right {
+		animation: slideInRight 0.8s ease-out forwards;
 		opacity: 0;
-		transform: translateX(50px);
 	}
 
-	to {
-		opacity: 1;
-		transform: translateX(0);
-	}
-}
-
-@keyframes float {
-
-	0%,
-	100% {
-		transform: translateY(0px);
+	.animate-float {
+		animation: float 3s ease-in-out infinite;
 	}
 
-	50% {
-		transform: translateY(-10px);
-	}
-}
-
-@keyframes pulse {
-
-	0%,
-	100% {
-		transform: scale(1);
+	.animate-pulse-custom {
+		animation: pulse 2s ease-in-out infinite;
 	}
 
-	50% {
+	.animate-rotate {
+		animation: rotate 2s linear infinite;
+	}
+
+	.animate-bounce-custom {
+		animation: bounce 2s ease-in-out infinite;
+	}
+
+	.animation-delay-200 {
+		animation-delay: 0.2s;
+	}
+
+	.animation-delay-400 {
+		animation-delay: 0.4s;
+	}
+
+	.animation-delay-600 {
+		animation-delay: 0.6s;
+	}
+
+	/* Course Card Hover Effects */
+	.course-card {
+		transition: all 0.3s ease;
+		position: relative;
+		overflow: hidden;
+	}
+
+	.course-card::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: -100%;
+		width: 100%;
+		height: 100%;
+		background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+		transition: left 0.5s ease;
+	}
+
+	.course-card:hover::before {
+		left: 100%;
+	}
+
+	.course-card:hover {
+		transform: translateY(-8px) scale(1.02);
+		box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+	}
+
+	/* Filter Panel Animation */
+	.filter-panel {
+		transition: all 0.3s ease;
+	}
+
+	.filter-panel:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+	}
+
+	/* Loading Spinner */
+	.spinner {
+		width: 40px;
+		height: 40px;
+		border: 4px solid rgba(7, 145, 132, 0.3);
+		border-top: 4px solid #079184;
+		border-radius: 50%;
+		animation: spin 1s linear infinite;
+	}
+
+	@keyframes spin {
+		0% {
+			transform: rotate(0deg);
+		}
+
+		100% {
+			transform: rotate(360deg);
+		}
+	}
+
+	/* Gradient Text */
+	.text-gradient {
+		background: linear-gradient(135deg, #079184, #0aa896);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+	}
+
+	/* Interactive Elements */
+	.interactive-element {
+		transition: all 0.3s ease;
+		cursor: pointer;
+	}
+
+	.interactive-element:hover {
 		transform: scale(1.05);
 	}
-}
 
-@keyframes rotate {
-	from {
-		transform: rotate(0deg);
+	/* Staggered Animation */
+	.stagger-animation>* {
+		opacity: 0;
+		transform: translateY(30px);
+		animation: fadeInUp 0.6s ease-out forwards;
 	}
 
-	to {
-		transform: rotate(360deg);
-	}
-}
-
-@keyframes bounce {
-
-	0%,
-	20%,
-	53%,
-	80%,
-	100% {
-		transform: translate3d(0, 0, 0);
+	.stagger-animation>*:nth-child(1) {
+		animation-delay: 0.1s;
 	}
 
-	40%,
-	43% {
-		transform: translate3d(0, -8px, 0);
+	.stagger-animation>*:nth-child(2) {
+		animation-delay: 0.2s;
 	}
 
-	70% {
-		transform: translate3d(0, -4px, 0);
+	.stagger-animation>*:nth-child(3) {
+		animation-delay: 0.3s;
 	}
 
-	90% {
-		transform: translate3d(0, -2px, 0);
-	}
-}
-
-.animate-fade-in-up {
-	animation: fadeInUp 0.8s ease-out forwards;
-	opacity: 0;
-}
-
-.animate-slide-in-left {
-	animation: slideInLeft 0.8s ease-out forwards;
-	opacity: 0;
-}
-
-.animate-slide-in-right {
-	animation: slideInRight 0.8s ease-out forwards;
-	opacity: 0;
-}
-
-.animate-float {
-	animation: float 3s ease-in-out infinite;
-}
-
-.animate-pulse-custom {
-	animation: pulse 2s ease-in-out infinite;
-}
-
-.animate-rotate {
-	animation: rotate 2s linear infinite;
-}
-
-.animate-bounce-custom {
-	animation: bounce 2s ease-in-out infinite;
-}
-
-.animation-delay-200 {
-	animation-delay: 0.2s;
-}
-
-.animation-delay-400 {
-	animation-delay: 0.4s;
-}
-
-.animation-delay-600 {
-	animation-delay: 0.6s;
-}
-
-/* Course Card Hover Effects */
-.course-card {
-	transition: all 0.3s ease;
-	position: relative;
-	overflow: hidden;
-}
-
-.course-card::before {
-	content: '';
-	position: absolute;
-	top: 0;
-	left: -100%;
-	width: 100%;
-	height: 100%;
-	background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-	transition: left 0.5s ease;
-}
-
-.course-card:hover::before {
-	left: 100%;
-}
-
-.course-card:hover {
-	transform: translateY(-8px) scale(1.02);
-	box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-}
-
-/* Filter Panel Animation */
-.filter-panel {
-	transition: all 0.3s ease;
-}
-
-.filter-panel:hover {
-	transform: translateY(-2px);
-	box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-}
-
-/* Loading Spinner */
-.spinner {
-	width: 40px;
-	height: 40px;
-	border: 4px solid rgba(7, 145, 132, 0.3);
-	border-top: 4px solid #079184;
-	border-radius: 50%;
-	animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-	0% {
-		transform: rotate(0deg);
+	.stagger-animation>*:nth-child(4) {
+		animation-delay: 0.4s;
 	}
 
-	100% {
-		transform: rotate(360deg);
-	}
-}
-
-/* Gradient Text */
-.text-gradient {
-	background: linear-gradient(135deg, #079184, #0aa896);
-	-webkit-background-clip: text;
-	-webkit-text-fill-color: transparent;
-	background-clip: text;
-}
-
-/* Interactive Elements */
-.interactive-element {
-	transition: all 0.3s ease;
-	cursor: pointer;
-}
-
-.interactive-element:hover {
-	transform: scale(1.05);
-}
-
-/* Staggered Animation */
-.stagger-animation>* {
-	opacity: 0;
-	transform: translateY(30px);
-	animation: fadeInUp 0.6s ease-out forwards;
-}
-
-.stagger-animation>*:nth-child(1) {
-	animation-delay: 0.1s;
-}
-
-.stagger-animation>*:nth-child(2) {
-	animation-delay: 0.2s;
-}
-
-.stagger-animation>*:nth-child(3) {
-	animation-delay: 0.3s;
-}
-
-.stagger-animation>*:nth-child(4) {
-	animation-delay: 0.4s;
-}
-
-.stagger-animation>*:nth-child(5) {
-	animation-delay: 0.5s;
-}
-
-.stagger-animation>*:nth-child(6) {
-	animation-delay: 0.6s;
-}
-
-/* Course Level Badge */
-.course-level-badge {
-	transition: all 0.3s ease;
-	position: relative;
-	overflow: hidden;
-}
-
-.course-level-badge::before {
-	content: '';
-	position: absolute;
-	top: 0;
-	left: -100%;
-	width: 100%;
-	height: 100%;
-	background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-	transition: left 0.3s ease;
-}
-
-.course-level-badge:hover::before {
-	left: 100%;
-}
-
-.course-level-badge:hover {
-	transform: scale(1.1);
-	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-}
-
-/* Price Highlight */
-.price-highlight {
-	background: linear-gradient(135deg, #10b981, #059669);
-	color: white;
-	padding: 0.5rem 1rem;
-	border-radius: 0.5rem;
-	font-weight: 600;
-	animation: pulse 2s ease-in-out infinite;
-}
-
-/* Duration Badge */
-.duration-badge {
-	background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-	color: white;
-	padding: 0.25rem 0.75rem;
-	border-radius: 9999px;
-	font-size: 0.75rem;
-	font-weight: 600;
-	animation: pulse 2s ease-in-out infinite;
-}
-
-/* Language Flag */
-.language-flag {
-	width: 20px;
-	height: 15px;
-	border-radius: 2px;
-	display: inline-block;
-	margin-right: 0.5rem;
-}
-
-/* Enhanced Form Inputs */
-.form-input {
-	transition: all 0.3s ease;
-	border: 2px solid #e5e7eb;
-}
-
-.form-input:focus {
-	border-color: #079184;
-	box-shadow: 0 0 0 3px rgba(7, 145, 132, 0.1);
-	transform: scale(1.02);
-}
-
-/* Sticky Filters */
-.sticky {
-	position: sticky;
-	top: 0;
-	z-index: 40;
-}
-
-/* Filter Panel Animation */
-#filtersPanel {
-	transition: all 0.3s ease;
-}
-
-/* Active Filter Chips */
-#activeFilters .bg-primary {
-	background: linear-gradient(135deg, #079184, #0aa896);
-}
-
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-	width: 8px;
-}
-
-::-webkit-scrollbar-track {
-	background: #f1f1f1;
-}
-
-::-webkit-scrollbar-thumb {
-	background: linear-gradient(135deg, #079184, #0aa896);
-	border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-	background: linear-gradient(135deg, #056b5f, #079184);
-}
-
-/* Smooth scrolling */
-html {
-	scroll-behavior: smooth;
-}
-
-/* Loading states */
-.loading {
-	opacity: 0.6;
-	pointer-events: none;
-}
-
-/* Mobile responsive adjustments */
-@media (max-width: 768px) {
-	.animate-fade-in-up {
-		animation-delay: 0s;
+	.stagger-animation>*:nth-child(5) {
+		animation-delay: 0.5s;
 	}
 
+	.stagger-animation>*:nth-child(6) {
+		animation-delay: 0.6s;
+	}
+
+	/* Course Level Badge */
+	.course-level-badge {
+		transition: all 0.3s ease;
+		position: relative;
+		overflow: hidden;
+	}
+
+	.course-level-badge::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: -100%;
+		width: 100%;
+		height: 100%;
+		background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+		transition: left 0.3s ease;
+	}
+
+	.course-level-badge:hover::before {
+		left: 100%;
+	}
+
+	.course-level-badge:hover {
+		transform: scale(1.1);
+		box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+	}
+
+	/* Price Highlight */
+	.price-highlight {
+		background: linear-gradient(135deg, #10b981, #059669);
+		color: white;
+		padding: 0.5rem 1rem;
+		border-radius: 0.5rem;
+		font-weight: 600;
+		animation: pulse 2s ease-in-out infinite;
+	}
+
+	/* Duration Badge */
+	.duration-badge {
+		background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+		color: white;
+		padding: 0.25rem 0.75rem;
+		border-radius: 9999px;
+		font-size: 0.75rem;
+		font-weight: 600;
+		animation: pulse 2s ease-in-out infinite;
+	}
+
+	/* Language Flag */
+	.language-flag {
+		width: 20px;
+		height: 15px;
+		border-radius: 2px;
+		display: inline-block;
+		margin-right: 0.5rem;
+	}
+
+	/* Enhanced Form Inputs */
+	.form-input {
+		transition: all 0.3s ease;
+		border: 2px solid #e5e7eb;
+	}
+
+	.form-input:focus {
+		border-color: #079184;
+		box-shadow: 0 0 0 3px rgba(7, 145, 132, 0.1);
+		transform: scale(1.02);
+	}
+
+	/* Sticky Filters */
+	.sticky {
+		position: sticky;
+		top: 0;
+		z-index: 40;
+	}
+
+	/* Filter Panel Animation */
 	#filtersPanel {
-		margin: 0 -1rem;
-		border-radius: 0;
+		transition: all 0.3s ease;
 	}
 
-	.grid.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-4 {
-		grid-template-columns: 1fr;
-		gap: 1rem;
+	/* Active Filter Chips */
+	#activeFilters .bg-primary {
+		background: linear-gradient(135deg, #079184, #0aa896);
 	}
-}
+
+	/* Custom Scrollbar */
+	::-webkit-scrollbar {
+		width: 8px;
+	}
+
+	::-webkit-scrollbar-track {
+		background: #f1f1f1;
+	}
+
+	::-webkit-scrollbar-thumb {
+		background: linear-gradient(135deg, #079184, #0aa896);
+		border-radius: 4px;
+	}
+
+	::-webkit-scrollbar-thumb:hover {
+		background: linear-gradient(135deg, #056b5f, #079184);
+	}
+
+	/* Smooth scrolling */
+	html {
+		scroll-behavior: smooth;
+	}
+
+	/* Loading states */
+	.loading {
+		opacity: 0.6;
+		pointer-events: none;
+	}
+
+	/* Mobile responsive adjustments */
+	@media (max-width: 768px) {
+		.animate-fade-in-up {
+			animation-delay: 0s;
+		}
+
+		#filtersPanel {
+			margin: 0 -1rem;
+			border-radius: 0;
+		}
+
+		.grid.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-4 {
+			grid-template-columns: 1fr;
+			gap: 1rem;
+		}
+	}
 </style>
 @endpush
 
@@ -483,7 +483,7 @@ html {
 					</div>
 				</div>
 
-		
+
 				<!-- Level Filter -->
 				<div class="group">
 					<label
@@ -523,7 +523,7 @@ html {
 								{{ request('sort') == 'title' ? 'selected' : '' }}>
 								Title A-Z
 							</option>
-							
+
 							<option value="start_date"
 								{{ request('sort') == 'start_date' ? 'selected' : '' }}>
 								Start Date
@@ -542,10 +542,10 @@ html {
 					</button>
 				</div>
 
-				
+
 			</div>
 
-			
+
 		</div>
 	</div>
 </section>
@@ -568,7 +568,7 @@ html {
 		</div>
 
 		<!-- Enhanced Pagination -->
-		<x-pagination :paginator="$courses" container-class="mt-12" :show-info="true" :max-pages="7"
+		<x-frontend.pagination :paginator="$courses" container-class="mt-12" :show-info="true" :max-pages="7"
 			:show-first-last="false" />
 	</div>
 </section>

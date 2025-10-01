@@ -37,9 +37,9 @@ document.addEventListener('DOMContentLoaded', function() {
 			if (jobTypeSelect.value) formData.append(
 				'type', jobTypeSelect
 				.value);
-			
 
-		
+
+
 
 			if (sortSelect.value) formData.append('sort',
 				sortSelect.value);
@@ -53,10 +53,10 @@ document.addEventListener('DOMContentLoaded', function() {
 						'X-CSRF-TOKEN': document
 							.querySelector(
 								'meta[name="csrf-token"]'
-								)
+							)
 							.getAttribute(
 								'content'
-								)
+							)
 					}
 				})
 				.then(response => response.json())
@@ -67,10 +67,10 @@ document.addEventListener('DOMContentLoaded', function() {
 							.innerHTML =
 							data
 							.html;
-						paginationContainer
-							.innerHTML =
-							data
-							.pagination;
+						// paginationContainer
+						// 	.innerHTML =
+						// 	data
+						// 	.pagination;
 						resultsCount
 							.textContent =
 							data
@@ -90,7 +90,7 @@ document.addEventListener('DOMContentLoaded', function() {
 				.catch(error => {
 					console.error('Error:',
 						error
-						);
+					);
 					jobsGrid.innerHTML =
 						'<div class="col-span-full text-center py-8 text-red-500">Error loading jobs</div>';
 				});

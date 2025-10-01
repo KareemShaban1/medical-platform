@@ -22,7 +22,7 @@ class JobRepository implements JobRepositoryInterface
 
         return datatables()->of($jobs)
             ->editColumn('main_image', function ($item) {
-                return '<img src="' . $item->getFirstMediaUrl('main_image') . '" alt="" class="img-fluid" style="width: 50px; height: 50px;">';
+                return '<img src="' . $item->main_image . '" alt="" class="img-fluid" style="width: 50px; height: 50px;">';
             })
             ->editColumn('status', fn($item) => $this->jobStatus($item))
             ->addColumn('action', fn($item) => $this->jobActions($item))
@@ -156,10 +156,16 @@ class JobRepository implements JobRepositoryInterface
     {
         $editUrl = route('clinic.jobs.edit', $item->id);
         $showUrl = route('clinic.jobs.show', $item->id);
+        if ($item->jobApplicationFields->count() > 0) {
+            $applicationFieldsUrl = route('clinic.job-application-fields.edit', $item->id);
+        }else{
+            $applicationFieldsUrl = route('clinic.job-application-fields.create', $item->id);
+        }
         return <<<HTML
         <div class="d-flex gap-2">
            <a href="{$showUrl}" class="btn btn-sm btn-success"><i class="fa fa-eye"></i></a>
            <a href="{$editUrl}" class="btn btn-sm btn-info"><i class="fa fa-edit"></i></a>
+           <a href="{$applicationFieldsUrl}" class="btn btn-sm btn-primary"><i class="fa fa-list"></i></a>
            <button onclick="deleteJob({$item->id})" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>
         </div>
         HTML;

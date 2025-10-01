@@ -2,144 +2,144 @@
 
 @push('styles')
 <style>
-/* Custom Animations */
-@keyframes fadeInUp {
-	from {
-		opacity: 0;
-		transform: translateY(30px);
+	/* Custom Animations */
+	@keyframes fadeInUp {
+		from {
+			opacity: 0;
+			transform: translateY(30px);
+		}
+
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
 	}
 
-	to {
-		opacity: 1;
-		transform: translateY(0);
-	}
-}
-
-.animate-fade-in-up {
-	animation: fadeInUp 0.8s ease-out forwards;
-	opacity: 0;
-}
-
-.animation-delay-200 {
-	animation-delay: 0.2s;
-}
-
-.animation-delay-400 {
-	animation-delay: 0.4s;
-}
-
-/* Custom Spinner */
-.spinner {
-	width: 40px;
-	height: 40px;
-	border: 4px solid rgba(7, 145, 132, 0.3);
-	border-top: 4px solid #079184;
-	border-radius: 50%;
-	animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-	0% {
-		transform: rotate(0deg);
-	}
-
-	100% {
-		transform: rotate(360deg);
-	}
-}
-
-/* Enhanced Form Inputs */
-.form-input {
-	transition: all 0.3s ease;
-	border: 2px solid #e5e7eb;
-}
-
-.form-input:focus {
-	border-color: #079184;
-	box-shadow: 0 0 0 3px rgba(7, 145, 132, 0.1);
-	transform: scale(1.02);
-}
-
-/* Product Card Hover Effects */
-.product-card {
-	transition: all 0.3s ease;
-}
-
-.product-card:hover {
-	transform: translateY(-8px);
-	box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-}
-
-/* Gradient Text */
-.text-gradient {
-	background: linear-gradient(135deg, #079184, #0aa896);
-	-webkit-background-clip: text;
-	-webkit-text-fill-color: transparent;
-	background-clip: text;
-}
-
-/* Sticky Filters */
-.sticky {
-	position: sticky;
-	top: 0;
-	z-index: 40;
-}
-
-/* Filter Panel Animation */
-#filtersPanel {
-	transition: all 0.3s ease;
-}
-
-/* Active Filter Chips */
-#activeFilters .bg-primary {
-	background: linear-gradient(135deg, #079184, #0aa896);
-}
-
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-	width: 8px;
-}
-
-::-webkit-scrollbar-track {
-	background: #f1f1f1;
-}
-
-::-webkit-scrollbar-thumb {
-	background: linear-gradient(135deg, #079184, #0aa896);
-	border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-	background: linear-gradient(135deg, #056b5f, #079184);
-}
-
-/* Smooth scrolling */
-html {
-	scroll-behavior: smooth;
-}
-
-/* Loading states */
-.loading {
-	opacity: 0.6;
-	pointer-events: none;
-}
-
-/* Mobile responsive adjustments */
-@media (max-width: 768px) {
 	.animate-fade-in-up {
-		animation-delay: 0s;
+		animation: fadeInUp 0.8s ease-out forwards;
+		opacity: 0;
 	}
 
+	.animation-delay-200 {
+		animation-delay: 0.2s;
+	}
+
+	.animation-delay-400 {
+		animation-delay: 0.4s;
+	}
+
+	/* Custom Spinner */
+	.spinner {
+		width: 40px;
+		height: 40px;
+		border: 4px solid rgba(7, 145, 132, 0.3);
+		border-top: 4px solid #079184;
+		border-radius: 50%;
+		animation: spin 1s linear infinite;
+	}
+
+	@keyframes spin {
+		0% {
+			transform: rotate(0deg);
+		}
+
+		100% {
+			transform: rotate(360deg);
+		}
+	}
+
+	/* Enhanced Form Inputs */
+	.form-input {
+		transition: all 0.3s ease;
+		border: 2px solid #e5e7eb;
+	}
+
+	.form-input:focus {
+		border-color: #079184;
+		box-shadow: 0 0 0 3px rgba(7, 145, 132, 0.1);
+		transform: scale(1.02);
+	}
+
+	/* Product Card Hover Effects */
+	.product-card {
+		transition: all 0.3s ease;
+	}
+
+	.product-card:hover {
+		transform: translateY(-8px);
+		box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+	}
+
+	/* Gradient Text */
+	.text-gradient {
+		background: linear-gradient(135deg, #079184, #0aa896);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+	}
+
+	/* Sticky Filters */
+	.sticky {
+		position: sticky;
+		top: 0;
+		z-index: 40;
+	}
+
+	/* Filter Panel Animation */
 	#filtersPanel {
-		margin: 0 -1rem;
-		border-radius: 0;
+		transition: all 0.3s ease;
 	}
 
-	.grid.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-4 {
-		grid-template-columns: 1fr;
-		gap: 1rem;
+	/* Active Filter Chips */
+	#activeFilters .bg-primary {
+		background: linear-gradient(135deg, #079184, #0aa896);
 	}
-}
+
+	/* Custom Scrollbar */
+	::-webkit-scrollbar {
+		width: 8px;
+	}
+
+	::-webkit-scrollbar-track {
+		background: #f1f1f1;
+	}
+
+	::-webkit-scrollbar-thumb {
+		background: linear-gradient(135deg, #079184, #0aa896);
+		border-radius: 4px;
+	}
+
+	::-webkit-scrollbar-thumb:hover {
+		background: linear-gradient(135deg, #056b5f, #079184);
+	}
+
+	/* Smooth scrolling */
+	html {
+		scroll-behavior: smooth;
+	}
+
+	/* Loading states */
+	.loading {
+		opacity: 0.6;
+		pointer-events: none;
+	}
+
+	/* Mobile responsive adjustments */
+	@media (max-width: 768px) {
+		.animate-fade-in-up {
+			animation-delay: 0s;
+		}
+
+		#filtersPanel {
+			margin: 0 -1rem;
+			border-radius: 0;
+		}
+
+		.grid.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-4 {
+			grid-template-columns: 1fr;
+			gap: 1rem;
+		}
+	}
 </style>
 @endpush
 
@@ -340,7 +340,7 @@ html {
 		</div>
 
 		<!-- Enhanced Pagination -->
-		<x-pagination :paginator="$products" container-class="mt-12" :show-info="true" :max-pages="7"
+		<x-frontend.pagination :paginator="$products" container-class="mt-12" :show-info="true" :max-pages="7"
 			:show-first-last="false" />
 	</div>
 </section>

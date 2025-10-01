@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Backend\Dashboards\Clinic\RoleController;
 use App\Http\Controllers\Backend\Dashboards\Clinic\RentalSpaceController;
 use App\Http\Controllers\Backend\Dashboards\Clinic\JobController;
+use App\Http\Controllers\Backend\Dashboards\Clinic\JobApplicationFieldController;
 use Illuminate\Support\Facades\Auth;
 
 Route::group(
@@ -137,6 +138,13 @@ Route::group(
                 Route::put('/{id}', [\App\Http\Controllers\Backend\Dashboards\Clinic\PatientController::class, 'update'])->name('patients.update');
                 Route::delete('/{id}', [\App\Http\Controllers\Backend\Dashboards\Clinic\PatientController::class, 'destroy'])->name('patients.destroy');
             });
+            // Job Application Fields Management
+             Route::put('job-application-fields/{id}/update-status', [JobApplicationFieldController::class, 'updateStatus'])->name('job-application-fields.update-status');
+             Route::get('job-application-fields/{id}/create', [JobApplicationFieldController::class, 'create'])->name('job-application-fields.create');
+             Route::get('job-application-fields/{id}/edit', [JobApplicationFieldController::class, 'edit'])->name('job-application-fields.edit');
+             Route::post('job-application-fields/store', [JobApplicationFieldController::class, 'store'])->name('job-application-fields.store');
+             Route::put('job-application-fields/{id}/update', [JobApplicationFieldController::class, 'update'])->name('job-application-fields.update');
+             Route::get('job-application-fields/{id}/show', [JobApplicationFieldController::class, 'show'])->name('job-application-fields.show');
 
     }
 );
@@ -150,5 +158,3 @@ Route::post('/clinic/logout', function (Request $request) {
 
     return redirect()->to('/clinic/login');
 })->name('clinic.logout');
-
-

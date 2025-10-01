@@ -42,6 +42,8 @@ Route::group(
 		Route::get('/jobs', [JobController::class, 'index'])->name('jobs');
 		Route::get('/jobs/{id}', [JobController::class, 'show'])->name('jobs.show');
 		Route::post('/jobs/filter', [JobController::class, 'filter'])->name('jobs.filter');
+		Route::get('/jobs/{id}/apply', [JobController::class, 'application'])->name('jobs.application');
+		Route::post('/jobs/{id}/apply', [JobController::class, 'submitApplication'])->name('jobs.submit-application');
 
 		Route::get('/blogs', [BlogController::class, 'index'])->name('blogs');
 		Route::get('/blogs/{id}', [BlogController::class, 'show'])->name('blogs.show');
