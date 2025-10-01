@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Job;
 use App\Models\Clinic;
+use App\Models\JobApplicationField;
+use App\Models\JobApplication;
 
 class JobController extends Controller
 {
@@ -192,4 +194,128 @@ class JobController extends Controller
 
 		return view('frontend.pages.jobs.show', compact('job', 'relatedJobs', 'similarJobs'));
 	}
+
+    /**
+     * Show job application form
+     */
+    public function application($id)
+    {
+        $job = Job::with(['clinic', 'jobApplicationFields'])
+            ->active()
+            ->approved()
+            ->findOrFail($id);
+
+        // Get application fields ordered by their order field
+        $applicationFields = $job->jobApplicationFields()
+            ->orderBy('order')
+            ->get();
+
+        return view('frontend.pages.jobs.job-application', compact('job', 'applicationFields'));
+    }
+
+    /**
+     * Submit job application
+     */
+    public function submitApplication(Request $request, $id)
+    {
+        try {
+            $job = Job::with('jobApplicationFields')
+                ->active()
+                ->approved()
+                ->findOrFail($id);
+
+            // Get application fields for this job
+            $applicationFields = $job->jobApplicationFields()
+                ->orderBy('order')
+                ->get();
+
+            // Build validation rules for dynamic fields only
+            $validationRules = [];
+
+            // Add dynamic field validation
+            foreach ($applicationFields as $field) {
+                $fieldName = $field->field_name;
+                $rules = [];
+
+                if ($field->required) {
+                    $rules[] = 'required';
+                } else {
+                    $rules[] = 'nullable';
+                }
+
+                // Add type-specific validation
+                switch ($field->field_type) {
+                    case 'email':
+                        $rules[] = 'email';
+                        break;
+                    case 'phone':
+                        $rules[] = 'string';
+                        break;
+                    case 'file':
+                        $rules[] = 'file';
+                        $rules[] = 'mimes:pdf,doc,docx,jpg,jpeg,png';
+                        $rules[] = 'max:2048';
+                        break;
+                    default:
+                        $rules[] = 'string';
+                        break;
+                }
+
+                $validationRules[$fieldName] = $rules;
+            }
+
+            // Validate dynamic fields only
+            $request->validate($validationRules);
+
+            // Prepare applicant data array with only dynamic fields
+            $applicantData = [];
+
+            // Handle dynamic fields
+            foreach ($applicationFields as $field) {
+                $fieldName = $field->field_name;
+                $value = $request->input($fieldName);
+
+                if ($field->field_type === 'file' && $request->hasFile($fieldName)) {
+                    // Store file and get path
+                    $file = $request->file($fieldName);
+                    $fileName = time() . '_' . $fieldName . '.' . $file->getClientOriginalExtension();
+                    $filePath = $file->storeAs('job-applications', $fileName, 'public');
+                    $applicantData[$fieldName] = $filePath;
+                } else {
+                    $applicantData[$fieldName] = $value;
+                }
+            }
+
+            // Store application data in database
+            $jobApplication = JobApplication::create([
+                'job_id' => $id,
+                'applicant_data' => $applicantData,
+                'status' => 'pending'
+            ]);
+
+            \Log::info('Job Application Submitted:', [
+                'application_id' => $jobApplication->id,
+                'job_id' => $id,
+                'job_title' => $job->title,
+                'applicant_data' => $applicantData,
+                'submitted_at' => now()
+            ]);
+
+            return redirect()->route('jobs.show', $id)
+                ->with('success', 'Your application has been submitted successfully! We will contact you soon.');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return redirect()->back()
+                ->withErrors($e->validator)
+                ->withInput();
+        } catch (\Exception $e) {
+            \Log::error('Job Application Error:', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return redirect()->back()
+                ->with('error', 'An error occurred while submitting your application. Please try again.')
+                ->withInput();
+        }
+    }
 }

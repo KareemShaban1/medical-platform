@@ -9,7 +9,7 @@ database tables:
 - cart items
 - suppliers (auth)
 - suppliers_users
-- categores
+- categories
 - product_categories
 - module_approvement
 - admins (auth)
@@ -293,15 +293,26 @@ contacts
   status → boolean (default true) -- (active or not)
   created_at, updated_at
 
+- job_application_fields
+    id → bigint (PK)
+    job_id (FK → jobs)
+    field_name      -- "name", "email", "phone", "cv"
+    field_label     -- "Full Name", "Email Address"
+    field_type      -- text, email, phone, file, textarea
+    required (bool)
+    options (json, nullable)   -- for select/checkbox
+    order (int)
+    created_at, updated_at
+
+
 - job_applications
-  id → bigint (PK)
-  job_id → bigint (FK → jobs)
-  clinic_user_id → bigint (FK → clinic_users)
-  cv → varchar(255) nullable
-  status → enum(‘pending’, ‘interviewed’, ‘hired’)
-  notes → text nullable
-  [applicant_data → json nullable] -- (name, phone, email)
-  created_at, updated_at
+    id (PK)
+    job_id (FK → jobs)
+    applicant_data (json)  -- { "name": "Ahmed", "email": "ahmed@test.com", "cv": "cv.pdf" }
+    status enum('pending','interviewed','hired') default 'pending'
+    notes text nullable
+    created_at, updated_at
+
 
 
 --------------------------------------------------------------------------------------------------------------

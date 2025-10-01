@@ -57,4 +57,14 @@ class Job extends Model implements HasMedia
     {
         return $this->belongsTo(Clinic::class);
     }
+
+    public function jobApplicationFields()
+    {
+        return $this->hasMany(JobApplicationField::class);
+    }
+
+    public function jobApplications()
+    {
+        return $this->hasMany(JobApplication::class);
+    }
 }

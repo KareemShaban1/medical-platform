@@ -3,13 +3,13 @@
 ## Basic Usage
 
 ```blade
-<x-pagination :paginator="$items" />
+<x-frontend.pagination :paginator="$items" />
 ```
 
 ## Advanced Usage with Custom Options
 
 ```blade
-<x-pagination 
+<x-frontend.pagination 
     :paginator="$products" 
     container-class="mt-8"
     :show-info="true"
@@ -41,7 +41,7 @@
 
 ### Products Module
 ```blade
-<x-pagination 
+<x-frontend.pagination 
     :paginator="$products" 
     container-class="mt-12"
     :show-info="true"
@@ -51,7 +51,7 @@
 
 ### Blog Posts Module
 ```blade
-<x-pagination 
+<x-frontend.pagination 
     :paginator="$posts" 
     container-class="mt-8"
     :show-info="true"
@@ -64,7 +64,7 @@
 
 ### Jobs Module
 ```blade
-<x-pagination 
+<x-frontend.pagination 
     :paginator="$jobs" 
     container-class="mt-6"
     :show-info="false"
@@ -74,7 +74,7 @@
 
 ### Admin Dashboard
 ```blade
-<x-pagination 
+<x-frontend.pagination 
     :paginator="$users" 
     container-class="mt-4"
     :show-info="true"

@@ -32,9 +32,9 @@
 								<span> {{ $job->clinic->address ?? '' }}
 								</span>
 							</div>
-							<button
+							<a href="{{ route('jobs.application', $job->id) }}"
 								class="w-full bg-purple-600 text-white py-2 rounded hover:bg-purple-700 transition">Apply
-								Now</button>
+								Now</a>
 						</div>
 					</div>
 				</div>

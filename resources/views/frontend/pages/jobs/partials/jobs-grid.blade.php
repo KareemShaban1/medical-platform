@@ -37,9 +37,9 @@
 
 
 		<div class="flex justify-between items-center">
-			<button class="btn-primary">
+			<a href="{{ route('jobs.application', $job->id) }}" class="btn-primary">
 				Apply Now
-			</button>
+			</a>
 			<!-- <button class="text-gray-500 hover:text-gray-700">
 				<i class="fas fa-heart"></i>
 			</button> -->
