@@ -128,6 +128,16 @@ Route::group(
                 Route::delete('/{id}', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'destroy'])->name('requests.destroy');
             });
 
+            // Patients Management
+            Route::group(['prefix' => 'patients'], function () {
+                Route::get('/data', [\App\Http\Controllers\Backend\Dashboards\Clinic\PatientController::class, 'data'])->name('patients.data');
+                Route::get('/', [\App\Http\Controllers\Backend\Dashboards\Clinic\PatientController::class, 'index'])->name('patients.index');
+                Route::post('/', [\App\Http\Controllers\Backend\Dashboards\Clinic\PatientController::class, 'store'])->name('patients.store');
+                Route::get('/{id}', [\App\Http\Controllers\Backend\Dashboards\Clinic\PatientController::class, 'show'])->name('patients.show');
+                Route::put('/{id}', [\App\Http\Controllers\Backend\Dashboards\Clinic\PatientController::class, 'update'])->name('patients.update');
+                Route::delete('/{id}', [\App\Http\Controllers\Backend\Dashboards\Clinic\PatientController::class, 'destroy'])->name('patients.destroy');
+            });
+
     }
 );
 

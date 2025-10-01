@@ -5,6 +5,7 @@ namespace App\Actions\Fortify;
 use App\Models\Admin;
 use App\Models\ClinicUser;
 use App\Models\SupplierUser;
+use App\Models\Patient;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
@@ -73,6 +74,25 @@ class CustomAuthentication
         return false;
     }
 
+
+    public function authenticatePatient($request)
+    {
+        $email = $request->email;
+        $password = $request->password;
+
+        // Find patient by email through their linked user account
+        $patient = Patient::with('user')
+            ->whereHas('user', function($query) use ($email) {
+                $query->where('email', $email);
+            })
+            ->first();
+
+        if ($patient && $patient->user && Hash::check($password, $patient->user->password)) {
+            return $patient;
+        }
+
+        return false;
+    }
 
     public function authenticateAdmin($request)
     {

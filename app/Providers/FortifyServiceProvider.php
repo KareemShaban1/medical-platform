@@ -3,7 +3,6 @@
 namespace App\Providers;
 
 use App\Actions\Fortify\CreateNewAdmin;
-use App\Actions\Fortify\CreateNewPatient;
 use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\CustomAuthentication;
 use App\Actions\Fortify\ResetUserPassword;
@@ -50,6 +49,15 @@ class FortifyServiceProvider extends ServiceProvider
             Config::set('fortify.prefix', 'supplier');
         }
 
+        // Handle patient routes (frontend patient auth - login only)
+        // Only set patient guard for exact frontend routes (not clinic/* or supplier/* routes)
+        if (($request->is('login') || $request->is('forgot-password') || $request->is('reset-password'))
+            && !$request->is('clinic/*') && !$request->is('supplier/*') && !$request->is('admin/*')) {
+            Config::set('fortify.guard', 'patient');
+            Config::set('fortify.password', 'patients');
+            Config::set('fortify.prefix', '');
+        }
+
 
 
 
@@ -73,6 +81,12 @@ class FortifyServiceProvider extends ServiceProvider
                     // dd("admin");
                     return redirect('/admin/dashboard');
                 }
+
+                if ($request->user('patient')) {
+                    // redirect patient to dashboard or homepage
+                    return redirect('/user');
+                }
+
                 return redirect('/');
             }
         });
@@ -126,6 +140,11 @@ class FortifyServiceProvider extends ServiceProvider
             Fortify::authenticateUsing([new CustomAuthentication, 'authenticateClinicUser']);
             //// point to clinic auth folder [views/clinic/auth]
             Fortify::viewPrefix('backend.dashboards.clinic.auth.');
+        } elseif (Config::get('fortify.guard') == 'patient') {
+            //// this method will be used for patient authentication
+            Fortify::authenticateUsing([new CustomAuthentication, 'authenticatePatient']);
+            //// point to frontend auth views
+            Fortify::viewPrefix('frontend.auth.');
         }
     }
 }

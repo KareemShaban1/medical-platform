@@ -61,6 +61,11 @@ class Clinic extends Model implements HasMedia
         return $this->hasMany(Request::class);
     }
 
+    public function patients()
+    {
+        return $this->hasMany(Patient::class);
+    }
+
     public function isVerified()
     {
         return $this->status == 1;

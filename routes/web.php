@@ -47,6 +47,35 @@ Route::group(
     });
 
 
+// Patient Registration Routes (outside localization group to match Fortify routes)
+Route::get('/register', [\App\Http\Controllers\Frontend\Auth\PatientAuthController::class, 'showRegistrationForm'])
+    ->name('register');
+Route::post('/register', [\App\Http\Controllers\Frontend\Auth\PatientAuthController::class, 'register'])
+    ->name('register');
+
+// Patient Dashboard Routes
+Route::group([
+    'prefix' => LaravelLocalization::setLocale() . '/user',
+    'as' => 'user.',
+    'middleware' => [
+        'auth:patient',
+        'localeCookieRedirect',
+        'localizationRedirect',
+        'localeViewPath'
+    ]
+], function () {
+    Route::get('/', [\App\Http\Controllers\Frontend\Patient\DashboardController::class, 'index'])
+        ->name('dashboard');
+});
+
+// Patient Logout Route
+Route::post('/user/logout', function (\Illuminate\Http\Request $request) {
+    \Illuminate\Support\Facades\Auth::guard('patient')->logout();
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
+    return redirect()->to('/login');
+})->name('user.logout');
+
 require __DIR__ . '/admin.php';
 require __DIR__.'/clinic.php';
 require __DIR__.'/supplier.php';
