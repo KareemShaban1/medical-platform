@@ -20,6 +20,19 @@
                             @error('title') <span class="text-danger">{{ $message }}</span> @enderror
                         </div>
 
+                        <!-- type -->
+                        <div class="col-md-6 mb-3">
+                            <label for="type" class="form-label">{{ __('Type') }}</label>
+                            <select name="type" id="type" class="form-control" required>
+                                <option value="full-time">{{ __('Full-time') }}</option>
+                                <option value="part-time">{{ __('Part-time') }}</option>
+                                <option value="contract">{{ __('Contract') }}</option>
+                                <option value="temporary">{{ __('Temporary') }}</option>
+                                <option value="internship">{{ __('Internship') }}</option>
+                            </select>
+                            @error('type') <span class="text-danger">{{ $message }}</span> @enderror
+                        </div>
+
                         <!-- Description -->
                         <div class="col-md-12 mb-3">
                             <label for="description" class="form-label">{{ __('Description') }}</label>

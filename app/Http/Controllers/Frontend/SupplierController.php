@@ -35,7 +35,7 @@ class SupplierController extends Controller
 			'regional' => 'Regional'
 		];
 
-		return view('frontend.pages.suppliers', compact(
+		return view('frontend.pages.suppliers.index', compact(
 			'suppliers',
 			'categories',
 			'locations'
@@ -118,14 +118,14 @@ class SupplierController extends Controller
 		if ($request->ajax()) {
 			return response()->json([
 				'success' => true,
-				'html' => view('frontend.partials.suppliers-grid', ['suppliers' => $suppliers])->render(),
-				'pagination' => $suppliers->links()->toHtml(),
+				'html' => view('frontend.pages.suppliers.partials.suppliers-grid', ['suppliers' => $suppliers])->render(),
+				'pagination' => view('frontend.pages.suppliers.partials.pagination', ['suppliers' => $suppliers])->render(),
 				'count' => $suppliers->total(),
 				'applied_filters' => $this->getAppliedFilters($request)
 			]);
 		}
 
-		return view('frontend.pages.suppliers', compact('suppliers'));
+		return view('frontend.pages.suppliers.index', compact('suppliers'));
 	}
 
 	private function getAppliedFilters(Request $request)
@@ -213,5 +213,34 @@ class SupplierController extends Controller
 		}
 
 		return $filters;
+	}
+
+	/**
+	 * Show supplier details
+	 */
+	public function show($id)
+	{
+		$supplier = Supplier::approved()
+			->where('status', true)
+			->with(['approvement'])
+			->findOrFail($id);
+
+		// Get related suppliers with same category
+		$relatedSuppliers = Supplier::approved()
+			->where('status', true)
+			->where('id', '!=', $id)
+			// ->where('category', $supplier->category)
+			->limit(4)
+			->get();
+
+		// Get suppliers with similar specialties
+		$similarSuppliers = Supplier::approved()
+			->where('status', true)
+			->where('id', '!=', $id)
+			// ->where('location', $supplier->location)
+			->limit(4)
+			->get();
+
+		return view('frontend.pages.suppliers.show', compact('supplier', 'relatedSuppliers', 'similarSuppliers'));
 	}
 }

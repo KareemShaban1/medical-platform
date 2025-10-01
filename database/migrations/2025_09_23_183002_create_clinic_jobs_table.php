@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('clinic_id')->constrained()->cascadeOnDelete();
             $table->string('title');
+            $table->enum('type', ['full-time', 'part-time', 'contract','temporary', 'internship'])->default('full-time');
             $table->text('description');
             $table->string('location');
             $table->decimal('salary', 10, 2)->nullable();
@@ -29,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('jobs');
+        Schema::dropIfExists('clinic_jobs');
     }
 };

@@ -23,6 +23,7 @@ class CourseFactory extends Factory
             'slug_ar' => fake()->slug(),
             'description_en' => fake()->text(),
             'description_ar' => fake()->text(),
+            'level' => fake()->randomElement(['beginner', 'intermediate', 'advanced', 'expert']),
             'url' => fake()->url(),
             'duration' => fake()->numberBetween(1, 10),
             'start_date' => fake()->date(),

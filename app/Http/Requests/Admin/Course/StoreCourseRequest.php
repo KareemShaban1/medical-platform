@@ -26,6 +26,7 @@ class StoreCourseRequest extends FormRequest
             'title_ar' => 'required|string|max:255',
             'description_en' => 'required|string',
             'description_ar' => 'required|string',
+            'level' => 'required|in:beginner,intermediate,advanced,expert',
             'url' => 'required|string',
             'duration' => 'required|string',
             'start_date' => 'required|date',

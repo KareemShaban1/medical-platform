@@ -43,6 +43,19 @@
                         @error('description_ar') <span class="text-danger">{{ $message }}</span> @enderror
                     </div>
 
+                    <!-- Level -->
+                     <div class="col-md-6 mb-3">
+                        <label for="level" class="form-label">{{ __('Level') }}</label>
+                        <select name="level" id="level" class="form-control" required>
+                            <option value="beginner" {{ $course->level == 'beginner' ? 'selected' : '' }}>{{ __('Beginner') }}</option>
+                            <option value="intermediate" {{ $course->level == 'intermediate' ? 'selected' : '' }}>{{ __('Intermediate') }}</option>
+                            <option value="advanced" {{ $course->level == 'advanced' ? 'selected' : '' }}>{{ __('Advanced') }}</option>
+                            <option value="expert" {{ $course->level == 'expert' ? 'selected' : '' }}>{{ __('Expert') }}</option>
+                        </select>
+                        @error('level') <span class="text-danger">{{ $message }}</span> @enderror
+                    </div>
+
+
                     <!-- Duration -->
                     <div class="col-md-6 mb-3">
                         <label for="duration" class="form-label">{{ __('Duration') }}</label>
