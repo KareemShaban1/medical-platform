@@ -12,20 +12,11 @@ class Patient extends Authenticatable
     use HasFactory, Notifiable, SoftDeletes;
 
     protected $fillable = [
-        'clinic_id',
         'user_id',
         'phone',
     ];
 
-    // ------- Relations -------
 
-    /**
-     * Get the clinic that owns the patient
-     */
-    public function clinic()
-    {
-        return $this->belongsTo(Clinic::class);
-    }
 
     /**
      * Get the user associated with the patient (for registered users)

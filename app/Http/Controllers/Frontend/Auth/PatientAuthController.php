@@ -57,7 +57,6 @@ class PatientAuthController extends Controller
                         // Create the patient record linked to the user with phone
                         Patient::create([
                             'user_id' => $user->id,
-                            'clinic_id' => null, // Patient registered themselves, not linked to specific clinic yet
                             'phone' => $request->phone,
                         ]);
                     });
