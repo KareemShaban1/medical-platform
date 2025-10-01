@@ -145,13 +145,13 @@
                             </div>
 
                             <div class="form-group">
-                                <div class="form-check">
-                                    <input type="checkbox" class="form-check-input" id="terms" name="terms" required>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <input type="checkbox" class="form-check-input ml-0" id="terms" name="terms" required>
                                     <label class="form-check-label" for="terms">
-                                        {{ __('I agree to the') }}
-                                        <a href="#" target="_blank">{{ __('Terms of Service') }}</a>
-                                        {{ __('and') }}
-                                        <a href="#" target="_blank">{{ __('Privacy Policy') }}</a>
+                                            {{ __('I agree to the') }}
+                                            <a href="#" target="_blank">{{ __('Terms of Service') }}</a>
+                                            {{ __('and') }}
+                                            <a href="#" target="_blank">{{ __('Privacy Policy') }}</a>
                                     </label>
                                 </div>
                                 <div class="validation-feedback" id="terms_feedback"></div>
@@ -162,17 +162,14 @@
                                 <i class="fa fa-check"></i>
                             </button>
 
-                            <div class="divider">
-                                <span>{{ __('or') }}</span>
-                            </div>
 
-                            <div class="register-link">
+							<div class="text-center mt-4">
                                 <p>{{ __("Already have an account?") }}
                                     <a href="{{ route('login') }}">{{ __('Sign in here') }}</a>
                                 </p>
                             </div>
 
-                            <div class="back-to-home">
+                            <div class="back-to-home text-center">
                                 <a href="{{ route('home') }}" class="btn btn-link">
                                     <i class="fa fa-arrow-left"></i>
                                     {{ __('Back to Home') }}

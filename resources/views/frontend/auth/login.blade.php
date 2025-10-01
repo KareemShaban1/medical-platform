@@ -82,34 +82,34 @@
                                 @enderror
                             </div>
 
-                            <div class="form-group d-flex justify-content-between align-items-center">
-                                <div class="form-check">
-                                    <input type="checkbox" class="form-check-input" id="remember" name="remember">
-                                    <label class="form-check-label" for="remember">
-                                        {{ __('Remember Me') }}
-                                    </label>
-                                </div>
-                                <a href="{{ route('password.request') }}" class="forgot-password">
-                                    {{ __('Forgot Password?') }}
-                                </a>
-                            </div>
+							<div class="form-group">
+								<div class="d-flex justify-content-between align-items-center">
+									<div class="form-check">
+										<input type="checkbox" class="form-check-input ml-0" id="remember" name="remember">
+										<label class="form-check-label" for="remember">
+											{{ __('Remember me') }}
+										</label>
+									</div>
+									<a href="#" class="forgot-password-link">
+										{{ __('Forgot Password?') }}
+									</a>
+								</div>
+							</div>
 
                             <button type="submit" class="btn btn-primary btn-block" id="loginBtn">
                                 {{ __('Sign In') }}
                                 <i class="fa fa-sign-in"></i>
                             </button>
 
-                            <div class="divider">
-                                <span>{{ __('or') }}</span>
+                            <div class="text-center mt-4">
+                                <div class="register-link">
+                                    <p>{{ __("Don't have an account?") }}
+                                        <a href="{{ route('register') }}">{{ __('Register here') }}</a>
+                                    </p>
+                                </div>
                             </div>
 
-                            <div class="register-link">
-                                <p>{{ __("Don't have an account?") }}
-                                    <a href="{{ route('register') }}">{{ __('Register here') }}</a>
-                                </p>
-                            </div>
-
-                            <div class="back-to-home">
+                            <div class="back-to-home text-center">
                                 <a href="{{ route('home') }}" class="btn btn-link">
                                     <i class="fa fa-arrow-left"></i>
                                     {{ __('Back to Home') }}
