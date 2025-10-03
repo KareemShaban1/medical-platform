@@ -109,4 +109,23 @@ class JobController extends Controller
     {
         return $this->jobRepo->forceDelete($id);
     }
+
+	/**
+	 * Display job applicants for a specific job.
+	 */
+	public function applicants($id)
+	{
+		$job = $this->jobRepo->show($id);
+		$applicants = $this->jobRepo->getApplicants($id);
+
+		return view('backend.dashboards.clinic.pages.jobs.applicants', compact('job', 'applicants'));
+	}
+
+	/**
+	 * Update job application status.
+	 */
+	public function updateApplicationStatus(Request $request)
+	{
+		return $this->jobRepo->updateApplicationStatus($request);
+	}
 }

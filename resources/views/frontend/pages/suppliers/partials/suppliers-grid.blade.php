@@ -9,8 +9,7 @@
 		@endif
 	</div>
 	<div class="p-4">
-		<h3 class="font-semibold text-lg mb-2">{{ $supplier->name }}</h3>
-		<p class="text-gray-600 text-sm mb-2">Medical equipment supplier</p>
+		<a href="{{ route('suppliers.show', $supplier->id) }}" class="font-semibold text-lg mb-2">{{ $supplier->name }}</a>
 		<div class="flex items-center text-sm text-gray-500 mb-3">
 			<i class="fas fa-map-marker-alt mr-2"></i>
 			<span>{{ $supplier->address ?? 'Location not specified' }}</span>
@@ -19,9 +18,9 @@
 			<i class="fas fa-phone mr-2"></i>
 			<span>{{ $supplier->phone ?? 'Contact not available' }}</span>
 		</div>
-		<button class="btn-primary w-full">
+		<a href="{{ route('suppliers.show', $supplier->id) }}" class="btn-primary w-full">
 			Contact Supplier
-		</button>
+		</a>
 	</div>
 </div>
 @empty

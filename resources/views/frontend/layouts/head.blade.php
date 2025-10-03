@@ -15,6 +15,10 @@
 	<!-- Theme CSS -->
 	<link rel="stylesheet" href="{{ asset('frontend/css/theme.css') }}">
 
+		<!-- Toastr CSS -->
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+
+
 	<title>Medical Platform - Home</title>
 
 	@if (app()->getLocale() == 'ar')

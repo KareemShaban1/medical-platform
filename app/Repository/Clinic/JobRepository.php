@@ -4,6 +4,7 @@ namespace App\Repository\Clinic;
 
 use App\Interfaces\Clinic\JobRepositoryInterface;
 use App\Models\Job;
+use App\Models\JobApplication;
 use App\Traits\HandlesMediaUploads;
 
 class JobRepository implements JobRepositoryInterface
@@ -25,8 +26,9 @@ class JobRepository implements JobRepositoryInterface
                 return '<img src="' . $item->main_image . '" alt="" class="img-fluid" style="width: 50px; height: 50px;">';
             })
             ->editColumn('status', fn($item) => $this->jobStatus($item))
+            ->editColumn('job_applications', fn($item) => $this->jobApplicationActions($item))
             ->addColumn('action', fn($item) => $this->jobActions($item))
-            ->rawColumns(['status', 'action', 'main_image'])
+            ->rawColumns(['status', 'action', 'main_image', 'job_applications'])
             ->make(true);
     }
 
@@ -125,11 +127,11 @@ class JobRepository implements JobRepositoryInterface
             if ($request->ajax()) {
                 return response()->json([
                     'status' => 'success',
-                    'message' => __('Job '.$action.' successfully'),
+                    'message' => __('Job ' . $action . ' successfully'),
                 ]);
             }
 
-            return redirect()->route('clinic.jobs.index')->with('success', __('Job '.$action.' successfully'));
+            return redirect()->route('clinic.jobs.index')->with('success', __('Job ' . $action . ' successfully'));
         } catch (\Throwable $e) {
             return response()->json([
                 'status' => 'error',
@@ -143,10 +145,10 @@ class JobRepository implements JobRepositoryInterface
         $checked = $item->status ? 'checked' : '';
         return <<<HTML
         <div class="form-check form-switch mt-2">
-            <input type="checkbox" 
-                   class="form-check-input toggle-boolean" 
-                   data-id="{$item->id}" 
-                   data-field="status" 
+            <input type="checkbox"
+                   class="form-check-input toggle-boolean"
+                   data-id="{$item->id}"
+                   data-field="status"
                    value="1" {$checked}>
         </div>
         HTML;
@@ -156,17 +158,35 @@ class JobRepository implements JobRepositoryInterface
     {
         $editUrl = route('clinic.jobs.edit', $item->id);
         $showUrl = route('clinic.jobs.show', $item->id);
-        if ($item->jobApplicationFields->count() > 0) {
-            $applicationFieldsUrl = route('clinic.job-application-fields.edit', $item->id);
-        }else{
-            $applicationFieldsUrl = route('clinic.job-application-fields.create', $item->id);
-        }
+
         return <<<HTML
         <div class="d-flex gap-2">
-           <a href="{$showUrl}" class="btn btn-sm btn-success"><i class="fa fa-eye"></i></a>
-           <a href="{$editUrl}" class="btn btn-sm btn-info"><i class="fa fa-edit"></i></a>
-           <a href="{$applicationFieldsUrl}" class="btn btn-sm btn-primary"><i class="fa fa-list"></i></a>
+           <a href="{$showUrl}" class="btn btn-sm btn-info"><i class="fa fa-eye"></i></a>
+           <a href="{$editUrl}" class="btn btn-sm btn-warning text-white"><i class="fa fa-edit"></i></a>
            <button onclick="deleteJob({$item->id})" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>
+        </div>
+        HTML;
+    }
+
+    private function jobApplicationActions($item): string
+    {
+        if ($item->jobApplicationFields->count() > 0) {
+            $applicationFieldsUrl = route('clinic.job-application-fields.edit', $item->id);
+            $applicationFieldsIcon = 'fa fa-edit';
+            $applicationFieldsClass = 'btn-warning text-white';
+        } else {
+            $applicationFieldsUrl = route('clinic.job-application-fields.create', $item->id);
+            $applicationFieldsIcon = 'fa fa-plus';
+            $applicationFieldsClass = 'btn-success';
+        }
+        $applicantsUrl = route('clinic.jobs.applicants', $item->id);
+        $applicantsIcon = 'fa fa-users';
+
+        return <<<HTML
+        <span>Applicants Count: {$item->jobApplications->count()}</span>
+        <div class="d-flex gap-2 mt-2">
+        <a href="{$applicationFieldsUrl}" class="btn btn-sm {$applicationFieldsClass}"><i class="{$applicationFieldsIcon}"></i></a>
+        <a href="{$applicantsUrl}" class="btn btn-sm btn-primary"><i class="{$applicantsIcon}"></i></a>
         </div>
         HTML;
     }
@@ -181,6 +201,26 @@ class JobRepository implements JobRepositoryInterface
         HTML;
     }
 
+
+    public function getApplicants($jobId)
+    {
+        return JobApplication::where('job_id', $jobId)
+            ->orderBy('created_at', 'desc')
+            ->get();
+    }
+
+    public function updateApplicationStatus($request)
+    {
+        $application = JobApplication::findOrFail($request->application_id);
+
+        $application->status = $request->status;
+        $application->save();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => __('Application status updated successfully'),
+        ]);
+    }
 
     private function jsonResponse(string $status, string $message)
     {

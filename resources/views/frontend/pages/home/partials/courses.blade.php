@@ -24,7 +24,7 @@
 
 							</div>
 							<h3
-								class="font-semibold text-md mb-2 line-clamp-2">
+								class="font-semibold text-md mb-2 line-clamp-1">
 								<a
 									href="{{ route('courses.show', $course->id) }}">
 									{{ $course->title }}

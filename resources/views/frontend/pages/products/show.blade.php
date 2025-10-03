@@ -595,7 +595,9 @@
 					@endif
 				</div>
 
-				<div class="product-meta">
+				
+
+				<!-- <div class="product-meta">
 					<div class="meta-item">
 						<i class="fas fa-barcode meta-icon"></i>
 						<span class="meta-text">SKU: {{ $product->sku }}</span>
@@ -612,13 +614,20 @@
 						<i class="fas fa-headset meta-icon"></i>
 						<span class="meta-text">24/7 Support</span>
 					</div>
-				</div>
+				</div> -->
 
 				<div class="product-description">
 					{{ $product->description }}
 				</div>
 
-				<div class="product-features">
+				
+				<div class="supplier-info">
+					<h3 class="supplier-title">Supplied by:</h3>
+					<p class="supplier-name">
+						{{ $product->supplier->name ?? 'Medical Supplier' }}</p>
+				</div>
+
+				<!-- <div class="product-features">
 					<h3 class="features-title">Key Features</h3>
 					<ul class="features-list">
 						<li><i class="fas fa-check feature-icon"></i> High-quality
@@ -632,7 +641,7 @@
 						<li><i class="fas fa-check feature-icon"></i> Professional
 							medical standards</li>
 					</ul>
-				</div>
+				</div> -->
 
 				<div class="stock-info">
 					@if($product->stock > 10)
@@ -665,16 +674,11 @@
 					<button class="btn-add-cart" onclick="addToCart()">
 						<i class="fas fa-cart-plus mr-2"></i>Add to Cart
 					</button>
-					<button class="btn-wishlist" onclick="toggleWishlist()">
+					<!-- <button class="btn-wishlist" onclick="toggleWishlist()">
 						<i class="fas fa-heart"></i>
-					</button>
+					</button> -->
 				</div>
 
-				<div class="supplier-info">
-					<h3 class="supplier-title">Supplied by:</h3>
-					<p class="supplier-name">
-						{{ $product->supplier->name ?? 'Medical Supplier' }}</p>
-				</div>
 			</div>
 		</div>
 
@@ -683,9 +687,7 @@
 			<div class="tab-nav">
 				<button class="tab-btn active"
 					onclick="switchTab('description')">Description</button>
-				<button class="tab-btn"
-					onclick="switchTab('specifications')">Specifications</button>
-				<button class="tab-btn" onclick="switchTab('reviews')">Reviews</button>
+				
 				<button class="tab-btn" onclick="switchTab('shipping')">Shipping &
 					Returns</button>
 			</div>
@@ -705,45 +707,7 @@
 					</div>
 				</div>
 
-				<div id="specifications" class="tab-panel">
-					<h3 class="text-lg font-semibold mb-4">Technical Specifications</h3>
-					<table class="specifications-table">
-						<tr>
-							<th>Material</th>
-							<td>Medical Grade Plastic</td>
-						</tr>
-						<tr>
-							<th>Dimensions</th>
-							<td>10cm x 5cm x 2cm</td>
-						</tr>
-						<tr>
-							<th>Weight</th>
-							<td>50g</td>
-						</tr>
-						<tr>
-							<th>Color</th>
-							<td>White/Blue</td>
-						</tr>
-						<tr>
-							<th>Certification</th>
-							<td>FDA Approved, CE Marked</td>
-						</tr>
-						<tr>
-							<th>Warranty</th>
-							<td>2 Years</td>
-						</tr>
-					</table>
-				</div>
 
-				<div id="reviews" class="tab-panel">
-					<h3 class="text-lg font-semibold mb-4">Customer Reviews</h3>
-					<div class="text-center py-8">
-						<i class="fas fa-star text-4xl text-yellow-400 mb-4"></i>
-						<p class="text-gray-600">No reviews yet. Be the first to
-							review this product!</p>
-						<button class="btn-primary mt-4">Write a Review</button>
-					</div>
-				</div>
 
 				<div id="shipping" class="tab-panel">
 					<h3 class="text-lg font-semibold mb-4">Shipping & Returns</h3>

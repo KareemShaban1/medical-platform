@@ -464,12 +464,10 @@
 			</div>
 
 			<div class="job-actions">
-				<a href="#" class="btn-apply" onclick="applyForJob()">
+				<a  href="{{ route('jobs.application', $job->id) }}" class="btn-apply">
 					<i class="fas fa-paper-plane mr-2"></i>Apply Now
 				</a>
-				<a href="#" class="btn-save" onclick="saveJob()">
-					<i class="fas fa-bookmark mr-2"></i>Save Job
-				</a>
+				
 			</div>
 		</div>
 	</div>
@@ -548,109 +546,17 @@
 				</div>
 
 
-				<!-- Quick Apply -->
-				<div class="sidebar-card">
-					<h3 class="sidebar-title">Quick Apply</h3>
-					<p class="text-sm text-gray-600 mb-4">Ready to join our team? Apply
-						now with your resume.</p>
-					<button class="w-full bg-primary text-white py-3 px-4 rounded-lg font-semibold hover:bg-primary-dark transition-colors"
-						onclick="applyForJob()">
-						<i class="fas fa-paper-plane mr-2"></i>Apply for this
-						Position
-					</button>
-				</div>
+				
 			</div>
 		</div>
 	</div>
 </section>
 
-<!-- Related Jobs -->
-@if($relatedJobs->count() > 0 || $similarJobs->count() > 0)
-<section class="related-jobs">
-	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-		<h2 class="section-title">Related Jobs</h2>
-		<div class="jobs-grid">
-			@foreach($relatedJobs->take(4) as $relatedJob)
-			<div class="job-card"
-				onclick="window.location.href='{{ route('jobs.show', $relatedJob->id) }}'">
-				<h3 class="job-card-title line-clamp-1"><a
-						href="{{ route('jobs.show', $relatedJob->id) }}">{{ $relatedJob->title }}</a>
-				</h3>
-				<p class="job-card-company">{{ $relatedJob->clinic->name ?? 'Medical Clinic' }}
-				</p>
-				<div class="job-card-meta">
-					<div class="job-card-meta-item">
-						<i class="fas fa-map-marker-alt"></i>
-						<span>{{ $relatedJob->location }}</span>
-					</div>
-					<div class="job-card-meta-item">
-						<i class="fas fa-briefcase"></i>
-						<span>{{ ucfirst($relatedJob->type) }}</span>
-					</div>
-					<div class="job-card-meta-item">
-						<!-- <i class="fas fa-dollar-sign"></i> -->
-						<span class="text-[#ceeae7]">LE</span>
-						<span>{{ $relatedJob->salary }} </span>
-					</div>
-				</div>
-				<p class="job-card-description line-clamp-2">
-					{{ Str::limit($relatedJob->description, 120) }}
-				</p>
-				<div class="job-card-actions">
-					<button class="job-card-btn">View Details</button>
-					<button class="job-card-btn job-card-btn-secondary">Save</button>
-				</div>
-			</div>
-			@endforeach
-		</div>
-	</div>
-</section>
-@endif
 
 @endsection
 
 @push('scripts')
 <script>
-// Job Application Functions
-function applyForJob() {
-	// Show loading state
-	const btn = event.target;
-	const originalText = btn.innerHTML;
-	btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Processing...';
-	btn.disabled = true;
-
-	// Simulate API call
-	setTimeout(function() {
-		btn.innerHTML = '<i class="fas fa-check mr-2"></i>Application Submitted';
-		btn.style.background = '#10b981';
-
-		setTimeout(function() {
-			btn.innerHTML = originalText;
-			btn.disabled = false;
-			btn.style.background = '';
-		}, 3000);
-	}, 1500);
-}
-
-// Save Job Functions
-function saveJob() {
-	const btn = event.target;
-	const icon = btn.querySelector('i');
-
-	if (icon.classList.contains('fa-bookmark')) {
-		icon.classList.remove('fa-bookmark');
-		icon.classList.add('fa-bookmark-filled');
-		btn.innerHTML = '<i class="fas fa-bookmark-filled mr-2"></i>Saved';
-		btn.style.background = '#10b981';
-		btn.style.borderColor = '#10b981';
-	} else {
-		icon.classList.remove('fa-bookmark-filled');
-		icon.classList.add('fa-bookmark');
-		btn.innerHTML = '<i class="fas fa-bookmark mr-2"></i>Save Job';
-		btn.style.background = '';
-		btn.style.borderColor = '';
-	}
-}
 
 // Handle related job clicks
 document.addEventListener('DOMContentLoaded', function() {

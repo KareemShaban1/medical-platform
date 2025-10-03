@@ -505,10 +505,10 @@
 					<i class="fas fa-calendar blog-meta-icon"></i>
 					<span>{{ $blogPost->created_at->format('M d, Y') }}</span>
 				</div>
-				<div class="blog-meta-item">
+				<!-- <div class="blog-meta-item">
 					<i class="fas fa-user blog-meta-icon"></i>
 					<span>Medical Team</span>
-				</div>
+				</div> -->
 				<div class="blog-meta-item">
 					<i class="fas fa-folder blog-meta-icon"></i>
 					<span>{{ app()->getLocale() == 'ar' ? $blogPost->blogCategory->name_ar : $blogPost->blogCategory->name_en }}</span>
@@ -543,19 +543,19 @@
 
 				<!-- Actions -->
 				<div class="blog-actions">
-					<a href="#" class="blog-action-btn btn-like" onclick="likePost()">
+					<!-- <a href="#" class="blog-action-btn btn-like" onclick="likePost()">
 						<i class="fas fa-heart"></i>
 						<span>Like</span>
-					</a>
+					</a> -->
 					<a href="#" class="blog-action-btn btn-share" onclick="sharePost()">
 						<i class="fas fa-share"></i>
 						<span>Share</span>
 					</a>
-					<a href="#" class="blog-action-btn btn-bookmark"
+					<!-- <a href="#" class="blog-action-btn btn-bookmark"
 						onclick="bookmarkPost()">
 						<i class="fas fa-bookmark"></i>
 						<span>Save</span>
-					</a>
+					</a> -->
 				</div>
 			</div>
 
@@ -619,11 +619,11 @@
 					<span
 						class="post-card-category">{{ app()->getLocale() == 'ar' ? $relatedPost->blogCategory->name_ar : $relatedPost->blogCategory->name_en }}</span>
 					<h3 class="post-card-title">{{ $relatedPost->title }}</h3>
-					<div class="post-card-meta">
+					<!-- <div class="post-card-meta">
 						<span><i class="fas fa-calendar"></i>
 							{{ $relatedPost->created_at->format('M d, Y') }}</span>
 						<span><i class="fas fa-user"></i> Medical Team</span>
-					</div>
+					</div> -->
 					<p class="post-card-description">
 						{{ Str::limit(strip_tags($relatedPost->content), 120) }}</p>
 				</div>

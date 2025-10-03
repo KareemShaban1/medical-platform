@@ -22,11 +22,11 @@
 			</span>
 			<div class="flex items-center text-sm text-gray-500">
 				<i class="fas fa-map-marker-alt mr-2"></i>
-				<span>{{ $job->location }}</span>
+				<span>{{ $job->location ?? '' }}</span>
 			</div>
 			<div class="flex items-center text-sm text-gray-500">
 				<i class="fas fa-dollar-sign mr-2"></i>
-				<span>${{ number_format($job->salary / 1000) }}k/year</span>
+				<span>{{ number_format($job->salary ?? '') }}</span>
 			</div>
 			<div class="flex items-center text-sm text-gray-500">
 				<i class="fas fa-clock mr-2"></i>

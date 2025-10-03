@@ -58,21 +58,11 @@ class JobController extends Controller
 				$query->where('type', $request->get('type'));
 			}
 
-			// Specialization filter
-			if ($request->filled('specialization')) {
-				$query->where('specialization', $request->get('specialization'));
-			}
 
-			// Experience level filter
-			if ($request->filled('experience')) {
-				$query->where('experience_level', $request->get('experience'));
-			}
 
-			
-			
 
-			// Sort by
-			$sortBy = $request->get('sort', 'newest');
+            // Sort by
+            $sortBy = $request->get('sort', 'newest');
 			switch ($sortBy) {
 				case 'salary':
 					$query->orderBy('salary', 'desc');
@@ -149,9 +139,9 @@ class JobController extends Controller
 			$filters['location'] = $request->location;
 		}
 
-	
 
-		if ($request->filled('sort')) {
+
+        if ($request->filled('sort')) {
 			$sortLabels = [
 				'newest' => 'Newest First',
 				'salary' => 'Highest Salary',
@@ -300,6 +290,8 @@ class JobController extends Controller
                 'applicant_data' => $applicantData,
                 'submitted_at' => now()
             ]);
+
+            // Toast will be shown via session message
 
             return redirect()->route('jobs.show', $id)
                 ->with('success', 'Your application has been submitted successfully! We will contact you soon.');

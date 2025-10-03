@@ -27,19 +27,22 @@
 			</div>
 		</div>
 		@endif
-		<div class="flex items-center mb-3">
+		<!-- <div class="flex items-center mb-3">
 			<div class="flex text-yellow-400">
 				@for($j = 1; $j <= 5; $j++) <i class="fas fa-star"></i>
 					@endfor
 			</div>
 			<span class="text-sm text-gray-500 ml-2">({{ $product->stock }})</span>
-		</div>
-		<div class="flex justify-between items-center">
+		</div> -->
+		<div class="flex justify-between items-start flex-col gap-3">
+			<div class="flex items-center gap-2">
 			<span class="text-md text-blue-600">${{ $product->price_after }}</span>
 			<!-- price before -->
 			<span class="text-sm text-red-500 line-through">${{ $product->price_before }}</span>
+			</div>
 			<button
 				class="bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700 transition">
+				<i class="fas fa-cart-plus"></i>
 				Add to Cart
 			</button>
 		</div>

@@ -29,10 +29,10 @@
 				<i class="fas fa-user mr-1"></i>
 				<span>{{ ucfirst(str_replace('-', ' ', $post->author ?? 'Dr. Smith')) }}</span>
 			</div> -->
-			<div class="flex items-center text-sm text-gray-500">
+			<!-- <div class="flex items-center text-sm text-gray-500">
 				<i class="fas fa-eye mr-1"></i>
 				<span>{{ $post->views ?? rand(100, 1000) }}</span>
-			</div>
+			</div> -->
 		</div>
 	</div>
 </div>

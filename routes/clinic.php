@@ -112,6 +112,8 @@ Route::group(
             Route::post('jobs/{id}/restore', [JobController::class, 'restore'])->name('jobs.restore');
             Route::delete('jobs/{id}/force-delete', [JobController::class, 'forceDelete'])->name('jobs.force-delete');
             Route::put('jobs/{id}/update-status', [JobController::class, 'updateStatus'])->name('jobs.update-status');
+		Route::get('jobs/{id}/applicants', [JobController::class, 'applicants'])->name('jobs.applicants');
+		Route::post('job-applications/update-status', [JobController::class, 'updateApplicationStatus'])->name('job-applications.update-status');
             Route::resource('jobs', JobController::class);
 
             // Requests Management (Tickets System)
