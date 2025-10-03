@@ -21,7 +21,7 @@ class SupplierSpecializedCategory extends Model
 
     public function suppliers()
     {
-        return $this->belongsToMany(Supplier::class, 'supplier_specialized_categories')
+        return $this->belongsToMany(Supplier::class, 'supplier_category_pivot')
                     ->withTimestamps();
     }
 
