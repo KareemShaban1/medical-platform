@@ -13,7 +13,6 @@
 
 	@include('frontend.layouts.scripts')
 
-
 </body>
 
 </html>

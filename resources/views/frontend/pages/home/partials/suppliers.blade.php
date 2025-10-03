@@ -23,18 +23,20 @@
 									{{ $supplier->name }}
 								</a>
 							</h3>
-							<p class="text-gray-600 text-sm mb-2">
-								Medical equipment supplier</p>
-							<div
-								class="flex items-center text-sm text-gray-500 mb-3">
-								<i
-									class="fas fa-star text-yellow-400 mr-1"></i>
-								<span>4.5 ({{ rand(50, 200) }}
-									reviews)</span>
-							</div>
-							<button
-								class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition">Contact
-								Supplier</button>
+
+							<div class="flex items-center text-sm text-gray-500 mb-3">
+			<i class="fas fa-map-marker-alt mr-2"></i>
+			<span>{{ $supplier->address ?? 'Location not specified' }}</span>
+		</div>
+		<div class="flex items-center text-sm text-gray-500 mb-3">
+			<i class="fas fa-phone mr-2"></i>
+			<span>{{ $supplier->phone ?? 'Contact not available' }}</span>
+		</div>
+							
+							
+							<a href="{{ route('suppliers.show', $supplier->id) }}"
+								class="w-full bg-green-600 text-white p-2 rounded hover:bg-green-700 transition">Contact
+								Supplier</a>
 						</div>
 					</div>
 				</div>

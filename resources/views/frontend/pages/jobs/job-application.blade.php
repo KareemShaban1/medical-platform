@@ -214,8 +214,7 @@
 									<option value="">Select an
 										option</option>
 									@if($field->options)
-									@foreach($field->options as
-									$option)
+									@foreach($field->options as $option)
 									<option value="{{ $option }}"
 										{{ old($field->field_name) == $option ? 'selected' : '' }}>
 										{{ $option }}
@@ -227,8 +226,7 @@
 								'checkbox')
 								<div class="space-y-3">
 									@if($field->options)
-									@foreach($field->options as
-									$index => $option)
+									@foreach($field->options as $index => $option)
 									<div
 										class="flex items-center">
 										<input type="checkbox"
@@ -262,8 +260,7 @@
 								@elseif($field->field_type == 'radio')
 								<div class="space-y-3">
 									@if($field->options)
-									@foreach($field->options as
-									$index => $option)
+									@foreach($field->options as $index => $option)
 									<div
 										class="flex items-center">
 										<input type="radio"

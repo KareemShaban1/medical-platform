@@ -32,7 +32,20 @@ class ClinicSeeder extends Seeder
         ]);
 
 
-        Clinic::factory()->count(20)->create();
+        $Clinics = Clinic::factory()->count(20)->create();
+
+        foreach ($Clinics as $Clinic) {
+            // approvement
+            $Clinic->approvement()->create([
+                'module_id' => $Clinic->id,
+                'module_type' => 'App\Models\Clinic',
+                'action_by' => 1,
+                'action' => 'approved',
+                'notes' => 'Approved by admin',
+            ]);
+        }
+
+
 
 
     }
