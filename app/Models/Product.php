@@ -31,7 +31,7 @@ class Product extends Model implements HasMedia
         'status',
     ];
 
-    public $appends = ['images', 'first_image'];
+    public $appends = ['images', 'first_image' , 'name'];
 
     public function getImagesAttribute()
     {
@@ -113,5 +113,5 @@ class Product extends Model implements HasMedia
             $query->whereNot('action', 'approved');
         });
     }
-   
+
 }

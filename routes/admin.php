@@ -154,6 +154,15 @@ Route::group(
         Route::post('jobs/{id}/restore', [JobController::class, 'restore'])->name('jobs.restore');
         Route::delete('jobs/{id}/force-delete', [JobController::class, 'forceDelete'])->name('jobs.force-delete');
         Route::resource('jobs', JobController::class);
+
+        // Orders Management
+        Route::group(['prefix' => 'orders'], function () {
+            Route::get('/data', [\App\Http\Controllers\Backend\Dashboards\Admin\OrderController::class, 'data'])->name('orders.data');
+            Route::get('/{id}/suppliers', [\App\Http\Controllers\Backend\Dashboards\Admin\OrderController::class, 'getOrderSuppliers'])->name('orders.suppliers');
+            Route::get('/{id}/items', [\App\Http\Controllers\Backend\Dashboards\Admin\OrderController::class, 'getOrderItems'])->name('orders.items');
+            Route::get('/', [\App\Http\Controllers\Backend\Dashboards\Admin\OrderController::class, 'index'])->name('orders.index');
+            Route::get('/{id}', [\App\Http\Controllers\Backend\Dashboards\Admin\OrderController::class, 'show'])->name('orders.show');
+        });
     }
 );
 
