@@ -43,10 +43,7 @@ class JobApplicationFieldController extends Controller
     public function store(StoreJobApplicationFieldRequest $request)
     {
         try {
-            \Log::info('Job Application Field Controller Store:', [
-                'request_data' => $request->all(),
-                'is_ajax' => $request->ajax()
-            ]);
+
 
             $result = $this->jobApplicationFieldRepo->store($request);
 
@@ -61,14 +58,10 @@ class JobApplicationFieldController extends Controller
                     ->with('error', $result->getData()->message);
             }
 
-            \Log::info('Redirecting to jobs index after successful creation');
             return redirect()->route('clinic.jobs.index')
                 ->with('success', 'Job application fields created successfully.');
         } catch (\Exception $e) {
-            \Log::error('Job Application Field Controller Error:', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
+            
 
             if ($request->ajax()) {
                 return response()->json([
@@ -93,11 +86,7 @@ class JobApplicationFieldController extends Controller
     public function update(UpdateJobApplicationFieldRequest $request, $id)
     {
         try {
-            \Log::info('Job Application Field Controller Update:', [
-                'request_data' => $request->all(),
-                'job_id' => $id,
-                'is_ajax' => $request->ajax()
-            ]);
+            
 
             $result = $this->jobApplicationFieldRepo->update($request, $id);
 
@@ -112,14 +101,11 @@ class JobApplicationFieldController extends Controller
                     ->with('error', $result->getData()->message);
             }
 
-            \Log::info('Redirecting to jobs index after successful update');
+            
             return redirect()->route('clinic.jobs.index')
                 ->with('success', 'Job application fields updated successfully.');
         } catch (\Exception $e) {
-            \Log::error('Job Application Field Controller Update Error:', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
+            
 
             if ($request->ajax()) {
                 return response()->json([

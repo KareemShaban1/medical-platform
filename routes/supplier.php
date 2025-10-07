@@ -30,26 +30,26 @@ Route::group(
 
         Route::get('/register-supplier', function () {
             return view('backend.dashboards.supplier.auth.register-supplier');
-        })->name('register-supplier')->withoutMiddleware(['auth:supplier' , 'check.supplier.approval']);
+        })->name('register-supplier')->withoutMiddleware(['auth:supplier', 'check.supplier.approval']);
 
         Route::post('/register-supplier', [SupplierController::class, 'registerSupplier'])
-            ->name('register-supplier')->withoutMiddleware(['auth:supplier' , 'check.supplier.approval']);
+            ->name('register-supplier')->withoutMiddleware(['auth:supplier', 'check.supplier.approval']);
 
         Route::post('/verify-otp', [SupplierController::class, 'verifyOtp'])
-            ->name('verify-otp')->withoutMiddleware(['auth:supplier' , 'check.supplier.approval'])
+            ->name('verify-otp')->withoutMiddleware(['auth:supplier', 'check.supplier.approval'])
             ->middleware('throttle:3,5');
 
         Route::post('/resend-otp', [SupplierController::class, 'resendOtp'])
-            ->name('resend-otp')->withoutMiddleware(['auth:supplier' , 'check.supplier.approval'])
+            ->name('resend-otp')->withoutMiddleware(['auth:supplier', 'check.supplier.approval'])
             ->middleware('throttle:1,1');
 
 
         // Approval routes (without approval middleware)
         Route::get('/approval', [ApprovalController::class, 'show'])
-        ->name('approval.show')->withoutMiddleware('check.supplier.approval');
+            ->name('approval.show')->withoutMiddleware('check.supplier.approval');
 
         Route::post('/approval/upload', [ApprovalController::class, 'upload'])
-        ->name('approval.upload')->withoutMiddleware('check.supplier.approval');
+            ->name('approval.upload')->withoutMiddleware('check.supplier.approval');
 
 
         Route::group(['prefix' => 'products'], function () {
@@ -65,7 +65,6 @@ Route::group(
             Route::put('/{id}', [ProductController::class, 'update'])->name('products.update');
             Route::patch('/{id}/toggle-status', [ProductController::class, 'toggleStatus'])->name('products.toggle.status');
             Route::delete('/{id}', [ProductController::class, 'destroy'])->name('products.destroy');
-
         });
 
         // Users Management
@@ -123,6 +122,18 @@ Route::group(
             Route::delete('/{id}', [\App\Http\Controllers\Backend\Dashboards\Supplier\OfferController::class, 'destroy'])->name('offers.destroy');
         });
 
+        // Orders Management
+        Route::group(['prefix' => 'orders'], function () {
+            Route::get('/data', [\App\Http\Controllers\Backend\Dashboards\Supplier\OrderController::class, 'data'])->name('orders.data');
+            Route::get('/{id}/items', [\App\Http\Controllers\Backend\Dashboards\Supplier\OrderController::class, 'getOrderItems'])->name('orders.items');
+            Route::post('/{id}/update-status', [\App\Http\Controllers\Backend\Dashboards\Supplier\OrderController::class, 'updateStatus'])->name('orders.update-status');
+            Route::post('/{id}/update-payment-status', [\App\Http\Controllers\Backend\Dashboards\Supplier\OrderController::class, 'updatePaymentStatus'])->name('orders.update-payment-status');
+            Route::post('/{id}/refund', [\App\Http\Controllers\Backend\Dashboards\Supplier\OrderController::class, 'createRefund'])->name('orders.create-refund');
+            Route::post('/refund/{refundId}/update-status', [\App\Http\Controllers\Backend\Dashboards\Supplier\OrderController::class, 'updateRefundStatus'])->name('orders.refund.update-status');
+            Route::get('/', [\App\Http\Controllers\Backend\Dashboards\Supplier\OrderController::class, 'index'])->name('orders.index');
+            Route::get('/{id}', [\App\Http\Controllers\Backend\Dashboards\Supplier\OrderController::class, 'show'])->name('orders.show');
+        });
+
         // Notifications Management
         Route::group(['prefix' => 'notifications'], function () {
             Route::get('/', [\App\Http\Controllers\Backend\Dashboards\Supplier\NotificationController::class, 'index'])->name('notifications.index');
@@ -131,8 +142,6 @@ Route::group(
             Route::post('/mark-as-read/{id}', [\App\Http\Controllers\Backend\Dashboards\Supplier\NotificationController::class, 'markAsRead'])->name('notifications.mark-as-read');
             Route::post('/mark-all-as-read', [\App\Http\Controllers\Backend\Dashboards\Supplier\NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-as-read');
         });
-
-
     }
 );
 
@@ -140,12 +149,11 @@ Route::group(
 
 
 
-    Route::post('/supplier/logout', function (Request $request) {
-        Auth::guard('supplier')->logout();
+Route::post('/supplier/logout', function (Request $request) {
+    Auth::guard('supplier')->logout();
 
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
 
-        return redirect()->to('/');
-    })->name('supplier.logout');
-
+    return redirect()->to('/');
+})->name('supplier.logout');

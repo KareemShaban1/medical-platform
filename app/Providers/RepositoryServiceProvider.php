@@ -46,6 +46,10 @@ class RepositoryServiceProvider extends ServiceProvider
         // supplier product repository
         $this->app->bind('App\Interfaces\Admin\SupplierProductRepositoryInterface', 'App\Repository\Admin\SupplierProductRepository');
 
+        // Order Repositories
+        $this->app->bind('App\Interfaces\Supplier\OrderRepositoryInterface', 'App\Repository\Supplier\OrderRepository');
+        $this->app->bind('App\Interfaces\Admin\OrderRepositoryInterface', 'App\Repository\Admin\OrderRepository');
+
         // Tickets System Repositories
         $this->app->bind('App\Interfaces\Clinic\RequestRepositoryInterface', 'App\Repository\Clinic\RequestRepository');
         $this->app->bind('App\Interfaces\Supplier\OfferRepositoryInterface', 'App\Repository\Supplier\OfferRepository');
@@ -53,6 +57,13 @@ class RepositoryServiceProvider extends ServiceProvider
 
         // Job Application Field Repository
         $this->app->bind('App\Interfaces\Clinic\JobApplicationFieldRepositoryInterface', 'App\Repository\Clinic\JobApplicationFieldRepository');
+        // Clinic Inventory Repository
+        $this->app->bind('App\Interfaces\Clinic\ClinicInventoryRepositoryInterface', 'App\Repository\Clinic\ClinicInventoryRepository');
+        // Clinic Inventory Movement Repository
+        $this->app->bind('App\Interfaces\Clinic\ClinicInventoryMovementRepositoryInterface', 'App\Repository\Clinic\ClinicInventoryMovementRepository');
+
+        // Clinic User Salary Repository
+        $this->app->bind('App\Interfaces\Clinic\ClinicUserSalaryRepositoryInterface', 'App\Repository\Clinic\ClinicUserSalaryRepository');
 
         // Ticket Repositories
         $this->app->bind('App\Interfaces\Admin\TicketRepositoryInterface', 'App\Repository\Admin\TicketRepository');

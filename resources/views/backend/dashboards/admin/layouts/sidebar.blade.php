@@ -191,6 +191,25 @@
                 </div>
             </li>
 
+            <!-- Orders Management -->
+            <li class="side-nav-item">
+                <a data-bs-toggle="collapse" href="#sidebarOrders" aria-expanded="false"
+                    aria-controls="sidebarOrders" class="side-nav-link">
+                    <i class="uil-store"></i>
+                    <span> {{ __('Orders') }} </span>
+                    <span class="menu-arrow"></span>
+                </a>
+                <div class="collapse" id="sidebarOrders">
+                    <ul class="side-nav-second-level">
+                        <li>
+                            <a href="{{ route('admin.orders.index') }}">
+                                <span> {{ __('All Orders') }} </span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+
             <!-- Notifications -->
             <li class="side-nav-item">
                 <a href="{{ route('admin.notifications.index') }}" class="side-nav-link">
