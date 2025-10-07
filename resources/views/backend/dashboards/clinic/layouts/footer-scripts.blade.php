@@ -38,108 +38,104 @@
  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
  <script>
-     const languages = {
-         @if(App::getLocale() == 'en')
-         en: {
-             paginate: {
-                 previous: "<i class='mdi mdi-chevron-left'></i> Previous",
-                 next: "Next <i class='mdi mdi-chevron-right'></i>"
-             },
-             info: "Showing records _START_ to _END_ of _TOTAL_",
-             lengthMenu: "Display _MENU_ records",
-             search: "_INPUT_",
-             searchPlaceholder: "Search...",
-             zeroRecords: "No matching records found",
-             infoEmpty: "No records to display",
-             infoFiltered: "(filtered from _MAX_ total records)"
-         },
-         @else
-         ar: {
-             paginate: {
-                 previous: "<i class='mdi mdi-chevron-right'></i> السابق",
-                 next: "التالي <i class='mdi mdi-chevron-left'></i>"
-             },
-             info: "عرض السجلات من _START_ إلى _END_ من إجمالي _TOTAL_ سجلات",
-             lengthMenu: "عرض _MENU_ سجلات",
-             search: "_INPUT_",
-             searchPlaceholder: "بحث...",
-             zeroRecords: "لا توجد سجلات مطابقة",
-             infoEmpty: "لا توجد سجلات للعرض",
-             infoFiltered: "(تمت التصفية من إجمالي _MAX_ سجلات)"
-         }
-         @endif
-     };
+const languages = {
+	@if(App::getLocale() == 'en')
+	en: {
+		paginate: {
+			previous: "<i class='mdi mdi-chevron-left'></i> Previous",
+			next: "Next <i class='mdi mdi-chevron-right'></i>"
+		},
+		info: "Showing records _START_ to _END_ of _TOTAL_",
+		lengthMenu: "Display _MENU_ records",
+		search: "_INPUT_",
+		searchPlaceholder: "Search...",
+		zeroRecords: "No matching records found",
+		infoEmpty: "No records to display",
+		infoFiltered: "(filtered from _MAX_ total records)"
+	},
+	@else
+	ar: {
+		paginate: {
+			previous: "<i class='mdi mdi-chevron-right'></i> السابق",
+			next: "التالي <i class='mdi mdi-chevron-left'></i>"
+		},
+		info: "عرض السجلات من _START_ إلى _END_ من إجمالي _TOTAL_ سجلات",
+		lengthMenu: "عرض _MENU_ سجلات",
+		search: "_INPUT_",
+		searchPlaceholder: "بحث...",
+		zeroRecords: "لا توجد سجلات مطابقة",
+		infoEmpty: "لا توجد سجلات للعرض",
+		infoFiltered: "(تمت التصفية من إجمالي _MAX_ سجلات)"
+	}
+	@endif
+};
 
-     const language = '{{ App::getLocale() }}';
+const language = '{{ App::getLocale() }}';
  </script>
 
  <!-- Simple Toast Configuration -->
  <script>
-     $(document).ready(function() {
-         // Configure Toastr
-         toastr.options = {
-             "closeButton": true,
-             "debug": false,
-             "newestOnTop": true,
-             "progressBar": true,
-             "positionClass": "toast-top-right",
-             "preventDuplicates": false,
-             "onclick": null,
-             "showDuration": "300",
-             "hideDuration": "1000",
-             "timeOut": "5000",
-             "extendedTimeOut": "1000",
-             "showEasing": "swing",
-             "hideEasing": "linear",
-             "showMethod": "fadeIn",
-             "hideMethod": "fadeOut"
-         };
+$(document).ready(function() {
+	// Configure Toastr
+	toastr.options = {
+		"closeButton": true,
+		"debug": false,
+		"newestOnTop": true,
+		"progressBar": true,
+		"positionClass": "toast-top-right",
+		"preventDuplicates": false,
+		"onclick": null,
+		"showDuration": "300",
+		"hideDuration": "1000",
+		"timeOut": "5000",
+		"extendedTimeOut": "1000",
+		"showEasing": "swing",
+		"hideEasing": "linear",
+		"showMethod": "fadeIn",
+		"hideMethod": "fadeOut"
+	};
 
-         // Handle Laravel session messages
-         @if(session('success'))
-         toastr.success('{{ session('
-             success ') }}');
-         @endif
+	// Handle Laravel session messages
+	@if(session('success'))
+	toastr.success('{{ session('success') }}');
+	@endif
 
-         @if(session('error'))
-         toastr.error('{{ session('
-             error ') }}');
-         @endif
+	@if(session('error'))
+	toastr.error('{{ session('error') }}');
+	@endif
 
-         @if(session('warning'))
-         toastr.warning('{{ session('
-             warning ') }}');
-         @endif
+	@if(session('warning'))
+	toastr.warning('{{ session('warning') }}');
+	@endif
 
-         @if(session('info'))
-         toastr.info('{{ session('
-             info ') }}');
-         @endif
+	@if(session('info'))
+	toastr.info('{{ session('info') }}');
+	@endif
 
-         // Handle validation errors
-         @if($errors->any())
-         @foreach($errors->all() as $error)
-         toastr.error('{{ $error }}');
-         @endforeach
-         @endif
-     });
+	// Handle validation errors
+	@if($errors->any())
+	@foreach($errors->all() as $error)
+	toastr.error('{{ $error }}');
+	@endforeach
+	@endif
+});
 
-     // Global toast functions
-     function toast_success(message) {
-         toastr.success(message);
-     }
+// Global toast functions
+function toast_success(message) {
+	toastr.success(message);
+}
 
-     function toast_error(message) {
-         toastr.error(message);
-     }
+function toast_error(message) {
+	toastr.error(message);
+}
 
-     function toast_warning(message) {
-         toastr.warning(message);
-     }
+function toast_warning(message) {
+	toastr.warning(message);
+}
 
-     function toast_info(message) {
-         toastr.info(message);
-     }
+function toast_info(message) {
+	toastr.info(message);
+}
  </script>
 
  @stack('scripts')

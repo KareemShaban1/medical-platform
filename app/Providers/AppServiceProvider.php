@@ -15,6 +15,8 @@ use App\Models\Course;
 use App\Observers\CourseObserver;
 use App\Models\Job;
 use App\Observers\JobObserver;
+use App\Models\ClinicInventory;
+use App\Observers\ClinicInventoryObserver;
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -39,5 +41,6 @@ class AppServiceProvider extends ServiceProvider
         BlogPost::observe(BlogPostObserver::class);
         Course::observe(CourseObserver::class);
         Job::observe(JobObserver::class);
+        ClinicInventory::observe(ClinicInventoryObserver::class);
     }
 }
