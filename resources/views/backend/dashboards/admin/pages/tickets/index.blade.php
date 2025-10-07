@@ -163,9 +163,9 @@
                 $('#updateStatusForm').attr('action', `/admin/tickets/${id}/update-status`);
 
                 // Set the current status as selected in the dropdown
-                $('#status').val(currentStatus);
+                $('#status-update').val(currentStatus);
 
-                console.log('Status set to:', $('#status').val());
+                console.log('Status set to:', $('#status-update').val());
 
                 $('#updateStatusModal').modal('show');
             };
@@ -173,18 +173,18 @@
             // Debug modal events
             $('#updateStatusModal').on('show.bs.modal', function (e) {
                 console.log('Modal is opening');
-                console.log('Current status dropdown value:', $('#status').val());
+                console.log('Current status dropdown value:', $('#status-update').val());
             });
 
             $('#updateStatusModal').on('shown.bs.modal', function (e) {
                 console.log('Modal is now visible');
-                console.log('Status select element:', $('#status'));
-                console.log('Is status select visible?', $('#status').is(':visible'));
+                console.log('Status select element:', $('#status-update'));
+                console.log('Is status select visible?', $('#status-update').is(':visible'));
             });
 
             // Clear modal when closed
             $('#updateStatusModal').on('hidden.bs.modal', function () {
-                $('#status').val('');
+                $('#status-update').val('');
                 console.log('Modal closed and status cleared');
             });
 

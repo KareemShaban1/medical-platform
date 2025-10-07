@@ -240,8 +240,8 @@
                     @method('PUT')
                     <div class="modal-body">
                         <div class="mb-3">
-                            <label for="status" class="form-label">{{ __('Status') }}</label>
-                            <select class="form-select" id="status" name="status" required>
+                            <label for="status-update" class="form-label">{{ __('Status') }}</label>
+                            <select class="form-select" id="status-update" name="status" required>
                                 <option value="">{{ __('Select Status') }}</option>
                                 <option value="pending" {{ $ticket->status === 'pending' ? 'selected' : '' }}>{{ __('Pending') }}</option>
                                 <option value="in_progress" {{ $ticket->status === 'in_progress' ? 'selected' : '' }}>{{ __('In Progress') }}</option>
@@ -269,13 +269,13 @@
             // Debug modal opening
             $('#updateStatusModal').on('show.bs.modal', function (e) {
                 console.log('Modal is opening');
-                console.log('Current status dropdown value:', $('#status').val());
+                console.log('Current status dropdown value:', $('#status-update').val());
             });
 
             $('#updateStatusModal').on('shown.bs.modal', function (e) {
                 console.log('Modal is now visible');
-                console.log('Status select element:', $('#status'));
-                console.log('Is status select visible?', $('#status').is(':visible'));
+                console.log('Status select element:', $('#status-update'));
+                console.log('Is status select visible?', $('#status-update').is(':visible'));
             });
 
             // Handle Status Update
