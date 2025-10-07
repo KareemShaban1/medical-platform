@@ -26,6 +26,10 @@
 
   	<div class="h-100" id="leftside-menu-container" data-simplebar="">
 
+	  <div class="px-3 py-2">
+            <input type="text" id="sidebar-search" class="form-control" placeholder="{{ __('Search menu...') }}" autocomplete="off">
+        </div>
+
   		<!--- Sidemenu -->
   		<ul class="side-nav">
 
