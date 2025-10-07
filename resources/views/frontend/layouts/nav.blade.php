@@ -193,6 +193,10 @@
 										class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Dashboard</a>
 								</li>
 								<li>
+									<a href="{{ route('user.tickets.index') }}"
+										class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Manage My Tickets</a>
+								</li>
+								<li>
 									<form method="POST" action="{{ route('user.logout') }}" class="inline w-full">
 										@csrf
 										<button type="submit" class="text-left w-full block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Logout</button>

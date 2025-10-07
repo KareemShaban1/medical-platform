@@ -35,5 +35,13 @@ class Admin extends Authenticatable
         'remember_token',
     ];
 
+    /**
+     * Get the ticket replies for the admin
+     */
+    public function ticketReplies()
+    {
+        return $this->morphMany(TicketReply::class, 'replied_by');
+    }
+
 }
 

@@ -55,4 +55,20 @@ class User extends Authenticatable
     {
         return $this->hasOne(Patient::class);
     }
+
+    /**
+     * Get the tickets for the user
+     */
+    public function tickets()
+    {
+        return $this->hasMany(Ticket::class);
+    }
+
+    /**
+     * Get the ticket replies for the user
+     */
+    public function ticketReplies()
+    {
+        return $this->morphMany(TicketReply::class, 'replied_by');
+    }
 }

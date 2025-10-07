@@ -53,6 +53,10 @@ class RepositoryServiceProvider extends ServiceProvider
 
         // Job Application Field Repository
         $this->app->bind('App\Interfaces\Clinic\JobApplicationFieldRepositoryInterface', 'App\Repository\Clinic\JobApplicationFieldRepository');
+
+        // Ticket Repositories
+        $this->app->bind('App\Interfaces\Admin\TicketRepositoryInterface', 'App\Repository\Admin\TicketRepository');
+        $this->app->bind('App\Interfaces\User\TicketRepositoryInterface', 'App\Repository\User\TicketRepository');
     }
 
 

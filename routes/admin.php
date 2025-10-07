@@ -154,6 +154,16 @@ Route::group(
         Route::post('jobs/{id}/restore', [JobController::class, 'restore'])->name('jobs.restore');
         Route::delete('jobs/{id}/force-delete', [JobController::class, 'forceDelete'])->name('jobs.force-delete');
         Route::resource('jobs', JobController::class);
+
+        // Tickets Management
+        Route::get('tickets/data', [\App\Http\Controllers\Backend\Dashboards\Admin\TicketController::class, 'data'])->name('tickets.data');
+        Route::put('tickets/{id}/update-status', [\App\Http\Controllers\Backend\Dashboards\Admin\TicketController::class, 'updateStatus'])->name('tickets.update-status');
+        Route::post('tickets/{id}/reply', [\App\Http\Controllers\Backend\Dashboards\Admin\TicketController::class, 'reply'])->name('tickets.reply');
+        Route::get('tickets/trash', [\App\Http\Controllers\Backend\Dashboards\Admin\TicketController::class, 'trash'])->name('tickets.trash');
+        Route::get('tickets/trash/data', [\App\Http\Controllers\Backend\Dashboards\Admin\TicketController::class, 'trashData'])->name('tickets.trash.data');
+        Route::post('tickets/{id}/restore', [\App\Http\Controllers\Backend\Dashboards\Admin\TicketController::class, 'restore'])->name('tickets.restore');
+        Route::delete('tickets/{id}/force-delete', [\App\Http\Controllers\Backend\Dashboards\Admin\TicketController::class, 'forceDelete'])->name('tickets.force-delete');
+        Route::resource('tickets', \App\Http\Controllers\Backend\Dashboards\Admin\TicketController::class)->only(['index', 'show', 'destroy']);
     }
 );
 

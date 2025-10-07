@@ -288,6 +288,30 @@
                 </div>
             </li>
 
+            <!-- Tickets -->
+            <li class="side-nav-item">
+                <a data-bs-toggle="collapse" href="#sidebarTickets" aria-expanded="false"
+                    aria-controls="sidebarTickets" class="side-nav-link">
+                    <i class="uil-ticket"></i>
+                    <span> {{ __('Tickets') }} </span>
+                    <span class="menu-arrow"></span>
+                </a>
+                <div class="collapse" id="sidebarTickets">
+                    <ul class="side-nav-second-level">
+                        <li>
+                            <a href="{{ route('admin.tickets.index') }}">
+                                <span> {{ __('All Tickets') }} </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.tickets.trash') }}">
+                                <span> {{ __('Trash Tickets') }} </span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+
 
 
         </ul>

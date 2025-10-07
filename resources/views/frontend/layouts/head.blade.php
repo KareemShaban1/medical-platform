@@ -17,6 +17,7 @@
 
 		<!-- Toastr CSS -->
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
 
 	<title>Medical Platform - Home</title>

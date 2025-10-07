@@ -74,6 +74,11 @@ Route::group([
 ], function () {
     Route::get('/', [\App\Http\Controllers\Frontend\Patient\DashboardController::class, 'index'])
         ->name('dashboard');
+
+    // Tickets Management
+    Route::get('tickets/data', [\App\Http\Controllers\Frontend\TicketController::class, 'data'])->name('tickets.data');
+    Route::post('tickets/{id}/reply', [\App\Http\Controllers\Frontend\TicketController::class, 'reply'])->name('tickets.reply');
+    Route::resource('tickets', \App\Http\Controllers\Frontend\TicketController::class)->only(['index', 'store', 'show']);
 });
 
 // Patient Logout Route
