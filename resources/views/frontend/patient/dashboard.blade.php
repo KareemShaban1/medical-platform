@@ -3,92 +3,92 @@
 @section('title', __('Patient Dashboard'))
 
 @section('content')
-<div class="container-fluid py-5" style="min-height: 80vh; display: flex; align-items: center; justify-content: center;">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-12 col-md-10 col-lg-8">
-                <div class="card shadow-lg">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h4 class="mb-0">{{ __('Patient Dashboard') }}</h4>
-                    <!-- Logout Button -->
-                    <form method="POST" action="{{ route('user.logout') }}" class="d-inline">
-                        @csrf
-                        <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('{{ __('Are you sure you want to logout?') }}')">
-                            <i class="fas fa-sign-out-alt"></i> {{ __('Logout') }}
-                        </button>
-                    </form>
+<div class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-10 px-4">
+    <div class="w-full max-w-4xl">
+        <div class="bg-white dark:bg-gray-800 shadow-2xl rounded-2xl overflow-hidden">
+            
+            <!-- Header -->
+            <div class="flex justify-between items-center bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-4">
+                <h2 class="text-xl font-semibold">{{ __('Patient Dashboard') }}</h2>
+
+                <form method="POST" action="{{ route('user.logout') }}" onsubmit="return confirm('{{ __('Are you sure you want to logout?') }}')">
+                    @csrf
+                    <button type="submit"
+                        class="flex items-center gap-2 px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded-lg text-sm font-medium transition">
+                        <i class="fas fa-sign-out-alt"></i>
+                        {{ __('Logout') }}
+                    </button>
+                </form>
+            </div>
+
+            <!-- Body -->
+            <div class="p-8">
+
+                <!-- Greeting -->
+                <div class="text-center mb-10">
+                    <h1 class="text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-100">
+                        👋 {{ __('Hello :name', ['name' => $patient->name]) }}
+                    </h1>
+                    <p class="text-gray-500 dark:text-gray-400">{{ __('Welcome to your patient dashboard') }}</p>
                 </div>
-                <div class="card-body">
-                    <div class="text-center mb-4">
-                        <h1>{{ __('Hello :name 👋', ['name' => $patient->name]) }}</h1>
-                        <p class="lead">{{ __('Welcome to your patient dashboard') }}</p>
+
+                <!-- Feature Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    @php
+                        $features = [
+                            ['icon' => 'fa-user', 'color' => 'text-blue-500', 'title' => __('Profile Information'), 'desc' => __('View and update your profile')],
+                            ['icon' => 'fa-calendar', 'color' => 'text-green-500', 'title' => __('Appointments'), 'desc' => __('Manage your appointments')],
+                            ['icon' => 'fa-file-medical', 'color' => 'text-sky-500', 'title' => __('Medical Records'), 'desc' => __('Access your medical history')],
+                            ['icon' => 'fa-pills', 'color' => 'text-yellow-500', 'title' => __('Prescriptions'), 'desc' => __('View your prescriptions')],
+                        ];
+                    @endphp
+
+                    @foreach($features as $feature)
+                        <div class="bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition rounded-xl shadow p-6 text-center">
+                            <i class="fas {{ $feature['icon'] }} {{ $feature['color'] }} text-4xl mb-3"></i>
+                            <h5 class="text-lg font-semibold text-gray-800 dark:text-gray-100">{{ $feature['title'] }}</h5>
+                            <p class="text-sm text-gray-500 dark:text-gray-300">{{ $feature['desc'] }}</p>
+                        </div>
+                    @endforeach
+                </div>
+
+                <hr class="my-8 border-gray-300 dark:border-gray-600">
+
+                <!-- Patient Info -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h6 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2">
+                            {{ __('Patient Information') }}
+                        </h6>
+                        <ul class="space-y-1 text-gray-600 dark:text-gray-300">
+                            <li><strong>{{ __('Name') }}:</strong> {{ $patient->name }}</li>
+                            <li><strong>{{ __('Email') }}:</strong> {{ $patient->email ?? __('Not provided') }}</li>
+                            <li><strong>{{ __('Phone') }}:</strong> {{ $patient->phone }}</li>
+                        </ul>
                     </div>
 
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <div class="card bg-light">
-                                <div class="card-body text-center">
-                                    <i class="fas fa-user fa-3x text-primary mb-2"></i>
-                                    <h5>{{ __('Profile Information') }}</h5>
-                                    <p class="text-muted">{{ __('View and update your profile') }}</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <div class="card bg-light">
-                                <div class="card-body text-center">
-                                    <i class="fas fa-calendar fa-3x text-success mb-2"></i>
-                                    <h5>{{ __('Appointments') }}</h5>
-                                    <p class="text-muted">{{ __('Manage your appointments') }}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <div class="card bg-light">
-                                <div class="card-body text-center">
-                                    <i class="fas fa-file-medical fa-3x text-info mb-2"></i>
-                                    <h5>{{ __('Medical Records') }}</h5>
-                                    <p class="text-muted">{{ __('Access your medical history') }}</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <div class="card bg-light">
-                                <div class="card-body text-center">
-                                    <i class="fas fa-pills fa-3x text-warning mb-2"></i>
-                                    <h5>{{ __('Prescriptions') }}</h5>
-                                    <p class="text-muted">{{ __('View your prescriptions') }}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <hr>
-
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h6>{{ __('Patient Information') }}</h6>
-                            <p><strong>{{ __('Name') }}:</strong> {{ $patient->name }}</p>
-                            <p><strong>{{ __('Email') }}:</strong> {{ $patient->email ?? __('Not provided') }}</p>
-                            <p><strong>{{ __('Phone') }}:</strong> {{ $patient->phone }}</p>
-                        </div>
-                        <div class="col-md-6">
-                            <h6>{{ __('Account Status') }}</h6>
-                            <p><strong>{{ __('Account Type') }}:</strong>
+                    <div>
+                        <h6 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2">
+                            {{ __('Account Status') }}
+                        </h6>
+                        <ul class="space-y-1 text-gray-600 dark:text-gray-300">
+                            <li>
+                                <strong>{{ __('Account Type') }}:</strong>
                                 @if($patient->isRegistered())
-                                    <span class="badge bg-success">{{ __('Registered User') }}</span>
+                                    <span class="ml-2 px-3 py-1 bg-green-100 text-green-700 dark:bg-green-800 dark:text-green-200 rounded-full text-xs font-medium">
+                                        {{ __('Registered User') }}
+                                    </span>
                                 @else
-                                    <span class="badge bg-warning">{{ __('Clinic Created') }}</span>
+                                    <span class="ml-2 px-3 py-1 bg-yellow-100 text-yellow-700 dark:bg-yellow-800 dark:text-yellow-200 rounded-full text-xs font-medium">
+                                        {{ __('Clinic Created') }}
+                                    </span>
                                 @endif
-                            </p>
-                            <p><strong>{{ __('Member Since') }}:</strong> {{ $patient->created_at->format('F Y') }}</p>
-                        </div>
+                            </li>
+                            <li><strong>{{ __('Member Since') }}:</strong> {{ $patient->created_at->format('F Y') }}</li>
+                        </ul>
                     </div>
                 </div>
-                </div>
+
             </div>
         </div>
     </div>

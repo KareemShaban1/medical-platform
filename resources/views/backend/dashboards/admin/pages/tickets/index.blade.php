@@ -114,8 +114,8 @@
                     @method('PUT')
                     <div class="modal-body">
                         <div class="mb-3">
-                            <label for="status" class="form-label">{{ __('Status') }}</label>
-                            <select class="form-select" id="status" name="status" required>
+                            <label for="status-update" class="form-label">{{ __('Status') }}</label>
+                            <select class="form-select" id="status-update" name="status" required>
                                 <option value="">{{ __('Select Status') }}</option>
                                 <option value="pending">{{ __('Pending') }}</option>
                                 <option value="in_progress">{{ __('In Progress') }}</option>
