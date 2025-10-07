@@ -57,6 +57,13 @@ class RepositoryServiceProvider extends ServiceProvider
 
         // Job Application Field Repository
         $this->app->bind('App\Interfaces\Clinic\JobApplicationFieldRepositoryInterface', 'App\Repository\Clinic\JobApplicationFieldRepository');
+        // Clinic Inventory Repository
+        $this->app->bind('App\Interfaces\Clinic\ClinicInventoryRepositoryInterface', 'App\Repository\Clinic\ClinicInventoryRepository');
+        // Clinic Inventory Movement Repository
+        $this->app->bind('App\Interfaces\Clinic\ClinicInventoryMovementRepositoryInterface', 'App\Repository\Clinic\ClinicInventoryMovementRepository');
+
+        // Clinic User Salary Repository
+        $this->app->bind('App\Interfaces\Clinic\ClinicUserSalaryRepositoryInterface', 'App\Repository\Clinic\ClinicUserSalaryRepository');
     }
 
 
