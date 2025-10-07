@@ -132,4 +132,110 @@ function toast_info(message) {
 
  </script>
 
+<script>
+          document.addEventListener('DOMContentLoaded', function () {
+            const container = document.getElementById('leftside-menu-container');
+            const input = document.getElementById('sidebar-search');
+            if (!container || !input) return;
+
+            const getAllLinks = () => Array.from(container.querySelectorAll('.side-nav a, .side-nav-second-level a'));
+            const getTogglerForCollapse = (collapseEl) =>
+                container.querySelector(`a[data-bs-toggle="collapse"][href="#${collapseEl.id}"]`);
+
+            const expandCollapse = (collapseEl) => {
+             if (!collapseEl) return;
+             if (!collapseEl.classList.contains('show')) {
+               collapseEl.classList.add('show');
+               collapseEl.dataset.openedBySearch = '1';
+             }
+             const toggler = getTogglerForCollapse(collapseEl);
+             if (toggler) toggler.setAttribute('aria-expanded', 'true');
+           };
+
+           const collapseIfOpenedBySearch = (collapseEl) => {
+             if (!collapseEl) return;
+             if (collapseEl.dataset.openedBySearch === '1') {
+               collapseEl.classList.remove('show');
+               delete collapseEl.dataset.openedBySearch;
+               const toggler = getTogglerForCollapse(collapseEl);
+               if (toggler) toggler.setAttribute('aria-expanded', 'false');
+             }
+           };
+
+           const clearHighlights = () => {
+             getAllLinks().forEach(a => a.classList.remove('sidebar-highlight'));
+           };
+
+           const clearSearchState = () => {
+             clearHighlights();
+             // Collapse sections we expanded due to a previous search
+             container.querySelectorAll('.collapse').forEach(collapseIfOpenedBySearch);
+             // Show everything back
+             container.querySelectorAll('.side-nav > li.side-nav-item').forEach(li => li.classList.remove('d-none'));
+             container.querySelectorAll('.side-nav-second-level > li').forEach(li => li.classList.remove('d-none'));
+             container.querySelectorAll('.collapse').forEach(col => col.classList.remove('d-none'));
+           };
+
+           input.addEventListener('input', function () {
+             const q = (input.value || '').trim().toLowerCase();
+             if (!q) {
+               clearSearchState();
+               return;
+             }
+
+             clearHighlights();
+             let firstMatch = null;
+
+             // Reset visibility: hide everything by default for search state
+             container.querySelectorAll('.side-nav > li.side-nav-item').forEach(li => li.classList.add('d-none'));
+             container.querySelectorAll('.side-nav-second-level > li').forEach(li => li.classList.add('d-none'));
+             container.querySelectorAll('.collapse').forEach(col => col.classList.add('d-none'));
+
+             // Track sections (collapse containers) that have any match
+             const matchedCollapses = new Set();
+
+             getAllLinks().forEach(link => {
+               const text = (link.textContent || '').trim().toLowerCase();
+               if (text && text.includes(q)) {
+                 link.classList.add('sidebar-highlight');
+                 if (!firstMatch) firstMatch = link;
+
+                 // Show this link's LI
+                 const linkLi = link.closest('li');
+                 if (linkLi) linkLi.classList.remove('d-none');
+
+                 // If it's inside a collapse, show and expand its collapse and show the toggler item
+                 const parentCollapse = link.closest('.collapse');
+                 if (parentCollapse) {
+                   matchedCollapses.add(parentCollapse);
+                   parentCollapse.classList.remove('d-none');
+                   expandCollapse(parentCollapse);
+                   const toggler = getTogglerForCollapse(parentCollapse);
+                   if (toggler) {
+                     const togglerLi = toggler.closest('li.side-nav-item');
+                     if (togglerLi) togglerLi.classList.remove('d-none');
+                   }
+                 } else {
+                   // Top-level direct link: show its parent li
+                   const topLi = link.closest('li.side-nav-item');
+                   if (topLi) topLi.classList.remove('d-none');
+                 }
+               }
+             });
+
+             // If no matches at all, reset to show everything
+             const hasAny = !!firstMatch;
+             if (!hasAny) {
+               clearSearchState();
+               return;
+             }
+
+             // Optionally scroll first match into view for better UX
+             if (firstMatch) {
+               try { firstMatch.scrollIntoView({ block: 'nearest' }); } catch (e) {}
+             }
+           });
+         });
+        </script>
+
  @stack('scripts')

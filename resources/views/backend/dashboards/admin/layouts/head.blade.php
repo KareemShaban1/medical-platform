@@ -79,6 +79,17 @@
 	<!-- jQuery -->
 	<!-- <script src="{{ asset('plugins/jquery/jquery.min.js') }}" defer></script> -->
 
+	<style>
+         /* Sidebar search highlight */
+         #leftside-menu-container .sidebar-highlight {
+           background-color:rgb(223, 158, 38); /* bootstrap warning-100 */
+		   color: white;
+           border-radius: 4px;
+           transition: background-color 0.2s ease;
+         }
+		 
+        </style>
+
 	<!-- Custom CSS -->
 	@stack('styles')
 </head>
