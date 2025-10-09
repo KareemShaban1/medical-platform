@@ -32,6 +32,8 @@ class ProductStoreRequest extends FormRequest
             'price_after'       => ['required','numeric' , 'min:0' , 'lte:price_before'],
             'discount_value'    => ['nullable','numeric' , 'min:0'],
             'stock'             => ['required','integer' , 'min:0'],
+            'tax'               => ['nullable','numeric' , 'min:0'],
+            'shipping'          => ['nullable','numeric' , 'min:0'],
             'status'            => ['required','boolean'],
             'categories'        => ['required','array'],
             'categories.*'      => ['required','exists:categories,id'],

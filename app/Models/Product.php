@@ -28,6 +28,8 @@ class Product extends Model implements HasMedia
         'discount_value',
         'stock',
         'reason',
+        'tax',
+        'shipping',
         'status',
     ];
 
