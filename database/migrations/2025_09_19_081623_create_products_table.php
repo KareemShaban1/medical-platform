@@ -28,6 +28,9 @@ return new class extends Migration
             $table->decimal('discount_value', 10, 2);
             $table->integer('stock');
 
+            $table->decimal('tax', 10, 2)->default(0);
+            $table->decimal('shipping', 10, 2)->default(0);
+
             // $table->boolean('approved')->default(false);
             $table->string('reason')->nullable();
             $table->tinyInteger('status')->default(1)->comment('0 = inactive, 1 = active');

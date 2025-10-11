@@ -28,6 +28,8 @@ class ProductUpdateRequest extends FormRequest
             'description_en'    => ['required','string','max:255'],
             'description_ar'    => ['required','string','max:255'],
             'sku'               => ['required','string','max:255' , Rule::unique('products','sku')->ignore($this->route('id'))],
+            'tax'               => ['nullable','numeric' , 'min:0'],
+            'shipping'          => ['nullable','numeric' , 'min:0'],
             'price_before'      => ['required','numeric' , 'min:0'],
             'price_after'       => ['required','numeric' , 'min:0' , 'lte:price_before'],
             'discount_value'    => ['nullable','numeric' , 'min:0'],

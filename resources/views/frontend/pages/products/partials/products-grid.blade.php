@@ -36,14 +36,18 @@
 		</div> -->
 		<div class="flex justify-between items-start flex-col gap-3">
 			<div class="flex items-center gap-2">
-			<span class="text-md text-blue-600">${{ $product->price_after }}</span>
-			<!-- price before -->
-			<span class="text-sm text-red-500 line-through">${{ $product->price_before }}</span>
+				<span class="text-md text-blue-600">${{ $product->price_after }}</span>
+				<!-- price before -->
+				<span class="text-sm text-red-500 line-through">${{ $product->price_before }}</span>
 			</div>
 			<button
+				data-add-to-cart
+				data-product-id="{{ $product->id }}"
+				data-supplier-id="{{ $product->supplier_id }}"
+				data-quantity="1"
 				class="bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700 transition">
 				<i class="fas fa-cart-plus"></i>
-				Add to Cart
+				{{ __('Add to Cart') }}
 			</button>
 		</div>
 	</div>

@@ -10,6 +10,12 @@ class Order extends Model
         'clinic_user_id', 'clinic_id', 'number', 'status', 'total',
         'shipping', 'tax', 'discount', 'payment_method', 'payment_status'
     ];
+    
+    public static function generateOrderNumber()
+    {
+        // output example: ORD-20251009-1234
+        return 'ORD-' . date('Ymd') .  '-' . rand(1000, 9999);
+    }
 
     public function clinicUser()
     {

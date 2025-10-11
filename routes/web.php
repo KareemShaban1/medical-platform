@@ -9,6 +9,9 @@ use App\Http\Controllers\Frontend\BlogController;
 use App\Http\Controllers\Frontend\ClinicController;
 use App\Http\Controllers\Frontend\SupplierController;
 use App\Http\Controllers\Frontend\CourseController;
+use App\Http\Controllers\Frontend\CartController;
+use App\Http\Controllers\Frontend\CheckoutController;
+use App\Http\Controllers\Frontend\ClinicUser\ProfileController;
 
 Route::group(
     [
@@ -44,7 +47,6 @@ Route::group(
 		Route::post('/jobs/filter', [JobController::class, 'filter'])->name('jobs.filter');
 		Route::get('/jobs/{id}/apply', [JobController::class, 'application'])->name('jobs.application');
 		Route::post('/jobs/{id}/apply', [JobController::class, 'submitApplication'])->name('jobs.submit-application');
-
 		Route::get('/blogs', [BlogController::class, 'index'])->name('blogs');
 		Route::get('/blogs/{id}', [BlogController::class, 'show'])->name('blogs.show');
 		Route::post('/blogs/filter', [BlogController::class, 'filter'])->name('blogs.filter');
@@ -54,12 +56,33 @@ Route::group(
 		Route::post('/courses/filter', [CourseController::class, 'filter'])->name('courses.filter');
     });
 
+// Cart and Checkout Routes (requires clinic authentication)
+Route::group([
+    'prefix' => LaravelLocalization::setLocale(),
+    'middleware' => [
+        'auth:clinic',
+        'localeCookieRedirect',
+        'localizationRedirect',
+        'localeViewPath'
+    ]
+], function () {
+    // Cart routes
+    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+    Route::get('/cart/data', [CartController::class, 'getData'])->name('cart.data');
+    Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
+    Route::post('/cart/update/{itemId}', [CartController::class, 'update'])->name('cart.update');
+    Route::delete('/cart/remove/{itemId}', [CartController::class, 'remove'])->name('cart.remove');
+    Route::post('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
 
-// Patient Registration Routes (outside localization group to match Fortify routes)
-Route::get('/register', [\App\Http\Controllers\Frontend\Auth\PatientAuthController::class, 'showRegistrationForm'])
-    ->name('register');
-Route::post('/register', [\App\Http\Controllers\Frontend\Auth\PatientAuthController::class, 'register'])
-    ->name('register');
+    // Checkout routes
+    Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+    Route::post('/checkout/place-order', [CheckoutController::class, 'placeOrder'])->name('checkout.place-order');
+    Route::get('/checkout/success/{order}', [CheckoutController::class, 'success'])->name('checkout.success');
+
+    // Profile routes
+    Route::get('/profile/orders', [ProfileController::class, 'orders'])->name('profile.orders');
+    Route::get('/profile/orders/{id}', [ProfileController::class, 'orderDetails'])->name('profile.order-details');
+});
 
 // Patient Dashboard Routes
 Route::group([
