@@ -164,6 +164,14 @@ Route::group(
             Route::get('/{id}', [\App\Http\Controllers\Backend\Dashboards\Admin\OrderController::class, 'show'])->name('orders.show');
         });
 
+        // Purchase Requests & Offers
+        Route::group(['prefix' => 'purchase-requests'], function () {
+            Route::get('/', [\App\Http\Controllers\Backend\Dashboards\Admin\PurchaseRequestController::class, 'index'])->name('purchase-requests.index');
+            Route::get('/data', [\App\Http\Controllers\Backend\Dashboards\Admin\PurchaseRequestController::class, 'data'])->name('purchase-requests.data');
+            Route::get('/{id}/offers', [\App\Http\Controllers\Backend\Dashboards\Admin\PurchaseRequestController::class, 'offers'])->name('purchase-requests.offers');
+            Route::get('/{id}/offers/data', [\App\Http\Controllers\Backend\Dashboards\Admin\PurchaseRequestController::class, 'offersData'])->name('purchase-requests.offers.data');
+        });
+
         // Tickets Management
         Route::get('tickets/data', [\App\Http\Controllers\Backend\Dashboards\Admin\TicketController::class, 'data'])->name('tickets.data');
         Route::put('tickets/{id}/update-status', [\App\Http\Controllers\Backend\Dashboards\Admin\TicketController::class, 'updateStatus'])->name('tickets.update-status');

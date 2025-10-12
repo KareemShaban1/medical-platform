@@ -29,7 +29,7 @@
             <input type="text" id="sidebar-search" class="form-control" placeholder="{{ __('Search menu...') }}" autocomplete="off">
         </div>
 
-       
+
 
         <!--- Sidemenu -->
         <ul class="side-nav">
@@ -210,6 +210,25 @@
                         <li>
                             <a href="{{ route('admin.orders.index') }}">
                                 <span> {{ __('All Orders') }} </span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+
+            <!-- Purchase Requests & Offers -->
+            <li class="side-nav-item">
+                <a data-bs-toggle="collapse" href="#sidebarPurchaseRequests" aria-expanded="false"
+                    aria-controls="sidebarPurchaseRequests" class="side-nav-link">
+                    <i class="uil-file-alt"></i>
+                    <span> {{ __('Purchase & Offers') }} </span>
+                    <span class="menu-arrow"></span>
+                </a>
+                <div class="collapse" id="sidebarPurchaseRequests">
+                    <ul class="side-nav-second-level">
+                        <li>
+                            <a href="{{ route('admin.purchase-requests.index') }}">
+                                <span> {{ __('Purchase Requests') }} </span>
                             </a>
                         </li>
                     </ul>
