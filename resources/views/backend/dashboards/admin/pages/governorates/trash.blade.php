@@ -1,5 +1,5 @@
 @extends('backend.dashboards.admin.layouts.app')
-@section('title' , __('Blog Categories Trash'))
+@section('title' , __('Governorates Trash'))
 
 @section('content')
 <div class="container-fluid">
@@ -7,7 +7,7 @@
         <div class="col-12">
             <div class="page-title-box">
                
-                <h4 class="page-title">{{ __('Blog Categories Trash') }}</h4>
+                <h4 class="page-title">{{ __('Governorates Trash') }}</h4>
             </div>
         </div>
     </div>
@@ -16,12 +16,11 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
-                    <table id="blog-categories-table" class="table dt-responsive nowrap w-100">
+                    <table id="governorates-table" class="table dt-responsive nowrap w-100">
                         <thead>
                             <tr>
                                 <th>{{ __('ID') }}</th>
-                                <th>{{ __('Name English') }}</th>
-                                <th>{{ __('Name Arabic') }}</th>
+                                <th>{{ __('Name') }}</th>
                                 <th>{{ __('Actions') }}</th>
                             </tr>
                         </thead>
@@ -37,21 +36,17 @@
 
 @push('scripts')
 <script>
-    let trashTable = $('#blog-categories-table').DataTable({
+    let trashTable = $('#governorates-table').DataTable({
         processing: true,
         serverSide: true,
-        ajax: '{{ route("admin.blog-categories.trash.data") }}',
+        ajax: '{{ route("admin.governorates.trash.data") }}',
         columns: [{
                 data: 'id',
                 name: 'id'
             },
             {
-                data: 'name_en',
-                name: 'name_en'
-            },
-            {
-                data: 'name_ar',
-                name: 'name_ar'
+                data: 'name',
+                name: 'name'
             },
             {
                 data: 'trash_action',
@@ -77,7 +72,7 @@
             {
                 extend: 'excel',
                 text: 'Excel',
-                title: 'Blog Categories Data',
+                title: 'Governorates Data',
                 exportOptions: {
                     columns: [0, 1, 2]
                 }
@@ -109,7 +104,7 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: '{{ route("admin.blog-categories.restore", ":id") }}'.replace(':id', id),
+                    url: '{{ route("admin.governorates.restore", ":id") }}'.replace(':id', id),
                     method: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -136,7 +131,7 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: '{{ route("admin.blog-categories.force-delete", ":id") }}'.replace(':id', id),
+                    url: '{{ route("admin.governorates.force-delete", ":id") }}'.replace(':id', id),
                     method: 'DELETE',
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')

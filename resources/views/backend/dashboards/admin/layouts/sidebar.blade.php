@@ -31,10 +31,8 @@
 
        
 
-        <!--- Sidemenu -->
         <ul class="side-nav">
 
-            <!-- <li class="side-nav-title side-nav-item">Navigation</li> -->
 
             <li class="side-nav-item">
                 <a href="" class="side-nav-link">
@@ -43,6 +41,35 @@
                         {{ __('Admin Dashboard') }}
                     </span>
                 </a>
+            </li>
+
+            <!-- location Management -->
+            <li class="side-nav-item">
+                <a data-bs-toggle="collapse" href="#sidebarLocation" aria-expanded="false"
+                    aria-controls="sidebarLocation" class="side-nav-link">
+                    <i class="uil-location"></i>
+                    <span> {{ __('Location') }} </span>
+                    <span class="menu-arrow"></span>
+                </a>
+                <div class="collapse" id="sidebarLocation">
+                    <ul class="side-nav-second-level">
+                        <li>
+                            <a href="{{ route('admin.governorates.index') }}">
+                                <span> {{ __('Governorates') }} </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.cities.index') }}">
+                                <span> {{ __('Cities') }} </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.areas.index') }}">
+                                <span> {{ __('Areas') }} </span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </li>
 
             <!-- Categories -->

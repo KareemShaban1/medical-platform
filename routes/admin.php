@@ -173,6 +173,31 @@ Route::group(
         Route::post('tickets/{id}/restore', [\App\Http\Controllers\Backend\Dashboards\Admin\TicketController::class, 'restore'])->name('tickets.restore');
         Route::delete('tickets/{id}/force-delete', [\App\Http\Controllers\Backend\Dashboards\Admin\TicketController::class, 'forceDelete'])->name('tickets.force-delete');
         Route::resource('tickets', \App\Http\Controllers\Backend\Dashboards\Admin\TicketController::class)->only(['index', 'show', 'destroy']);
+
+        // Governorates Management
+        Route::get('governorates/data', [\App\Http\Controllers\Backend\Dashboards\Admin\GovernorateController::class, 'data'])->name('governorates.data');
+        Route::get('governorates/trash', [\App\Http\Controllers\Backend\Dashboards\Admin\GovernorateController::class, 'trash'])->name('governorates.trash');
+        Route::get('governorates/trash/data', [\App\Http\Controllers\Backend\Dashboards\Admin\GovernorateController::class, 'trashData'])->name('governorates.trash.data');
+        Route::post('governorates/{id}/restore', [\App\Http\Controllers\Backend\Dashboards\Admin\GovernorateController::class, 'restore'])->name('governorates.restore');
+        Route::delete('governorates/{id}/force-delete', [\App\Http\Controllers\Backend\Dashboards\Admin\GovernorateController::class, 'forceDelete'])->name('governorates.force-delete');
+        Route::resource('governorates', \App\Http\Controllers\Backend\Dashboards\Admin\GovernorateController::class);
+
+        // Cities Management
+        Route::get('cities/data', [\App\Http\Controllers\Backend\Dashboards\Admin\CityController::class, 'data'])->name('cities.data');
+        Route::get('cities/get-cities', [\App\Http\Controllers\Backend\Dashboards\Admin\CityController::class, 'getCitiesByGovernorateId'])->name('cities.get-cities-by-governorate-id');
+        Route::get('cities/trash', [\App\Http\Controllers\Backend\Dashboards\Admin\CityController::class, 'trash'])->name('cities.trash');
+        Route::get('cities/trash/data', [\App\Http\Controllers\Backend\Dashboards\Admin\CityController::class, 'trashData'])->name('cities.trash.data');
+        Route::post('cities/{id}/restore', [\App\Http\Controllers\Backend\Dashboards\Admin\CityController::class, 'restore'])->name('cities.restore');
+        Route::delete('cities/{id}/force-delete', [\App\Http\Controllers\Backend\Dashboards\Admin\CityController::class, 'forceDelete'])->name('cities.force-delete');
+        Route::resource('cities', \App\Http\Controllers\Backend\Dashboards\Admin\CityController::class);
+
+        // Areas Management
+        Route::get('areas/data', [\App\Http\Controllers\Backend\Dashboards\Admin\AreaController::class, 'data'])->name('areas.data');
+        Route::get('areas/trash', [\App\Http\Controllers\Backend\Dashboards\Admin\AreaController::class, 'trash'])->name('areas.trash');
+        Route::get('areas/trash/data', [\App\Http\Controllers\Backend\Dashboards\Admin\AreaController::class, 'trashData'])->name('areas.trash.data');
+        Route::post('areas/{id}/restore', [\App\Http\Controllers\Backend\Dashboards\Admin\AreaController::class, 'restore'])->name('areas.restore');
+        Route::delete('areas/{id}/force-delete', [\App\Http\Controllers\Backend\Dashboards\Admin\AreaController::class, 'forceDelete'])->name('areas.force-delete');
+        Route::resource('areas', \App\Http\Controllers\Backend\Dashboards\Admin\AreaController::class);
     }
 );
 
