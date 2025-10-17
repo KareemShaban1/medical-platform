@@ -70,6 +70,12 @@ class RepositoryServiceProvider extends ServiceProvider
         // Clinic User Salary Repository
         $this->app->bind('App\Interfaces\Clinic\ClinicUserSalaryRepositoryInterface', 'App\Repository\Clinic\ClinicUserSalaryRepository');
 
+        // salary contract repository
+        $this->app->bind('App\Interfaces\Clinic\SalaryContractRepositoryInterface', 'App\Repository\Clinic\SalaryContractRepository');
+
+			// payslip repository
+			$this->app->bind('App\Interfaces\Clinic\PayslipRepositoryInterface', 'App\Repository\Clinic\PayslipRepository');
+
         // Ticket Repositories
         $this->app->bind('App\Interfaces\Admin\TicketRepositoryInterface', 'App\Repository\Admin\TicketRepository');
         $this->app->bind('App\Interfaces\User\TicketRepositoryInterface', 'App\Repository\User\TicketRepository');

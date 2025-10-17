@@ -69,32 +69,40 @@
   				</div>
   			</li>
 
-  			<!-- Clinic User Salaries Management -->
+  			<!-- Salary Contracts Management -->
   			<li class="side-nav-item">
-  				<a data-bs-toggle="collapse" href="#sidebarClinicUserSalaries"
-  					aria-expanded="false" aria-controls="sidebarClinicUserSalaries"
+  				<a data-bs-toggle="collapse" href="#sidebarSalaryContracts"
+  					aria-expanded="false" aria-controls="sidebarSalaryContracts"
   					class="side-nav-link">
   					<i class="uil-file-medical"></i>
-  					<span> {{__('Clinic User Salaries')}} </span>
+  					<span> {{__('Salary Contracts')}} </span>
   					<span class="menu-arrow"></span>
   				</a>
-  				<div class="collapse" id="sidebarClinicUserSalaries">
+  				<div class="collapse" id="sidebarSalaryContracts">
   					<ul class="side-nav-second-level">
   						<li>
   							<a
-  								href="{{ route('clinic.clinic-user-salaries.index') }}">
-  								<span> {{__('Clinic User Salaries')}}
+  								href="{{ route('clinic.salary-contracts.index') }}">
+  								<span> {{__('Salary Contracts')}}
   								</span>
   							</a>
   						</li>
 
   						<li>
   							<a
-  								href="{{ route('clinic.clinic-user-salaries.trash') }}">
-  								<span> {{__('Trash Clinic User Salaries')}}
+  								href="{{ route('clinic.salary-contracts.trash') }}">
+  								<span> {{__('Trash Salary Contracts')}}
   								</span>
   							</a>
   						</li>
+
+						<!-- payslip -->
+						<li>
+							<a href="{{ route('clinic.payslips.index') }}">
+								<span> {{__('Payslip')}}
+								</span>
+							</a>
+						</li>
   					</ul>
   				</div>
   			</li>
