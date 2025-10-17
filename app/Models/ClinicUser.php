@@ -3,11 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-
-use App\Models\Role;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Permission\Traits\HasRoles;
 
@@ -55,6 +52,19 @@ class ClinicUser extends Authenticatable
     {
         return $this->morphMany(UserOtp::class, 'otpable');
     }
+
+    public function salaryContract()
+    {
+        return $this->hasOne(SalaryContract::class);
+    }
+
+    // payslips
+    public function payslips()
+    {
+        return $this->hasMany(Payslip::class);
+    }
+    
+
     
 
 }

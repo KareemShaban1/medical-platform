@@ -12,6 +12,8 @@ use App\Http\Controllers\Backend\Dashboards\Clinic\JobApplicationFieldController
 use App\Http\Controllers\Backend\Dashboards\Clinic\ClinicInventoryController;
 use App\Http\Controllers\Backend\Dashboards\Clinic\ClinicInventoryMovementsController;
 use App\Http\Controllers\Backend\Dashboards\Clinic\ClinicUserSalaryController;
+use App\Http\Controllers\Backend\Dashboards\Clinic\SalaryContractController;
+use App\Http\Controllers\Backend\Dashboards\Clinic\PayslipController;
 use Illuminate\Support\Facades\Auth;
 
 Route::group(
@@ -182,6 +184,25 @@ Route::group(
         Route::delete('clinic-user-salaries/{id}/force-delete', [ClinicUserSalaryController::class, 'forceDelete'])->name('clinic-user-salaries.force-delete');
         Route::get('clinic-user-salaries/user/{userId}/salary-data', [ClinicUserSalaryController::class, 'getUserSalaryData'])->name('clinic-user-salaries.user-salary-data');
         Route::resource('clinic-user-salaries', ClinicUserSalaryController::class);
+
+        // Salary Contracts Management
+        Route::get('salary-contracts/data', [SalaryContractController::class, 'data'])->name('salary-contracts.data');
+        Route::get('salary-contracts/trash', [SalaryContractController::class, 'trash'])->name('salary-contracts.trash');
+        Route::get('salary-contracts/trash/data', [SalaryContractController::class, 'trashData'])->name('salary-contracts.trash.data');
+        Route::post('salary-contracts/{id}/restore', [SalaryContractController::class, 'restore'])->name('salary-contracts.restore');
+        Route::delete('salary-contracts/{id}/force-delete', [SalaryContractController::class, 'forceDelete'])->name('salary-contracts.force-delete');
+        Route::resource('salary-contracts', SalaryContractController::class);
+
+
+        //Payslip
+        Route::get('payslips/data', [PayslipController::class, 'data'])->name('payslips.data');
+        Route::get('payslips/create/{userId}', [PayslipController::class, 'create'])->name('payslips.create');
+        Route::get('payslips/edit/{id}', [PayslipController::class, 'edit'])->name('payslips.edit');
+        Route::get('payslips/trash', [PayslipController::class, 'trash'])->name('payslips.trash');
+        Route::get('payslips/trash/data', [PayslipController::class, 'trashData'])->name('payslips.trash.data');
+        Route::post('payslips/{id}/restore', [PayslipController::class, 'restore'])->name('payslips.restore');
+        Route::delete('payslips/{id}/force-delete', [PayslipController::class, 'forceDelete'])->name('payslips.force-delete');
+        Route::resource('payslips', PayslipController::class);
     }
 );
 
