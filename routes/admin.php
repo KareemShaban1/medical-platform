@@ -15,6 +15,7 @@ use App\Http\Controllers\Backend\Dashboards\Admin\CourseController;
 use App\Http\Controllers\Backend\Dashboards\Admin\JobController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Backend\Dashboards\Admin\SpecialityController;
 
 
 Route::group(
@@ -37,6 +38,10 @@ Route::group(
         Route::get('categories/data', [CategoryController::class, 'data'])->name('categories.data');
         Route::put('categories/{id}/update-status', [CategoryController::class, 'updateStatus'])->name('categories.update-status');
         Route::resource('categories', CategoryController::class);
+
+        // Doctor Specialities
+        Route::get('specialities/data', [SpecialityController::class, 'data'])->name('specialities.data');
+        Route::resource('specialities', SpecialityController::class)->only(['index','store','show','update','destroy']);
 
         // Roles Management
         Route::get('roles/data', [\App\Http\Controllers\Backend\Dashboards\Admin\RoleController::class, 'data'])->name('roles.data');

@@ -14,6 +14,7 @@ class DoctorProfile extends Model implements HasMedia
 
     protected $fillable = [
         'clinic_user_id',
+        'speciality_id',
         'name',
         'bio',
         'email',
@@ -74,6 +75,11 @@ class DoctorProfile extends Model implements HasMedia
     public function featuredBy()
     {
         return $this->belongsTo(Admin::class, 'featured_by');
+    }
+
+    public function speciality()
+    {
+        return $this->belongsTo(Speciality::class, 'speciality_id');
     }
 
     public function registerMediaCollections(): void

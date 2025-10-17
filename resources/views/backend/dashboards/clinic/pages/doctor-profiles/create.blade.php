@@ -50,6 +50,17 @@
                                 <div class="invalid-feedback"></div>
                             </div>
 
+                            <div class="col-md-6 mb-3">
+                                <label for="speciality_id" class="form-label">{{ __('Main Speciality') }}</label>
+                                <select class="form-select" id="speciality_id" name="speciality_id" required>
+                                    <option value="">{{ __('Select Speciality') }}</option>
+                                    @foreach($specialities as $spec)
+                                        <option value="{{ $spec->id }}">{{ $spec->name_en }} - {{ $spec->name_ar }}</option>
+                                    @endforeach
+                                </select>
+                                <div class="invalid-feedback"></div>
+                            </div>
+
                             <div class="col-12 mb-3">
                                 <label for="bio" class="form-label">{{ __('Bio/Summary') }}</label>
                                 <textarea class="form-control" id="bio" name="bio" rows="4" maxlength="2000"></textarea>

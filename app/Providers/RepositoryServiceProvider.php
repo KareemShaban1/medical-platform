@@ -39,6 +39,8 @@ class RepositoryServiceProvider extends ServiceProvider
         // Doctor Profile Repositories
         $this->app->bind('App\Interfaces\Clinic\DoctorProfileRepositoryInterface', 'App\Repository\Clinic\DoctorProfileRepository');
         $this->app->bind('App\Interfaces\Admin\DoctorProfileRepositoryInterface', 'App\Repository\Admin\DoctorProfileRepository');
+        $this->app->bind('App\\Interfaces\\Clinic\\WorkingHourRepositoryInterface', 'App\\Repository\\Clinic\\WorkingHourRepository');
+        $this->app->bind('App\\Interfaces\\Clinic\\AttendanceRepositoryInterface', 'App\\Repository\\Clinic\\AttendanceRepository');
 
         // Patient Repository
         $this->app->bind('App\Interfaces\Clinic\PatientRepositoryInterface', 'App\Repository\Clinic\PatientRepository');

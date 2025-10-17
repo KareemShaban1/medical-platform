@@ -38,13 +38,13 @@ class ClinicRepository implements ClinicRepositoryInterface
 
     public function show($id)
     {
-        return Clinic::with(['clinicUsers.doctorProfile'])->findOrFail($id);
+        return Clinic::with(['clinicUsers.doctorProfile.speciality'])->findOrFail($id);
     }
 
     public function clinicUsersData($id)
     {
         $clinic = Clinic::findOrFail($id);
-        $clinicUsers = $clinic->clinicUsers()->with(['doctorProfile']);
+        $clinicUsers = $clinic->clinicUsers()->with(['doctorProfile.speciality']);
 
         return datatables()->of($clinicUsers)
             ->addColumn('user_name', fn($item) => $item->name)
@@ -275,6 +275,9 @@ class ClinicRepository implements ClinicRepositoryInterface
             }
 
             return '<div class="d-flex flex-wrap">' . $badges . '</div>';
+        }
+        if ($item->doctorProfile && $item->doctorProfile->speciality) {
+            return '<span class="badge bg-primary">' . e($item->doctorProfile->speciality->name_en) . '</span>';
         }
         return '<span class="text-muted">N/A</span>';
     }

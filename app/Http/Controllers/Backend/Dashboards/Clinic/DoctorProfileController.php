@@ -7,6 +7,7 @@ use App\Http\Requests\Clinic\DoctorProfile\DoctorProfileStoreRequest;
 use App\Http\Requests\Clinic\DoctorProfile\DoctorProfileUpdateRequest;
 use App\Interfaces\Clinic\DoctorProfileRepositoryInterface;
 use App\Models\DoctorProfile;
+use App\Models\Speciality;
 
 class DoctorProfileController extends Controller
 {
@@ -37,7 +38,8 @@ class DoctorProfileController extends Controller
                 ->with('info', 'You already have a profile. You can edit it below.');
         }
 
-        return view('backend.dashboards.clinic.pages.doctor-profiles.create');
+        $specialities = Speciality::orderBy('name_en')->get();
+        return view('backend.dashboards.clinic.pages.doctor-profiles.create', compact('specialities'));
     }
 
     public function store(DoctorProfileStoreRequest $request)
@@ -69,7 +71,8 @@ class DoctorProfileController extends Controller
                 ->with('error', 'Profile cannot be edited in current status.');
         }
 
-        return view('backend.dashboards.clinic.pages.doctor-profiles.edit', compact('profile'));
+        $specialities = Speciality::orderBy('name_en')->get();
+        return view('backend.dashboards.clinic.pages.doctor-profiles.edit', compact('profile','specialities'));
     }
 
     public function update(DoctorProfileUpdateRequest $request, $id)
