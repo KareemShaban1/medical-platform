@@ -137,6 +137,10 @@
                                                 </tr>
                                                 @endif
                                                 <tr>
+                                                    <th>{{ __('Main Speciality') }}:</th>
+                                                    <td>{{ $profile->speciality?->name_en ?: 'N/A' }}</td>
+                                                </tr>
+                                                <tr>
                                                     <th>{{ __('Featured Status') }}:</th>
                                                     <td>
                                                         @if($profile->is_featured)

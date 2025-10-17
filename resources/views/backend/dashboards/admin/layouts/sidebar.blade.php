@@ -166,6 +166,11 @@
                                 <span> {{ __('Doctor Profiles') }} </span>
                             </a>
                         </li>
+                        <li>
+                            <a href="{{ route('admin.specialities.index') }}">
+                                <span> {{ __('Doctor Specialites') }} </span>
+                            </a>
+                        </li>
 
                     </ul>
                 </div>

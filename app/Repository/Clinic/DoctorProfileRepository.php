@@ -18,7 +18,7 @@ class DoctorProfileRepository implements DoctorProfileRepositoryInterface
 
     public function data()
     {
-        $profiles = DoctorProfile::with(['clinicUser'])
+        $profiles = DoctorProfile::with(['clinicUser','speciality'])
             ->forClinicUser(auth('clinic')->id());
 
         return datatables()->of($profiles)
@@ -54,7 +54,7 @@ class DoctorProfileRepository implements DoctorProfileRepositoryInterface
 
     public function show($id)
     {
-        return DoctorProfile::with(['clinicUser', 'reviewer'])
+        return DoctorProfile::with(['clinicUser', 'reviewer','speciality'])
             ->forClinicUser(auth('clinic')->id())
             ->findOrFail($id);
     }

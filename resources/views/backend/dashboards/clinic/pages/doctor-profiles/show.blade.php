@@ -72,6 +72,10 @@
                                                     <td>{{ $profile->years_experience ?: 'N/A' }}</td>
                                                 </tr>
                                                 <tr>
+                                                    <th>{{ __('Main Speciality') }}:</th>
+                                                    <td>{{ $profile->speciality?->name_en ?: 'N/A' }}</td>
+                                                </tr>
+                                                <tr>
                                                     <th>{{ __('Status') }}:</th>
                                                     <td>{!! $profile->status_badge !!}</td>
                                                 </tr>

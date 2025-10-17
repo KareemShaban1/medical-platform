@@ -29,6 +29,7 @@ class UpdateUserRequest extends FormRequest
 
         return [
             'name'              => ['required', 'string', 'max:255'],
+            'position_title'    => [$guard === 'clinic' ? 'required' : 'nullable', 'string', 'max:255'],
             'email'             => ['required', 'email', 'max:255', Rule::unique($table, 'email')->ignore($userId)],
             'phone'             => ['required', 'string', 'max:20'],
             'password'          => ['nullable', 'string', 'min:8', 'confirmed'],
@@ -44,6 +45,7 @@ class UpdateUserRequest extends FormRequest
     {
         return [
             'name' => 'Name',
+            'position_title' => 'Position Title',
             'email' => 'Email',
             'phone' => 'Phone',
             'password' => 'Password',

@@ -71,6 +71,7 @@
                                         <h6 class="text-uppercase text-muted">{{ __('Contact Information') }}</h6>
                                         <p><strong>{{ __('Phone') }}:</strong> {{ $userProfile->phone ?: 'N/A' }}</p>
                                         <p><strong>{{ __('Years of Experience') }}:</strong> {{ $userProfile->years_experience ?: 'N/A' }}</p>
+                                        <p><strong>{{ __('Main Speciality') }}:</strong> {{ $userProfile->speciality?->name_en ?: 'N/A' }}</p>
                                     </div>
 
                                     <div class="col-md-6">

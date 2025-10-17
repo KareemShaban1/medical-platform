@@ -22,6 +22,7 @@ class UserRepository implements UserRepositoryInterface
 
         return datatables()->of($users)
             ->addColumn('name', fn($item) => $item->name)
+            ->addColumn('position_title', fn($item) => $item->position_title)
             ->addColumn('email', fn($item) => $item->email)
             ->addColumn('phone', fn($item) => $item->phone)
             ->addColumn('roles', fn($item) => $this->userRoles($item))

@@ -64,6 +64,25 @@ Route::group(
             Route::delete('/{id}', [\App\Http\Controllers\Backend\Dashboards\Clinic\UserController::class, 'destroy'])->name('users.destroy');
         });
 
+        // Working Hours Management
+        Route::group(['prefix' => 'working-hours'], function () {
+            Route::get('/', [\App\Http\Controllers\Backend\Dashboards\Clinic\WorkingHourController::class, 'index'])->name('working-hours.index');
+            Route::get('/for-user/{clinicUserId}', [\App\Http\Controllers\Backend\Dashboards\Clinic\WorkingHourController::class, 'forUser'])->name('working-hours.for-user');
+            Route::post('/bulk-save', [\App\Http\Controllers\Backend\Dashboards\Clinic\WorkingHourController::class, 'bulkSave'])->name('working-hours.bulk-save');
+            Route::delete('/{id}', [\App\Http\Controllers\Backend\Dashboards\Clinic\WorkingHourController::class, 'destroy'])->name('working-hours.destroy');
+        });
+
+        // Attendance Management
+        Route::group(['prefix' => 'attendance'], function () {
+            Route::get('/', [\App\Http\Controllers\Backend\Dashboards\Clinic\AttendanceController::class, 'index'])->name('attendance.index');
+            Route::post('/check-in', [\App\Http\Controllers\Backend\Dashboards\Clinic\AttendanceController::class, 'checkIn'])->name('attendance.check-in');
+            Route::post('/check-out', [\App\Http\Controllers\Backend\Dashboards\Clinic\AttendanceController::class, 'checkOut'])->name('attendance.check-out');
+            Route::post('/absence', [\App\Http\Controllers\Backend\Dashboards\Clinic\AttendanceController::class, 'absence'])->name('attendance.absence');
+            Route::get('/{id}/attachments', [\App\Http\Controllers\Backend\Dashboards\Clinic\AttendanceController::class, 'attachments'])->name('attendance.attachments');
+            Route::post('/{id}/approve', [\App\Http\Controllers\Backend\Dashboards\Clinic\AttendanceController::class, 'approve'])->name('attendance.approve');
+            Route::get('/compute', [\App\Http\Controllers\Backend\Dashboards\Clinic\AttendanceController::class, 'compute'])->name('attendance.compute');
+        });
+
         Route::get('/register-clinic', function () {
             return view('backend.dashboards.clinic.auth.register-clinic');
         })->name('register-clinic')->withoutMiddleware(['auth:clinic', 'check.clinic.approval']);

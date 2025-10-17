@@ -21,6 +21,7 @@ class ClinicUser extends Authenticatable
     protected $fillable = [
         'clinic_id',
         'name',
+        'position_title',
         'email',
         'phone',
         'password',
@@ -54,6 +55,16 @@ class ClinicUser extends Authenticatable
     public function otps()
     {
         return $this->morphMany(UserOtp::class, 'otpable');
+    }
+    
+    public function workingHours()
+    {
+        return $this->hasMany(WorkingHour::class);
+    }
+
+    public function attendanceLogs()
+    {
+        return $this->hasMany(AttendanceLog::class);
     }
     
 

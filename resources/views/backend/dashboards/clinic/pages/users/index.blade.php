@@ -28,6 +28,7 @@
                                                                       <tr>
                                                                                 <th>{{ __('ID') }}</th>
                                                                                 <th>{{ __('Name') }}</th>
+                                                                                <th>{{ __('Position Title') }}</th>
                                                                                 <th>{{ __('Email') }}</th>
                                                                                 <th>{{ __('Phone') }}</th>
                                                                                 <th>{{ __('Roles') }}</th>
@@ -57,21 +58,27 @@
                                                   @csrf
                                                   <input type="hidden" id="usersId">
                                                   <div class="row">
-                                                            <div class="col-12 col-md-6 mb-3">
-                                                                      <label for="name"
-                                                                                class="form-label">{{ __('Name') }}</label>
-                                                                      <input type="text" class="form-control"
-                                                                                id="name" name="name" required>
-                                                                      <div class="invalid-feedback"></div>
-                                                            </div>
+                                                    <div class="col-12 col-md-6 mb-3">
+                                                    <label for="name"
+                                                                class="form-label">{{ __('Name') }}</label>
+                                                    <input type="text" class="form-control"
+                                                                id="name" name="name" required>
+                                                    <div class="invalid-feedback"></div>
+                                                    </div>
 
-                                                            <div class="col-12 col-md-6 mb-3">
-                                                                      <label for="email"
-                                                                                class="form-label">{{ __('Email') }}</label>
-                                                                      <input type="email" class="form-control"
-                                                                                id="email" name="email" required>
-                                                                      <div class="invalid-feedback"></div>
-                                                            </div>
+                                                    <div class="col-12 col-md-6 mb-3">
+                                                    <label for="position_title" class="form-label">{{ __('Position Title') }}</label>
+                                                    <input type="text" class="form-control" id="position_title" name="position_title" required>
+                                                    <div class="invalid-feedback"></div>
+                                                    </div>
+
+                                                    <div class="col-12 col-md-6 mb-3">
+                                                    <label for="email"
+                                                                class="form-label">{{ __('Email') }}</label>
+                                                    <input type="email" class="form-control"
+                                                                id="email" name="email" required>
+                                                    <div class="invalid-feedback"></div>
+                                                    </div>
 
                                                             <div class="col-12 col-md-6 mb-3">
                                                                       <label for="phone"
@@ -147,6 +154,10 @@ let table = $('#users-table').DataTable({
                               name: 'name'
                     },
                     {
+                              data: 'position_title',
+                              name: 'position_title'
+                    },
+                    {
                               data: 'email',
                               name: 'email'
                     },
@@ -181,23 +192,17 @@ let table = $('#users-table').DataTable({
           language: languages[language],
           buttons: [{
                               extend: 'print',
-                              exportOptions: {
-                                        columns: [0, 1, 2, 3, 4, 5]
-                              }
+                              exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6] }
                     },
                     {
                               extend: 'excel',
                               text: 'Excel',
                               title: 'Users Data',
-                              exportOptions: {
-                                        columns: [0, 1, 2, 3, 4, 5]
-                              }
+                              exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6] }
                     },
                     {
                               extend: 'copy',
-                              exportOptions: {
-                                        columns: [0, 1, 2, 3, 4, 5]
-                              }
+                              exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6] }
                     },
           ],
           drawCallback: function() {
@@ -225,6 +230,7 @@ function resetForm() {
           $('#usersModal .modal-title').text('{{ __("Add User") }}');
           $('#password').prop('required', true);
           $('#password_confirmation').prop('required', true);
+          $('#position_title').prop('required', true);
           $('.is-invalid').removeClass('is-invalid');
           $('.invalid-feedback').text('');
           loadRoles();
@@ -333,6 +339,7 @@ function editUser(id) {
           $.get('{{ route("clinic.users.index") }}/' + id, function(data) {
                     $('#usersId').val(data.id);
                     $('#name').val(data.name);
+                    $('#position_title').val(data.position_title || '');
                     $('#email').val(data.email);
                     $('#phone').val(data.phone);
                     $('#statusToggle').prop('checked', data.status);

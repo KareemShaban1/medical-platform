@@ -100,7 +100,7 @@
   			</li>
 
 
-  			<!-- Doctor Profiles Management -->
+			<!-- Doctor Profiles Management -->
   			<li class="side-nav-item">
   				<a data-bs-toggle="collapse" href="#sidebarDoctorProfiles"
   					aria-expanded="false" aria-controls="sidebarDoctorProfiles"
@@ -121,6 +121,21 @@
   					</ul>
   				</div>
   			</li>
+			<!-- Working Hours -->
+			<li class="side-nav-item">
+				<a href="{{ route('clinic.working-hours.index') }}" class="side-nav-link">
+					<i class="uil-schedule"></i>
+					<span> {{ __('Working Hours') }} </span>
+				</a>
+			</li>
+
+			<!-- Attendance -->
+			<li class="side-nav-item">
+				<a href="{{ route('clinic.attendance.index') }}" class="side-nav-link">
+					<i class="uil-clock-eight"></i>
+					<span> {{ __('Attendance') }} </span>
+				</a>
+			</li>
 
   			<!-- Patients Management -->
   			<li class="side-nav-item">

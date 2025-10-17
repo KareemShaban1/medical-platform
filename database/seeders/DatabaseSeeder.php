@@ -28,6 +28,7 @@ class DatabaseSeeder extends Seeder
             RoleAndPermissionSeeder::class,
             ClinicUserSeeder::class,
             SupplierUserSeeder::class,
+            SpecialitySeeder::class,
             CategorySeeder::class,
             ProductSeeder::class,
             OrderSeeder::class

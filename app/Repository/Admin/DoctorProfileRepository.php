@@ -17,7 +17,7 @@ class DoctorProfileRepository implements DoctorProfileRepositoryInterface
 
     public function data()
     {
-        $profiles = DoctorProfile::with(['clinicUser', 'reviewer', 'featuredBy']);
+        $profiles = DoctorProfile::with(['clinicUser', 'reviewer', 'featuredBy','speciality']);
 
         return datatables()->of($profiles)
             ->addColumn('profile_photo', fn($item) => $this->profilePhoto($item))
@@ -34,7 +34,7 @@ class DoctorProfileRepository implements DoctorProfileRepositoryInterface
 
     public function pendingData()
     {
-        $profiles = DoctorProfile::with(['clinicUser'])
+        $profiles = DoctorProfile::with(['clinicUser','speciality'])
             ->pending();
 
         return datatables()->of($profiles)
@@ -50,7 +50,7 @@ class DoctorProfileRepository implements DoctorProfileRepositoryInterface
 
     public function show($id)
     {
-        return DoctorProfile::with(['clinicUser', 'reviewer', 'featuredBy'])->findOrFail($id);
+        return DoctorProfile::with(['clinicUser', 'reviewer', 'featuredBy','speciality'])->findOrFail($id);
     }
 
     public function approve($id)
