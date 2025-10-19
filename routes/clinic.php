@@ -155,6 +155,10 @@ Route::group(
             Route::delete('/{id}', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'destroy'])->name('requests.destroy');
         });
 
+        // Accepted Offer Invoice
+        Route::get('offers/{offerId}/invoice', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'invoice'])
+            ->name('offers.invoice');
+
         // Patients Management
         Route::group(['prefix' => 'patients'], function () {
             Route::get('/data', [\App\Http\Controllers\Backend\Dashboards\Clinic\PatientController::class, 'data'])->name('patients.data');

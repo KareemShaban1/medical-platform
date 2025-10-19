@@ -25,6 +25,7 @@ class StoreClinicInventoryRequest extends FormRequest
             'item_name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'quantity' => 'required|integer|min:1',
+            'min_quantity' => 'nullable|integer|min:0',
             'unit' => 'required|string|max:255',
             'main_image' => 'required|image|mimes:jpeg,png,jpg,webp|max:2048',
             'images' => 'nullable|array',

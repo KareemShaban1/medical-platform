@@ -38,19 +38,30 @@
 						</div>
 
 						<div class="row">
-							<!-- Quantity -->
-							<div class="col-md-6 mb-3">
-								<label for="quantity"
-									class="form-label">{{ __('Quantity') }}</label>
-								<input type="number" name="quantity"
-									id="quantity"
-									class="form-control"
-									value="{{ old('quantity', $clinicInventory->quantity) }}"
-									required>
-								@error('quantity') <span
-									class="text-danger">{{ $message }}</span>
-								@enderror
-							</div>
+                            <!-- Quantity -->
+                            <div class="col-md-6 mb-3">
+                                <label for="quantity"
+                                    class="form-label">{{ __('Quantity') }}</label>
+                                <input type="number" name="quantity"
+                                    id="quantity"
+                                    class="form-control"
+                                    value="{{ old('quantity', $clinicInventory->quantity) }}"
+                                    required>
+                                @error('quantity') <span
+                                    class="text-danger">{{ $message }}</span>
+                                @enderror
+                            </div>
+
+                            <!-- Min Quantity -->
+                            <div class="col-md-6 mb-3">
+                                <label for="min_quantity"
+                                    class="form-label">{{ __('Min Quantity (Alert)') }}</label>
+                                <input type="number" name="min_quantity" id="min_quantity"
+                                       class="form-control"
+                                       value="{{ old('min_quantity', $clinicInventory->min_quantity) }}"
+                                       min="0">
+                                @error('min_quantity') <span class="text-danger">{{ $message }}</span> @enderror
+                            </div>
 
 							<!-- Unit -->
 							<div class="col-md-6 mb-3">

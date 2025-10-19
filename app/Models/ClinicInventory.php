@@ -18,14 +18,21 @@ class ClinicInventory extends Model implements HasMedia
         'item_name',
         'description',
         'quantity',
+        'min_quantity',
         'unit',
     ];
         
-    public $appends = ['main_image', 'images'];
+    public $appends = ['main_image', 'images', 'is_low_stock'];
 
     public function getMainImageAttribute()
     {
         return $this->getMedia('main_image')->first()?->getUrl() ?? null;
+    }
+
+    public function getIsLowStockAttribute()
+    {
+        $min = (int) ($this->min_quantity ?? 0);
+        return (int) $this->quantity < $min && $min > 0;
     }
 
     public function getImagesAttribute()

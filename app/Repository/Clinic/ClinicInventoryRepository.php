@@ -19,15 +19,26 @@ class ClinicInventoryRepository implements ClinicInventoryRepositoryInterface
 
     public function data()
     {
-        $clinicInventories = ClinicInventory::query();
+        $query = ClinicInventory::query();
 
-        return datatables()->of($clinicInventories)
+        // Optional filter for low stock items
+        if (request()->boolean('low_stock')) {
+            $query->whereColumn('quantity', '<', 'min_quantity')->where('min_quantity', '>', 0);
+        }
+
+        return datatables()->of($query)
             ->editColumn('main_image', function ($item) {
                 return '<img src="' . $item->main_image . '" alt="" class="img-fluid" style="width: 50px; height: 50px;">';
             })
+            ->editColumn('quantity', function ($item) {
+                $badge = $item->is_low_stock ? ' <span class="badge bg-danger ms-1">' . __('Low') . '</span>' : '';
+                return e($item->quantity) . $badge;
+            })
+            ->addColumn('min_quantity', fn($item) => $item->min_quantity)
             ->addColumn('action', fn($item) => $this->clinicInventoryActions($item))
             ->addColumn('movements', fn($item) => $this->clinicInventoryMovements($item))
-            ->rawColumns(['action', 'main_image', 'movements'])
+            ->addColumn('is_low_stock', fn($item) => (bool) $item->is_low_stock)
+            ->rawColumns(['action', 'main_image', 'movements', 'quantity'])
             ->make(true);
     }
 

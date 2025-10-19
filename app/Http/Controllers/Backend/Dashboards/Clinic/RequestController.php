@@ -143,11 +143,34 @@ class RequestController extends Controller
                 'success' => true,
                 'data' => $categories
             ]);
-        } catch (\Exception $e) {
+    } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage()
             ], 400);
+        }
+    }
+
+    public function invoice($offerId)
+    {
+        try {
+            $offer = \App\Models\Offer::with(['request.clinic', 'supplier'])
+                ->accepted()
+                ->findOrFail($offerId);
+
+            // Ensure the authenticated clinic owns the request
+            if ($offer->request->clinic_id !== auth('clinic')->user()->clinic_id) {
+                abort(403);
+            }
+
+            return view('backend.dashboards.clinic.pages.requests.invoice', [
+                'offer' => $offer,
+                'requestModel' => $offer->request,
+                'clinic' => $offer->request->clinic,
+                'supplier' => $offer->supplier,
+            ]);
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', $e->getMessage());
         }
     }
 }

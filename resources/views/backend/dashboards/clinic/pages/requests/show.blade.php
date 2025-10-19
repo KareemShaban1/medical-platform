@@ -192,9 +192,14 @@
                                                     </button>
                                                 </div>
                                             @elseif($offer->status === 'accepted')
-                                                <div class="alert alert-success mb-0">
-                                                    <i class="mdi mdi-check-circle me-2"></i>
-                                                    <strong>{{ __('Accepted!') }}</strong> {{ __('This offer has been accepted.') }}
+                                                <div class="d-grid gap-2">
+                                                    <div class="alert alert-success mb-0">
+                                                        <i class="mdi mdi-check-circle me-2"></i>
+                                                        <strong>{{ __('Accepted!') }}</strong> {{ __('This offer has been accepted.') }}
+                                                    </div>
+                                                    <a href="{{ route('clinic.offers.invoice', ['offerId' => $offer->id]) }}" class="btn btn-outline-primary btn-sm">
+                                                        <i class="mdi mdi-file-document me-1"></i> {{ __('View Invoice') }}
+                                                    </a>
                                                 </div>
                                             @endif
                                         </div>
