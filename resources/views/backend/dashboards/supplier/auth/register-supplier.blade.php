@@ -192,6 +192,12 @@
 												class="fa fa-arrow-right"></i>
 										</button>
 									</div>
+                                    <div class="back-to-home text-center">
+                                        <a href="{{ route('home') }}" class="btn btn-link">
+                                            <i class="fa fa-arrow-left"></i>
+                                            {{ __('Back to Home') }}
+                                        </a>
+                                    </div>
 								</div>
 
 								<!-- Step 2: User Details -->

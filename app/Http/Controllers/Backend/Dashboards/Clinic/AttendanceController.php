@@ -101,6 +101,38 @@ class AttendanceController extends Controller
         }
     }
 
+    public function approveCheckIn($id)
+    {
+        try {
+            $log = $this->repo->approveCheckIn($id, auth('clinic')->id());
+            return response()->json(['status' => 'success', 'message' => __('Check-in approved'), 'data' => $log]);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 400);
+        }
+    }
+
+    public function approveCheckOut($id)
+    {
+        try {
+            $log = $this->repo->approveCheckOut($id, auth('clinic')->id());
+            return response()->json(['status' => 'success', 'message' => __('Check-out approved'), 'data' => $log]);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 400);
+        }
+    }
+
+    public function myLogs(Request $request)
+    {
+        $request->validate([
+            'start' => 'nullable|date',
+            'end' => 'nullable|date',
+        ]);
+        $start = $request->input('start', now()->copy()->subDays(30)->toDateString());
+        $end = $request->input('end', now()->toDateString());
+        $logs = $this->repo->listForUser(auth('clinic')->id(), $start, $end);
+        return response()->json(['status' => 'success', 'data' => $logs]);
+    }
+
     public function compute(Request $request)
     {
         $request->validate([

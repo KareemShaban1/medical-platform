@@ -107,6 +107,12 @@
 									<a href="{{ route('clinic.register-clinic') }}">{{ __('Register here') }}</a>
 								</p>
 							</div>
+                            <div class="back-to-home text-center">
+                                <a href="{{ route('home') }}" class="btn btn-link">
+                                    <i class="fa fa-arrow-left"></i>
+                                    {{ __('Back to Home') }}
+                                </a>
+                            </div>
 						</form>
 					</div>
 				</div>

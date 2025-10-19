@@ -31,6 +31,7 @@
                                     <th>{{ __('Type') }}</th>
                                     <th>{{ __('Status') }}</th>
                                     <th>{{ __('Notes') }}</th>
+                                    <th>{{ __('Action') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -49,14 +50,33 @@
                                                 @if(($log->media_count ?? 0) > 0)
                                                     <button class="btn btn-link btn-sm p-0 ms-2" onclick="viewAttachments({{ $log->id }})">{{ __('View Attachments') }} ({{ $log->media_count }})</button>
                                                 @endif
+                                            @elseif($log->check_type === 'check_in' || $log->check_type === 'check_out')
+                                                @if($log->approved_at)
+                                                    <span class="badge bg-success">{{ __('Approved') }}</span>
+                                                @else
+                                                    <span class="badge bg-secondary">{{ __('Pending') }}</span>
+                                                @endif
                                             @else
                                                 <span class="text-muted">-</span>
                                             @endif
                                         </td>
                                         <td>{{ $log->notes }}</td>
+                                        <td>
+                                            @if(!$log->approved_at && !auth('clinic')->user()->hasRole('doctor'))
+                                                @if($log->check_type === 'check_in')
+                                                    <button class="btn btn-sm btn-primary" onclick="approveCheckIn({{ $log->id }})">{{ __('Approve') }}</button>
+                                                @elseif($log->check_type === 'check_out')
+                                                    <button class="btn btn-sm btn-primary" onclick="approveCheckOut({{ $log->id }})">{{ __('Approve') }}</button>
+                                                @else
+                                                    <span class="text-muted">-</span>
+                                                @endif
+                                            @else
+                                                <span class="text-muted">-</span>
+                                            @endif
+                                        </td>
                                     </tr>
                                 @empty
-                                    <tr><td colspan="4" class="text-muted">{{ __('No logs') }}</td></tr>
+                                    <tr><td colspan="6" class="text-muted">{{ __('No logs') }}</td></tr>
                                 @endforelse
                             </tbody>
                         </table>
@@ -146,6 +166,36 @@
             </div>
         </div>
     </div>
+
+    <div class="row mt-3">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">{{ __('My Attendance Logs') }}</h5>
+                    <div class="d-flex align-items-center gap-2">
+                        <input type="date" id="myStart" class="form-control form-control-sm" style="max-width: 200px;">
+                        <input type="date" id="myEnd" class="form-control form-control-sm" style="max-width: 200px;">
+                        <button class="btn btn-sm btn-info" id="btnMyLogs">{{ __('Load') }}</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm" id="my-logs-table">
+                            <thead>
+                                <tr>
+                                    <th>{{ __('Date/Time') }}</th>
+                                    <th>{{ __('Type') }}</th>
+                                    <th>{{ __('Status') }}</th>
+                                    <th>{{ __('Approved By') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 @endsection
 
@@ -209,6 +259,55 @@ function approve(id){
         Swal.fire('Error', xhr.responseJSON?.message || 'Error', 'error');
     });
 }
+
+function approveCheckIn(id){
+    $.post('{{ route('clinic.attendance.approve-check-in', ':id') }}'.replace(':id', id), {
+        _token: $('meta[name="csrf-token"]').attr('content')
+    }, function(resp){
+        Swal.fire('Success', resp.message, 'success').then(() => location.reload());
+    }).fail(function(xhr){
+        Swal.fire('Error', xhr.responseJSON?.message || 'Error', 'error');
+    });
+}
+
+function approveCheckOut(id){
+    $.post('{{ route('clinic.attendance.approve-check-out', ':id') }}'.replace(':id', id), {
+        _token: $('meta[name="csrf-token"]').attr('content')
+    }, function(resp){
+        Swal.fire('Success', resp.message, 'success').then(() => location.reload());
+    }).fail(function(xhr){
+        Swal.fire('Error', xhr.responseJSON?.message || 'Error', 'error');
+    });
+}
+
+function loadMyLogs(){
+    const params = {
+        start: $('#myStart').val(),
+        end: $('#myEnd').val()
+    };
+    $.get('{{ route('clinic.attendance.my-logs') }}', params, function(resp){
+        const rows = (resp.data || []).map(function(l){
+            const at = l.at ? new Date(l.at).toLocaleString() : '';
+            const status = l.approved_at ? '<span class="badge bg-success">{{ __('Approved') }}</span>' : '<span class="badge bg-secondary">{{ __('Pending') }}</span>';
+            const approver = l.approver ? (l.approver.name || '') : '';
+            return `<tr><td>${at}</td><td>${l.check_type.replace('_',' ')}</td><td>${status}</td><td>${approver}</td></tr>`;
+        }).join('');
+        $('#my-logs-table tbody').html(rows || `<tr><td colspan="4" class="text-muted">{{ __('No logs') }}</td></tr>`);
+    }).fail(function(xhr){
+        Swal.fire('Error', xhr.responseJSON?.message || 'Error', 'error');
+    });
+}
+
+$(document).ready(function(){
+    const today = new Date();
+    const start = new Date(); start.setDate(today.getDate()-30);
+    const fmt = (d)=> d.toISOString().slice(0,10);
+    $('#myStart').val(fmt(start));
+    $('#myEnd').val(fmt(today));
+    loadMyLogs();
+});
+
+$('#btnMyLogs').on('click', function(){ loadMyLogs(); });
 
 function viewAttachments(id){
     $.get('{{ route('clinic.attendance.attachments', ':id') }}'.replace(':id', id), function(resp){

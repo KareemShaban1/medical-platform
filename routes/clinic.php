@@ -82,6 +82,9 @@ Route::group(
             Route::post('/absence', [\App\Http\Controllers\Backend\Dashboards\Clinic\AttendanceController::class, 'absence'])->name('attendance.absence');
             Route::get('/{id}/attachments', [\App\Http\Controllers\Backend\Dashboards\Clinic\AttendanceController::class, 'attachments'])->name('attendance.attachments');
             Route::post('/{id}/approve', [\App\Http\Controllers\Backend\Dashboards\Clinic\AttendanceController::class, 'approve'])->name('attendance.approve');
+            Route::post('/{id}/approve-check-in', [\App\Http\Controllers\Backend\Dashboards\Clinic\AttendanceController::class, 'approveCheckIn'])->name('attendance.approve-check-in');
+            Route::post('/{id}/approve-check-out', [\App\Http\Controllers\Backend\Dashboards\Clinic\AttendanceController::class, 'approveCheckOut'])->name('attendance.approve-check-out');
+            Route::get('/my-logs', [\App\Http\Controllers\Backend\Dashboards\Clinic\AttendanceController::class, 'myLogs'])->name('attendance.my-logs');
             Route::get('/compute', [\App\Http\Controllers\Backend\Dashboards\Clinic\AttendanceController::class, 'compute'])->name('attendance.compute');
         });
 
