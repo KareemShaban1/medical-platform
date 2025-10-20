@@ -102,6 +102,9 @@ Route::group([
     Route::get('tickets/data', [\App\Http\Controllers\Frontend\TicketController::class, 'data'])->name('tickets.data');
     Route::post('tickets/{id}/reply', [\App\Http\Controllers\Frontend\TicketController::class, 'reply'])->name('tickets.reply');
     Route::resource('tickets', \App\Http\Controllers\Frontend\TicketController::class)->only(['index', 'store', 'show']);
+
+    Route::get('lab-orders', [\App\Http\Controllers\Frontend\Patient\LabOrderController::class, 'index'])->name('lab-orders.index');
+    Route::get('lab-orders/{id}', [\App\Http\Controllers\Frontend\Patient\LabOrderController::class, 'show'])->name('lab-orders.show');
 });
 
 // Patient Logout Route
@@ -115,3 +118,5 @@ Route::post('/user/logout', function (\Illuminate\Http\Request $request) {
 require __DIR__ . '/admin.php';
 require __DIR__.'/clinic.php';
 require __DIR__.'/supplier.php';
+
+

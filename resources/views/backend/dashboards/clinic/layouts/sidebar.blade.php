@@ -273,6 +273,20 @@
   					</ul>
   				</div>
   			</li>
+            	<!-- Lab Orders -->
+  			<li class="side-nav-item">
+                <a data-bs-toggle="collapse" href="#sidebarLabOrders" aria-expanded="false" aria-controls="sidebarLabOrders" class="side-nav-link">
+                    <i class="uil-flask"></i>
+                    <span> {{__('Lab Orders')}} </span>
+                    <span class="menu-arrow"></span>
+                </a>
+                <div class="collapse" id="sidebarLabOrders">
+                    <ul class="side-nav-second-level">
+                        <li><a href="{{ route('clinic.lab-orders.index') }}"><span> {{__('All Lab Orders')}} </span></a></li>
+                        <li><a href="{{ route('clinic.lab-orders.create') }}"><span> {{__('Create Lab Order')}} </span></a></li>
+                    </ul>
+                </div>
+            </li>
 
   			<!-- Requests Management (Tickets System) -->
   			<li class="side-nav-item">
@@ -349,3 +363,4 @@
   	<!-- Sidebar -left -->
   </div>
   <!-- Left Sidebar End -->
+

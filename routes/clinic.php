@@ -248,9 +248,15 @@ Route::group(
         Route::post('expenses/{id}/restore', [ExpenseController::class, 'restore'])->name('expenses.restore');
         Route::delete('expenses/{id}/force-delete', [ExpenseController::class, 'forceDelete'])->name('expenses.force-delete');
         Route::resource('expenses', ExpenseController::class);
-    }
-
-);
+            // Lab Orders
+        Route::get('lab-orders', [\App\Http\Controllers\Backend\Dashboards\Clinic\LabOrderController::class, 'index'])->name('lab-orders.index');
+        Route::get('lab-orders/data', [\App\Http\Controllers\Backend\Dashboards\Clinic\LabOrderController::class, 'data'])->name('lab-orders.data');
+        Route::get('lab-orders/create', [\App\Http\Controllers\Backend\Dashboards\Clinic\LabOrderController::class, 'create'])->name('lab-orders.create');
+        Route::post('lab-orders', [\App\Http\Controllers\Backend\Dashboards\Clinic\LabOrderController::class, 'store'])->name('lab-orders.store');
+        Route::get('lab-orders/{id}', [\App\Http\Controllers\Backend\Dashboards\Clinic\LabOrderController::class, 'show'])->name('lab-orders.show');
+        Route::post('lab-orders/{id}/upload', [\App\Http\Controllers\Backend\Dashboards\Clinic\LabOrderController::class, 'upload'])->name('lab-orders.upload');
+        Route::post('lab-orders/{id}/complete', [\App\Http\Controllers\Backend\Dashboards\Clinic\LabOrderController::class, 'complete'])->name('lab-orders.complete');
+    });
 
 
 Route::post('/clinic/logout', function (Request $request) {
@@ -261,3 +267,4 @@ Route::post('/clinic/logout', function (Request $request) {
 
     return redirect()->to('/clinic/login');
 })->name('clinic.logout');
+

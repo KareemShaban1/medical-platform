@@ -4,6 +4,10 @@ namespace App\Providers;
 
 use App\Interfaces\Supplier\ProductRepositoryInterface;
 use App\Repository\Supplier\ProductRepository;
+use App\Interfaces\Clinic\LabOrderRepositoryInterface as ClinicLabOrderRepositoryInterface;
+use App\Repository\Clinic\LabOrderRepository as ClinicLabOrderRepository;
+use App\Interfaces\User\LabOrderRepositoryInterface as UserLabOrderRepositoryInterface;
+use App\Repository\User\LabOrderRepository as UserLabOrderRepository;
 use Illuminate\Support\ServiceProvider;
 
 class RepositoryServiceProvider extends ServiceProvider
@@ -83,6 +87,10 @@ class RepositoryServiceProvider extends ServiceProvider
         // Ticket Repositories
         $this->app->bind('App\Interfaces\Admin\TicketRepositoryInterface', 'App\Repository\Admin\TicketRepository');
         $this->app->bind('App\Interfaces\User\TicketRepositoryInterface', 'App\Repository\User\TicketRepository');
+
+        // Lab Orders Repositories
+        $this->app->bind(ClinicLabOrderRepositoryInterface::class, ClinicLabOrderRepository::class);
+        $this->app->bind(UserLabOrderRepositoryInterface::class, UserLabOrderRepository::class);
     }
 
 
