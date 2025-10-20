@@ -10,7 +10,11 @@
             <!-- Header -->
             <div class="flex justify-between items-center bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-4">
                 <h2 class="text-xl font-semibold">{{ __('Patient Dashboard') }}</h2>
-
+                <div class="flex items-center gap-3">
+                    <a href="{{ route('user.lab-orders.index') }}" class="px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded-lg text-sm font-medium transition">
+                        <i class="fas fa-vials"></i> {{ __('My Lab Results') }}
+                    </a>
+                
                 <form method="POST" action="{{ route('user.logout') }}" onsubmit="return confirm('{{ __('Are you sure you want to logout?') }}')">
                     @csrf
                     <button type="submit"
@@ -19,6 +23,7 @@
                         {{ __('Logout') }}
                     </button>
                 </form>
+                </div>
             </div>
 
             <!-- Body -->
@@ -40,15 +45,25 @@
                             ['icon' => 'fa-calendar', 'color' => 'text-green-500', 'title' => __('Appointments'), 'desc' => __('Manage your appointments')],
                             ['icon' => 'fa-file-medical', 'color' => 'text-sky-500', 'title' => __('Medical Records'), 'desc' => __('Access your medical history')],
                             ['icon' => 'fa-pills', 'color' => 'text-yellow-500', 'title' => __('Prescriptions'), 'desc' => __('View your prescriptions')],
+                            // Lab Results card with same style (clickable)
+                            ['icon' => 'fa-vials', 'color' => 'text-purple-500', 'title' => __('Lab Results'), 'desc' => __('View and download your results'), 'route' => route('user.lab-orders.index')],
                         ];
                     @endphp
 
                     @foreach($features as $feature)
-                        <div class="bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition rounded-xl shadow p-6 text-center">
-                            <i class="fas {{ $feature['icon'] }} {{ $feature['color'] }} text-4xl mb-3"></i>
-                            <h5 class="text-lg font-semibold text-gray-800 dark:text-gray-100">{{ $feature['title'] }}</h5>
-                            <p class="text-sm text-gray-500 dark:text-gray-300">{{ $feature['desc'] }}</p>
-                        </div>
+                        @if(isset($feature['route']))
+                            <a href="{{ $feature['route'] }}" class="bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition rounded-xl shadow p-6 text-center block">
+                                <i class="fas {{ $feature['icon'] }} {{ $feature['color'] }} text-4xl mb-3"></i>
+                                <h5 class="text-lg font-semibold text-gray-800 dark:text-gray-100">{{ $feature['title'] }}</h5>
+                                <p class="text-sm text-gray-500 dark:text-gray-300">{{ $feature['desc'] }}</p>
+                            </a>
+                        @else
+                            <div class="bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition rounded-xl shadow p-6 text-center">
+                                <i class="fas {{ $feature['icon'] }} {{ $feature['color'] }} text-4xl mb-3"></i>
+                                <h5 class="text-lg font-semibold text-gray-800 dark:text-gray-100">{{ $feature['title'] }}</h5>
+                                <p class="text-sm text-gray-500 dark:text-gray-300">{{ $feature['desc'] }}</p>
+                            </div>
+                        @endif
                     @endforeach
                 </div>
 
