@@ -14,6 +14,8 @@ use App\Http\Controllers\Backend\Dashboards\Clinic\ClinicInventoryMovementsContr
 use App\Http\Controllers\Backend\Dashboards\Clinic\ClinicUserSalaryController;
 use App\Http\Controllers\Backend\Dashboards\Clinic\SalaryContractController;
 use App\Http\Controllers\Backend\Dashboards\Clinic\PayslipController;
+use App\Http\Controllers\Backend\Dashboards\Clinic\ExpenseCategoryController;
+use App\Http\Controllers\Backend\Dashboards\Clinic\ExpenseController;
 use Illuminate\Support\Facades\Auth;
 
 Route::group(
@@ -229,7 +231,25 @@ Route::group(
         Route::post('payslips/{id}/restore', [PayslipController::class, 'restore'])->name('payslips.restore');
         Route::delete('payslips/{id}/force-delete', [PayslipController::class, 'forceDelete'])->name('payslips.force-delete');
         Route::resource('payslips', PayslipController::class);
+
+        // Expense Categories Management
+        Route::get('expense-categories/data', [ExpenseCategoryController::class, 'data'])->name('expense-categories.data');
+        Route::get('expense-categories/trash', [ExpenseCategoryController::class, 'trash'])->name('expense-categories.trash');
+        Route::get('expense-categories/trash/data', [ExpenseCategoryController::class, 'trashData'])->name('expense-categories.trash.data');
+        Route::post('expense-categories/{id}/restore', [ExpenseCategoryController::class, 'restore'])->name('expense-categories.restore');
+        Route::delete('expense-categories/{id}/force-delete', [ExpenseCategoryController::class, 'forceDelete'])->name('expense-categories.force-delete');
+        Route::put('expense-categories/{id}/update-status', [ExpenseCategoryController::class, 'updateStatus'])->name('expense-categories.update-status');
+        Route::resource('expense-categories', ExpenseCategoryController::class);
+
+        // Expenses Management
+        Route::get('expenses/data', [ExpenseController::class, 'data'])->name('expenses.data');
+        Route::get('expenses/trash', [ExpenseController::class, 'trash'])->name('expenses.trash');
+        Route::get('expenses/trash/data', [ExpenseController::class, 'trashData'])->name('expenses.trash.data');
+        Route::post('expenses/{id}/restore', [ExpenseController::class, 'restore'])->name('expenses.restore');
+        Route::delete('expenses/{id}/force-delete', [ExpenseController::class, 'forceDelete'])->name('expenses.force-delete');
+        Route::resource('expenses', ExpenseController::class);
     }
+
 );
 
 
