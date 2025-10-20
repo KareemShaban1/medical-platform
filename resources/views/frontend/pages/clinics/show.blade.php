@@ -539,23 +539,50 @@
 					</ul>
 				</div>
 
-				<!-- Gallery -->
+				<!-- Doctors -->
 				<div class="clinic-description">
-					<h3>Clinic Gallery</h3>
-					<div class="clinic-gallery">
-						<div class="gallery-item">
-							<img src="/images/clinics/gallery-1.jpg" alt="Clinic Interior">
+					<h3>{{ __('Our Doctors') }}</h3>
+					@if($doctors->count() > 0)
+					<div class="doctors-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px;">
+						@foreach($doctors as $doctor)
+						<div class="doctor-card" style="background: white; border-radius: 12px; padding: 24px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); transition: all 0.3s ease; cursor: pointer; border: 1px solid #e5e7eb;" onclick="window.location.href='{{ route('doctors.show', $doctor->id) }}'">
+							<div style="display: flex; flex-direction: column; align-items: center; text-align: center;">
+								@if($doctor->profile_photo_url)
+								<img src="{{ $doctor->profile_photo_url }}" alt="{{ $doctor->name }}" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin-bottom: 16px; border: 3px solid #10b981;">
+								@else
+								<div style="width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(135deg, #059669, #10b981); display: flex; align-items: center; justify-content: center; margin-bottom: 16px; color: white; font-size: 36px; font-weight: 700;">
+									{{ substr($doctor->name, 0, 1) }}
+								</div>
+								@endif
+								<h4 style="font-size: 18px; font-weight: 600; color: #111827; margin-bottom: 8px;">
+									{{ $doctor->name }}
+								</h4>
+								<p style="color: #059669; font-weight: 500; margin-bottom: 12px; font-size: 14px;">
+									{{ $doctor->speciality->name ?? __('General Practice') }}
+								</p>
+								@if($doctor->years_experience)
+								<p style="color: #6b7280; font-size: 13px; margin-bottom: 8px;">
+									<i class="fas fa-briefcase" style="margin-right: 4px;"></i>
+									{{ $doctor->years_experience }} {{ __('years experience') }}
+								</p>
+								@endif
+								@if($doctor->bio)
+								<p style="color: #6b7280; font-size: 14px; line-height: 1.5; margin-bottom: 16px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+									{{ $doctor->bio }}
+								</p>
+								@endif
+								<button class="btn" style="width: 100%; background: #059669; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 500; transition: all 0.3s ease; cursor: pointer;" onmouseover="this.style.background='#10b981'" onmouseout="this.style.background='#059669'">
+									<i class="fas fa-calendar-plus" style="margin-right: 8px;"></i>{{ __('Book Appointment') }}
+								</button>
+							</div>
 						</div>
-						<div class="gallery-item">
-							<img src="/images/clinics/gallery-2.jpg" alt="Waiting Area">
-						</div>
-						<div class="gallery-item">
-							<img src="/images/clinics/gallery-3.jpg" alt="Consultation Room">
-						</div>
-						<div class="gallery-item">
-							<img src="/images/clinics/gallery-4.jpg" alt="Reception Area">
-						</div>
+						@endforeach
 					</div>
+					@else
+					<p style="color: #6b7280; padding: 40px; text-align: center; background: #f8fafc; border-radius: 8px;">
+						{{ __('No doctors available at this clinic yet.') }}
+					</p>
+					@endif
 				</div>
 			</div>
 

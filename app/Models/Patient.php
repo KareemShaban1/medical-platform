@@ -34,6 +34,14 @@ class Patient extends Authenticatable
         return $this->morphMany(UserOtp::class, 'otpable');
     }
 
+    /**
+     * Get appointments for this patient
+     */
+    public function appointments()
+    {
+        return $this->hasMany(Appointment::class);
+    }
+
     // ------- Scopes -------
 
     /**

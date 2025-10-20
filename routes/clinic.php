@@ -222,6 +222,31 @@ Route::group(
         Route::post('payslips/{id}/restore', [PayslipController::class, 'restore'])->name('payslips.restore');
         Route::delete('payslips/{id}/force-delete', [PayslipController::class, 'forceDelete'])->name('payslips.force-delete');
         Route::resource('payslips', PayslipController::class);
+
+        // Availability Overrides Management
+        Route::get('availability-overrides/data', [\App\Http\Controllers\Backend\Dashboards\Clinic\AvailabilityOverrideController::class, 'data'])->name('availability-overrides.data');
+        Route::get('availability-overrides/trash', [\App\Http\Controllers\Backend\Dashboards\Clinic\AvailabilityOverrideController::class, 'trash'])->name('availability-overrides.trash');
+        Route::get('availability-overrides/trash/data', [\App\Http\Controllers\Backend\Dashboards\Clinic\AvailabilityOverrideController::class, 'trashData'])->name('availability-overrides.trash.data');
+        Route::post('availability-overrides/{id}/restore', [\App\Http\Controllers\Backend\Dashboards\Clinic\AvailabilityOverrideController::class, 'restore'])->name('availability-overrides.restore');
+        Route::delete('availability-overrides/{id}/force-delete', [\App\Http\Controllers\Backend\Dashboards\Clinic\AvailabilityOverrideController::class, 'forceDelete'])->name('availability-overrides.force-delete');
+        Route::get('availability-overrides/doctor/{doctorId}', [\App\Http\Controllers\Backend\Dashboards\Clinic\AvailabilityOverrideController::class, 'forDoctor'])->name('availability-overrides.for-doctor');
+        Route::resource('availability-overrides', \App\Http\Controllers\Backend\Dashboards\Clinic\AvailabilityOverrideController::class);
+
+        // Daily Periods Management
+        Route::get('daily-periods/data', [\App\Http\Controllers\Backend\Dashboards\Clinic\DailyPeriodController::class, 'data'])->name('daily-periods.data');
+        Route::post('daily-periods/{id}/toggle-open', [\App\Http\Controllers\Backend\Dashboards\Clinic\DailyPeriodController::class, 'toggleOpen'])->name('daily-periods.toggle-open');
+        Route::post('daily-periods/{id}/update-capacity', [\App\Http\Controllers\Backend\Dashboards\Clinic\DailyPeriodController::class, 'updateCapacity'])->name('daily-periods.update-capacity');
+        Route::post('daily-periods/generate', [\App\Http\Controllers\Backend\Dashboards\Clinic\DailyPeriodController::class, 'generatePeriods'])->name('daily-periods.generate');
+        Route::resource('daily-periods', \App\Http\Controllers\Backend\Dashboards\Clinic\DailyPeriodController::class);
+
+        // Appointments Management
+        Route::get('appointments/data', [\App\Http\Controllers\Backend\Dashboards\Clinic\AppointmentController::class, 'data'])->name('appointments.data');
+        Route::get('appointments/available-periods', [\App\Http\Controllers\Backend\Dashboards\Clinic\AppointmentController::class, 'getAvailablePeriods'])->name('appointments.available-periods');
+        Route::post('appointments/{id}/confirm', [\App\Http\Controllers\Backend\Dashboards\Clinic\AppointmentController::class, 'confirm'])->name('appointments.confirm');
+        Route::post('appointments/{id}/cancel', [\App\Http\Controllers\Backend\Dashboards\Clinic\AppointmentController::class, 'cancel'])->name('appointments.cancel');
+        Route::get('appointments/doctor/{doctorId}', [\App\Http\Controllers\Backend\Dashboards\Clinic\AppointmentController::class, 'forDoctor'])->name('appointments.for-doctor');
+        Route::get('appointments/period/{periodId}', [\App\Http\Controllers\Backend\Dashboards\Clinic\AppointmentController::class, 'forPeriod'])->name('appointments.for-period');
+        Route::resource('appointments', \App\Http\Controllers\Backend\Dashboards\Clinic\AppointmentController::class);
     }
 );
 

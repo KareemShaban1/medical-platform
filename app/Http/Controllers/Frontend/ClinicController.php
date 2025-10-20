@@ -34,7 +34,7 @@ class ClinicController extends Controller
 			});
 		}
 
-	
+
 
 		// Sort options
 		switch ($request->get('sort', 'name')) {
@@ -93,6 +93,16 @@ class ClinicController extends Controller
 			->with(['approvement'])
 			->findOrFail($id);
 
+		// Get doctor profiles for this clinic
+		$doctors = \App\Models\DoctorProfile::where('status', \App\Models\DoctorProfile::STATUS_APPROVED)
+			->whereHas('clinicUser', function($q) use ($id) {
+				$q->where('clinic_id', $id);
+			})
+			->with(['speciality', 'clinicUser'])
+			->orderBy('is_featured', 'desc')
+			->orderBy('name')
+			->get();
+
 		// Get related clinics with same specialization
 		$relatedClinics = Clinic::approved()
 			->where('status', true)
@@ -107,6 +117,6 @@ class ClinicController extends Controller
 			->limit(4)
 			->get();
 
-		return view('frontend.pages.clinics.show', compact('clinic', 'relatedClinics', 'nearbyClinics'));
+		return view('frontend.pages.clinics.show', compact('clinic', 'doctors', 'relatedClinics', 'nearbyClinics'));
 	}
 }

@@ -2,21 +2,23 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
-use App\Models\Category;
-use App\Observers\CategoryObserver;
-use App\Models\RentalSpace;
-use App\Observers\RentalSpaceObserver;
-use App\Models\BlogCategory;
-use App\Observers\BlogCategoryObserver;
-use App\Models\BlogPost;
-use App\Observers\BlogPostObserver;
-use App\Models\Course;
-use App\Observers\CourseObserver;
 use App\Models\Job;
+use App\Models\Course;
+use App\Models\BlogPost;
+use App\Models\Category;
+use App\Models\RentalSpace;
+use App\Models\BlogCategory;
 use App\Observers\JobObserver;
 use App\Models\ClinicInventory;
+use App\Observers\CourseObserver;
+use App\Observers\BlogPostObserver;
+use App\Observers\CategoryObserver;
+use Illuminate\Pagination\Paginator;
+use App\Observers\RentalSpaceObserver;
+use App\Observers\BlogCategoryObserver;
+use Illuminate\Support\ServiceProvider;
 use App\Observers\ClinicInventoryObserver;
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -33,7 +35,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         //
-        
+
         // add observer to category model
         Category::observe(CategoryObserver::class);
         RentalSpace::observe(RentalSpaceObserver::class);
@@ -42,5 +44,7 @@ class AppServiceProvider extends ServiceProvider
         Course::observe(CourseObserver::class);
         Job::observe(JobObserver::class);
         ClinicInventory::observe(ClinicInventoryObserver::class);
+        Paginator::useBootstrapFour();
+
     }
 }

@@ -33,36 +33,52 @@ class WorkingHourRepository implements WorkingHourRepositoryInterface
             $user = ClinicUser::where('clinic_id', auth('clinic')->user()->clinic_id)
                 ->findOrFail($clinicUserId);
 
-            WorkingHour::where('clinic_user_id', $user->id)->where('is_recurring', $isRecurring)->delete();
+            // Get existing working hours for this user
+            $existingSlots = WorkingHour::where('clinic_user_id', $user->id)
+                ->where('is_recurring', $isRecurring)
+                ->get()
+                ->keyBy('id');
 
-            $payload = [];
-            $seenDays = [];
+            $incomingIds = collect($slots)->pluck('id')->filter()->toArray();
+            $existingIds = $existingSlots->pluck('id')->toArray();
+
+            // Delete slots that are not in the incoming payload
+            $idsToDelete = array_diff($existingIds, $incomingIds);
+            if (!empty($idsToDelete)) {
+                WorkingHour::whereIn('id', $idsToDelete)->delete();
+            }
+
+            // Process incoming slots
             foreach ($slots as $slot) {
-                // ['day_of_week'=>0..6,'start_time'=>'HH:MM','end_time'=>'HH:MM']
+                // Validate required fields
                 if (!isset($slot['day_of_week'], $slot['start_time'], $slot['end_time'])) {
                     continue;
                 }
+
                 $day = (int)$slot['day_of_week'];
-                if (isset($seenDays[$day])) {
-                    continue;
-                }
+
+                // Validate time range
                 if ($slot['end_time'] <= $slot['start_time']) {
                     continue;
                 }
-                $payload[] = [
+
+                $slotData = [
                     'clinic_user_id' => $user->id,
                     'day_of_week' => $day,
                     'start_time' => $slot['start_time'],
                     'end_time' => $slot['end_time'],
                     'is_recurring' => $isRecurring,
-                    'created_at' => now(),
-                    'updated_at' => now(),
                 ];
-                $seenDays[$day] = true;
-            }
 
-            if (!empty($payload)) {
-                WorkingHour::insert($payload);
+                // Update existing slot or create new one
+                if (isset($slot['id']) && $existingSlots->has($slot['id'])) {
+                    // Update existing slot
+                    $existingSlot = $existingSlots->get($slot['id']);
+                    $existingSlot->update($slotData);
+                } else {
+                    // Create new slot
+                    WorkingHour::create($slotData);
+                }
             }
 
             return $this->forUser($user->id);

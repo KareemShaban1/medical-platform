@@ -129,21 +129,51 @@
   					</ul>
   				</div>
   			</li>
-			<!-- Working Hours -->
-			<li class="side-nav-item">
-				<a href="{{ route('clinic.working-hours.index') }}" class="side-nav-link">
-					<i class="uil-schedule"></i>
-					<span> {{ __('Working Hours') }} </span>
-				</a>
-			</li>
+		<!-- Working Hours -->
+		<li class="side-nav-item">
+			<a href="{{ route('clinic.working-hours.index') }}" class="side-nav-link">
+				<i class="uil-schedule"></i>
+				<span> {{ __('Working Hours') }} </span>
+			</a>
+		</li>
 
-			<!-- Attendance -->
-			<li class="side-nav-item">
-				<a href="{{ route('clinic.attendance.index') }}" class="side-nav-link">
-					<i class="uil-clock-eight"></i>
-					<span> {{ __('Attendance') }} </span>
-				</a>
-			</li>
+		<!-- Attendance -->
+		<li class="side-nav-item">
+			<a href="{{ route('clinic.attendance.index') }}" class="side-nav-link">
+				<i class="uil-clock-eight"></i>
+				<span> {{ __('Attendance') }} </span>
+			</a>
+		</li>
+
+		<!-- Appointments Management -->
+		<li class="side-nav-item">
+			<a data-bs-toggle="collapse" href="#sidebarAppointments" aria-expanded="false"
+				aria-controls="sidebarAppointments" class="side-nav-link">
+				<i class="uil-calendar-alt"></i>
+				<span> {{__('Appointments')}} </span>
+				<span class="menu-arrow"></span>
+			</a>
+			<div class="collapse" id="sidebarAppointments">
+				<ul class="side-nav-second-level">
+					<li>
+						<a href="{{ route('clinic.appointments.index') }}">
+							<span> {{__('All Appointments')}} </span>
+						</a>
+					</li>
+                    <li>
+						<a href="{{ route('clinic.availability-overrides.index') }}">
+							<span> {{__('Availability Overrides')}} </span>
+						</a>
+					</li>
+					<li>
+						<a href="{{ route('clinic.daily-periods.index') }}">
+							<span> {{__('Daily Periods')}} </span>
+						</a>
+					</li>
+
+				</ul>
+			</div>
+		</li>
 
   			<!-- Patients Management -->
   			<li class="side-nav-item">

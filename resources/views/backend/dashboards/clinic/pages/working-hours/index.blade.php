@@ -53,13 +53,11 @@
                             @for($d=0;$d<7;$d++)
                                 <td>
                                     <div class="day-slots" data-day="{{ $d }}">
-                                        <div class="input-group mb-1">
-                                            <input type="time" class="form-control start">
-                                            <span class="input-group-text">-</span>
-                                            <input type="time" class="form-control end">
-                                            <button class="btn btn-sm btn-outline-danger clear-slot" type="button"><i class="mdi mdi-close"></i></button>
-                                        </div>
+                                        <!-- Slots will be dynamically added here -->
                                     </div>
+                                    <button class="btn btn-sm btn-outline-primary add-period-btn mt-2 w-100" data-day="{{ $d }}" type="button">
+                                        <i class="mdi mdi-plus"></i> {{ __('Add Period') }}
+                                    </button>
                                 </td>
                             @endfor
                         </tr>
@@ -74,10 +72,12 @@
 @push('styles')
 <style>
 /* Make day columns wide enough and inputs readable */
-#weekGrid th, #weekGrid td { min-width: 180px; vertical-align: top; }
+#weekGrid th, #weekGrid td { min-width: 180px; vertical-align: top; padding: 1rem; }
+#weekGrid .day-slots { min-height: 60px; }
 #weekGrid .day-slots .input-group { gap: 4px; }
-#weekGrid .day-slots .input-group input.form-control { min-width: 120px; }
+#weekGrid .day-slots .input-group input.form-control { min-width: 120px; font-size: 0.875rem; }
 #weekGrid .day-slots .input-group .input-group-text { padding: 0 .5rem; }
+#weekGrid .add-period-btn { font-size: 0.8rem; padding: 0.25rem 0.5rem; }
 @media (max-width: 1400px) {
   #weekGrid th, #weekGrid td { min-width: 200px; }
   #weekGrid .day-slots .input-group input.form-control { min-width: 130px; }
@@ -92,32 +92,75 @@ $('.select2').select2();
 const days = [0,1,2,3,4,5,6];
 let clipboardWeek = null;
 
-function renderSlots(day, slots) {
-    const container = $(`.day-slots[data-day="${day}"]`);
-    const row = container.find('.input-group');
-    const first = (slots && slots.length > 0) ? slots[0] : null;
-    row.find('input.start').val(first ? first.start_time : '');
-    row.find('input.end').val(first ? first.end_time : '');
+// Generate HTML for a single time slot
+function createSlotHTML(day, slotData = null) {
+    const id = slotData?.id || '';
+    const start = slotData?.start_time || '';
+    const end = slotData?.end_time || '';
+
+    return `
+        <div class="input-group mb-2 slot-row" data-slot-id="${id}">
+            <input type="time" class="form-control start" value="${start}">
+            <span class="input-group-text">-</span>
+            <input type="time" class="form-control end" value="${end}">
+            <button class="btn btn-sm btn-outline-danger remove-slot" type="button">
+                <i class="mdi mdi-close"></i>
+            </button>
+        </div>
+    `;
 }
 
+// Render all slots for a specific day
+function renderSlots(day, slots) {
+    const container = $(`.day-slots[data-day="${day}"]`);
+    container.empty();
+
+    if (!slots || slots.length === 0) {
+        // Add one empty slot by default
+        container.append(createSlotHTML(day, null));
+    } else {
+        // Render all existing slots
+        slots.forEach(slot => {
+            container.append(createSlotHTML(day, slot));
+        });
+    }
+}
+
+// Collect all slots from the grid
 function getGridData() {
     const slots = [];
     days.forEach(day => {
         const container = $(`.day-slots[data-day="${day}"]`);
-        container.find('.input-group').each(function() {
+        container.find('.slot-row').each(function() {
+            const slotId = $(this).data('slot-id');
             const start = $(this).find('input.start').val();
             const end = $(this).find('input.end').val();
             if (start && end) {
-                slots.push({ day_of_week: day, start_time: start, end_time: end });
+                const slotData = {
+                    day_of_week: day,
+                    start_time: start,
+                    end_time: end
+                };
+                if (slotId) {
+                    slotData.id = slotId;
+                }
+                slots.push(slotData);
             }
         });
     });
     return slots;
 }
 
+// Set all slots in the grid
 function setGridData(allSlots) {
     const grouped = {0:[],1:[],2:[],3:[],4:[],5:[],6:[]};
-    (allSlots || []).forEach(s => { grouped[s.day_of_week].push({start_time: s.start_time, end_time: s.end_time}); });
+    (allSlots || []).forEach(s => {
+        grouped[s.day_of_week].push({
+            id: s.id,
+            start_time: s.start_time,
+            end_time: s.end_time
+        });
+    });
     days.forEach(d => renderSlots(d, grouped[d]));
 }
 
@@ -128,17 +171,35 @@ function loadUserHours(userId) {
 }
 
 $(document).ready(function() {
-    // clear single slot per day
-    $(document).on('click', '.clear-slot', function(){
-        const row = $(this).closest('.input-group');
-        row.find('input.start').val('');
-        row.find('input.end').val('');
+    // Add a new period to a specific day
+    $(document).on('click', '.add-period-btn', function(){
+        const day = $(this).data('day');
+        const container = $(`.day-slots[data-day="${day}"]`);
+        container.append(createSlotHTML(day, null));
+    });
+
+    // Remove a specific slot
+    $(document).on('click', '.remove-slot', function(){
+        const container = $(this).closest('.day-slots');
+        const slotRow = $(this).closest('.slot-row');
+
+        // Only remove if there's more than one slot, otherwise just clear it
+        if (container.find('.slot-row').length > 1) {
+            slotRow.remove();
+        } else {
+            slotRow.find('input.start').val('');
+            slotRow.find('input.end').val('');
+            slotRow.attr('data-slot-id', '');
+        }
     });
 
     // copy/paste
     $('#copyWeekBtn').on('click', function(){ clipboardWeek = getGridData(); Swal.fire('Copied', '{{ __('Week copied to clipboard') }}', 'success');});
     $('#pasteWeekBtn').on('click', function(){ if (clipboardWeek) setGridData(clipboardWeek); });
-    $('#clearWeekBtn').on('click', function(){ setGridData([]); });
+    $('#clearWeekBtn').on('click', function(){
+        // Clear all slots and add one empty slot per day
+        days.forEach(d => renderSlots(d, []));
+    });
 
     // load initial user
     const initialUser = $('#clinicUserSelect').val();
