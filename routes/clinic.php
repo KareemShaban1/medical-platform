@@ -14,6 +14,8 @@ use App\Http\Controllers\Backend\Dashboards\Clinic\ClinicInventoryMovementsContr
 use App\Http\Controllers\Backend\Dashboards\Clinic\ClinicUserSalaryController;
 use App\Http\Controllers\Backend\Dashboards\Clinic\SalaryContractController;
 use App\Http\Controllers\Backend\Dashboards\Clinic\PayslipController;
+use App\Http\Controllers\Backend\Dashboards\Clinic\ExpenseCategoryController;
+use App\Http\Controllers\Backend\Dashboards\Clinic\ExpenseController;
 use Illuminate\Support\Facades\Auth;
 
 Route::group(
@@ -82,6 +84,9 @@ Route::group(
             Route::post('/absence', [\App\Http\Controllers\Backend\Dashboards\Clinic\AttendanceController::class, 'absence'])->name('attendance.absence');
             Route::get('/{id}/attachments', [\App\Http\Controllers\Backend\Dashboards\Clinic\AttendanceController::class, 'attachments'])->name('attendance.attachments');
             Route::post('/{id}/approve', [\App\Http\Controllers\Backend\Dashboards\Clinic\AttendanceController::class, 'approve'])->name('attendance.approve');
+            Route::post('/{id}/approve-check-in', [\App\Http\Controllers\Backend\Dashboards\Clinic\AttendanceController::class, 'approveCheckIn'])->name('attendance.approve-check-in');
+            Route::post('/{id}/approve-check-out', [\App\Http\Controllers\Backend\Dashboards\Clinic\AttendanceController::class, 'approveCheckOut'])->name('attendance.approve-check-out');
+            Route::get('/my-logs', [\App\Http\Controllers\Backend\Dashboards\Clinic\AttendanceController::class, 'myLogs'])->name('attendance.my-logs');
             Route::get('/compute', [\App\Http\Controllers\Backend\Dashboards\Clinic\AttendanceController::class, 'compute'])->name('attendance.compute');
         });
 
@@ -154,6 +159,10 @@ Route::group(
             Route::put('/{id}', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'update'])->name('requests.update');
             Route::delete('/{id}', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'destroy'])->name('requests.destroy');
         });
+
+        // Accepted Offer Invoice
+        Route::get('offers/{offerId}/invoice', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'invoice'])
+            ->name('offers.invoice');
 
         // Patients Management
         Route::group(['prefix' => 'patients'], function () {
@@ -247,8 +256,32 @@ Route::group(
         Route::get('appointments/doctor/{doctorId}', [\App\Http\Controllers\Backend\Dashboards\Clinic\AppointmentController::class, 'forDoctor'])->name('appointments.for-doctor');
         Route::get('appointments/period/{periodId}', [\App\Http\Controllers\Backend\Dashboards\Clinic\AppointmentController::class, 'forPeriod'])->name('appointments.for-period');
         Route::resource('appointments', \App\Http\Controllers\Backend\Dashboards\Clinic\AppointmentController::class);
-    }
-);
+
+        // Expense Categories Management
+        Route::get('expense-categories/data', [ExpenseCategoryController::class, 'data'])->name('expense-categories.data');
+        Route::get('expense-categories/trash', [ExpenseCategoryController::class, 'trash'])->name('expense-categories.trash');
+        Route::get('expense-categories/trash/data', [ExpenseCategoryController::class, 'trashData'])->name('expense-categories.trash.data');
+        Route::post('expense-categories/{id}/restore', [ExpenseCategoryController::class, 'restore'])->name('expense-categories.restore');
+        Route::delete('expense-categories/{id}/force-delete', [ExpenseCategoryController::class, 'forceDelete'])->name('expense-categories.force-delete');
+        Route::put('expense-categories/{id}/update-status', [ExpenseCategoryController::class, 'updateStatus'])->name('expense-categories.update-status');
+        Route::resource('expense-categories', ExpenseCategoryController::class);
+
+        // Expenses Management
+        Route::get('expenses/data', [ExpenseController::class, 'data'])->name('expenses.data');
+        Route::get('expenses/trash', [ExpenseController::class, 'trash'])->name('expenses.trash');
+        Route::get('expenses/trash/data', [ExpenseController::class, 'trashData'])->name('expenses.trash.data');
+        Route::post('expenses/{id}/restore', [ExpenseController::class, 'restore'])->name('expenses.restore');
+        Route::delete('expenses/{id}/force-delete', [ExpenseController::class, 'forceDelete'])->name('expenses.force-delete');
+        Route::resource('expenses', ExpenseController::class);
+            // Lab Orders
+        Route::get('lab-orders', [\App\Http\Controllers\Backend\Dashboards\Clinic\LabOrderController::class, 'index'])->name('lab-orders.index');
+        Route::get('lab-orders/data', [\App\Http\Controllers\Backend\Dashboards\Clinic\LabOrderController::class, 'data'])->name('lab-orders.data');
+        Route::get('lab-orders/create', [\App\Http\Controllers\Backend\Dashboards\Clinic\LabOrderController::class, 'create'])->name('lab-orders.create');
+        Route::post('lab-orders', [\App\Http\Controllers\Backend\Dashboards\Clinic\LabOrderController::class, 'store'])->name('lab-orders.store');
+        Route::get('lab-orders/{id}', [\App\Http\Controllers\Backend\Dashboards\Clinic\LabOrderController::class, 'show'])->name('lab-orders.show');
+        Route::post('lab-orders/{id}/upload', [\App\Http\Controllers\Backend\Dashboards\Clinic\LabOrderController::class, 'upload'])->name('lab-orders.upload');
+        Route::post('lab-orders/{id}/complete', [\App\Http\Controllers\Backend\Dashboards\Clinic\LabOrderController::class, 'complete'])->name('lab-orders.complete');
+    });
 
 
 Route::post('/clinic/logout', function (Request $request) {
@@ -259,3 +292,4 @@ Route::post('/clinic/logout', function (Request $request) {
 
     return redirect()->to('/clinic/login');
 })->name('clinic.logout');
+

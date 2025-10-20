@@ -26,9 +26,10 @@
 
   	<div class="h-100" id="leftside-menu-container" data-simplebar="">
 
-	  <div class="px-3 py-2">
-            <input type="text" id="sidebar-search" class="form-control" placeholder="{{ __('Search menu...') }}" autocomplete="off">
-        </div>
+  		<div class="px-3 py-2">
+  			<input type="text" id="sidebar-search" class="form-control"
+  				placeholder="{{ __('Search menu...') }}" autocomplete="off">
+  		</div>
 
   		<!--- Sidemenu -->
   		<ul class="side-nav">
@@ -96,19 +97,19 @@
   							</a>
   						</li>
 
-						<!-- payslip -->
-						<li>
-							<a href="{{ route('clinic.payslips.index') }}">
-								<span> {{__('Payslip')}}
-								</span>
-							</a>
-						</li>
+  						<!-- payslip -->
+  						<li>
+  							<a href="{{ route('clinic.payslips.index') }}">
+  								<span> {{__('Payslip')}}
+  								</span>
+  							</a>
+  						</li>
   					</ul>
   				</div>
   			</li>
 
 
-			<!-- Doctor Profiles Management -->
+  			<!-- Doctor Profiles Management -->
   			<li class="side-nav-item">
   				<a data-bs-toggle="collapse" href="#sidebarDoctorProfiles"
   					aria-expanded="false" aria-controls="sidebarDoctorProfiles"
@@ -129,21 +130,21 @@
   					</ul>
   				</div>
   			</li>
-		<!-- Working Hours -->
-		<li class="side-nav-item">
-			<a href="{{ route('clinic.working-hours.index') }}" class="side-nav-link">
-				<i class="uil-schedule"></i>
-				<span> {{ __('Working Hours') }} </span>
-			</a>
-		</li>
+  		<!-- Working Hours -->
+  		<li class="side-nav-item">
+  			<a href="{{ route('clinic.working-hours.index') }}" class="side-nav-link">
+  				<i class="uil-schedule"></i>
+  				<span> {{ __('Working Hours') }} </span>
+  			</a>
+  		</li>
 
-		<!-- Attendance -->
-		<li class="side-nav-item">
-			<a href="{{ route('clinic.attendance.index') }}" class="side-nav-link">
-				<i class="uil-clock-eight"></i>
-				<span> {{ __('Attendance') }} </span>
-			</a>
-		</li>
+  		<!-- Attendance -->
+  		<li class="side-nav-item">
+  			<a href="{{ route('clinic.attendance.index') }}" class="side-nav-link">
+  				<i class="uil-clock-eight"></i>
+  				<span> {{ __('Attendance') }} </span>
+  			</a>
+  		</li>
 
 		<!-- Appointments Management -->
 		<li class="side-nav-item">
@@ -302,6 +303,20 @@
   					</ul>
   				</div>
   			</li>
+            	<!-- Lab Orders -->
+  			<li class="side-nav-item">
+                <a data-bs-toggle="collapse" href="#sidebarLabOrders" aria-expanded="false" aria-controls="sidebarLabOrders" class="side-nav-link">
+                    <i class="uil-flask"></i>
+                    <span> {{__('Lab Orders')}} </span>
+                    <span class="menu-arrow"></span>
+                </a>
+                <div class="collapse" id="sidebarLabOrders">
+                    <ul class="side-nav-second-level">
+                        <li><a href="{{ route('clinic.lab-orders.index') }}"><span> {{__('All Lab Orders')}} </span></a></li>
+                        <li><a href="{{ route('clinic.lab-orders.create') }}"><span> {{__('Create Lab Order')}} </span></a></li>
+                    </ul>
+                </div>
+            </li>
 
   			<!-- Requests Management (Tickets System) -->
   			<li class="side-nav-item">
@@ -328,8 +343,33 @@
   				</div>
   			</li>
 
-
-
+  			<!-- Expense Categories Management -->
+  			<li class="side-nav-item">
+  				<a data-bs-toggle="collapse" href="#sidebarExpenseCategories"
+  					aria-expanded="false" aria-controls="sidebarExpenseCategories"
+  					class="side-nav-link">
+  					<i class="uil-file-medical"></i>
+  					<span> {{__('Expenses')}} </span>
+  					<span class="menu-arrow"></span>
+  				</a>
+  				<div class="collapse" id="sidebarExpenseCategories">
+  					<ul class="side-nav-second-level">
+  						<li>
+  							<a
+  								href="{{ route('clinic.expense-categories.index') }}">
+  								<span> {{__('Expense Categories')}}
+  								</span>
+  							</a>
+  						</li>
+  						<li> <a href="{{ route('clinic.expenses.index') }}">
+  								<span> {{__('Expenses')}}
+  								</span>
+  							</a>
+  						</li>
+  					</ul>
+  				</div>
+  			</li>
+  			</li>
 
   			<!-- Notifications -->
   			<li class="side-nav-item">
@@ -353,3 +393,4 @@
   	<!-- Sidebar -left -->
   </div>
   <!-- Left Sidebar End -->
+

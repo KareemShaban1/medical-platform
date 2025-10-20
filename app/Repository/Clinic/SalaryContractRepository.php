@@ -101,11 +101,11 @@ class SalaryContractRepository implements SalaryContractRepositoryInterface
                 ], $action);
             }
 
+            DB::commit();
 
             if ($request->ajax()) {
                 return $this->jsonResponse('success', __('Salary contract ' . $action . ' successfully'));
             }
-            DB::commit();
 
             return redirect()->route('clinic.salary-contracts.index')->with('success', __('Salary contract ' . $action . ' successfully'));
         } catch (\Exception $e) {

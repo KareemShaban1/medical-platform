@@ -89,6 +89,7 @@ class PayslipRepository implements PayslipRepositoryInterface
                     ]);
                 }
             });
+            DB::commit();
 
 
 

@@ -18,7 +18,6 @@ use App\Observers\RentalSpaceObserver;
 use App\Observers\BlogCategoryObserver;
 use Illuminate\Support\ServiceProvider;
 use App\Observers\ClinicInventoryObserver;
-
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -44,6 +43,5 @@ class AppServiceProvider extends ServiceProvider
         Course::observe(CourseObserver::class);
         Job::observe(JobObserver::class);
         ClinicInventory::observe(ClinicInventoryObserver::class);
-
     }
 }

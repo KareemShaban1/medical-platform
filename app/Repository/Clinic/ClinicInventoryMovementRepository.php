@@ -5,6 +5,7 @@ namespace App\Repository\Clinic;
 use App\Interfaces\Clinic\ClinicInventoryMovementRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 use App\Models\ClinicInventoryMovement;
+use App\Models\ClinicInventory;
 
 class ClinicInventoryMovementRepository implements ClinicInventoryMovementRepositoryInterface
 {
@@ -30,7 +31,7 @@ class ClinicInventoryMovementRepository implements ClinicInventoryMovementReposi
         return ClinicInventoryMovement::findOrFail($id);
     }
 
-    
+
     public function store($request)
     {
         return $this->saveClinicInventoryMovement(new ClinicInventoryMovement(), $request, 'created');
@@ -90,22 +91,32 @@ class ClinicInventoryMovementRepository implements ClinicInventoryMovementReposi
     {
         try {
             DB::beginTransaction();
+            // Prevent OUT movements beyond available stock
+            if ($request->type === 'out') {
+                $inventory = ClinicInventory::findOrFail($request->clinic_inventory_id);
+                if ((int) $request->quantity > (int) $inventory->quantity) {
+                    throw new \Exception(__('The out quantity exceeds current stock.'));
+                }
+            }
             $clinicInventoryMovement->fill($request->validated())->save();
+
+            DB::commit();
 
             if ($request->type == 'in') {
                 $clinicInventoryMovement->clinicInventory->update([
                     'quantity' => $clinicInventoryMovement->clinicInventory->quantity + $request->quantity
                 ]);
             } else {
-                $clinicInventoryMovement->clinicInventory->update([
-                    'quantity' => $clinicInventoryMovement->clinicInventory->quantity - $request->quantity
-                ]);
+                $newQty = $clinicInventoryMovement->clinicInventory->quantity - $request->quantity;
+                if ($newQty < 0) {
+                    throw new \Exception(__('Invalid movement: resulting stock would be negative.'));
+                }
+                $clinicInventoryMovement->clinicInventory->update(['quantity' => $newQty]);
             }
 
             if ($request->ajax()) {
                 return $this->jsonResponse('success', __('Clinic inventory ' . $action . ' successfully'));
             }
-            DB::commit();
 
             return redirect()->route('clinic.clinic-inventory-movements.index', $clinicInventoryMovement->clinicInventory->id)->with('success', __('Clinic inventory ' . $action . ' successfully'));
         } catch (\Exception $e) {

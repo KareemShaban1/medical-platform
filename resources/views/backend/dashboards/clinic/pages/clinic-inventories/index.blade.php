@@ -29,6 +29,7 @@
 								<th>{{ __('Main Image') }}</th>
 								<th>{{ __('Name') }}</th>
 								<th>{{ __('Quantity') }}</th>
+								<th>{{ __('Min Qty') }}</th>
 								<th>{{ __('Unit') }}</th>
 								<th>{{ __('Movements') }}</th>
 								<th>{{ __('Actions') }}</th>
@@ -46,10 +47,14 @@
 
 @push('scripts')
 <script>
+let lowOnly = false;
 let table = $('#clinic-inventory-table').DataTable({
 	processing: true,
 	serverSide: true,
-	ajax: '{{ route("clinic.clinic-inventories.data") }}',
+	ajax: {
+		url: '{{ route("clinic.clinic-inventories.data") }}',
+		data: function(d){ d.low_stock = lowOnly ? 1 : 0; }
+	},
 	columns: [{
 			data: 'id',
 			name: 'id'
@@ -64,6 +69,9 @@ let table = $('#clinic-inventory-table').DataTable({
 		}, {
 			data: 'quantity',
 			name: 'quantity'
+		}, {
+			data: 'min_quantity',
+			name: 'min_quantity'
 		}, {
 			data: 'unit',
 			name: 'unit'
@@ -105,6 +113,11 @@ let table = $('#clinic-inventory-table').DataTable({
 			exportOptions: {
 				columns: [0, 1, 2]
 			}
+		},
+		{
+			text: '{{ __('Low Stock Only') }}',
+			className: 'btn btn-danger',
+			action: function(){ lowOnly = !lowOnly; table.ajax.reload(); }
 		},
 	],
 	drawCallback: function() {

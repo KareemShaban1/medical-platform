@@ -115,6 +115,9 @@ Route::group([
     // My Appointments
     Route::get('appointments', [\App\Http\Controllers\Frontend\AppointmentController::class, 'myAppointments'])->name('appointments.my');
     Route::post('appointments/{id}/cancel', [\App\Http\Controllers\Frontend\AppointmentController::class, 'cancel'])->name('appointments.cancel');
+
+    Route::get('lab-orders', [\App\Http\Controllers\Frontend\Patient\LabOrderController::class, 'index'])->name('lab-orders.index');
+    Route::get('lab-orders/{id}', [\App\Http\Controllers\Frontend\Patient\LabOrderController::class, 'show'])->name('lab-orders.show');
 });
 
 // Patient Logout Route
@@ -128,3 +131,6 @@ Route::post('/user/logout', function (\Illuminate\Http\Request $request) {
 require __DIR__ . '/admin.php';
 require __DIR__.'/clinic.php';
 require __DIR__.'/supplier.php';
+
+
+

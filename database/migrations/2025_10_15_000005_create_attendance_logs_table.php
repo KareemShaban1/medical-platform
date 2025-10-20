@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('requested_by')->nullable()->constrained('clinic_users')->nullOnDelete();
             $table->foreignId('approved_by')->nullable()->constrained('clinic_users')->nullOnDelete();
             $table->timestamp('approved_at')->nullable();
-            $table->timestamp('at');
+            $table->dateTime('at');
             $table->text('notes')->nullable();
             $table->timestamps();
 
@@ -29,4 +29,3 @@ return new class extends Migration
         Schema::dropIfExists('attendance_logs');
     }
 };
-

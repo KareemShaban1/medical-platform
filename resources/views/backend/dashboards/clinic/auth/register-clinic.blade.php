@@ -13,7 +13,7 @@
 		href="{{asset('auth/fonts/iconic/css/material-design-iconic-font.min.css')}}">
 	<link rel="stylesheet" type="text/css" href="{{asset('auth/vendor/animate/animate.css')}}">
 	<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+	<meta name="csrf-token" content="{{ csrf_token() }}">
 
 	@if (app()->getLocale() == 'ar')
 	<link rel="stylesheet" type="text/css" href="{{asset('auth/css/ar_style.css')}}">
@@ -42,7 +42,8 @@
 				<!-- Form Section -->
 				<div class="col-lg-7">
 					<div class="form-content">
-						<form method="POST" action="{{ Route('clinic.register-clinic') }}"
+						<form method="POST"
+							action="{{ Route('clinic.register-clinic') }}"
 							id="clinicRegistrationForm">
 							@csrf
 
@@ -191,6 +192,12 @@
 												class="fa fa-arrow-right"></i>
 										</button>
 									</div>
+                                    <div class="back-to-home text-center">
+                                        <a href="{{ route('home') }}" class="btn btn-link">
+                                            <i class="fa fa-arrow-left"></i>
+                                            {{ __('Back to Home') }}
+                                        </a>
+                                    </div>
 								</div>
 
 								<!-- Step 2: User Details -->
@@ -328,42 +335,87 @@
 								<!-- Step 3: OTP Verification -->
 								<div class="step step-3">
 									<div class="step-header">
-										<h4>{{ __('Step 3: Email Verification') }}</h4>
-										<p>{{ __('Please enter the 6-digit code sent to your email') }}</p>
+										<h4>{{ __('Step 3: Email Verification') }}
+										</h4>
+										<p>{{ __('Please enter the 6-digit code sent to your email') }}
+										</p>
 									</div>
 
-									<input type="hidden" id="clinic_id" name="clinic_id">
+									<input type="hidden"
+										id="clinic_id"
+										name="clinic_id">
 
-									<div class="form-group text-center">
-										<label class="form-label required">{{ __('Verification Code') }}</label>
-										<div class="otp-input-container">
-											<input type="text" class="otp-input" maxlength="1" id="otp1">
-											<input type="text" class="otp-input" maxlength="1" id="otp2">
-											<input type="text" class="otp-input" maxlength="1" id="otp3">
-											<input type="text" class="otp-input" maxlength="1" id="otp4">
-											<input type="text" class="otp-input" maxlength="1" id="otp5">
-											<input type="text" class="otp-input" maxlength="1" id="otp6">
+									<div
+										class="form-group text-center">
+										<label
+											class="form-label required">{{ __('Verification Code') }}</label>
+										<div
+											class="otp-input-container">
+											<input type="text"
+												class="otp-input"
+												maxlength="1"
+												id="otp1">
+											<input type="text"
+												class="otp-input"
+												maxlength="1"
+												id="otp2">
+											<input type="text"
+												class="otp-input"
+												maxlength="1"
+												id="otp3">
+											<input type="text"
+												class="otp-input"
+												maxlength="1"
+												id="otp4">
+											<input type="text"
+												class="otp-input"
+												maxlength="1"
+												id="otp5">
+											<input type="text"
+												class="otp-input"
+												maxlength="1"
+												id="otp6">
 										</div>
-										<div class="validation-feedback" id="otp_feedback"></div>
+										<div class="validation-feedback"
+											id="otp_feedback">
+										</div>
 									</div>
 
-									<div class="form-group text-center">
-										<div class="timer-container">
-											<p>{{ __('Code expires in') }}: <span id="timer">05:00</span></p>
+									<div
+										class="form-group text-center">
+										<div
+											class="timer-container">
+											<p>{{ __('Code expires in') }}:
+												<span
+													id="timer">05:00</span>
+											</p>
 										</div>
-										<button type="button" class="btn btn-link" id="resendBtn" disabled>
-											{{ __('Resend Code') }} (<span id="resendTimer">60</span>s)
+										<button type="button"
+											class="btn btn-link"
+											id="resendBtn"
+											disabled>
+											{{ __('Resend Code') }}
+											(<span
+												id="resendTimer">60</span>s)
 										</button>
 									</div>
 
-									<div class="d-flex justify-content-between">
-										<button type="button" class="btn btn-secondary" id="backToStep2">
-											<i class="fa fa-arrow-left"></i>
+									<div
+										class="d-flex justify-content-between">
+										<button type="button"
+											class="btn btn-secondary"
+											id="backToStep2">
+											<i
+												class="fa fa-arrow-left"></i>
 											{{ __('Back') }}
 										</button>
-										<button type="button" class="btn btn-success" id="verifyOtpBtn" disabled>
+										<button type="button"
+											class="btn btn-success"
+											id="verifyOtpBtn"
+											disabled>
 											{{ __('Verify & Complete Registration') }}
-											<i class="fa fa-check"></i>
+											<i
+												class="fa fa-check"></i>
 										</button>
 									</div>
 								</div>

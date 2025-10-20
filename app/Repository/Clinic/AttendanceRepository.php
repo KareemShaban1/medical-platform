@@ -35,6 +35,8 @@ class AttendanceRepository implements AttendanceRepositoryInterface
             'at' => $at,
             'notes' => $notes,
             'requested_by' => auth('clinic')->id(),
+            'approved_by' => null,
+            'approved_at' => null,
         ]);
     }
 
@@ -63,6 +65,9 @@ class AttendanceRepository implements AttendanceRepositoryInterface
         if ($lastCheckIn->at->gt($at)) {
             throw new \Exception(__('Checkout cannot predate today\'s check-in'));
         }
+        if (is_null($lastCheckIn->approved_at)) {
+            throw new \Exception(__('Check-in is pending approval'));
+        }
 
         return AttendanceLog::create([
             'clinic_user_id' => $userId,
@@ -71,6 +76,8 @@ class AttendanceRepository implements AttendanceRepositoryInterface
             'at' => $at,
             'notes' => $notes,
             'requested_by' => auth('clinic')->id(),
+            'approved_by' => null,
+            'approved_at' => null,
         ]);
     }
 
@@ -101,6 +108,40 @@ class AttendanceRepository implements AttendanceRepositoryInterface
         return $log->refresh();
     }
 
+    public function approveCheckIn($logId, $approverId)
+    {
+        $log = AttendanceLog::findOrFail($logId);
+        $this->assertBelongsToClinic($log->clinic_user_id);
+        if ($log->check_type !== 'check_in') {
+            throw new \Exception(__('Only check-in logs can be approved'));
+        }
+        if (!is_null($log->approved_at)) {
+            return $log;
+        }
+        $log->update([
+            'approved_by' => $approverId,
+            'approved_at' => now(),
+        ]);
+        return $log->refresh();
+    }
+
+    public function approveCheckOut($logId, $approverId)
+    {
+        $log = AttendanceLog::findOrFail($logId);
+        $this->assertBelongsToClinic($log->clinic_user_id);
+        if ($log->check_type !== 'check_out') {
+            throw new \Exception(__('Only check-out logs can be approved'));
+        }
+        if (!is_null($log->approved_at)) {
+            return $log;
+        }
+        $log->update([
+            'approved_by' => $approverId,
+            'approved_at' => now(),
+        ]);
+        return $log->refresh();
+    }
+
     public function listForDay($date)
     {
         return AttendanceLog::with(['clinicUser'])
@@ -123,6 +164,17 @@ class AttendanceRepository implements AttendanceRepositoryInterface
             ->where('check_type', 'absence_request')
             ->whereNull('approved_at')
             ->orderBy('at', 'desc')
+            ->get();
+    }
+
+    public function listForUser($clinicUserId, $start, $end)
+    {
+        $this->assertBelongsToClinic($clinicUserId);
+        return AttendanceLog::with(['approver', 'requester'])
+            ->where('clinic_user_id', $clinicUserId)
+            ->whereIn('check_type', ['check_in','check_out'])
+            ->whereBetween('at', [Carbon::parse($start)->startOfDay(), Carbon::parse($end)->endOfDay()])
+            ->orderBy('at', 'asc')
             ->get();
     }
 }

@@ -154,10 +154,11 @@ class RentalSpaceRepository implements RentalSpaceRepositoryInterface
                 ], $request->pricing);
             }
 
+            DB::commit();
+
             if ($request->ajax()) {
                 return $this->jsonResponse('success', __('Rental space ' . $action . ' successfully'));
             }
-            DB::commit();
 
             return redirect()->route('clinic.rental-spaces.index')->with('success', __('Rental space ' . $action . ' successfully'));
         } catch (\Exception $e) {
@@ -172,10 +173,10 @@ class RentalSpaceRepository implements RentalSpaceRepositoryInterface
         $checked = $item->status ? 'checked' : '';
         return <<<HTML
         <div class="form-check form-switch mt-2">
-            <input type="checkbox" 
-                   class="form-check-input toggle-boolean" 
-                   data-id="{$item->id}" 
-                   data-field="status" 
+            <input type="checkbox"
+                   class="form-check-input toggle-boolean"
+                   data-id="{$item->id}"
+                   data-field="status"
                    value="1" {$checked}>
         </div>
         HTML;

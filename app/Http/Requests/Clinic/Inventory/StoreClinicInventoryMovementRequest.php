@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Clinic\Inventory;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Models\ClinicInventory;
 
 class StoreClinicInventoryMovementRequest extends FormRequest
 {
@@ -28,5 +29,21 @@ class StoreClinicInventoryMovementRequest extends FormRequest
             'movement_date' => 'required|date',
             'notes' => 'nullable|string',
         ];
+    }
+
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+            $type = $this->input('type');
+            $quantity = (int) $this->input('quantity');
+            $inventoryId = $this->input('clinic_inventory_id');
+
+            if ($type === 'out' && $inventoryId && $quantity > 0) {
+                $inventory = ClinicInventory::find($inventoryId);
+                if ($inventory && $quantity > (int) $inventory->quantity) {
+                    $validator->errors()->add('quantity', __('The out quantity exceeds current stock (available: :available).', ['available' => $inventory->quantity]));
+                }
+            }
+        });
     }
 }

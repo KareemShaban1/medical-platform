@@ -36,6 +36,17 @@
                                     required />
                             </div>
 
+                            <!-- Min Quantity -->
+                            <div class="col-md-6 mb-3">
+                                <x-input
+                                    type="number"
+                                    name="min_quantity"
+                                    label="{{ __('Min Quantity (Alert)') }}"
+                                    placeholder="{{ __('Enter minimum acceptable stock') }}"
+                                    min="0"
+                                    step="1" />
+                            </div>
+
                             <!-- Unit -->
                             <div class="col-md-6 mb-3">
                                 <x-input

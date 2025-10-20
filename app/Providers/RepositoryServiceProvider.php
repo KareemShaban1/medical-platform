@@ -4,6 +4,10 @@ namespace App\Providers;
 
 use App\Interfaces\Supplier\ProductRepositoryInterface;
 use App\Repository\Supplier\ProductRepository;
+use App\Interfaces\Clinic\LabOrderRepositoryInterface as ClinicLabOrderRepositoryInterface;
+use App\Repository\Clinic\LabOrderRepository as ClinicLabOrderRepository;
+use App\Interfaces\User\LabOrderRepositoryInterface as UserLabOrderRepositoryInterface;
+use App\Repository\User\LabOrderRepository as UserLabOrderRepository;
 use Illuminate\Support\ServiceProvider;
 
 class RepositoryServiceProvider extends ServiceProvider
@@ -41,6 +45,10 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind('App\Interfaces\Admin\DoctorProfileRepositoryInterface', 'App\Repository\Admin\DoctorProfileRepository');
         $this->app->bind('App\\Interfaces\\Clinic\\WorkingHourRepositoryInterface', 'App\\Repository\\Clinic\\WorkingHourRepository');
         $this->app->bind('App\\Interfaces\\Clinic\\AttendanceRepositoryInterface', 'App\\Repository\\Clinic\\AttendanceRepository');
+        // Expense Category Repository
+        $this->app->bind('App\Interfaces\Clinic\ExpenseCategoryRepositoryInterface', 'App\Repository\Clinic\ExpenseCategoryRepository');
+
+    $this->app->bind('App\Interfaces\Clinic\ExpenseRepositoryInterface', 'App\Repository\Clinic\ExpenseRepository');
 
         // Patient Repository
         $this->app->bind('App\Interfaces\Clinic\PatientRepositoryInterface', 'App\Repository\Clinic\PatientRepository');
@@ -85,6 +93,10 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind('App\Interfaces\Clinic\DailyPeriodRepositoryInterface', 'App\Repository\Clinic\DailyPeriodRepository');
         $this->app->bind('App\Interfaces\Clinic\AppointmentRepositoryInterface', 'App\Repository\Clinic\AppointmentRepository');
         $this->app->bind('App\Interfaces\User\DoctorProfileRepositoryInterface', 'App\Repository\User\DoctorProfileRepository');
+
+        // Lab Orders Repositories
+        $this->app->bind(ClinicLabOrderRepositoryInterface::class, ClinicLabOrderRepository::class);
+        $this->app->bind(UserLabOrderRepositoryInterface::class, UserLabOrderRepository::class);
     }
 
 
