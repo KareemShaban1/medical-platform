@@ -30,7 +30,7 @@ class ClinicInventoryMovementRepository implements ClinicInventoryMovementReposi
         return ClinicInventoryMovement::findOrFail($id);
     }
 
-    
+
     public function store($request)
     {
         return $this->saveClinicInventoryMovement(new ClinicInventoryMovement(), $request, 'created');
@@ -92,6 +92,8 @@ class ClinicInventoryMovementRepository implements ClinicInventoryMovementReposi
             DB::beginTransaction();
             $clinicInventoryMovement->fill($request->validated())->save();
 
+            DB::commit();
+
             if ($request->type == 'in') {
                 $clinicInventoryMovement->clinicInventory->update([
                     'quantity' => $clinicInventoryMovement->clinicInventory->quantity + $request->quantity
@@ -105,7 +107,6 @@ class ClinicInventoryMovementRepository implements ClinicInventoryMovementReposi
             if ($request->ajax()) {
                 return $this->jsonResponse('success', __('Clinic inventory ' . $action . ' successfully'));
             }
-            DB::commit();
 
             return redirect()->route('clinic.clinic-inventory-movements.index', $clinicInventoryMovement->clinicInventory->id)->with('success', __('Clinic inventory ' . $action . ' successfully'));
         } catch (\Exception $e) {

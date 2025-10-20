@@ -105,10 +105,12 @@ class ClinicInventoryRepository implements ClinicInventoryRepositoryInterface
             }
 
 
+            DB::commit();
+
+            
             if ($request->ajax()) {
                 return $this->jsonResponse('success', __('Clinic inventory ' . $action . ' successfully'));
             }
-            DB::commit();
 
             return redirect()->route('clinic.clinic-inventories.index')->with('success', __('Clinic inventory ' . $action . ' successfully'));
         } catch (\Exception $e) {

@@ -17,6 +17,10 @@ use App\Models\Job;
 use App\Observers\JobObserver;
 use App\Models\ClinicInventory;
 use App\Observers\ClinicInventoryObserver;
+use App\Models\ExpenseCategory;
+use App\Observers\ExpenseCategoryObserver;
+use App\Models\Expense;
+use App\Observers\ExpenseObserver;
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -33,7 +37,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         //
-        
+
         // add observer to category model
         Category::observe(CategoryObserver::class);
         RentalSpace::observe(RentalSpaceObserver::class);
@@ -42,5 +46,7 @@ class AppServiceProvider extends ServiceProvider
         Course::observe(CourseObserver::class);
         Job::observe(JobObserver::class);
         ClinicInventory::observe(ClinicInventoryObserver::class);
+        ExpenseCategory::observe(ExpenseCategoryObserver::class);
+        Expense::observe(ExpenseObserver::class);
     }
 }
