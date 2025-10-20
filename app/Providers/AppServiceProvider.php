@@ -18,6 +18,11 @@ use App\Observers\RentalSpaceObserver;
 use App\Observers\BlogCategoryObserver;
 use Illuminate\Support\ServiceProvider;
 use App\Observers\ClinicInventoryObserver;
+use App\Models\ExpenseCategory;
+use App\Observers\ExpenseCategoryObserver;
+use App\Models\Expense;
+use App\Observers\ExpenseObserver;
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -43,5 +48,8 @@ class AppServiceProvider extends ServiceProvider
         Course::observe(CourseObserver::class);
         Job::observe(JobObserver::class);
         ClinicInventory::observe(ClinicInventoryObserver::class);
+        ExpenseCategory::observe(ExpenseCategoryObserver::class);
+        Expense::observe(ExpenseObserver::class);
+
     }
 }
