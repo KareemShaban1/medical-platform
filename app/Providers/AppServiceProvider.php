@@ -44,7 +44,6 @@ class AppServiceProvider extends ServiceProvider
         Course::observe(CourseObserver::class);
         Job::observe(JobObserver::class);
         ClinicInventory::observe(ClinicInventoryObserver::class);
-        Paginator::useBootstrapFour();
 
     }
 }
