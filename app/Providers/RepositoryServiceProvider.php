@@ -88,6 +88,12 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind('App\Interfaces\Admin\TicketRepositoryInterface', 'App\Repository\Admin\TicketRepository');
         $this->app->bind('App\Interfaces\User\TicketRepositoryInterface', 'App\Repository\User\TicketRepository');
 
+        // Appointment System Repositories
+        $this->app->bind('App\Interfaces\Clinic\AvailabilityOverrideRepositoryInterface', 'App\Repository\Clinic\AvailabilityOverrideRepository');
+        $this->app->bind('App\Interfaces\Clinic\DailyPeriodRepositoryInterface', 'App\Repository\Clinic\DailyPeriodRepository');
+        $this->app->bind('App\Interfaces\Clinic\AppointmentRepositoryInterface', 'App\Repository\Clinic\AppointmentRepository');
+        $this->app->bind('App\Interfaces\User\DoctorProfileRepositoryInterface', 'App\Repository\User\DoctorProfileRepository');
+
         // Lab Orders Repositories
         $this->app->bind(ClinicLabOrderRepositoryInterface::class, ClinicLabOrderRepository::class);
         $this->app->bind(UserLabOrderRepositoryInterface::class, UserLabOrderRepository::class);

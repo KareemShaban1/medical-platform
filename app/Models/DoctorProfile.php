@@ -82,6 +82,31 @@ class DoctorProfile extends Model implements HasMedia
         return $this->belongsTo(Speciality::class, 'speciality_id');
     }
 
+    public function workingHours()
+    {
+        return $this->hasMany(WorkingHour::class, 'clinic_user_id', 'clinic_user_id');
+    }
+
+    public function availabilityOverrides()
+    {
+        return $this->hasMany(AvailabilityOverride::class);
+    }
+
+    public function dailyPeriods()
+    {
+        return $this->hasMany(DailyPeriod::class);
+    }
+
+    public function appointments()
+    {
+        return $this->hasMany(Appointment::class);
+    }
+
+    public function clinic()
+    {
+        return $this->hasOneThrough(Clinic::class, ClinicUser::class, 'id', 'id', 'clinic_user_id', 'clinic_id');
+    }
+
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('profile_photo')

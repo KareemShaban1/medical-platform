@@ -2,25 +2,27 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
-use App\Models\Category;
-use App\Observers\CategoryObserver;
-use App\Models\RentalSpace;
-use App\Observers\RentalSpaceObserver;
-use App\Models\BlogCategory;
-use App\Observers\BlogCategoryObserver;
-use App\Models\BlogPost;
-use App\Observers\BlogPostObserver;
-use App\Models\Course;
-use App\Observers\CourseObserver;
 use App\Models\Job;
+use App\Models\Course;
+use App\Models\BlogPost;
+use App\Models\Category;
+use App\Models\RentalSpace;
+use App\Models\BlogCategory;
 use App\Observers\JobObserver;
 use App\Models\ClinicInventory;
+use App\Observers\CourseObserver;
+use App\Observers\BlogPostObserver;
+use App\Observers\CategoryObserver;
+use Illuminate\Pagination\Paginator;
+use App\Observers\RentalSpaceObserver;
+use App\Observers\BlogCategoryObserver;
+use Illuminate\Support\ServiceProvider;
 use App\Observers\ClinicInventoryObserver;
 use App\Models\ExpenseCategory;
 use App\Observers\ExpenseCategoryObserver;
 use App\Models\Expense;
 use App\Observers\ExpenseObserver;
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -48,5 +50,6 @@ class AppServiceProvider extends ServiceProvider
         ClinicInventory::observe(ClinicInventoryObserver::class);
         ExpenseCategory::observe(ExpenseCategoryObserver::class);
         Expense::observe(ExpenseObserver::class);
+
     }
 }

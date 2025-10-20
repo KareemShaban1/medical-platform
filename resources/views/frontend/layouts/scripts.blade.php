@@ -4,6 +4,10 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 <!-- Flowbite JS for dropdowns -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.5.2/flowbite.min.js"></script>
+<!-- SweetAlert2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
 <!-- Cart functionality -->
 <script src="{{ asset('js/cart.js') }}"></script>
 
@@ -128,7 +132,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <li class="px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-600">
                         <div class="flex items-center gap-3">
                             <div class="w-12 h-12 flex-shrink-0">
-                                ${imageUrl ? `<img src="${imageUrl}" alt="${item.product_name}" class="w-full h-full object-cover rounded">` : 
+                                ${imageUrl ? `<img src="${imageUrl}" alt="${item.product_name}" class="w-full h-full object-cover rounded">` :
                                 `<div class="w-full h-full bg-gray-200 dark:bg-gray-700 rounded"></div>`}
                             </div>
                             <div class="flex-grow min-w-0">

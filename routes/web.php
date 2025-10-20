@@ -54,6 +54,15 @@ Route::group(
 		Route::get('/courses', [CourseController::class, 'index'])->name('courses');
 		Route::get('/courses/{id}', [CourseController::class, 'show'])->name('courses.show');
 		Route::post('/courses/filter', [CourseController::class, 'filter'])->name('courses.filter');
+
+		// Doctor Profile Routes
+		Route::get('/doctors/{id}', [\App\Http\Controllers\Frontend\DoctorProfileController::class, 'show'])->name('doctors.show');
+		Route::get('/doctors/{id}/available-days', [\App\Http\Controllers\Frontend\DoctorProfileController::class, 'getAvailableDays'])->name('doctors.available-days');
+		Route::get('/doctors/{id}/available-periods', [\App\Http\Controllers\Frontend\DoctorProfileController::class, 'getAvailablePeriods'])->name('doctors.available-periods');
+
+		// Appointment Routes (public for booking, authenticated for managing)
+		Route::post('/appointments/book', [\App\Http\Controllers\Frontend\AppointmentController::class, 'book'])->name('appointments.book');
+		Route::post('/appointments/confirm', [\App\Http\Controllers\Frontend\AppointmentController::class, 'confirm'])->name('appointments.confirm');
     });
 
 // Cart and Checkout Routes (requires clinic authentication)
@@ -103,6 +112,10 @@ Route::group([
     Route::post('tickets/{id}/reply', [\App\Http\Controllers\Frontend\TicketController::class, 'reply'])->name('tickets.reply');
     Route::resource('tickets', \App\Http\Controllers\Frontend\TicketController::class)->only(['index', 'store', 'show']);
 
+    // My Appointments
+    Route::get('appointments', [\App\Http\Controllers\Frontend\AppointmentController::class, 'myAppointments'])->name('appointments.my');
+    Route::post('appointments/{id}/cancel', [\App\Http\Controllers\Frontend\AppointmentController::class, 'cancel'])->name('appointments.cancel');
+
     Route::get('lab-orders', [\App\Http\Controllers\Frontend\Patient\LabOrderController::class, 'index'])->name('lab-orders.index');
     Route::get('lab-orders/{id}', [\App\Http\Controllers\Frontend\Patient\LabOrderController::class, 'show'])->name('lab-orders.show');
 });
@@ -118,5 +131,6 @@ Route::post('/user/logout', function (\Illuminate\Http\Request $request) {
 require __DIR__ . '/admin.php';
 require __DIR__.'/clinic.php';
 require __DIR__.'/supplier.php';
+
 
 
