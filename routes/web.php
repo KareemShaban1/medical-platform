@@ -1,16 +1,17 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
-use App\Http\Controllers\Frontend\HomeController;
-use App\Http\Controllers\Frontend\ProductController;
 use App\Http\Controllers\Frontend\JobController;
 use App\Http\Controllers\Frontend\BlogController;
-use App\Http\Controllers\Frontend\ClinicController;
-use App\Http\Controllers\Frontend\SupplierController;
-use App\Http\Controllers\Frontend\CourseController;
 use App\Http\Controllers\Frontend\CartController;
+use App\Http\Controllers\Frontend\HomeController;
+use App\Http\Controllers\Frontend\ClinicController;
+use App\Http\Controllers\Frontend\CourseController;
+use App\Http\Controllers\Frontend\ProductController;
 use App\Http\Controllers\Frontend\CheckoutController;
+use App\Http\Controllers\Frontend\SupplierController;
+use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
+use App\Http\Controllers\Frontend\Auth\PatientAuthController;
 use App\Http\Controllers\Frontend\ClinicUser\ProfileController;
 
 Route::group(
@@ -127,6 +128,9 @@ Route::post('/user/logout', function (\Illuminate\Http\Request $request) {
     $request->session()->regenerateToken();
     return redirect()->to('/login');
 })->name('user.logout');
+
+Route::post('/register', [PatientAuthController::class, 'register'])->name('register');
+
 
 require __DIR__ . '/admin.php';
 require __DIR__.'/clinic.php';
