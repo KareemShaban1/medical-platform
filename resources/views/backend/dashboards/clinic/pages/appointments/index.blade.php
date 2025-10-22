@@ -92,7 +92,7 @@
 
                         <div class="col-12 col-md-6 mb-3">
                             <label for="status" class="form-label">{{ __('Status') }}</label>
-                            <select class="form-select" id="status" name="status">
+                            <select class="form-select" id="appointment_status" name="status">
                                 <option value="">{{ __('Select Status') }}</option>
                                 <option value="confirmed" selected>{{ __('Confirmed') }}</option>
                                 <option value="pending">{{ __('Pending') }}</option>
