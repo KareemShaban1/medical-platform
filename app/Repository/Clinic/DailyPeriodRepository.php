@@ -222,6 +222,9 @@ class DailyPeriodRepository implements DailyPeriodRepositoryInterface
 
         return <<<HTML
         <div class="d-flex gap-2">
+            <button onclick="viewAppointments({$item->id})" class="btn btn-sm btn-info text-white" title="View Appointments">
+                <i class="mdi mdi-calendar-check"></i>
+            </button>
             <button onclick="editCapacity({$item->id}, {$item->capacity})" class="btn btn-sm btn-primary" title="Edit Capacity">
                 <i class="mdi mdi-pencil"></i>
             </button>

@@ -21,6 +21,9 @@ class StoreAppointmentRequest extends FormRequest
             'patient_notes' => 'nullable|string|max:1000',
             'doctor_notes' => 'nullable|string|max:1000',
             'status' => 'nullable|in:' . implode(',', array_keys(Appointment::getStatuses())),
+            'visit_type' => 'nullable|integer|in:0,1,2',
+            'cost_amount' => 'nullable|numeric|min:0',
+            'payment_status' => 'nullable|in:pending,paid',
         ];
     }
 
@@ -34,6 +37,9 @@ class StoreAppointmentRequest extends FormRequest
             'period_id.required' => __('Please select a time slot'),
             'period_id.exists' => __('Selected time slot does not exist'),
             'status.in' => __('Invalid status selected'),
+            'visit_type.in' => __('Invalid visit type selected'),
+            'cost_amount.numeric' => __('Cost amount must be a number'),
+            'payment_status.in' => __('Invalid payment status selected'),
         ];
     }
 }

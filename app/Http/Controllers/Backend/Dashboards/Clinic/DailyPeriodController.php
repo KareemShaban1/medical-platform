@@ -160,5 +160,58 @@ class DailyPeriodController extends Controller
             ], 500);
         }
     }
+
+    public function viewAppointments($id)
+    {
+        try {
+            $period = $this->repo->find($id);
+
+            // Get all appointments for this period
+            $appointments = $period->appointments()
+                ->with(['patient.user', 'doctorProfile'])
+                ->orderBy('slot_number')
+                ->orderBy('created_at')
+                ->get();
+
+            // Calculate analytics
+            $analytics = [
+                'total_appointments' => $appointments->count(),
+                'confirmed' => $appointments->where('status', 'confirmed')->count(),
+                'pending' => $appointments->where('status', 'pending')->count(),
+                'completed' => $appointments->where('status', 'completed')->count(),
+                'cancelled' => $appointments->where('status', 'cancelled')->count(),
+                'waiting' => $appointments->where('status', 'waiting')->count(),
+                'capacity' => $period->capacity,
+                'booked_count' => $period->booked_count,
+                'available_slots' => $period->remaining_capacity,
+                'capacity_percentage' => $period->capacity_percentage,
+            ];
+
+            // Visit type statistics
+            $visitTypeStats = [
+                'initial' => $appointments->where('visit_type', 0)->count(),
+                'follow_up' => $appointments->where('visit_type', 1)->count(),
+                'consultation' => $appointments->where('visit_type', 2)->count(),
+            ];
+
+            // Payment statistics
+            $paymentStats = [
+                'paid' => $appointments->where('payment_status', 'paid')->count(),
+                'pending' => $appointments->where('payment_status', 'pending')->count(),
+                'total_revenue' => $appointments->where('payment_status', 'paid')->sum('cost_amount'),
+                'pending_revenue' => $appointments->where('payment_status', 'pending')->sum('cost_amount'),
+            ];
+
+            return view('backend.dashboards.clinic.pages.daily-periods.appointments', compact(
+                'period',
+                'appointments',
+                'analytics',
+                'visitTypeStats',
+                'paymentStats'
+            ));
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage());
+        }
+    }
 }
 

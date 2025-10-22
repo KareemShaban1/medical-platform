@@ -25,13 +25,15 @@ return new class extends Migration
             $table->text('doctor_notes')->nullable();
             $table->string('cancellation_reason')->nullable();
             $table->foreignId('cancelled_by')->nullable()->constrained('users')->onDelete('set null');
-            $table->timestamp('cancelled_at')->nullable();
-            $table->timestamps();
+            $table->decimal('cost_amount', 10, 2)->nullable();
+            $table->enum('payment_status', ['pending', 'paid'])->default('pending');
+            $table->tinyInteger('visit_type')->default(0)->comment('0: Initial, 1: Follow-up, 2: Consultation');
 
-            $table->index(['doctor_profile_id', 'status']);
-            $table->index(['patient_id', 'status']);
-            $table->index(['period_id', 'status']);
-            $table->index('confirmation_code');
+            $table->timestamp('cancelled_at')->nullable();
+
+            $table->timestamps();
+            $table->softDeletes();
+
         });
     }
 

@@ -7,6 +7,9 @@
         <div class="col-12">
             <div class="page-title-box">
                 <div class="page-title-right">
+                    <a href="{{ route('clinic.appointments.analytics', $appointment->doctor_profile_id) }}" class="btn btn-info me-2">
+                        <i class="mdi mdi-chart-line"></i> {{ __('Doctor Analytics') }}
+                    </a>
                     <a href="{{ route('clinic.appointments.index') }}" class="btn btn-secondary">
                         <i class="mdi mdi-arrow-left"></i> {{ __('Back to List') }}
                     </a>
@@ -46,8 +49,28 @@
                                     <td>{{ $appointment->period ? $appointment->period->start_time . ' - ' . $appointment->period->end_time : 'N/A' }}</td>
                                 </tr>
                                 <tr>
+                                    <th scope="row">{{ __('Slot Number') }}</th>
+                                    <td>{{ $appointment->slot_number ?? '-' }}</td>
+                                </tr>
+                                <tr>
                                     <th scope="row">{{ __('Status') }}</th>
                                     <td>{!! $appointment->status_badge !!}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">{{ __('Visit Type') }}</th>
+                                    <td>{{ $appointment->visit_type_label }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">{{ __('Cost Amount') }}</th>
+                                    <td>{{ $appointment->cost_amount ? number_format($appointment->cost_amount, 2) : 'N/A' }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">{{ __('Payment Status') }}</th>
+                                    <td>
+                                        <span class="badge bg-{{ $appointment->payment_status === 'paid' ? 'success' : 'warning' }}">
+                                            {{ ucfirst($appointment->payment_status ?? 'pending') }}
+                                        </span>
+                                    </td>
                                 </tr>
                                 <tr>
                                     <th scope="row">{{ __('Booked At') }}</th>

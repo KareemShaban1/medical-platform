@@ -243,6 +243,7 @@ Route::group(
 
         // Daily Periods Management
         Route::get('daily-periods/data', [\App\Http\Controllers\Backend\Dashboards\Clinic\DailyPeriodController::class, 'data'])->name('daily-periods.data');
+        Route::get('daily-periods/{id}/appointments', [\App\Http\Controllers\Backend\Dashboards\Clinic\DailyPeriodController::class, 'viewAppointments'])->name('daily-periods.appointments');
         Route::post('daily-periods/{id}/toggle-open', [\App\Http\Controllers\Backend\Dashboards\Clinic\DailyPeriodController::class, 'toggleOpen'])->name('daily-periods.toggle-open');
         Route::post('daily-periods/{id}/update-capacity', [\App\Http\Controllers\Backend\Dashboards\Clinic\DailyPeriodController::class, 'updateCapacity'])->name('daily-periods.update-capacity');
         Route::post('daily-periods/generate', [\App\Http\Controllers\Backend\Dashboards\Clinic\DailyPeriodController::class, 'generatePeriods'])->name('daily-periods.generate');
@@ -250,6 +251,7 @@ Route::group(
 
         // Appointments Management
         Route::get('appointments/data', [\App\Http\Controllers\Backend\Dashboards\Clinic\AppointmentController::class, 'data'])->name('appointments.data');
+        Route::get('appointments/{doctorId}/analytics', [\App\Http\Controllers\Backend\Dashboards\Clinic\AppointmentController::class, 'analytics'])->name('appointments.analytics');
         Route::get('appointments/available-periods', [\App\Http\Controllers\Backend\Dashboards\Clinic\AppointmentController::class, 'getAvailablePeriods'])->name('appointments.available-periods');
         Route::post('appointments/{id}/confirm', [\App\Http\Controllers\Backend\Dashboards\Clinic\AppointmentController::class, 'confirm'])->name('appointments.confirm');
         Route::post('appointments/{id}/cancel', [\App\Http\Controllers\Backend\Dashboards\Clinic\AppointmentController::class, 'cancel'])->name('appointments.cancel');

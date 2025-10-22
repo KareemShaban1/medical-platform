@@ -7,8 +7,10 @@
         <div class="col-12">
             <div class="page-title-box">
                 <div class="page-title-right">
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                        data-bs-target="#appointmentModal" onclick="resetForm()">
+                    <a href="{{ route('clinic.appointments.analytics', $doctors->first()?->id ?? 0) }}" class="btn btn-info me-2">
+                        <i class="mdi mdi-chart-line"></i> {{ __('Analytics Dashboard') }}
+                    </a>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createAppointmentModal">
                         <i class="mdi mdi-plus"></i> {{ __('Book Appointment') }}
                     </button>
                 </div>
@@ -29,6 +31,8 @@
                                 <th>{{ __('Patient') }}</th>
                                 <th>{{ __('Date') }}</th>
                                 <th>{{ __('Time') }}</th>
+                                <th>{{ __('Visit Type') }}</th>
+                                <th>{{ __('Slot Number') }}</th>
                                 <th>{{ __('Status') }}</th>
                                 <th>{{ __('Actions') }}</th>
                             </tr>
@@ -40,34 +44,21 @@
     </div>
 </div>
 
-<!-- Modal -->
-<div class="modal fade" id="appointmentModal" tabindex="-1" role="dialog" aria-labelledby="appointmentModalLabel"
-    aria-hidden="true">
+<!-- Create Appointment Modal -->
+<div class="modal fade" id="createAppointmentModal" tabindex="-1" aria-labelledby="createAppointmentModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="appointmentModalLabel">{{ __('Book Appointment') }}</h5>
+                <h5 class="modal-title" id="createAppointmentModalLabel">{{ __('Book Appointment') }}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                <form id="appointmentForm" method="POST">
-                    @csrf
-                    <input type="hidden" id="appointmentId">
+            <form id="createAppointmentForm">
+                @csrf
+                <div class="modal-body">
                     <div class="row">
                         <div class="col-12 col-md-6 mb-3">
-                            <label for="doctor_profile_id" class="form-label">{{ __('Doctor') }}</label>
-                            <select class="form-control select2" id="doctor_profile_id" name="doctor_profile_id" required>
-                                <option value="">{{ __('Select a Doctor') }}</option>
-                                @foreach($doctors as $doctor)
-                                    <option value="{{ $doctor->id }}">{{ $doctor->name }}</option>
-                                @endforeach
-                            </select>
-                            <div class="invalid-feedback"></div>
-                        </div>
-
-                        <div class="col-12 col-md-6 mb-3">
-                            <label for="patient_id" class="form-label">{{ __('Patient') }}</label>
-                            <select class="form-control select2" id="patient_id" name="patient_id" required>
+                            <label for="create_patient_id" class="form-label">{{ __('Patient') }} <span class="text-danger">*</span></label>
+                            <select class="form-control select2" id="create_patient_id" name="patient_id" required>
                                 <option value="">{{ __('Select a Patient') }}</option>
                                 @foreach($patients as $patient)
                                     <option value="{{ $patient->id }}">{{ $patient->user->name ?? 'N/A' }}</option>
@@ -77,23 +68,33 @@
                         </div>
 
                         <div class="col-12 col-md-6 mb-3">
-                            <label for="appointment_date" class="form-label">{{ __('Date') }}</label>
-                            <input type="date" class="form-control" id="appointment_date" name="appointment_date" required>
+                            <label for="create_doctor_profile_id" class="form-label">{{ __('Doctor') }} <span class="text-danger">*</span></label>
+                            <select class="form-control select2" id="create_doctor_profile_id" name="doctor_profile_id" required>
+                                <option value="">{{ __('Select a Doctor') }}</option>
+                                @foreach($doctors as $doctor)
+                                    <option value="{{ $doctor->id }}">{{ $doctor->name }}</option>
+                                @endforeach
+                            </select>
                             <div class="invalid-feedback"></div>
                         </div>
 
                         <div class="col-12 col-md-6 mb-3">
-                            <label for="period_id" class="form-label">{{ __('Time Slot') }}</label>
-                            <select class="form-select" id="period_id" name="period_id" required>
+                            <label for="create_appointment_date" class="form-label">{{ __('Date') }} <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="create_appointment_date" name="appointment_date" required>
+                            <div class="invalid-feedback"></div>
+                        </div>
+
+                        <div class="col-12 col-md-6 mb-3">
+                            <label for="create_period_id" class="form-label">{{ __('Time Slot') }} <span class="text-danger">*</span></label>
+                            <select class="form-select" id="create_period_id" name="period_id" required>
                                 <option value="">{{ __('Select Date & Doctor First') }}</option>
                             </select>
                             <div class="invalid-feedback"></div>
                         </div>
 
                         <div class="col-12 col-md-6 mb-3">
-                            <label for="status" class="form-label">{{ __('Status') }}</label>
-                            <select class="form-select" id="appointment_status" name="status">
-                                <option value="">{{ __('Select Status') }}</option>
+                            <label for="create_status" class="form-label">{{ __('Status') }}</label>
+                            <select class="form-select" id="create_status" name="status">
                                 <option value="confirmed" selected>{{ __('Confirmed') }}</option>
                                 <option value="pending">{{ __('Pending') }}</option>
                                 <option value="waiting">{{ __('Waiting') }}</option>
@@ -104,25 +105,150 @@
                             <div class="invalid-feedback"></div>
                         </div>
 
-                        <div class="col-12 mb-3">
-                            <label for="patient_notes" class="form-label">{{ __('Patient Notes') }}</label>
-                            <textarea class="form-control" id="patient_notes" name="patient_notes" rows="2"></textarea>
+                        <div class="col-12 col-md-6 mb-3">
+                            <label for="create_visit_type" class="form-label">{{ __('Visit Type') }}</label>
+                            <select class="form-select" id="create_visit_type" name="visit_type">
+                                @foreach($visitTypes as $value => $label)
+                                    <option value="{{ $value }}" {{ $value == 0 ? 'selected' : '' }}>{{ __($label) }}</option>
+                                @endforeach
+                            </select>
+                            <div class="invalid-feedback"></div>
+                        </div>
+
+                        <div class="col-12 col-md-6 mb-3">
+                            <label for="create_cost_amount" class="form-label">{{ __('Cost Amount') }}</label>
+                            <input type="number" step="0.01" class="form-control" id="create_cost_amount" name="cost_amount" placeholder="0.00">
+                            <div class="invalid-feedback"></div>
+                        </div>
+
+                        <div class="col-12 col-md-6 mb-3">
+                            <label for="create_payment_status" class="form-label">{{ __('Payment Status') }}</label>
+                            <select class="form-select" id="create_payment_status" name="payment_status">
+                                <option value="pending" selected>{{ __('Pending') }}</option>
+                                <option value="paid">{{ __('Paid') }}</option>
+                            </select>
                             <div class="invalid-feedback"></div>
                         </div>
 
                         <div class="col-12 mb-3">
-                            <label for="doctor_notes" class="form-label">{{ __('Doctor Notes') }}</label>
-                            <textarea class="form-control" id="doctor_notes" name="doctor_notes" rows="2"></textarea>
+                            <label for="create_patient_notes" class="form-label">{{ __('Patient Notes') }}</label>
+                            <textarea class="form-control" id="create_patient_notes" name="patient_notes" rows="2"></textarea>
+                            <div class="invalid-feedback"></div>
+                        </div>
+
+                        <div class="col-12 mb-3">
+                            <label for="create_doctor_notes" class="form-label">{{ __('Doctor Notes') }}</label>
+                            <textarea class="form-control" id="create_doctor_notes" name="doctor_notes" rows="2"></textarea>
                             <div class="invalid-feedback"></div>
                         </div>
                     </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{ __('Close') }}</button>
+                    <button type="submit" class="btn btn-primary">{{ __('Save Appointment') }}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{ __('Close') }}</button>
-                        <button type="submit" class="btn btn-primary">{{ __('Save') }}</button>
-                    </div>
-                </form>
+<!-- Edit Appointment Modal -->
+<div class="modal fade" id="editAppointmentModal" tabindex="-1" aria-labelledby="editAppointmentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editAppointmentModalLabel">{{ __('Edit Appointment') }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+            <form id="editAppointmentForm">
+                @csrf
+                @method('PUT')
+                <input type="hidden" id="edit_appointment_id">
+                <div class="modal-body">
+                    <!-- Read-only Information -->
+                    <div class="alert alert-info">
+                        <i class="mdi mdi-information"></i> {{ __('Patient, Doctor, Date, and Time Slot cannot be changed when editing.') }}
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-12 col-md-6 mb-3">
+                            <label class="form-label fw-bold">{{ __('Patient') }}</label>
+                            <p class="form-control-plaintext" id="edit_display_patient_name"></p>
+                        </div>
+                        <div class="col-12 col-md-6 mb-3">
+                            <label class="form-label fw-bold">{{ __('Doctor') }}</label>
+                            <p class="form-control-plaintext" id="edit_display_doctor_name"></p>
+                        </div>
+                        <div class="col-12 col-md-6 mb-3">
+                            <label class="form-label fw-bold">{{ __('Date') }}</label>
+                            <p class="form-control-plaintext" id="edit_display_date"></p>
+                        </div>
+                        <div class="col-12 col-md-6 mb-3">
+                            <label class="form-label fw-bold">{{ __('Time Slot') }}</label>
+                            <p class="form-control-plaintext" id="edit_display_time_slot"></p>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <!-- Editable Fields -->
+                    <div class="row">
+                        <div class="col-12 col-md-6 mb-3">
+                            <label for="edit_status" class="form-label">{{ __('Status') }}</label>
+                            <select class="form-select" id="edit_status" name="status">
+                                <option value="confirmed">{{ __('Confirmed') }}</option>
+                                <option value="pending">{{ __('Pending') }}</option>
+                                <option value="waiting">{{ __('Waiting') }}</option>
+                                <option value="completed">{{ __('Completed') }}</option>
+                                <option value="cancelled">{{ __('Cancelled') }}</option>
+                                <option value="expired">{{ __('Expired') }}</option>
+                            </select>
+                            <div class="invalid-feedback"></div>
+                        </div>
+
+                        <div class="col-12 col-md-6 mb-3">
+                            <label for="edit_visit_type" class="form-label">{{ __('Visit Type') }}</label>
+                            <select class="form-select" id="edit_visit_type" name="visit_type">
+                                @foreach($visitTypes as $value => $label)
+                                    <option value="{{ $value }}">{{ __($label) }}</option>
+                                @endforeach
+                            </select>
+                            <div class="invalid-feedback"></div>
+                        </div>
+
+                        <div class="col-12 col-md-6 mb-3">
+                            <label for="edit_cost_amount" class="form-label">{{ __('Cost Amount') }}</label>
+                            <input type="number" step="0.01" class="form-control" id="edit_cost_amount" name="cost_amount" placeholder="0.00">
+                            <div class="invalid-feedback"></div>
+                        </div>
+
+                        <div class="col-12 col-md-6 mb-3">
+                            <label for="edit_payment_status" class="form-label">{{ __('Payment Status') }}</label>
+                            <select class="form-select" id="edit_payment_status" name="payment_status">
+                                <option value="pending">{{ __('Pending') }}</option>
+                                <option value="paid">{{ __('Paid') }}</option>
+                            </select>
+                            <div class="invalid-feedback"></div>
+                        </div>
+
+                        <div class="col-12 mb-3">
+                            <label for="edit_patient_notes" class="form-label">{{ __('Patient Notes') }}</label>
+                            <textarea class="form-control" id="edit_patient_notes" name="patient_notes" rows="2"></textarea>
+                            <div class="invalid-feedback"></div>
+                        </div>
+
+                        <div class="col-12 mb-3">
+                            <label for="edit_doctor_notes" class="form-label">{{ __('Doctor Notes') }}</label>
+                            <textarea class="form-control" id="edit_doctor_notes" name="doctor_notes" rows="2"></textarea>
+                            <div class="invalid-feedback"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{ __('Close') }}</button>
+                    <button type="submit" class="btn btn-primary">{{ __('Update Appointment') }}</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -130,6 +256,9 @@
 
 @push('scripts')
 <script>
+// ============================================
+// DataTable Initialization
+// ============================================
 let table = $('#appointments-table').DataTable({
     processing: true,
     serverSide: true,
@@ -145,6 +274,8 @@ let table = $('#appointments-table').DataTable({
         { data: 'patient_name', name: 'patient_name' },
         { data: 'appointment_date', name: 'appointment_date' },
         { data: 'appointment_time', name: 'appointment_time' },
+        { data: 'visit_type', name: 'visit_type' },
+        { data: 'slot_number', name: 'slot_number' },
         { data: 'status', name: 'status' },
         { data: 'action', name: 'action', orderable: false, searchable: false },
     ],
@@ -154,141 +285,218 @@ let table = $('#appointments-table').DataTable({
     responsive: true,
     language: languages[language],
     buttons: [
-        { extend: 'print', exportOptions: { columns: [0, 1, 2, 3, 4, 5] } },
-        { extend: 'excel', text: 'Excel', title: 'Appointments Data', exportOptions: { columns: [0, 1, 2, 3, 4, 5] } },
-        { extend: 'copy', exportOptions: { columns: [0, 1, 2, 3, 4, 5] } },
+        { extend: 'print', exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7] } },
+        { extend: 'excel', text: 'Excel', title: 'Appointments Data', exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7] } },
+        { extend: 'copy', exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7] } },
     ],
     drawCallback: function() {
         $('.dataTables_paginate > .pagination').addClass('pagination-rounded');
     }
 });
 
-// Initialize select2
-$('.select2').select2({
-    dropdownParent: $('#appointmentModal')
+// ============================================
+// CREATE APPOINTMENT - Initialize Select2
+// ============================================
+$('#create_patient_id, #create_doctor_profile_id').select2({
+    dropdownParent: $('#createAppointmentModal')
 });
 
-// Load available periods when doctor and date are selected
-$('#doctor_profile_id, #appointment_date').on('change', function() {
-    let doctorId = $('#doctor_profile_id').val();
-    let date = $('#appointment_date').val();
-
-    if (doctorId && date) {
-        $.ajax({
-            url: '{{ route("clinic.appointments.available-periods") }}',
-            method: 'GET',
-            data: { doctor_profile_id: doctorId, date: date },
-            success: function(periods) {
-                $('#period_id').empty();
-                if (periods.length > 0) {
-                    $('#period_id').append('<option value="">{{ __("Select a Time Slot") }}</option>');
-                    periods.forEach(function(period) {
-                        let available = period.capacity - period.booked_count;
-                        $('#period_id').append(
-                            `<option value="${period.id}">${period.start_time} - ${period.end_time} (${available} slots available)</option>`
-                        );
-                    });
-                } else {
-                    $('#period_id').append('<option value="">{{ __("No available slots") }}</option>');
-                }
-            },
-            error: function() {
-                Swal.fire('Error', 'Failed to load available periods', 'error');
-            }
-        });
-    }
+// ============================================
+// CREATE APPOINTMENT - Load Available Periods
+// ============================================
+$('#create_doctor_profile_id, #create_appointment_date').on('change', function() {
+    loadAvailablePeriods(
+        $('#create_doctor_profile_id').val(),
+        $('#create_appointment_date').val(),
+        '#create_period_id'
+    );
 });
 
-// Reset form
-function resetForm() {
-    $('#appointmentForm')[0].reset();
-    $('#appointmentForm').attr('action', '{{ route("clinic.appointments.store") }}');
-    $('#appointmentId').val('');
-    $('#appointmentModal .modal-title').text('{{ __("Book Appointment") }}');
-    $('.is-invalid').removeClass('is-invalid');
-    $('.invalid-feedback').text('');
-    $('#period_id').empty().append('<option value="">{{ __("Select Date & Doctor First") }}</option>');
-}
-
-// Handle Add/Edit Form Submission
-$('#appointmentForm').on('submit', function(e) {
+// ============================================
+// CREATE APPOINTMENT - Form Submission
+// ============================================
+$('#createAppointmentForm').on('submit', function(e) {
     e.preventDefault();
-    let id = $('#appointmentId').val();
-    let url = id ?
-        '{{ route("clinic.appointments.update", ":id") }}'.replace(':id', id) :
-        '{{ route("clinic.appointments.store") }}';
-    let method = id ? 'PUT' : 'POST';
 
     let formData = new FormData(this);
-    if (method === 'PUT') {
-        formData.append('_method', 'PUT');
-    }
 
     $.ajax({
-        url: url,
+        url: '{{ route("clinic.appointments.store") }}',
         method: 'POST',
         data: formData,
         processData: false,
         contentType: false,
         success: function(response) {
-            $('#appointmentModal').modal('hide');
+            $('#createAppointmentModal').modal('hide');
+            $('#createAppointmentForm')[0].reset();
+            $('#create_patient_id, #create_doctor_profile_id').val(null).trigger('change');
+            $('#create_period_id').empty().append('<option value="">{{ __("Select Date & Doctor First") }}</option>');
             table.ajax.reload();
-            Swal.fire('Success', response.message, 'success');
+            Swal.fire('{{ __("Success") }}', response.message, 'success');
         },
         error: function(xhr) {
-            if (xhr.status === 422) {
-                let errors = xhr.responseJSON.errors || {};
-                let messages = [];
-                Object.keys(errors).forEach(function(key) {
-                    messages.push(errors[key][0]);
-                    let $input = $('[name="' + key + '"]');
-                    if ($input.length) {
-                        $input.addClass('is-invalid');
-                        $input.next('.invalid-feedback').text(errors[key][0]);
-                    }
-                });
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Validation Errors',
-                    html: messages.join('<br>')
-                });
-            } else {
-                Swal.fire('Error', xhr.responseJSON?.message || 'Something went wrong', 'error');
-            }
+            handleFormErrors(xhr, '#createAppointmentForm');
         }
     });
 });
 
-// Edit
+// ============================================
+// EDIT APPOINTMENT - Open Modal
+// ============================================
 function editAppointment(id) {
-    $.get('{{ route("clinic.appointments.index") }}/' + id, function(data) {
-        $('#appointmentId').val(data.id);
-        $('#doctor_profile_id').val(data.doctor_profile_id).trigger('change');
-        $('#patient_id').val(data.patient_id).trigger('change');
-        $('#status').val(data.status);
-        $('#patient_notes').val(data.patient_notes);
-        $('#doctor_notes').val(data.doctor_notes);
+    $.ajax({
+        url: '{{ route("clinic.appointments.index") }}/' + id,
+        method: 'GET',
+        success: function(data) {
+            // Set appointment ID
+            $('#edit_appointment_id').val(data.id);
 
-        // Load period data
-        if (data.period) {
-            $('#appointment_date').val(data.period.date);
+            // Display read-only information
+            $('#edit_display_patient_name').text(data.patient?.user?.name || 'N/A');
+            $('#edit_display_doctor_name').text(data.doctor_profile?.name || 'N/A');
+            $('#edit_display_date').text(data.period?.date || 'N/A');
+            $('#edit_display_time_slot').text(data.period ? `${data.period.start_time} - ${data.period.end_time}` : 'N/A');
 
-            // Trigger change to load periods
-            setTimeout(function() {
-                $('#period_id').val(data.period_id);
-            }, 500);
+            // Populate editable fields
+            $('#edit_status').val(data.status);
+            $('#edit_visit_type').val(data.visit_type);
+            $('#edit_cost_amount').val(data.cost_amount);
+            $('#edit_payment_status').val(data.payment_status);
+            $('#edit_patient_notes').val(data.patient_notes);
+            $('#edit_doctor_notes').val(data.doctor_notes);
+
+            // Show modal
+            $('#editAppointmentModal').modal('show');
+        },
+        error: function(xhr) {
+            Swal.fire('{{ __("Error") }}', xhr.responseJSON?.message || '{{ __("Failed to load appointment") }}', 'error');
         }
-
-        $('#appointmentForm').attr('action',
-            '{{ route("clinic.appointments.update", ":id") }}'.replace(':id', id));
-        $('#appointmentModal .modal-title').text('{{ __("Edit Appointment") }}');
-        $('#appointmentModal').modal('show');
     });
 }
 
-// View
+// ============================================
+// EDIT APPOINTMENT - Form Submission
+// ============================================
+$('#editAppointmentForm').on('submit', function(e) {
+    e.preventDefault();
+
+    let appointmentId = $('#edit_appointment_id').val();
+    let formData = new FormData(this);
+
+    $.ajax({
+        url: '{{ route("clinic.appointments.update", ":id") }}'.replace(':id', appointmentId),
+        method: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function(response) {
+            $('#editAppointmentModal').modal('hide');
+            table.ajax.reload();
+            Swal.fire('{{ __("Success") }}', response.message, 'success');
+        },
+        error: function(xhr) {
+            handleFormErrors(xhr, '#editAppointmentForm');
+        }
+    });
+});
+
+// ============================================
+// VIEW APPOINTMENT
+// ============================================
 function viewAppointment(id) {
     window.location.href = '{{ route("clinic.appointments.show", ":id") }}'.replace(':id', id);
 }
+
+// ============================================
+// HELPER FUNCTIONS
+// ============================================
+
+/**
+ * Load available periods for a doctor on a specific date
+ */
+function loadAvailablePeriods(doctorId, date, targetSelector) {
+    if (!doctorId || !date) {
+        $(targetSelector).empty().append('<option value="">{{ __("Select Date & Doctor First") }}</option>');
+        return;
+    }
+
+    $.ajax({
+        url: '{{ route("clinic.appointments.available-periods") }}',
+        method: 'GET',
+        data: {
+            doctor_profile_id: doctorId,
+            date: date
+        },
+        success: function(periods) {
+            $(targetSelector).empty();
+            if (periods.length > 0) {
+                $(targetSelector).append('<option value="">{{ __("Select a Time Slot") }}</option>');
+                periods.forEach(function(period) {
+                    let available = period.capacity - period.booked_count;
+                    $(targetSelector).append(
+                        `<option value="${period.id}">${period.start_time} - ${period.end_time} (${available} {{ __("slots available") }})</option>`
+                    );
+                });
+            } else {
+                $(targetSelector).append('<option value="">{{ __("No available slots") }}</option>');
+            }
+        },
+        error: function() {
+            Swal.fire('{{ __("Error") }}', '{{ __("Failed to load available periods") }}', 'error');
+        }
+    });
+}
+
+/**
+ * Handle form validation errors
+ */
+function handleFormErrors(xhr, formSelector) {
+    if (xhr.status === 422) {
+        let errors = xhr.responseJSON.errors || {};
+        let messages = [];
+
+        // Clear previous errors
+        $(formSelector + ' .is-invalid').removeClass('is-invalid');
+        $(formSelector + ' .invalid-feedback').text('');
+
+        // Display errors
+        Object.keys(errors).forEach(function(key) {
+            messages.push(errors[key][0]);
+            let $input = $(formSelector + ' [name="' + key + '"]');
+            if ($input.length) {
+                $input.addClass('is-invalid');
+                $input.next('.invalid-feedback').text(errors[key][0]);
+            }
+        });
+
+        Swal.fire({
+            icon: 'error',
+            title: '{{ __("Validation Errors") }}',
+            html: messages.join('<br>')
+        });
+    } else {
+        Swal.fire('{{ __("Error") }}', xhr.responseJSON?.message || '{{ __("Something went wrong") }}', 'error');
+    }
+}
+
+// ============================================
+// MODAL EVENTS
+// ============================================
+
+// Reset create form when modal is closed
+$('#createAppointmentModal').on('hidden.bs.modal', function () {
+    $('#createAppointmentForm')[0].reset();
+    $('#create_patient_id, #create_doctor_profile_id').val(null).trigger('change');
+    $('#create_period_id').empty().append('<option value="">{{ __("Select Date & Doctor First") }}</option>');
+    $('#createAppointmentForm .is-invalid').removeClass('is-invalid');
+    $('#createAppointmentForm .invalid-feedback').text('');
+});
+
+// Reset edit form when modal is closed
+$('#editAppointmentModal').on('hidden.bs.modal', function () {
+    $('#editAppointmentForm')[0].reset();
+    $('#editAppointmentForm .is-invalid').removeClass('is-invalid');
+    $('#editAppointmentForm .invalid-feedback').text('');
+});
 </script>
 @endpush

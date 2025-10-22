@@ -34,8 +34,9 @@ class AppointmentController extends Controller
         })->where('status', DoctorProfile::STATUS_APPROVED)->get();
 
         $patients = Patient::all();
+        $visitTypes = Appointment::getVisitTypeOptions();
 
-        return view('backend.dashboards.clinic.pages.appointments.index', compact('doctors', 'patients'));
+        return view('backend.dashboards.clinic.pages.appointments.index', compact('doctors', 'patients', 'visitTypes'));
     }
 
     public function data(Request $request)
@@ -139,6 +140,110 @@ class AppointmentController extends Controller
             ->get();
 
         return response()->json($periods);
+    }
+
+    public function analytics(Request $request, $doctorId = null)
+    {
+        $clinicId = auth('clinic')->user()->clinic_id;
+
+        // Get all doctors in the clinic
+        $doctors = DoctorProfile::whereHas('clinicUser', function ($q) use ($clinicId) {
+            $q->where('clinic_id', $clinicId);
+        })->where('status', DoctorProfile::STATUS_APPROVED)->get();
+
+        // Set default doctor if not provided
+        if (!$doctorId && $doctors->isNotEmpty()) {
+            $doctorId = $doctors->first()->id;
+        }
+
+        $selectedDoctor = DoctorProfile::find($doctorId);
+
+        // Date range filters
+        $startDate = $request->get('start_date', now()->startOfMonth()->toDateString());
+        $endDate = $request->get('end_date', now()->endOfMonth()->toDateString());
+
+        if (!$selectedDoctor) {
+            return view('backend.dashboards.clinic.pages.appointments.analytics', [
+                'doctors' => $doctors,
+                'selectedDoctor' => null,
+                'analytics' => [],
+                'appointments' => collect([]),
+                'startDate' => $startDate,
+                'endDate' => $endDate,
+            ]);
+        }
+
+        // Get appointments for the doctor within date range
+        $appointments = Appointment::where('doctor_profile_id', $doctorId)
+            ->whereHas('period', function ($q) use ($startDate, $endDate) {
+                $q->whereBetween('date', [$startDate, $endDate]);
+            })
+            ->with(['patient.user', 'period'])
+            ->get();
+
+        // Calculate comprehensive analytics
+        $analytics = [
+            // Overview
+            'total_appointments' => $appointments->count(),
+            'confirmed' => $appointments->where('status', 'confirmed')->count(),
+            'completed' => $appointments->where('status', 'completed')->count(),
+            'cancelled' => $appointments->where('status', 'cancelled')->count(),
+            'pending' => $appointments->where('status', 'pending')->count(),
+            'waiting' => $appointments->where('status', 'waiting')->count(),
+
+            // Visit Types
+            'initial_visits' => $appointments->where('visit_type', 0)->count(),
+            'follow_ups' => $appointments->where('visit_type', 1)->count(),
+            'consultations' => $appointments->where('visit_type', 2)->count(),
+
+            // Revenue
+            'total_revenue' => $appointments->where('payment_status', 'paid')->sum('cost_amount'),
+            'pending_revenue' => $appointments->where('payment_status', 'pending')->sum('cost_amount'),
+            'average_cost' => $appointments->where('cost_amount', '>', 0)->avg('cost_amount'),
+            'paid_count' => $appointments->where('payment_status', 'paid')->count(),
+            'pending_payment_count' => $appointments->where('payment_status', 'pending')->count(),
+
+            // Time-based
+            'appointments_by_date' => $appointments->groupBy(function($item) {
+                return $item->period->date->format('Y-m-d');
+            })->map->count(),
+
+            'appointments_by_status_and_date' => $appointments->groupBy(function($item) {
+                return $item->period->date->format('Y-m-d');
+            })->map(function($dateAppointments) {
+                return [
+                    'confirmed' => $dateAppointments->where('status', 'confirmed')->count(),
+                    'completed' => $dateAppointments->where('status', 'completed')->count(),
+                    'cancelled' => $dateAppointments->where('status', 'cancelled')->count(),
+                ];
+            }),
+
+            // Peak times
+            'busiest_day' => $appointments->groupBy(function($item) {
+                return $item->period->date->format('l');
+            })->map->count()->sortDesc()->keys()->first(),
+
+            // Completion rate
+            'completion_rate' => $appointments->count() > 0
+                ? round(($appointments->where('status', 'completed')->count() / $appointments->count()) * 100, 2)
+                : 0,
+
+            'cancellation_rate' => $appointments->count() > 0
+                ? round(($appointments->where('status', 'cancelled')->count() / $appointments->count()) * 100, 2)
+                : 0,
+
+            // Recent appointments
+            'recent_appointments' => $appointments->sortByDesc('created_at')->take(5),
+        ];
+
+        return view('backend.dashboards.clinic.pages.appointments.analytics', compact(
+            'doctors',
+            'selectedDoctor',
+            'analytics',
+            'appointments',
+            'startDate',
+            'endDate'
+        ));
     }
 }
 

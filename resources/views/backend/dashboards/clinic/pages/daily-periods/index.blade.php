@@ -192,6 +192,11 @@ $(document).ready(function() {
             }
         });
     };
+
+    // View Appointments
+    window.viewAppointments = function(periodId) {
+        window.location.href = `/clinic/daily-periods/${periodId}/appointments`;
+    };
 });
 </script>
 

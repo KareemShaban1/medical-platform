@@ -90,6 +90,12 @@ class AppointmentRepository implements AppointmentRepositoryInterface
             ->addColumn('appointment_time', function ($item) {
                 return $item->period ? $item->period->start_time . ' - ' . $item->period->end_time : 'N/A';
             })
+            ->addColumn('visit_type', function ($item) {
+                return $item->visit_type_label;
+            })
+            ->addColumn('slot_number', function ($item) {
+                return $item->slot_number ?? '-';
+            })
             ->editColumn('status', function ($item) {
                 $statusClasses = [
                     'pending' => 'warning',
@@ -112,9 +118,13 @@ class AppointmentRepository implements AppointmentRepositoryInterface
         try {
             DB::beginTransaction();
 
-            // Set default status if not provided
+            // Set default values if not provided
             if (!isset($data['status'])) {
                 $data['status'] = Appointment::STATUS_CONFIRMED;
+            }
+
+            if (!isset($data['visit_type'])) {
+                $data['visit_type'] = 0; // Default to Initial Visit
             }
 
             // Set booked_at for confirmed appointments
@@ -154,9 +164,12 @@ class AppointmentRepository implements AppointmentRepositoryInterface
             $oldStatus = $appointment->status;
             $oldPeriodId = $appointment->period_id;
 
-            $appointment->update($data);
+            // Only update fields that are provided
+            $appointment->update(array_filter($data, function($value) {
+                return $value !== null;
+            }));
 
-            // Handle period change
+            // Handle period change (only if period_id is in the data)
             if (isset($data['period_id']) && $oldPeriodId != $data['period_id']) {
                 // Decrement old period if was confirmed
                 if ($oldStatus === Appointment::STATUS_CONFIRMED) {

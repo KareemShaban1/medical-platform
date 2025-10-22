@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\VisitType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -24,12 +25,17 @@ class Appointment extends Model
         'cancellation_reason',
         'cancelled_by',
         'cancelled_at',
+        'visit_type',
+        'cost_amount',
+        'payment_status',
     ];
 
     protected $casts = [
         'confirmation_code_expires_at' => 'datetime',
         'booked_at' => 'datetime',
         'cancelled_at' => 'datetime',
+        'visit_type' => VisitType::class,
+        'cost_amount' => 'decimal:2',
     ];
 
     const STATUS_PENDING = 'pending';
@@ -236,6 +242,16 @@ class Appointment extends Model
         $text = self::getStatuses()[$this->status] ?? 'Unknown';
 
         return "<span class=\"badge {$class}\">{$text}</span>";
+    }
+
+    public function getVisitTypeLabelAttribute()
+    {
+        return $this->visit_type ? $this->visit_type->label() : 'N/A';
+    }
+
+    public static function getVisitTypeOptions()
+    {
+        return VisitType::options();
     }
 }
 
