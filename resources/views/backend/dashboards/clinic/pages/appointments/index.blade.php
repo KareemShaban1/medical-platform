@@ -34,6 +34,7 @@
                                 <th>{{ __('Visit Type') }}</th>
                                 <th>{{ __('Slot Number') }}</th>
                                 <th>{{ __('Status') }}</th>
+                                <th>{{ __('Prescription Actions') }}</th>
                                 <th>{{ __('Actions') }}</th>
                             </tr>
                         </thead>
@@ -277,6 +278,7 @@ let table = $('#appointments-table').DataTable({
         { data: 'visit_type', name: 'visit_type' },
         { data: 'slot_number', name: 'slot_number' },
         { data: 'status', name: 'status' },
+        { data: 'prescription_actions', name: 'prescription_actions', orderable: false, searchable: false },
         { data: 'action', name: 'action', orderable: false, searchable: false },
     ],
     order: [[0, 'desc']],

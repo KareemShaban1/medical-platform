@@ -253,5 +253,10 @@ class Appointment extends Model
     {
         return VisitType::options();
     }
-}
 
+    // prescription
+    public function prescription()
+    {
+        return $this->hasOne(Prescription::class);
+    }
+}
