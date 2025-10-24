@@ -7,6 +7,9 @@
         <div class="col-12">
             <div class="page-title-box">
                 <div class="page-title-right">
+                    <a href="{{ route('clinic.medical-records.edit', $appointment->id) }}" class="btn btn-outline-primary me-2">
+                        <i class="mdi mdi-file-document-outline"></i> {{ __('Medical Record') }}
+                    </a>
                     <a href="{{ route('clinic.appointments.analytics', $appointment->doctor_profile_id) }}" class="btn btn-info me-2">
                         <i class="mdi mdi-chart-line"></i> {{ __('Doctor Analytics') }}
                     </a>

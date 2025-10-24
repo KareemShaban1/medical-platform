@@ -97,6 +97,9 @@ class RepositoryServiceProvider extends ServiceProvider
         // Lab Orders Repositories
         $this->app->bind(ClinicLabOrderRepositoryInterface::class, ClinicLabOrderRepository::class);
         $this->app->bind(UserLabOrderRepositoryInterface::class, UserLabOrderRepository::class);
+
+        // Medical Records
+        $this->app->bind('App\\Interfaces\\Clinic\\MedicalRecordRepositoryInterface', 'App\\Repository\\Clinic\\MedicalRecordRepository');
     }
 
 
