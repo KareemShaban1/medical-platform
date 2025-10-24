@@ -16,6 +16,7 @@ use App\Http\Controllers\Backend\Dashboards\Clinic\SalaryContractController;
 use App\Http\Controllers\Backend\Dashboards\Clinic\PayslipController;
 use App\Http\Controllers\Backend\Dashboards\Clinic\ExpenseCategoryController;
 use App\Http\Controllers\Backend\Dashboards\Clinic\ExpenseController;
+use App\Http\Controllers\Backend\Dashboards\Clinic\PrescriptionController;
 use Illuminate\Support\Facades\Auth;
 
 Route::group(
@@ -292,6 +293,14 @@ Route::group(
             Route::put('/{appointment}', [\App\Http\Controllers\Backend\Dashboards\Clinic\MedicalRecordController::class, 'update'])->name('medical-records.update');
             Route::post('/share/{record}', [\App\Http\Controllers\Backend\Dashboards\Clinic\MedicalRecordController::class, 'toggleShare'])->name('medical-records.share');
         });
+        // Prescriptions Management
+        Route::get('prescriptions/data', [PrescriptionController::class, 'data'])->name('prescriptions.data');
+        Route::get('prescriptions/create/{appointmentId}', [PrescriptionController::class, 'create'])->name('prescriptions.create');
+        Route::post('prescriptions', [PrescriptionController::class, 'store'])->name('prescriptions.store');
+        Route::get('prescriptions/{id}', [PrescriptionController::class, 'show'])->name('prescriptions.show');
+        Route::get('prescriptions/{id}/edit', [PrescriptionController::class, 'edit'])->name('prescriptions.edit');
+        Route::put('prescriptions/{id}', [PrescriptionController::class, 'update'])->name('prescriptions.update');
+        Route::delete('prescriptions/{id}', [PrescriptionController::class, 'destroy'])->name('prescriptions.destroy');
     });
 
 
@@ -303,4 +312,3 @@ Route::post('/clinic/logout', function (Request $request) {
 
     return redirect()->to('/clinic/login');
 })->name('clinic.logout');
-

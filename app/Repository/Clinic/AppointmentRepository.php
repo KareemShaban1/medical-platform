@@ -109,7 +109,8 @@ class AppointmentRepository implements AppointmentRepositoryInterface
                 return '<span class="badge bg-' . $class . '">' . ucfirst($item->status) . '</span>';
             })
             ->addColumn('action', fn($item) => $this->actionButtons($item))
-            ->rawColumns(['status', 'action'])
+            ->addColumn('prescription_actions', fn($item) => $this->prescriptionButtons($item))
+            ->rawColumns(['status', 'action', 'prescription_actions'])
             ->make(true);
     }
 
@@ -310,6 +311,27 @@ class AppointmentRepository implements AppointmentRepositoryInterface
         $this->assertDoctorBelongsToClinic($appointment->doctor_profile_id);
     }
 
+    // prescription buttons
+    private function prescriptionButtons($item): string
+    {
+        // add prescription
+        if ($item->prescription) {
+            $prescriptionButton = '<a href="' . route('clinic.prescriptions.edit', $item->prescription->id) . '" class="btn btn-sm btn-warning text-white" title="Edit Prescription">
+            '.__('Edit Prescription').'
+            <i class="fa fa-edit"></i></a>';
+        } else {
+            $prescriptionButton = '<a href="' . route('clinic.prescriptions.create', $item->id) . '" class="btn btn-sm btn-primary" title="Add Prescription">
+            '.__('Add Prescription').'
+            <i class="fa fa-plus"></i></a>';
+        }
+
+        return <<<HTML
+        <div class="d-flex gap-2">
+            {$prescriptionButton}
+        </div>
+        HTML;
+    }
+
     private function actionButtons($item): string
     {
         return <<<HTML
@@ -320,4 +342,3 @@ class AppointmentRepository implements AppointmentRepositoryInterface
         HTML;
     }
 }
-

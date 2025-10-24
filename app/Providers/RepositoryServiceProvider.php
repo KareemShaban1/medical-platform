@@ -94,6 +94,9 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind('App\Interfaces\Clinic\AppointmentRepositoryInterface', 'App\Repository\Clinic\AppointmentRepository');
         $this->app->bind('App\Interfaces\User\DoctorProfileRepositoryInterface', 'App\Repository\User\DoctorProfileRepository');
 
+        // Prescription Repository
+        $this->app->bind('App\Interfaces\Clinic\PrescriptionRepositoryInterface', 'App\Repository\Clinic\PrescriptionRepository');
+        
         // Lab Orders Repositories
         $this->app->bind(ClinicLabOrderRepositoryInterface::class, ClinicLabOrderRepository::class);
         $this->app->bind(UserLabOrderRepositoryInterface::class, UserLabOrderRepository::class);
