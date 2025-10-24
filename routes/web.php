@@ -119,6 +119,8 @@ Route::group([
 
     Route::get('lab-orders', [\App\Http\Controllers\Frontend\Patient\LabOrderController::class, 'index'])->name('lab-orders.index');
     Route::get('lab-orders/{id}', [\App\Http\Controllers\Frontend\Patient\LabOrderController::class, 'show'])->name('lab-orders.show');
+    Route::get('medical-records', [\App\Http\Controllers\Frontend\Patient\MedicalRecordController::class, 'index'])->name('medical-records.index');
+    Route::get('medical-records/{record}', [\App\Http\Controllers\Frontend\Patient\MedicalRecordController::class, 'show'])->name('medical-records.show');
 });
 
 // Patient Logout Route
@@ -135,6 +137,9 @@ Route::post('/register', [PatientAuthController::class, 'register'])->name('regi
 require __DIR__ . '/admin.php';
 require __DIR__.'/clinic.php';
 require __DIR__.'/supplier.php';
+
+
+
 
 
 

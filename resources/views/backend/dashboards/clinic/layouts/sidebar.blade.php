@@ -318,7 +318,15 @@
                 </div>
             </li>
 
-  			<!-- Requests Management (Tickets System) -->
+            <!-- Medical Records -->
+            <li class="side-nav-item">
+                <a href="{{ route('clinic.medical-records.index') }}" class="side-nav-link">
+                    <i class="uil-notes"></i>
+                    <span> {{ __('Medical Records') }} </span>
+                </a>
+            </li>
+
+            <!-- Requests Management (Tickets System) -->
   			<li class="side-nav-item">
   				<a data-bs-toggle="collapse" href="#sidebarRequests" aria-expanded="false"
   					aria-controls="sidebarRequests" class="side-nav-link">
@@ -393,4 +401,3 @@
   	<!-- Sidebar -left -->
   </div>
   <!-- Left Sidebar End -->
-

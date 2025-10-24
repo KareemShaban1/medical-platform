@@ -57,6 +57,33 @@ class Appointment extends Model
         ];
     }
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::updated(function (Appointment $appointment) {
+            if ($appointment->isDirty('status') && $appointment->status === self::STATUS_COMPLETED) {
+                $clinicId = optional($appointment->doctorProfile->clinic)->id;
+                if (!$clinicId) {
+                    return;
+                }
+
+                MedicalRecord::firstOrCreate(
+                    ['appointment_id' => $appointment->id],
+                    [
+                        'clinic_id' => $clinicId,
+                        'doctor_profile_id' => $appointment->doctor_profile_id,
+                        'patient_id' => $appointment->patient_id,
+                        'visit_type' => ($appointment->visit_type ?? 0),
+                        'notes' => $appointment->doctor_notes,
+                        'created_by' => auth('clinic')->id() ?: null,
+                    ]
+                );
+            }
+        });
+    }
+
+
     // Relationships
     public function doctorProfile()
     {

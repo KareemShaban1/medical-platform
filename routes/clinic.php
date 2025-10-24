@@ -285,6 +285,14 @@ Route::group(
         Route::post('lab-orders/{id}/upload', [\App\Http\Controllers\Backend\Dashboards\Clinic\LabOrderController::class, 'upload'])->name('lab-orders.upload');
         Route::post('lab-orders/{id}/complete', [\App\Http\Controllers\Backend\Dashboards\Clinic\LabOrderController::class, 'complete'])->name('lab-orders.complete');
 
+        // Medical Records
+        Route::prefix('medical-records')->group(function () {
+            Route::get('/data', [\App\Http\Controllers\Backend\Dashboards\Clinic\MedicalRecordController::class, 'data'])->name('medical-records.data');
+            Route::get('/', [\App\Http\Controllers\Backend\Dashboards\Clinic\MedicalRecordController::class, 'index'])->name('medical-records.index');
+            Route::get('/{appointment}', [\App\Http\Controllers\Backend\Dashboards\Clinic\MedicalRecordController::class, 'edit'])->name('medical-records.edit');
+            Route::put('/{appointment}', [\App\Http\Controllers\Backend\Dashboards\Clinic\MedicalRecordController::class, 'update'])->name('medical-records.update');
+            Route::post('/share/{record}', [\App\Http\Controllers\Backend\Dashboards\Clinic\MedicalRecordController::class, 'toggleShare'])->name('medical-records.share');
+        });
         // Prescriptions Management
         Route::get('prescriptions/data', [PrescriptionController::class, 'data'])->name('prescriptions.data');
         Route::get('prescriptions/create/{appointmentId}', [PrescriptionController::class, 'create'])->name('prescriptions.create');

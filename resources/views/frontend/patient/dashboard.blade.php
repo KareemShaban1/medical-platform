@@ -6,7 +6,7 @@
 <div class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-10 px-4">
     <div class="w-full max-w-4xl">
         <div class="bg-white dark:bg-gray-800 shadow-2xl rounded-2xl overflow-hidden">
-            
+
             <!-- Header -->
             <div class="flex justify-between items-center bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-4">
                 <h2 class="text-xl font-semibold">{{ __('Patient Dashboard') }}</h2>
@@ -14,7 +14,7 @@
                     <a href="{{ route('user.lab-orders.index') }}" class="px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded-lg text-sm font-medium transition">
                         <i class="fas fa-vials"></i> {{ __('My Lab Results') }}
                     </a>
-                
+
                 <form method="POST" action="{{ route('user.logout') }}" onsubmit="return confirm('{{ __('Are you sure you want to logout?') }}')">
                     @csrf
                     <button type="submit"
@@ -42,8 +42,8 @@
                     @php
                         $features = [
                             ['icon' => 'fa-user', 'color' => 'text-blue-500', 'title' => __('Profile Information'), 'desc' => __('View and update your profile')],
-                            ['icon' => 'fa-calendar', 'color' => 'text-green-500', 'title' => __('Appointments'), 'desc' => __('Manage your appointments')],
-                            ['icon' => 'fa-file-medical', 'color' => 'text-sky-500', 'title' => __('Medical Records'), 'desc' => __('Access your medical history')],
+                            ['icon' => 'fa-calendar', 'color' => 'text-green-500', 'title' => __('Appointments'), 'desc' => __('Manage your appointments'), 'route' => route('user.appointments.my')],
+                            ['icon' => 'fa-file-medical', 'color' => 'text-sky-500', 'title' => __('Medical Records'), 'desc' => __('Access your medical history'), 'route' => route('user.medical-records.index')],
                             ['icon' => 'fa-pills', 'color' => 'text-yellow-500', 'title' => __('Prescriptions'), 'desc' => __('View your prescriptions')],
                             // Lab Results card with same style (clickable)
                             ['icon' => 'fa-vials', 'color' => 'text-purple-500', 'title' => __('Lab Results'), 'desc' => __('View and download your results'), 'route' => route('user.lab-orders.index')],
