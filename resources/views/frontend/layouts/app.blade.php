@@ -9,6 +9,8 @@
 	@yield('content')
 
 
+	@include('frontend.layouts.floating-button')
+
 	@include('frontend.layouts.footer')
 
 	@include('frontend.layouts.scripts')
