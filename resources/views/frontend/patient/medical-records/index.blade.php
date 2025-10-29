@@ -3,24 +3,26 @@
 @section('title', __('My Medical Records'))
 
 @section('content')
-<div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-10 px-4">
+<div class="min-h-screen bg-gray-50 py-10 px-4">
     <div class="max-w-4xl mx-auto">
-        <div class="bg-white dark:bg-gray-800 shadow-2xl rounded-2xl overflow-hidden">
+        <div class="bg-white shadow-2xl rounded-2xl overflow-hidden">
             <div class="flex justify-between items-center bg-gradient-to-r from-sky-600 to-blue-600 text-white px-6 py-4">
-                <h2 class="text-xl font-semibold">{{ __('My Medical Records') }}</h2>
-                <a href="{{ route('user.dashboard') }}" class="text-white/90 hover:text-white text-sm">{{ __('Back to Dashboard') }}</a>
+                <h2 class="text-2xl font-bold text-gray-800">{{ __('My Medical Records') }}</h2>
+                <a href="{{ route('user.dashboard') }}" class="px-4 py-2 rounded-lg bg-gray-200 text-gray-800 hover:bg-gray-300 transition">
+                    <i class="fas fa-arrow-left"></i> {{ __('Back to Dashboard') }}
+                </a>
             </div>
             <div class="p-6">
                 @if($records->count() === 0)
-                    <p class="text-gray-600 dark:text-gray-300">{{ __('No shared medical records yet.') }}</p>
+                    <p class="text-gray-600">{{ __('No shared medical records yet.') }}</p>
                 @else
                     <ul class="space-y-4">
                         @foreach($records as $record)
-                            <li class="p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
+                            <li class="p-4 rounded-xl border border-gray-200 bg-gray-50">
                                 <div class="flex items-center justify-between">
                                     <div>
-                                        <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">{{ $record->doctor?->name }}</h3>
-                                        <p class="text-sm text-gray-500 dark:text-gray-300">
+                                        <h3 class="text-lg font-semibold text-gray-800">{{ $record->doctor?->name }}</h3>
+                                        <p class="text-sm text-gray-500">
                                             {{ __('Appointment') }}: {{ optional($record->appointment?->period?->date)->format('Y-m-d') ?: 'N/A' }} �
                                             {{ __('Visit Type') }}: {{ [0=>'Initial',1=>'Follow-up',2=>'Consultation'][$record->visit_type] ?? 'N/A' }}
                                         </p>
@@ -38,6 +40,5 @@
     </div>
 </div>
 @endsection
-
 
 

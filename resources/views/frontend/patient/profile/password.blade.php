@@ -3,12 +3,12 @@
 @section('title', __('Change Password'))
 
 @section('content')
-<div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-10 px-4">
+<div class="min-h-screen bg-gray-50 py-10 px-4">
   <div class="max-w-3xl mx-auto">
-    <div class="bg-white dark:bg-gray-800 shadow-2xl rounded-2xl overflow-hidden">
+    <div class="bg-white shadow-2xl rounded-2xl overflow-hidden">
       <div class="flex justify-between items-center bg-gradient-to-r from-sky-600 to-blue-600 text-white px-6 py-4">
-        <h2 class="text-xl font-semibold">{{ __('Change Password') }}</h2>
-        <a href="{{ route('user.dashboard') }}" class="px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded-lg text-sm font-medium transition">
+        <h2 class="text-2xl font-bold text-gray-800">{{ __('Change Password') }}</h2>
+        <a href="{{ route('user.dashboard') }}" class="px-4 py-2 rounded-lg bg-gray-200 text-gray-800 hover:bg-gray-300 transition">
           <i class="fas fa-arrow-left"></i> {{ __('Back to Dashboard') }}
         </a>
       </div>
@@ -18,20 +18,20 @@
           @method('PUT')
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Current Password') }}</label>
-            <input type="password" name="current_password" class="mt-1 w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100" required>
+            <label class="block text-sm font-medium text-gray-700">{{ __('Current Password') }}</label>
+            <input type="password" name="current_password" class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
             @error('current_password')<p class="text-sm text-red-600 mt-1">{{ $message }}</p>@enderror
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('New Password') }}</label>
-              <input type="password" name="password" class="mt-1 w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100" required>
+              <label class="block text-sm font-medium text-gray-700">{{ __('New Password') }}</label>
+              <input type="password" name="password" class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
               @error('password')<p class="text-sm text-red-600 mt-1">{{ $message }}</p>@enderror
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Confirm Password') }}</label>
-              <input type="password" name="password_confirmation" class="mt-1 w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100" required>
+              <label class="block text-sm font-medium text-gray-700">{{ __('Confirm Password') }}</label>
+              <input type="password" name="password_confirmation" class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
             </div>
           </div>
 
