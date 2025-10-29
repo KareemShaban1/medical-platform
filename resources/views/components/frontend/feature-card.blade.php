@@ -24,7 +24,7 @@
 	</p>
 
 	<ul class="mt-5 space-y-2 text-start mx-auto w-fit">
-		@foreach($features as $feature)
+		 @foreach(array_slice($features, 0, 2) as $feature)
 		<x-frontend.feature-item item="{{ $feature }}" icon="fas fa-check" iconColor="{{ $iconColor }}" />
 		@endforeach
 	</ul>
