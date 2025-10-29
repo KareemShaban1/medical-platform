@@ -3,12 +3,12 @@
 'containerClass' => 'mt-12',
 'showInfo' => true,
 'infoClass' => 'text-center mt-4 text-sm text-gray-500',
-'previousText' => 'Previous',
-'nextText' => 'Next',
+'previousText' => 'previous',
+'nextText' => 'next',
 'maxPages' => null,
 'showFirstLast' => false,
-'firstText' => 'First',
-'lastText' => 'Last',
+'firstText' => 'first',
+'lastText' => 'last',
 ])
 
 @if($paginator && $paginator->hasPages())
@@ -25,12 +25,23 @@
 		{{-- Previous Page Link --}}
 		@if ($paginator->onFirstPage())
 		<span class="px-4 py-2 bg-gray-100 text-gray-400 rounded-lg cursor-not-allowed">
-			<i class="fas fa-chevron-left mr-1"></i> {{ $previousText }}
+
+			@if(App::getLocale() == 'ar')
+			{{ __($previousText) }} <i class="fas fa-chevron-right mr-1"></i>
+			@else
+			<i class="fas fa-chevron-left ml-1"></i> {{ __($previousText) }}
+			@endif
 		</span>
 		@else
 		<a href="{{ $paginator->previousPageUrl() }}"
 			class="px-4 py-2 bg-white hover:bg-blue-50 text-[var(--primary-color)] rounded-lg shadow-sm transition-all duration-200 hover:scale-105">
-			<i class="fas fa-chevron-left mr-1"></i> {{ $previousText }}
+
+			<!-- if language is arabic -->
+			@if(App::getLocale() == 'ar')
+			{{ __($previousText) }} <i class="fas fa-chevron-right mr-1"></i>
+			@else
+			<i class="fas fa-chevron-left ml-1"></i> {{ __($previousText) }}
+			@endif
 		</a>
 		@endif
 
@@ -77,7 +88,7 @@
 						@endif
 						<a href="{{ $paginator->url($lastPage) }}"
 							class="w-10 h-10 flex items-center justify-center bg-white hover:bg-blue-50 text-gray-600 hover:text-[var(--primary-color)] rounded-lg shadow-sm transition-all duration-200 hover:scale-105">
-							{{ $lastPage }}
+							{{ __($lastPage) }}
 						</a>
 						@endif
 		</div>
@@ -86,11 +97,19 @@
 		@if ($paginator->hasMorePages())
 		<a href="{{ $paginator->nextPageUrl() }}"
 			class="px-4 py-2 bg-white hover:bg-blue-50 text-[var(--primary-color)] rounded-lg shadow-sm transition-all duration-200 hover:scale-105">
-			{{ $nextText }} <i class="fas fa-chevron-right ml-1"></i>
+			@if(App::getLocale() == 'ar')
+			{{ __($nextText) }} <i class="fas fa-chevron-left mr-1"></i>
+			@else
+			<i class="fas fa-chevron-right ml-1"></i> {{ __($nextText) }}
+			@endif
 		</a>
 		@else
 		<span class="px-4 py-2 bg-gray-100 text-gray-400 rounded-lg cursor-not-allowed">
-			{{ $nextText }} <i class="fas fa-chevron-right ml-1"></i>
+			@if(App::getLocale() == 'ar')
+			{{ __($nextText) }} <i class="fas fa-chevron-left mr-1"></i>
+			@else
+			<i class="fas fa-chevron-right ml-1"></i> {{ __($nextText) }}
+			@endif
 		</span>
 		@endif
 
@@ -98,15 +117,15 @@
 		@if($showFirstLast && $paginator->hasMorePages())
 		<a href="{{ $paginator->url($paginator->lastPage()) }}"
 			class="px-4 py-2 bg-white hover:bg-blue-50 text-[var(--primary-color)] rounded-lg shadow-sm transition-all duration-200 hover:scale-105">
-			{{ $lastText }} <i class="fas fa-angle-double-right ml-1"></i>
+			{{ __($lastText) }} <i class="fas fa-angle-double-right ml-1"></i>
 		</a>
 		@endif
 	</div>
 
 	@if($showInfo)
 	<div class="{{ $infoClass }}">
-		Showing {{ $paginator->firstItem() }} to {{ $paginator->lastItem() }} of
-		{{ $paginator->total() }} results
+		{{ __('showing') }} {{ $paginator->firstItem() }} {{ __('to') }} {{ $paginator->lastItem() }}
+		{{ __('of') }} {{ $paginator->total() }} {{ __('results') }}
 	</div>
 	@endif
 </div>
