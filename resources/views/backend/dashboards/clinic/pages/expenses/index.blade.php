@@ -11,6 +11,9 @@
 						<i class="mdi mdi-plus"></i>
 						{{ __('Add Expense') }}
 					</a>
+					<a href="{{ route('clinic.expenses.analytics') }}" class="btn btn-info text-white">
+						<i class="mdi mdi-chart-line"></i> {{ __('Expenses Analytics') }}
+					</a>
 					<!-- trash button -->
 					<a href="{{ route('clinic.expenses.trash') }}"
 						class="btn btn-warning">

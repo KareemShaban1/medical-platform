@@ -41,10 +41,10 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                     @php
                         $features = [
-                            ['icon' => 'fa-user', 'color' => 'text-blue-500', 'title' => __('Profile Information'), 'desc' => __('View and update your profile')],
+                            ['icon' => 'fa-user', 'color' => 'text-blue-500', 'title' => __('Profile Information'), 'desc' => __('View and update your profile'), 'route' => route('user.profile.index')],
                             ['icon' => 'fa-calendar', 'color' => 'text-green-500', 'title' => __('Appointments'), 'desc' => __('Manage your appointments'), 'route' => route('user.appointments.my')],
                             ['icon' => 'fa-file-medical', 'color' => 'text-sky-500', 'title' => __('Medical Records'), 'desc' => __('Access your medical history'), 'route' => route('user.medical-records.index')],
-                            ['icon' => 'fa-pills', 'color' => 'text-yellow-500', 'title' => __('Prescriptions'), 'desc' => __('View your prescriptions')],
+                            ['icon' => 'fa-pills', 'color' => 'text-yellow-500', 'title' => __('Prescriptions'), 'desc' => __('View your prescriptions'), 'route' => route('user.prescriptions.index')],
                             // Lab Results card with same style (clickable)
                             ['icon' => 'fa-vials', 'color' => 'text-purple-500', 'title' => __('Lab Results'), 'desc' => __('View and download your results'), 'route' => route('user.lab-orders.index')],
                         ];

@@ -121,6 +121,16 @@ Route::group([
     Route::get('lab-orders/{id}', [\App\Http\Controllers\Frontend\Patient\LabOrderController::class, 'show'])->name('lab-orders.show');
     Route::get('medical-records', [\App\Http\Controllers\Frontend\Patient\MedicalRecordController::class, 'index'])->name('medical-records.index');
     Route::get('medical-records/{record}', [\App\Http\Controllers\Frontend\Patient\MedicalRecordController::class, 'show'])->name('medical-records.show');
+    // Prescriptions (Patient)
+    Route::get('prescriptions', [\App\Http\Controllers\Frontend\Patient\PrescriptionController::class, 'index'])->name('prescriptions.index');
+    Route::get('prescriptions/{id}', [\App\Http\Controllers\Frontend\Patient\PrescriptionController::class, 'show'])->name('prescriptions.show');
+
+    // Profile Information (Patient)
+    Route::get('profile', [\App\Http\Controllers\Frontend\Patient\ProfileController::class, 'index'])->name('profile.index');
+    Route::put('profile', [\App\Http\Controllers\Frontend\Patient\ProfileController::class, 'update'])->name('profile.update');
+    // Change Password (Patient)
+    Route::get('profile/password', [\App\Http\Controllers\Frontend\Patient\ProfileController::class, 'password'])->name('profile.password');
+    Route::put('profile/password', [\App\Http\Controllers\Frontend\Patient\ProfileController::class, 'updatePassword'])->name('profile.password.update');
 });
 
 // Patient Logout Route
@@ -137,8 +147,6 @@ Route::post('/register', [PatientAuthController::class, 'register'])->name('regi
 require __DIR__ . '/admin.php';
 require __DIR__.'/clinic.php';
 require __DIR__.'/supplier.php';
-
-
 
 
 
