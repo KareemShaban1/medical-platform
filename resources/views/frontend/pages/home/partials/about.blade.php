@@ -7,9 +7,9 @@
 		<h2 class="text-4xl text-center font-bold text-gray-900 py-5 font-tajawal">
 			{{ __('about us') }}
 		</h2>
-		<p class="text-lg font-normal text-gray-500 max-w-md md:max-w-2xl mx-auto font-tajawal">
-			{{ __('provides about us that are essential for the platform.') }}
-		</p>
+		<!-- <p class="text-lg font-normal text-gray-500 max-w-md md:max-w-2xl mx-auto font-tajawal">
+			{{ __('about us description') }}
+		</p> -->
 	</div>
 	<!-- Grid -->
 	<div class="lg:grid lg:grid-cols-12 lg:gap-16 lg:items-center" style="direction: ltr;">
@@ -46,77 +46,26 @@
 				<!-- Title -->
 				<div class="space-y-2 md:space-y-4">
 					<h2 class="font-bold text-3xl lg:text-4xl text-gray-800 ">
-						{{ __('welcome to our medical platform') }}
+						{{ __('about us description 1') }}
 					</h2>
 					<p class="text-gray-500">
-						{{ __('explore our platform and find the best medical services for you.') }}
+						{{ __('about us description 2') }}
 					</p>
 				</div>
 				<!-- End Title -->
 
 				<!-- List -->
 				<ul class="space-y-2 sm:space-y-4">
-					<li class="flex gap-x-3">
-						<span
-							class="mt-0.5 size-5 flex justify-center items-center rounded-full bg-blue-50 text-blue-600">
-							<svg class="shrink-0 size-3.5"
-								xmlns="http://www.w3.org/2000/svg"
-								width="24" height="24"
-								viewBox="0 0 24 24" fill="none"
-								stroke="currentColor" stroke-width="2"
-								stroke-linecap="round"
-								stroke-linejoin="round">
-								<polyline points="20 6 9 17 4 12" />
-							</svg>
-						</span>
-						<div class="grow">
-							<span class="text-sm sm:text-base text-gray-500">
-								{{ __('less routine') }} <span
-									class="font-bold">{{ __('more creativity') }}</span>
-							</span>
-						</div>
-					</li>
 
-					<li class="flex gap-x-3">
-						<span
-							class="mt-0.5 size-5 flex justify-center items-center rounded-full bg-blue-50 text-blue-600">
-							<svg class="shrink-0 size-3.5"
-								xmlns="http://www.w3.org/2000/svg"
-								width="24" height="24"
-								viewBox="0 0 24 24" fill="none"
-								stroke="currentColor" stroke-width="2"
-								stroke-linecap="round"
-								stroke-linejoin="round">
-								<polyline points="20 6 9 17 4 12" />
-							</svg>
-						</span>
-						<div class="grow">
-							<span class="text-sm sm:text-base text-gray-500 ">
-								{{ __('hundreds of thousands saved') }}
-							</span>
-						</div>
-					</li>
+					<x-frontend.about-item item="{{ __('about item 1') }}" />
+					<x-frontend.about-item item="{{ __('about item 2') }}" />
+					<x-frontend.about-item item="{{ __('about item 3') }}" />
+					<x-frontend.about-item item="{{ __('about item 4') }}" />
+					<x-frontend.about-item item="{{ __('about item 5') }}" />
+					<x-frontend.about-item item="{{ __('about item 6') }}" />
+					<x-frontend.about-item item="{{ __('about item 7') }}" />
 
-					<li class="flex gap-x-3">
-						<span
-							class="mt-0.5 size-5 flex justify-center items-center rounded-full bg-blue-50 text-blue-600">
-							<svg class="shrink-0 size-3.5"
-								xmlns="http://www.w3.org/2000/svg"
-								width="24" height="24"
-								viewBox="0 0 24 24" fill="none"
-								stroke="currentColor" stroke-width="2"
-								stroke-linecap="round"
-								stroke-linejoin="round">
-								<polyline points="20 6 9 17 4 12" />
-							</svg>
-						</span>
-						<div class="grow">
-							<span class="text-sm sm:text-base text-gray-500">
-								{{ __('scale budgets') }} <span
-									class="font-bold">{{ __('efficiently') }}</span>
-							</span>
-						</div>
-					</li>
+
 				</ul>
 				<!-- End List -->
 			</div>

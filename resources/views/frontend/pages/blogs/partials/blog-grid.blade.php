@@ -10,7 +10,7 @@
 		@endif
 	</div>
 	<div class="p-4">
-		<div class="flex items-center text-sm text-gray-500 mb-2">
+		<div class="flex items-center gap-3 text-sm text-gray-500 mb-2">
 			@if($post->blogCategory)
 			<span class="badge badge-primary mr-2">
 				{{ $post->blogCategory->name }}

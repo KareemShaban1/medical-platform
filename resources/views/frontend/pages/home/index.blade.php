@@ -7,8 +7,6 @@
 <!-- hero2 -->
 @include('frontend.pages.home.partials.hero')
 
-<!-- about -->
-@include('frontend.pages.home.partials.about')
 
 <section class="relative z-10 overflow-hidden bg-primary-gradient py-16 px-8">
 	<div class="container">
@@ -107,6 +105,10 @@
 	</span>
 </section>
 
+
+<!-- about -->
+@include('frontend.pages.home.partials.about')
+
 <!-- features -->
 @include('frontend.pages.home.partials.features')
 
@@ -152,6 +154,9 @@
 	</div>
 </section>
 <!-- Courses Section -->
+
+<!-- Registration Section -->
+@include('frontend.pages.home.partials.registration-section')
 
 <!-- plans -->
 <div class="sm:flex sm:flex-col sm:align-center p-10">

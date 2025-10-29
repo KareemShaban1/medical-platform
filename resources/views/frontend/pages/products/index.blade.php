@@ -164,7 +164,7 @@ html {
 
 	<div class="relative z-10 text-center text-white px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
 		<h1 class="text-4xl md:text-6xl font-bold mb-6 animate-fade-in-up">
-			<span class="bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent">
+			<span class="text-white bg-clip-text text-transparent">
 				{{ __('medical products') }}
 			</span>
 		</h1>
@@ -177,7 +177,7 @@ html {
 			<div class="relative group">
 				<input type="text" id="heroSearch"
 					placeholder="{{ __('search for medical products...') }}"
-					class="w-full px-6 py-4 pl-14 pr-6 text-white 
+					class="w-full px-6 py-4 pl-14 pr-6 text-white
                     rounded-full shadow-2xl focus:outline-none focus:ring-4 focus:ring-white/30 transition-all duration-300 group-hover:scale-105">
 				<i
 					class="fas fa-search absolute left-5 top-1/2 transform -translate-y-1/4 text-white text-lg"></i>
@@ -361,49 +361,6 @@ html {
 	</div>
 </section>
 
-<!-- Interactive Features Section -->
-<section class="py-16 bg-gradient-primary relative overflow-hidden">
-	<div class="absolute inset-0 bg-black/20"></div>
-	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-		<div class="text-center mb-12">
-			<h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Why Choose Our Products?</h2>
-			<p class="text-xl text-white/90 max-w-3xl mx-auto">Quality, reliability, and innovation in
-				every product we offer</p>
-		</div>
-
-		<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-			<!-- Feature 1 -->
-			<div class="group text-center">
-				<div
-					class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
-					<i class="fas fa-shield-alt text-3xl text-white"></i>
-				</div>
-				<h3 class="text-xl font-bold text-white mb-4">Quality Assured</h3>
-				<p class="text-white/80">All products meet international medical standards</p>
-			</div>
-
-			<!-- Feature 2 -->
-			<div class="group text-center">
-				<div
-					class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
-					<i class="fas fa-shipping-fast text-3xl text-white"></i>
-				</div>
-				<h3 class="text-xl font-bold text-white mb-4">Fast Delivery</h3>
-				<p class="text-white/80">Quick and reliable shipping worldwide</p>
-			</div>
-
-			<!-- Feature 3 -->
-			<div class="group text-center">
-				<div
-					class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
-					<i class="fas fa-headset text-3xl text-white"></i>
-				</div>
-				<h3 class="text-xl font-bold text-white mb-4">24/7 Support</h3>
-				<p class="text-white/80">Expert support whenever you need it</p>
-			</div>
-		</div>
-	</div>
-</section>
 
 @endsection
 

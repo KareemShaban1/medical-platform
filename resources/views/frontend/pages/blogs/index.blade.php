@@ -1,4 +1,155 @@
 @extends('frontend.layouts.app')
+
+
+@push('styles')
+<style>
+/* Custom Animations */
+@keyframes fadeInUp {
+	from {
+		opacity: 0;
+		transform: translateY(30px);
+	}
+
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.animate-fade-in-up {
+	animation: fadeInUp 0.8s ease-out forwards;
+	opacity: 0;
+}
+
+.animation-delay-200 {
+	animation-delay: 0.2s;
+}
+
+.animation-delay-400 {
+	animation-delay: 0.4s;
+}
+
+/* Custom Spinner */
+.spinner {
+	width: 40px;
+	height: 40px;
+	border: 4px solid rgba(7, 145, 132, 0.3);
+	border-top: 4px solid #079184;
+	border-radius: 50%;
+	animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+	0% {
+		transform: rotate(0deg);
+	}
+
+	100% {
+		transform: rotate(360deg);
+	}
+}
+
+/* Enhanced Form Inputs */
+.form-input {
+	transition: all 0.3s ease;
+	border: 2px solid #e5e7eb;
+}
+
+.form-input:focus {
+	border-color: #079184;
+	box-shadow: 0 0 0 3px rgba(7, 145, 132, 0.1);
+	transform: scale(1.02);
+}
+
+/* Product Card Hover Effects */
+.product-card {
+	transition: all 0.3s ease;
+}
+
+.product-card:hover {
+	transform: translateY(-8px);
+	box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+/* Gradient Text */
+.text-gradient {
+	background: linear-gradient(135deg, #079184, #0aa896);
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+	background-clip: text;
+}
+
+/* Sticky Filters */
+.sticky {
+	position: sticky;
+	top: 0;
+	z-index: 40;
+}
+
+#heroSearch::placeholder {
+	color: white;
+	opacity: 1;
+	/* Ensures full visibility */
+}
+
+/* Filter Panel Animation */
+#filtersPanel {
+	transition: all 0.3s ease;
+}
+
+/* Active Filter Chips */
+#activeFilters .bg-primary {
+	background: linear-gradient(135deg, #079184, #0aa896);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+	width: 8px;
+}
+
+::-webkit-scrollbar-track {
+	background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+	background: linear-gradient(135deg, #079184, #0aa896);
+	border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background: linear-gradient(135deg, #056b5f, #079184);
+}
+
+/* Smooth scrolling */
+html {
+	scroll-behavior: smooth;
+}
+
+/* Loading states */
+.loading {
+	opacity: 0.6;
+	pointer-events: none;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+	.animate-fade-in-up {
+		animation-delay: 0s;
+	}
+
+	#filtersPanel {
+		margin: 0 -1rem;
+		border-radius: 0;
+	}
+
+	.grid.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-4 {
+		grid-template-columns: 1fr;
+		gap: 1rem;
+	}
+}
+</style>
+@endpush
+
 @section('content')
 
 <!-- Hero Section with Advanced Animations -->
@@ -15,21 +166,21 @@
 
 	<div class="relative z-10 text-center text-white px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
 		<h1 class="text-4xl md:text-6xl font-bold mb-6 animate-fade-in-up">
-			<span class="bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent">
-				Medical Blog
+			<span class="text-white bg-clip-text text-transparent">
+				{{ __('medical blog') }}
 			</span>
 		</h1>
 		<p class="text-xl md:text-2xl mb-8 animate-fade-in-up animation-delay-200 opacity-90">
-			Stay updated with the latest medical news and insights
+			{{ __('stay updated with the latest medical news and insights') }}
 		</p>
 
 		<!-- Interactive Search Bar -->
 		<div class="max-w-2xl mx-auto animate-fade-in-up animation-delay-400">
 			<div class="relative group">
-				<input type="text" id="heroSearch" placeholder="Search for articles..."
+				<input type="text" id="heroSearch" placeholder="{{ __('search for articles') }}"
 					class="w-full px-6 py-4 pl-14 pr-6 text-gray-900 rounded-full shadow-2xl focus:outline-none focus:ring-4 focus:ring-white/30 transition-all duration-300 group-hover:scale-105">
 				<i
-					class="fas fa-search absolute left-5 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg"></i>
+					class="fas fa-search absolute left-5 top-1/2 transform -translate-y-1/4 text-white text-lg"></i>
 				<!-- <button
 					class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gradient-primary text-white px-6 py-2 rounded-full hover:scale-105 transition-transform duration-300">
 					Search
@@ -48,7 +199,7 @@
 				<button id="toggleFilters"
 					class="group flex items-center space-x-3 px-6 py-3 bg-gradient-primary text-white rounded-xl hover:scale-105 transition-all duration-300 shadow-lg">
 					<i class="fas fa-filter text-lg"></i>
-					<span class="font-semibold">Filters</span>
+					<span class="font-semibold">{{ __('filters') }}</span>
 					<i id="filterChevron"
 						class="fas fa-chevron-down transition-transform duration-300"></i>
 				</button>
@@ -56,21 +207,21 @@
 				<!-- Active Filters Count -->
 				<div id="activeFiltersCount"
 					class="hidden bg-primary text-white px-3 py-1 rounded-full text-sm font-semibold">
-					<span id="filterCount">0</span> filters
+					<span id="filterCount">0</span> {{ __('filters') }}
 				</div>
 			</div>
 
 			<!-- Results Count -->
 			<div class="flex items-center space-x-4">
 				<div class="bg-gray-100 rounded-xl px-4 py-2">
-					<span class="text-gray-600">Showing <span id="resultsCount"
+					<span class="text-gray-600">{{ __('showing') }} <span id="resultsCount"
 							class="font-bold text-primary">{{ $blogPosts->total() }}</span>
-						articles</span>
+						{{ __('articles') }}</span>
 				</div>
 
 				<!-- View Toggle -->
 				<div class="hidden md:flex items-center space-x-2">
-					<span class="text-sm text-gray-500">View:</span>
+					<span class="text-sm text-gray-500">{{ __('view') }}:</span>
 					<button id="gridView"
 						class="p-3 bg-gradient-primary text-white rounded-xl hover:scale-110 transition-transform duration-300 shadow-lg">
 						<i class="fas fa-th"></i>
@@ -88,48 +239,43 @@
 			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 				<!-- Search Filter -->
 				<div class="group">
-					<label class="block text-sm font-semibold text-gray-700 mb-3">Search
-						Articles</label>
+					<label class="block text-sm font-semibold text-gray-700 mb-3">{{ __('search articles') }}</label>
 					<div class="relative">
 						<input type="text" id="search"
-							placeholder="Search articles..."
+							placeholder="{{ __('search articles') }}"
 							class="form-input w-full pl-10 pr-4 py-3 group-hover:scale-105 transition-transform duration-300">
 						<i
-							class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+							class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/4 text-gray-400"></i>
 					</div>
 				</div>
 
 				<!-- Category Filter -->
 				<div class="group">
 					<label
-						class="block text-sm font-semibold text-gray-700 mb-3">Category</label>
+						class="block text-sm font-semibold text-gray-700 mb-3">{{ __('category') }}</label>
 					<div class="relative">
 						<select id="category"
 							class="form-input w-full px-3 py-3 group-hover:scale-105 transition-transform duration-300">
-							<option value="">All Categories</option>
+							<option value="">{{ __('all categories') }}</option>
 							@foreach($categories as $category)
 							<option value="{{ $category->id }}">
 								{{ app()->getLocale() == 'ar' ? $category->name_ar : $category->name_en }}
 							</option>
 							@endforeach
 						</select>
-						<i
-							class="fas fa-chevron-down absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+						
 					</div>
 				</div>
 				<!-- Sort Filter -->
 				<div class="group">
-					<label class="block text-sm font-semibold text-gray-700 mb-3">Sort
-						By</label>
+					<label class="block text-sm font-semibold text-gray-700 mb-3">{{ __('sort by') }}</label>
 					<div class="relative">
 						<select id="sort"
 							class="form-input w-full px-3 py-3 group-hover:scale-105 transition-transform duration-300">
-							<option value="newest">Newest First</option>
-							<option value="oldest">Oldest First</option>
-							<option value="title">Title A-Z</option>
+							<option value="newest">{{ __('newest first') }}</option>
+							<option value="oldest">{{ __('oldest first') }}</option>
+							<option value="title">{{ __('title a-z') }}</option>
 						</select>
-						<i
-							class="fas fa-chevron-down absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none"></i>
 					</div>
 				</div>
 
@@ -138,7 +284,7 @@
 					<button id="clearFilters" class="btn-secondary w-full group">
 						<i
 							class="fas fa-refresh mr-2 group-hover:rotate-180 transition-transform duration-500"></i>
-						Clear All Filters
+						{{ __('clear all filters') }}
 					</button>
 				</div>
 			</div>
@@ -155,7 +301,7 @@
 		<div id="loadingSpinner" class="hidden text-center py-12">
 			<div class="inline-flex items-center space-x-3">
 				<div class="spinner"></div>
-				<span class="text-gray-600 font-medium">Loading articles...</span>
+				<span class="text-gray-600 font-medium">{{ __('loading articles') }}...</span>
 			</div>
 		</div>
 

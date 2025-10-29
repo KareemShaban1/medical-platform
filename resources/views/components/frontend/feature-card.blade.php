@@ -23,14 +23,14 @@
 		{{ $description }}
 	</p>
 
-	<ul class="mt-5 space-y-2 text-left mx-auto w-fit">
+	<ul class="mt-5 space-y-2 text-start mx-auto w-fit">
 		@foreach($features as $feature)
 		<x-frontend.feature-item item="{{ $feature }}" icon="fas fa-check" iconColor="{{ $iconColor }}" />
 		@endforeach
 	</ul>
 
 	<!-- Glow Effect (behind content) -->
-	<div
+	<!-- <div
 		class="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 bg-gradient-to-r from-indigo-400/10 to-blue-400/10 blur-xl transition-all duration-700 z-0">
-	</div>
+	</div> -->
 </div>

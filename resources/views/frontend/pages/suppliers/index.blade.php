@@ -139,6 +139,12 @@
 		box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
 	}
 
+	#heroSearch::placeholder {
+	color: white;
+	opacity: 1;
+	/* Ensures full visibility */
+}
+
 	/* Filter Panel Animation */
 	.filter-panel {
 		transition: all 0.3s ease;
@@ -349,20 +355,20 @@
 
 	<div class="relative z-10 text-center text-white px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
 		<h1 class="text-4xl md:text-6xl font-bold mb-6 animate-fade-in-up">
-			<span class="bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent">
-				Medical Suppliers
+			<span class="text-white bg-clip-text text-transparent">
+				{{ __('medical suppliers') }}
 			</span>
 		</h1>
 		<p class="text-xl md:text-2xl mb-8 animate-fade-in-up animation-delay-200 opacity-90">
-			Find trusted suppliers for medical equipment and supplies
+			{{ __('find trusted suppliers for medical equipment and supplies') }}
 		</p>
 
 		<!-- Interactive Search Bar -->
 		<div class="max-w-2xl mx-auto animate-fade-in-up animation-delay-400">
 			<div class="relative group">
-				<input type="text" id="heroSearch" placeholder="Search for suppliers..."
+				<input type="text" id="heroSearch" placeholder="{{ __('search for suppliers') }}"
 					class="w-full px-6 py-4 pl-14 pr-6 text-gray-900 rounded-full shadow-2xl focus:outline-none focus:ring-4 focus:ring-white/30 transition-all duration-300 group-hover:scale-105">
-				<i class="fas fa-search absolute left-5 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg"></i>
+				<i class="fas fa-search absolute left-5 top-1/2 transform -translate-y-1/4 text-white text-lg"></i>
 				<!-- <button class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gradient-primary text-white px-6 py-2 rounded-full hover:scale-105 transition-transform duration-300">
                     Search
                 </button> -->
@@ -380,7 +386,7 @@
 				<button id="toggleFilters"
 					class="group flex items-center space-x-3 px-6 py-3 bg-gradient-primary text-white rounded-xl hover:scale-105 transition-all duration-300 shadow-lg">
 					<i class="fas fa-filter text-lg"></i>
-					<span class="font-semibold">Filters</span>
+					<span class="font-semibold">{{ __('filters') }}</span>
 					<i id="filterChevron"
 						class="fas fa-chevron-down transition-transform duration-300"></i>
 				</button>
@@ -388,21 +394,21 @@
 				<!-- Active Filters Count -->
 				<div id="activeFiltersCount"
 					class="hidden bg-primary text-white px-3 py-1 rounded-full text-sm font-semibold">
-					<span id="filterCount">0</span> filters
+					<span id="filterCount">0</span> {{ __('filters') }}
 				</div>
 			</div>
 
 			<!-- Results Count -->
 			<div class="flex items-center space-x-4">
 				<div class="bg-gray-100 rounded-xl px-4 py-2">
-					<span class="text-gray-600">Showing <span id="resultsCount"
+					<span class="text-gray-600">{{ __('showing') }} <span id="resultsCount"
 							class="font-bold text-primary">{{ $suppliers->total() }}</span>
-						suppliers</span>
+						{{ __('suppliers') }}</span>
 				</div>
 
 				<!-- View Toggle -->
 				<div class="hidden md:flex items-center space-x-2">
-					<span class="text-sm text-gray-500">View:</span>
+					<span class="text-sm text-gray-500">{{ __('view') }}:</span>
 					<button id="gridView"
 						class="p-3 bg-gradient-primary text-white rounded-xl hover:scale-110 transition-transform duration-300 shadow-lg">
 						<i class="fas fa-th"></i>
@@ -420,10 +426,9 @@
 			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 				<!-- Search Filter -->
 				<div class="group">
-					<label class="block text-sm font-semibold text-gray-700 mb-3">Search
-						Suppliers</label>
+					<label class="block text-sm font-semibold text-gray-700 mb-3">{{ __('search suppliers') }}</label>
 					<div class="relative">
-						<input type="text" id="search" placeholder="Search suppliers..."
+						<input type="text" id="search" placeholder="{{ __('search suppliers') }}"
 							class="form-input w-full pl-10 pr-4 py-3 group-hover:scale-105 transition-transform duration-300">
 						<i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
 					</div>
@@ -433,21 +438,20 @@
 
 				<!-- Sort Filter -->
 				<div class="group">
-					<label class="block text-sm font-semibold text-gray-700 mb-3">Sort By</label>
+					<label class="block text-sm font-semibold text-gray-700 mb-3">{{ __('sort by') }}</label>
 					<div class="relative">
 						<select id="sort" class="form-input w-full px-3 py-3 group-hover:scale-105 transition-transform duration-300">
-							<option value="name" {{ request('sort') == 'name' ? 'selected' : '' }}>Name A-Z</option>
-							<option value="newest" {{ request('sort') == 'newest' ? 'selected' : '' }}>Newest First</option>
-							<option value="oldest" {{ request('sort') == 'oldest' ? 'selected' : '' }}>Oldest First</option>
+							<option value="name" {{ request('sort') == 'name' ? 'selected' : '' }}>{{ __('name a-z') }}</option>
+							<option value="newest" {{ request('sort') == 'newest' ? 'selected' : '' }}>{{ __('newest first') }}</option>
+							<option value="oldest" {{ request('sort') == 'oldest' ? 'selected' : '' }}>{{ __('oldest first') }}</option>
 						</select>
-						<i class="fas fa-chevron-down absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none"></i>
 					</div>
 				</div>
 
 				<div class="group flex items-center space-x-4">
 					<button id="clearFilters" class="btn-secondary group">
-						<i class="fas fa-refresh mr-2 group-hover:rotate-180 transition-transform duration-500"></i>
-						Clear All Filters
+						<i class="fas fa-refresh mx-2 group-hover:rotate-180 transition-transform duration-500"></i>
+						{{ __('clear all filters') }}
 					</button>
 				</div>
 			</div>
@@ -464,7 +468,7 @@
 		<div id="loadingSpinner" class="hidden text-center py-12">
 			<div class="inline-flex items-center space-x-3">
 				<div class="spinner"></div>
-				<span class="text-gray-600 font-medium">Loading suppliers...</span>
+				<span class="text-gray-600 font-medium">{{ __('loading suppliers') }}</span>
 			</div>
 		</div>
 
@@ -480,45 +484,7 @@
 	</div>
 </section>
 
-<!-- Interactive Features Section -->
-<section class="py-16 bg-gradient-primary relative overflow-hidden">
-	<div class="absolute inset-0 bg-black/20"></div>
-	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-		<div class="text-center mb-12">
-			<h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Why Choose Our Suppliers?</h2>
-			<p class="text-xl text-white/90 max-w-3xl mx-auto">Trusted partners for all your medical equipment and supply needs</p>
-		</div>
 
-		<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-			<!-- Feature 1 -->
-			<div class="group text-center">
-				<div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 animate-float">
-					<i class="fas fa-shield-alt text-3xl text-white"></i>
-				</div>
-				<h3 class="text-xl font-bold text-white mb-4">Quality Assured</h3>
-				<p class="text-white/80">All suppliers meet strict quality standards</p>
-			</div>
-
-			<!-- Feature 2 -->
-			<div class="group text-center">
-				<div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 animate-float animation-delay-200">
-					<i class="fas fa-truck text-3xl text-white"></i>
-				</div>
-				<h3 class="text-xl font-bold text-white mb-4">Reliable Delivery</h3>
-				<p class="text-white/80">Fast and secure shipping worldwide</p>
-			</div>
-
-			<!-- Feature 3 -->
-			<div class="group text-center">
-				<div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 animate-float animation-delay-400">
-					<i class="fas fa-certificate text-3xl text-white"></i>
-				</div>
-				<h3 class="text-xl font-bold text-white mb-4">Certified Partners</h3>
-				<p class="text-white/80">Verified and certified medical suppliers</p>
-			</div>
-		</div>
-	</div>
-</section>
 
 @endsection
 

@@ -2,12 +2,15 @@
 	<div class="container mx-auto flex flex-col md:flex-row items-center gap-10 px-6">
 		<!-- Left: Text Content -->
 		<div class="md:w-1/2 space-y-6 text-position">
-			<h2 class="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
-				{{ __('welcome to our medical platform') }}
+			<h2 class="text-4xl md:text-4xl font-bold text-gray-900 leading-tight">
+				{{ __('banner heading') }}
 			</h2>
 			<p class="text-gray-600 text-lg leading-relaxed">
-				{{ __('your trusted healthcare partner for the future') }}
+				{{ __('banner sub heading 1') }}
+				<br>
+				{{ __('banner sub heading 2') }}
 			</p>
+
 
 			<div class="flex flex-col sm:flex-row justify-center md:justify-start gap-4">
 				<a href="#"

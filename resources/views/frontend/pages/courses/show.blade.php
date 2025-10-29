@@ -461,11 +461,11 @@
 	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 		<ol class="breadcrumb-list">
 			<li class="breadcrumb-item">
-				<a href="{{ route('home') }}" class="hover:text-primary">Home</a>
+				<a href="{{ route('home') }}" class="hover:text-primary">{{ __('home') }}</a>
 			</li>
 			<li class="breadcrumb-separator">/</li>
 			<li class="breadcrumb-item">
-				<a href="{{ route('courses') }}" class="hover:text-primary">Courses</a>
+				<a href="{{ route('courses') }}" class="hover:text-primary">{{ __('courses') }}</a>
 			</li>
 			<li class="breadcrumb-separator">/</li>
 			<li class="breadcrumb-item active">{{ $course->title }}</li>
@@ -474,7 +474,7 @@
 </nav>
 
 <!-- Course Hero Section -->
-<section class="course-hero py-16 relative">
+<section class="bg-primary-gradient py-16 relative">
 	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 		<div class="text-center text-white">
 			<h1 class="text-4xl md:text-6xl font-bold mb-6 fade-in">
@@ -484,33 +484,7 @@
 				{{ app()->getLocale() == 'ar' ? $course->description_ar : $course->description_en }}
 			</p>
 
-			<!-- Course Status Badge -->
-			@php
-			$now = now();
-			$startDate = $course->start_date;
-			$endDate = $course->end_date;
 
-			if ($startDate > $now) {
-			$status = 'upcoming';
-			$statusText = 'Upcoming';
-			$statusIcon = 'fas fa-clock';
-			} elseif ($endDate >= $now) {
-			$status = 'ongoing';
-			$statusText = 'Ongoing';
-			$statusIcon = 'fas fa-play';
-			} else {
-			$status = 'completed';
-			$statusText = 'Completed';
-			$statusIcon = 'fas fa-check';
-			}
-			@endphp
-
-			<div class="inline-flex items-center gap-4 fade-in" style="animation-delay: 0.4s;">
-				<span class="status-badge status-{{ $status }}">
-					<i class="{{ $statusIcon }}"></i>
-					{{ $statusText }}
-				</span>
-			</div>
 		</div>
 	</div>
 </section>
@@ -539,7 +513,7 @@
 					<div class="course-meta">
 						<div class="meta-item">
 							<i class="fas fa-clock meta-icon"></i>
-							<span class="meta-text">{{ $course->duration ?? 'N/A' }} weeks duration</span>
+							<span class="meta-text">{{ $course->duration ?? 'N/A' }} {{ __('weeks') }}</span>
 						</div>
 						<div class="meta-item">
 							<i class="fas fa-calendar-alt meta-icon"></i>
@@ -547,7 +521,7 @@
 								@if($course->start_date)
 								{{ $course->start_date->format('M d, Y') }}
 								@else
-								TBA
+								{{ __('tba') }}
 								@endif
 							</span>
 						</div>
@@ -557,64 +531,34 @@
 								@if($course->end_date)
 								{{ $course->end_date->format('M d, Y') }}
 								@else
-								TBA
+									{{ __('tba') }}
 								@endif
 							</span>
 						</div>
-						<div class="meta-item">
-							<i class="fas fa-globe meta-icon"></i>
-							<span class="meta-text">Online Course</span>
-						</div>
+						
 					</div>
 
 					<div class="course-description">
 						{{ app()->getLocale() == 'ar' ? $course->description_ar : $course->description_en }}
 					</div>
 
-					<div class="course-features">
-						<h3 class="features-title">What You'll Learn</h3>
-						<ul class="features-list">
-							<li class="feature-item">
-								<i class="fas fa-check feature-icon"></i>
-								<span>Comprehensive medical knowledge and best practices</span>
-							</li>
-							<li class="feature-item">
-								<i class="fas fa-check feature-icon"></i>
-								<span>Hands-on practical experience and case studies</span>
-							</li>
-							<li class="feature-item">
-								<i class="fas fa-check feature-icon"></i>
-								<span>Expert instruction from medical professionals</span>
-							</li>
-							<li class="feature-item">
-								<i class="fas fa-check feature-icon"></i>
-								<span>Certification upon successful completion</span>
-							</li>
-							<li class="feature-item">
-								<i class="fas fa-check feature-icon"></i>
-								<span>Access to course materials and resources</span>
-							</li>
-						</ul>
-					</div>
+				
 
 					<div class="course-actions">
 						<button class="btn-enroll" onclick="enrollCourse()">
 							<i class="fas fa-user-plus"></i>
-							Enroll Now
+							{{ __('enroll now') }}
 						</button>
 						<a href="#" class="btn-secondary" onclick="shareCourse()">
 							<i class="fas fa-share"></i>
-							Share Course
+							{{ __('share course') }}
 						</a>
-						<a href="#" class="btn-secondary" onclick="addToFavorites()">
-							<i class="fas fa-heart"></i>
-							Add to Favorites
-						</a>
+						
 					</div>
 				</div>
 
 				<!-- Course Tabs -->
-				<div class="course-tabs">
+				<!-- <div class="course-tabs">
 					<div class="tab-nav">
 						<button class="tab-btn active" onclick="switchTab('overview')">Overview</button>
 						<button class="tab-btn" onclick="switchTab('curriculum')">Curriculum</button>
@@ -701,57 +645,54 @@
 							</div>
 						</div>
 					</div>
-				</div>
+				</div> -->
 			</div>
 
 			<!-- Sidebar -->
 			<div class="lg:col-span-1">
 				<!-- Course Quick Info -->
 				<div class="bg-white rounded-lg shadow-lg p-6 mb-6">
-					<h3 class="text-lg font-semibold mb-4">Course Details</h3>
+					<h3 class="text-lg font-semibold mb-4">{{ __('course details') }}</h3>
 					<div class="space-y-3">
 						<div class="flex justify-between">
-							<span class="text-gray-600">Duration:</span>
+							<span class="text-gray-600">{{ __('duration') }}:</span>
 							<span class="font-medium">{{ $course->duration ?? 'N/A' }} weeks</span>
 						</div>
 						<div class="flex justify-between">
-							<span class="text-gray-600">Start Date:</span>
+							<span class="text-gray-600">{{ __('start date') }}:</span>
 							<span class="font-medium">
 								@if($course->start_date)
 								{{ $course->start_date->format('M d, Y') }}
 								@else
-								TBA
+								{{ __('tba') }}
 								@endif
 							</span>
 						</div>
 						<div class="flex justify-between">
-							<span class="text-gray-600">End Date:</span>
+							<span class="text-gray-600">{{ __('end date') }}:</span>
 							<span class="font-medium">
 								@if($course->end_date)
 								{{ $course->end_date->format('M d, Y') }}
 								@else
-								TBA
+								{{ __('tba') }}
 								@endif
 							</span>
 						</div>
+						
 						<div class="flex justify-between">
-							<span class="text-gray-600">Language:</span>
-							<span class="font-medium">English</span>
+							<span class="text-gray-600">{{ __('level') }}:</span>
+							<span class="font-medium">{{ $course->level ?? 'N/A' }}</span>
 						</div>
-						<div class="flex justify-between">
-							<span class="text-gray-600">Level:</span>
-							<span class="font-medium">Intermediate</span>
-						</div>
-					</div>
+					</div>	
 				</div>
 
 				<!-- Course URL -->
 				@if($course->url)
 				<div class="bg-white rounded-lg shadow-lg p-6 mb-6">
-					<h3 class="text-lg font-semibold mb-4">Course Link</h3>
+					<h3 class="text-lg font-semibold mb-4">{{ __('course link') }}</h3>
 					<a href="{{ $course->url }}" target="_blank" class="btn-enroll w-full text-center">
 						<i class="fas fa-external-link-alt"></i>
-						Visit Course Page
+						{{ __('visit course page') }}
 					</a>
 				</div>
 				@endif
@@ -765,7 +706,7 @@
 <section class="py-12 bg-white">
 	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 		<div class="related-courses">
-			<h2 class="related-title">Related Courses</h2>
+			<h2 class="related-title">{{ __('related courses') }}</h2>
 			<div class="course-grid">
 				@foreach($relatedCourses as $relatedCourse)
 				<div class="course-card">
@@ -784,12 +725,12 @@
 						<div class="course-card-meta">
 							<span class="course-card-duration">
 								<i class="fas fa-clock"></i>
-								{{ $relatedCourse->duration ?? 'N/A' }} weeks
+								{{ $relatedCourse->duration ?? 'N/A' }} {{ __('weeks') }}
 							</span>
-							<span class="course-card-level">Intermediate</span>
+							<span class="course-card-level">{{ $relatedCourse->level ?? 'N/A' }}</span>
 						</div>
 						<a href="{{ route('courses.show', $relatedCourse->id) }}" class="course-card-link">
-							View Details
+							{{ __('view details') }}
 							<i class="fas fa-arrow-right"></i>
 						</a>
 					</div>
@@ -881,4 +822,3 @@
 	});
 </script>
 @endpush
-

@@ -13,7 +13,9 @@
 			<span class="badge badge-primary">{{ ucfirst($course->level ?? 'Intermediate') }}</span>
 			<!-- <span class="text-sm text-gray-500">{{ $course->duration ?? rand(2, 12) }} weeks</span> -->
 		</div>
+		<a href="{{ route('courses.show', $course->id) }}">
 		<h3 class="font-semibold text-lg mb-2 truncate">{{ $course->title }}</h3>
+		</a>
 		<p class="text-gray-600 text-sm mb-3 line-clamp-2">
 			{{ Str::limit($course->description, 100) }}
 		</p>
@@ -24,7 +26,9 @@
 		</div> -->
 		<div class="flex justify-between items-center">
 			<button class="btn-primary">
-				Enroll Now
+				<a href="{{ route('courses.show', $course->id) }}">
+					{{ __('enroll now') }}
+				</a>
 			</button>
 		</div>
 	</div>

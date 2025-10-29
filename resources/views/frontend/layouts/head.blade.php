@@ -26,6 +26,9 @@
 
 	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 
+	<script src="//unpkg.com/alpinejs" defer></script>
+
+
 	<title>Medical Platform - Home</title>
 
 	@if (app()->getLocale() == 'ar')

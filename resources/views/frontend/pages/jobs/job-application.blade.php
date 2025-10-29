@@ -8,8 +8,8 @@
 		<!-- Job Information Card -->
 		<div class="bg-white rounded-lg shadow-lg mb-8 overflow-hidden">
 			<div class="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4">
-				<h1 class="text-2xl font-bold text-white">{{ $job->title }}</h1>
-				<p class="text-blue-100 mt-1">{{ $job->clinic->name ?? 'Medical Clinic' }}</p>
+				<h1 class="text-2xl font-bold text-black">{{ $job->title }}</h1>
+				<p class="text-black mt-1">{{ $job->clinic->name ?? 'Medical Clinic' }}</p>
 			</div>
 			<div class="p-6">
 				<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -29,7 +29,7 @@
 									d="M15 11a3 3 0 11-6 0 3 3 0 016 0z">
 								</path>
 							</svg>
-							<span class="text-gray-700"><strong>Location:</strong>
+							<span class="text-gray-700"><strong>{{ __('location') }}:</strong>
 								{{ $job->location }}</span>
 						</div>
 						<div class="flex items-center">
@@ -42,7 +42,7 @@
 									d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V8a2 2 0 012-2V6">
 								</path>
 							</svg>
-							<span class="text-gray-700"><strong>Type:</strong>
+							<span class="text-gray-700"><strong>{{ __('type') }}:</strong>
 								{{ ucfirst($job->type) }}</span>
 						</div>
 					</div>
@@ -57,15 +57,16 @@
 									d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1">
 								</path>
 							</svg>
-							<span class="text-gray-700"><strong>Salary:</strong>
-								{{ $job->salary ? '$' . number_format($job->salary) : 'Not specified' }}</span>
+							<span class="text-gray-700"><strong>{{ __('salary') }}:</strong>
+								{{ $job->salary ? number_format($job->salary) : 'Not specified' }}</span>
 						</div>
 
 					</div>
 				</div>
 				@if($job->description)
 				<div class="mt-6 pt-6 border-t border-gray-200">
-					<h3 class="text-lg font-semibold text-gray-900 mb-3">Job Description
+					<h3 class="text-lg font-semibold text-gray-900 mb-3">
+						{{ __('job description') }}
 					</h3>
 					<p class="text-gray-700 leading-relaxed">{{ $job->description }}</p>
 				</div>
@@ -84,7 +85,8 @@
 						clip-rule="evenodd"></path>
 				</svg>
 				<div>
-					<h3 class="text-sm font-medium text-green-800">Success!</h3>
+					<h3 class="text-sm font-medium text-green-800">{{ __('success') }}!
+					</h3>
 					<div class="mt-1 text-sm text-green-700">{{ session('success') }}
 					</div>
 				</div>
@@ -103,7 +105,7 @@
 						clip-rule="evenodd"></path>
 				</svg>
 				<div>
-					<h3 class="text-sm font-medium text-red-800">Error!</h3>
+					<h3 class="text-sm font-medium text-red-800">{{ __('error') }}!</h3>
 					<div class="mt-1 text-sm text-red-700">{{ session('error') }}</div>
 				</div>
 			</div>
@@ -113,9 +115,11 @@
 		<!-- Application Form -->
 		<div class="bg-white rounded-lg shadow-lg overflow-hidden">
 			<div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
-				<h2 class="text-xl font-semibold text-gray-900">Job Application Form</h2>
-				<p class="text-gray-600 mt-1">Please fill out the form below to apply for this
-					position.</p>
+				<h2 class="text-xl font-semibold text-gray-900">{{ __('job application form') }}
+				</h2>
+				<p class="text-gray-600 mt-1">
+					{{ __('please fill out the form below to apply for this position') }}
+				</p>
 			</div>
 			<div class="p-6">
 				<form action="{{ route('jobs.submit-application', $job->id) }}" method="POST"
@@ -127,10 +131,11 @@
 					<div class="space-y-6">
 						<div class="border-b border-gray-200 pb-4">
 							<h3 class="text-lg font-medium text-gray-900">
-								Application Information</h3>
-							<p class="text-gray-600 mt-1">Please provide the
-								following information to complete your
-								application.</p>
+								{{ __('application information') }}
+							</h3>
+							<p class="text-gray-600 mt-1">
+								{{ __('please provide the following information to complete your application') }}
+							</p>
 						</div>
 
 						<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -155,8 +160,7 @@
 									value="{{ old($field->field_name) }}"
 									{{ $field->required ? 'required' : '' }}
 									placeholder="Enter {{ strtolower($field->field_label) }}">
-								@elseif($field->field_type ==
-								'textarea')
+								@elseif($field->field_type == 'textarea')
 								<textarea name="{{ $field->field_name }}"
 									id="{{ $field->field_name }}"
 									rows="4"
@@ -222,8 +226,7 @@
 									@endforeach
 									@endif
 								</select>
-								@elseif($field->field_type ==
-								'checkbox')
+								@elseif($field->field_type == 'checkbox')
 								<div class="space-y-3">
 									@if($field->options)
 									@foreach($field->options as $index => $option)
@@ -300,15 +303,9 @@
 							<div>
 								<h3
 									class="text-sm font-medium text-blue-800">
-									No Application Fields
-									Configured</h3>
+								</h3>
 								<div class="mt-1 text-sm text-blue-700">
-									<p>No application fields have
-										been configured for
-										this job. Please
-										contact the clinic
-										for application
-										instructions.</p>
+									<p>{{ __('no application fields have been configured for this job. Please contact the clinic for application instructions.') }}</p>
 								</div>
 							</div>
 						</div>
@@ -328,8 +325,9 @@
 									d="M10 19l-7-7m0 0l7-7m-7 7h18">
 								</path>
 							</svg>
-							Back to Job Details
+							{{ __('back to job details') }}
 						</a>
+						@if($applicationFields && count($applicationFields) > 0)
 						<button type="submit"
 							class="inline-flex items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
 							<svg class="w-4 h-4 mr-2" fill="none"
@@ -341,8 +339,9 @@
 									d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8">
 								</path>
 							</svg>
-							Submit Application
+							{{ __('submit application') }}
 						</button>
+						@endif
 					</div>
 				</form>
 			</div>

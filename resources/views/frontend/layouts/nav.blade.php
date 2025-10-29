@@ -3,7 +3,7 @@
 		<a href="{{ route('home') }}" class="flex items-center space-x-2 sm:space-x-3 rtl:space-x-reverse">
 			<!-- <img src="https://flowbite.com/docs/images/logo.svg" class="h-8" alt="Flowbite Logo" /> -->
 			<span
-				class="navbar-brand text-lg sm:text-xl lg:text-2xl font-semibold whitespace-nowrap">{{ __('medical platform') }}</span>
+				class="navbar-brand text-lg sm:text-xl lg:text-2xl font-semibold whitespace-nowrap">{{ __('Teb Plus') }}</span>
 		</a>
 		<div class="flex items-center md:order-2 space-x-1 md:space-x-0 rtl:space-x-reverse">
 			<button type="button" data-dropdown-toggle="language-dropdown-menu"
@@ -63,7 +63,7 @@
 					<span class="sr-only">{{ __('view cart') }}</span>
 					<!-- Cart count badge -->
 					<div id="cart-count-badge"
-						class="absolute inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-1 -end-1">
+						class="absolute inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-primary-gradient border-2 border-white rounded-full -top-1 -end-1">
 						0
 					</div>
 				</button>
@@ -188,9 +188,9 @@
 				<li>
 					<button id="clinicLink" data-dropdown-toggle="clinicDropdown"
 						@if(Route::is('clinics'))
-						class="flex items-center justify-between w-full mx-2 rtl:mx-2 py-2 px-3 text-[var(--primary-color)] rounded-sm  md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:w-auto text-sm sm:text-base"
+						class="flex items-center justify-between z-100 w-full mx-2 rtl:mx-2 py-2 px-3 text-[var(--primary-color)] rounded-sm  md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:w-auto text-sm sm:text-base"
 						@else
-						class="flex items-center justify-between w-full mx-2 rtl:mx-2 py-2 px-3 text-gray-900 rounded-sm md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:w-auto text-sm sm:text-base"
+						class="flex items-center justify-between z-100 w-full mx-2 rtl:mx-2 py-2 px-3 text-gray-900 rounded-sm md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:w-auto text-sm sm:text-base"
 						@endif>
 						{{ __('clinics') }}
 						<svg class="w-2.5 h-2.5 ms-2.5" aria-hidden="true"
@@ -202,7 +202,7 @@
 						</svg>
 					</button>
 					<div id="clinicDropdown"
-						class="z-20 hidden font-normal bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-40 sm:w-44  ">
+  					class="z-[9999] absolute font-normal bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-40 sm:w-44">
 						<ul class="py-2 text-sm text-gray-700"
 							aria-labelledby="clinicLink">
 							<li>
@@ -239,17 +239,17 @@
 						</svg>
 					</button>
 					<div id="supplierDropdown"
-						class="z-20 hidden font-normal bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-40 sm:w-44">
+						class="z-[9999] absolute font-normal bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-40 sm:w-44">
 						<ul class="py-2 text-sm text-gray-700"
 							aria-labelledby="supplierLink">
 							<li>
 								<a href="{{ route('suppliers') }}"
-									class="block px-3 sm:px-4 py-2 hover:bg-gray-100 text-xs sm:text-sm">View
+									class="block px-3 sm:px-4 py-2 hover:bg-gray-100 text-xs sm:text-sm">
 									{{ __('view suppliers') }}</a>
 							</li>
 							<li>
 								<a href="{{ route('supplier.register-supplier') }}"
-									class="block px-3 sm:px-4 py-2 hover:bg-gray-100 text-xs sm:text-sm">Register
+									class="block px-3 sm:px-4 py-2 hover:bg-gray-100 text-xs sm:text-sm">
 									{{ __('register supplier') }}</a>
 							</li>
 							<li>
@@ -276,7 +276,7 @@
 						</svg>
 					</button>
 					<div id="patientDropdown"
-						class="z-20 hidden font-normal bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44">
+						class="z-[9999] absolute font-normal bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44">
 						<ul class="py-2 text-sm text-gray-700"
 							aria-labelledby="patientLink">
 							@auth('patient')
