@@ -275,6 +275,7 @@ Route::group(
         Route::get('expenses/trash/data', [ExpenseController::class, 'trashData'])->name('expenses.trash.data');
         Route::post('expenses/{id}/restore', [ExpenseController::class, 'restore'])->name('expenses.restore');
         Route::delete('expenses/{id}/force-delete', [ExpenseController::class, 'forceDelete'])->name('expenses.force-delete');
+        Route::get('expenses/analytics', [ExpenseController::class, 'analytics'])->name('expenses.analytics');
         Route::resource('expenses', ExpenseController::class);
             // Lab Orders
         Route::get('lab-orders', [\App\Http\Controllers\Backend\Dashboards\Clinic\LabOrderController::class, 'index'])->name('lab-orders.index');

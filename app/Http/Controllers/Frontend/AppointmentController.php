@@ -56,43 +56,30 @@ class AppointmentController extends Controller
 
     public function myAppointments()
     {
-        if (!auth()->check()) {
+        if (!auth('patient')->check()) {
             return redirect()->route('login')->with('error', __('Please login to view your appointments'));
         }
 
-        $patient = auth()->user()->patient;
-
-        if (!$patient) {
-            return view('frontend.pages.appointments.my-appointments', ['appointments' => collect()]);
-        }
+        $patient = auth('patient')->user();
 
         $appointments = $patient->appointments()
             ->with(['doctorProfile.clinicUser.clinic', 'doctorProfile.speciality', 'period'])
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
-        return view('frontend.pages.appointments.my-appointments', compact('appointments'));
+        return view('frontend.pages.appointments.my-appointments', compact('appointments', 'patient'));
     }
 
     public function cancel(Request $request, $id)
     {
         try {
-            // Verify the appointment belongs to the authenticated user
-            $patient = auth()->user()->patient;
-
-            if (!$patient) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => __('Unauthorized')
-                ], 403);
-            }
-
+            $patient = auth('patient')->user();
             $appointment = $patient->appointments()->findOrFail($id);
 
             $this->appointmentService->cancelAppointment(
-                $id,
+                $appointment->id,
                 $request->reason,
-                auth()->id()
+                $patient->id
             );
 
             return response()->json([
@@ -107,4 +94,3 @@ class AppointmentController extends Controller
         }
     }
 }
-
