@@ -156,6 +156,42 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  // Select all dropdown toggle buttons
+  const dropdownButtons = document.querySelectorAll('[data-dropdown-toggle]');
+
+  dropdownButtons.forEach(button => {
+    button.addEventListener('click', function (e) {
+      e.stopPropagation();
+
+      const dropdownId = this.getAttribute('data-dropdown-toggle');
+      const dropdown = document.getElementById(dropdownId);
+
+      // Close all other dropdowns
+      document.querySelectorAll('[id$="Dropdown"]').forEach(el => {
+        if (el !== dropdown) {
+          el.classList.add('hidden');
+        }
+      });
+
+      // Toggle this dropdown
+      dropdown.classList.toggle('hidden');
+    });
+  });
+
+  // Close all dropdowns when clicking outside
+  document.addEventListener('click', function (e) {
+    if (!e.target.closest('[data-dropdown-toggle]') && !e.target.closest('[id$="Dropdown"]')) {
+      document.querySelectorAll('[id$="Dropdown"]').forEach(el => {
+        el.classList.add('hidden');
+      });
+    }
+  });
+});
+</script>
+
+
 <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
 
 

@@ -2,455 +2,456 @@
 
 @push('styles')
 <style>
-	/* Course Details Page Styles */
-	.course-hero {
-		background: linear-gradient(135deg, #079184, #0aa896);
-		position: relative;
-		overflow: hidden;
-	}
+/* Course Details Page Styles */
+.course-hero {
+	background: var(--primary-gradient);
+	position: relative;
+	overflow: hidden;
+}
 
-	.course-hero::before {
-		content: '';
-		position: absolute;
-		top: 0;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
-		opacity: 0.3;
-	}
+.course-hero::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+	opacity: 0.3;
+}
 
-	.course-image {
-		width: 100%;
-		height: 400px;
-		object-fit: cover;
-		border-radius: 12px;
-		transition: transform 0.3s ease;
-	}
+.course-image {
+	width: 100%;
+	height: 400px;
+	object-fit: cover;
+	border-radius: 12px;
+	transition: transform 0.3s ease;
+}
 
-	.course-image:hover {
-		transform: scale(1.02);
-	}
+.course-image:hover {
+	transform: scale(1.02);
+}
 
+.course-info {
+	background: white;
+	border-radius: 12px;
+	padding: 32px;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+	margin-top: -50px;
+	position: relative;
+	z-index: 10;
+}
+
+.course-title {
+	font-size: 32px;
+	font-weight: 700;
+	color: var(--text-primary);
+	margin-bottom: 16px;
+	line-height: 1.3;
+}
+
+.course-meta {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+	gap: 16px;
+	margin-bottom: 24px;
+}
+
+.meta-item {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 16px;
+	background: var(--primary-gradient);
+	border-radius: 8px;
+	border-left: 4px solid white;
+	color: white;
+}
+
+.meta-icon {
+	color: white;
+	font-size: 20px;
+}
+
+.meta-text {
+	color: white;
+	font-weight: 500;
+}
+
+.course-description {
+	color: var(--text-secondary);
+	line-height: 1.6;
+	margin-bottom: 24px;
+	font-size: 16px;
+}
+
+.course-features {
+	margin-bottom: 24px;
+}
+
+.features-title {
+	font-size: 20px;
+	font-weight: 600;
+	color: var(--text-primary);
+	margin-bottom: 16px;
+}
+
+.features-list {
+	list-style: none;
+	padding: 0;
+}
+
+.feature-item {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 12px 0;
+	border-bottom: 1px solid var(--border-color);
+}
+
+.feature-item:last-child {
+	border-bottom: none;
+}
+
+.feature-icon {
+	color: var(--primary-color);
+	font-size: 16px;
+}
+
+.course-actions {
+	display: flex;
+	gap: 16px;
+	margin-top: 32px;
+	flex-wrap: wrap;
+}
+
+.btn-enroll {
+	background: var(--primary-gradient);
+	color: white;
+	padding: 16px 32px;
+	border-radius: 8px;
+	font-weight: 600;
+	text-decoration: none;
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	transition: all 0.3s ease;
+	border: none;
+	cursor: pointer;
+}
+
+.btn-enroll:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 8px 25px rgba(7, 145, 132, 0.3);
+	color: white;
+	text-decoration: none;
+}
+
+.btn-secondary {
+	background: #f3f4f6;
+	color: #374151;
+	padding: 16px 32px;
+	border-radius: 8px;
+	font-weight: 600;
+	text-decoration: none;
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	transition: all 0.3s ease;
+	border: 2px solid #e5e7eb;
+}
+
+.btn-secondary:hover {
+	background: #e5e7eb;
+	color: #111827;
+	text-decoration: none;
+}
+
+.course-tabs {
+	margin-top: 48px;
+}
+
+.tab-nav {
+	display: flex;
+	border-bottom: 2px solid #e5e7eb;
+	margin-bottom: 32px;
+	overflow-x: auto;
+}
+
+.tab-btn {
+	background: none;
+	border: none;
+	padding: 16px 24px;
+	font-weight: 600;
+	color: #6b7280;
+	cursor: pointer;
+	transition: all 0.3s ease;
+	border-bottom: 3px solid transparent;
+	white-space: nowrap;
+}
+
+.tab-btn:hover {
+	color: #079184;
+}
+
+.tab-btn.active {
+	color: #079184;
+	border-bottom-color: #079184;
+}
+
+.tab-panel {
+	display: none;
+}
+
+.tab-panel.active {
+	display: block;
+}
+
+.related-courses {
+	background: #f9fafb;
+	border-radius: 12px;
+	padding: 32px;
+	margin-top: 48px;
+}
+
+.related-title {
+	font-size: 24px;
+	font-weight: 700;
+	color: #111827;
+	margin-bottom: 24px;
+}
+
+.course-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+	gap: 24px;
+}
+
+.course-card {
+	background: white;
+	border-radius: 12px;
+	overflow: hidden;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+	transition: all 0.3s ease;
+}
+
+.course-card:hover {
+	transform: translateY(-4px);
+	box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.course-card-image {
+	width: 100%;
+	height: 200px;
+	object-fit: cover;
+}
+
+.course-card-content {
+	padding: 20px;
+}
+
+.course-card-title {
+	font-size: 18px;
+	font-weight: 600;
+	color: #111827;
+	margin-bottom: 8px;
+	line-height: 1.4;
+}
+
+.course-card-description {
+	color: #6b7280;
+	font-size: 14px;
+	line-height: 1.5;
+	margin-bottom: 16px;
+}
+
+.course-card-meta {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 16px;
+}
+
+.course-card-duration {
+	color: #6b7280;
+	font-size: 14px;
+	display: flex;
+	align-items: center;
+	gap: 4px;
+}
+
+.course-card-level {
+	background: var(--primary-color);
+	color: white;
+	padding: 4px 12px;
+	border-radius: 20px;
+	font-size: 12px;
+	font-weight: 600;
+}
+
+.course-card-link {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	color: var(--primary-color);
+	text-decoration: none;
+	font-weight: 600;
+	transition: all 0.3s ease;
+}
+
+.course-card-link:hover {
+	color: var(--primary-light);
+	text-decoration: none;
+}
+
+.breadcrumb {
+	background: #f9fafb;
+	padding: 16px 0;
+	border-bottom: 1px solid #e5e7eb;
+}
+
+.breadcrumb-list {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.breadcrumb-item a {
+	color: #6b7280;
+	text-decoration: none;
+	transition: color 0.3s ease;
+}
+
+.breadcrumb-item a:hover {
+	color: #079184;
+}
+
+.breadcrumb-separator {
+	color: #9ca3af;
+}
+
+.breadcrumb-item.active {
+	color: #111827;
+	font-weight: 500;
+}
+
+/* Status Badges */
+.status-badge {
+	padding: 6px 16px;
+	border-radius: 20px;
+	font-size: 14px;
+	font-weight: 600;
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.status-upcoming {
+	background: #dbeafe;
+	color: #1e40af;
+}
+
+.status-ongoing {
+	background: #dcfce7;
+	color: #166534;
+}
+
+.status-completed {
+	background: #f3f4f6;
+	color: #374151;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
 	.course-info {
-		background: white;
-		border-radius: 12px;
-		padding: 32px;
-		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-		margin-top: -50px;
-		position: relative;
-		z-index: 10;
+		margin-top: -30px;
+		padding: 24px;
 	}
 
 	.course-title {
-		font-size: 32px;
-		font-weight: 700;
-		color: #111827;
-		margin-bottom: 16px;
-		line-height: 1.3;
+		font-size: 24px;
 	}
 
 	.course-meta {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-		gap: 16px;
-		margin-bottom: 24px;
-	}
-
-	.meta-item {
-		display: flex;
-		align-items: center;
-		gap: 12px;
-		padding: 16px;
-		background: #f9fafb;
-		border-radius: 8px;
-		border-left: 4px solid #079184;
-	}
-
-	.meta-icon {
-		color: #079184;
-		font-size: 20px;
-	}
-
-	.meta-text {
-		color: #374151;
-		font-weight: 500;
-	}
-
-	.course-description {
-		color: #6b7280;
-		line-height: 1.6;
-		margin-bottom: 24px;
-		font-size: 16px;
-	}
-
-	.course-features {
-		margin-bottom: 24px;
-	}
-
-	.features-title {
-		font-size: 20px;
-		font-weight: 600;
-		color: #111827;
-		margin-bottom: 16px;
-	}
-
-	.features-list {
-		list-style: none;
-		padding: 0;
-	}
-
-	.feature-item {
-		display: flex;
-		align-items: center;
-		gap: 12px;
-		padding: 12px 0;
-		border-bottom: 1px solid #f3f4f6;
-	}
-
-	.feature-item:last-child {
-		border-bottom: none;
-	}
-
-	.feature-icon {
-		color: #10b981;
-		font-size: 16px;
+		grid-template-columns: 1fr;
 	}
 
 	.course-actions {
-		display: flex;
-		gap: 16px;
-		margin-top: 32px;
-		flex-wrap: wrap;
+		flex-direction: column;
 	}
 
-	.btn-enroll {
-		background: linear-gradient(135deg, #079184, #0aa896);
-		color: white;
-		padding: 16px 32px;
-		border-radius: 8px;
-		font-weight: 600;
-		text-decoration: none;
-		display: inline-flex;
-		align-items: center;
-		gap: 8px;
-		transition: all 0.3s ease;
-		border: none;
-		cursor: pointer;
-	}
-
-	.btn-enroll:hover {
-		transform: translateY(-2px);
-		box-shadow: 0 8px 25px rgba(7, 145, 132, 0.3);
-		color: white;
-		text-decoration: none;
-	}
-
+	.btn-enroll,
 	.btn-secondary {
-		background: #f3f4f6;
-		color: #374151;
-		padding: 16px 32px;
-		border-radius: 8px;
-		font-weight: 600;
-		text-decoration: none;
-		display: inline-flex;
-		align-items: center;
-		gap: 8px;
-		transition: all 0.3s ease;
-		border: 2px solid #e5e7eb;
-	}
-
-	.btn-secondary:hover {
-		background: #e5e7eb;
-		color: #111827;
-		text-decoration: none;
-	}
-
-	.course-tabs {
-		margin-top: 48px;
+		width: 100%;
+		justify-content: center;
 	}
 
 	.tab-nav {
-		display: flex;
-		border-bottom: 2px solid #e5e7eb;
-		margin-bottom: 32px;
-		overflow-x: auto;
+		flex-direction: column;
 	}
 
 	.tab-btn {
-		background: none;
-		border: none;
-		padding: 16px 24px;
-		font-weight: 600;
-		color: #6b7280;
-		cursor: pointer;
-		transition: all 0.3s ease;
-		border-bottom: 3px solid transparent;
-		white-space: nowrap;
-	}
-
-	.tab-btn:hover {
-		color: #079184;
-	}
-
-	.tab-btn.active {
-		color: #079184;
-		border-bottom-color: #079184;
-	}
-
-	.tab-panel {
-		display: none;
-	}
-
-	.tab-panel.active {
-		display: block;
-	}
-
-	.related-courses {
-		background: #f9fafb;
-		border-radius: 12px;
-		padding: 32px;
-		margin-top: 48px;
-	}
-
-	.related-title {
-		font-size: 24px;
-		font-weight: 700;
-		color: #111827;
-		margin-bottom: 24px;
+		text-align: left;
+		border-bottom: 1px solid #e5e7eb;
+		border-right: none;
 	}
 
 	.course-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-		gap: 24px;
+		grid-template-columns: 1fr;
+	}
+}
+
+/* Animation Classes */
+.fade-in {
+	animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+		transform: translateY(20px);
 	}
 
-	.course-card {
-		background: white;
-		border-radius: 12px;
-		overflow: hidden;
-		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-		transition: all 0.3s ease;
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.slide-in-left {
+	animation: slideInLeft 0.6s ease-out;
+}
+
+@keyframes slideInLeft {
+	from {
+		opacity: 0;
+		transform: translateX(-30px);
 	}
 
-	.course-card:hover {
-		transform: translateY(-4px);
-		box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+	to {
+		opacity: 1;
+		transform: translateX(0);
+	}
+}
+
+.slide-in-right {
+	animation: slideInRight 0.6s ease-out;
+}
+
+@keyframes slideInRight {
+	from {
+		opacity: 0;
+		transform: translateX(30px);
 	}
 
-	.course-card-image {
-		width: 100%;
-		height: 200px;
-		object-fit: cover;
+	to {
+		opacity: 1;
+		transform: translateX(0);
 	}
-
-	.course-card-content {
-		padding: 20px;
-	}
-
-	.course-card-title {
-		font-size: 18px;
-		font-weight: 600;
-		color: #111827;
-		margin-bottom: 8px;
-		line-height: 1.4;
-	}
-
-	.course-card-description {
-		color: #6b7280;
-		font-size: 14px;
-		line-height: 1.5;
-		margin-bottom: 16px;
-	}
-
-	.course-card-meta {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		margin-bottom: 16px;
-	}
-
-	.course-card-duration {
-		color: #6b7280;
-		font-size: 14px;
-		display: flex;
-		align-items: center;
-		gap: 4px;
-	}
-
-	.course-card-level {
-		background: #079184;
-		color: white;
-		padding: 4px 12px;
-		border-radius: 20px;
-		font-size: 12px;
-		font-weight: 600;
-	}
-
-	.course-card-link {
-		display: inline-flex;
-		align-items: center;
-		gap: 8px;
-		color: #079184;
-		text-decoration: none;
-		font-weight: 600;
-		transition: all 0.3s ease;
-	}
-
-	.course-card-link:hover {
-		color: #0aa896;
-		text-decoration: none;
-	}
-
-	.breadcrumb {
-		background: #f9fafb;
-		padding: 16px 0;
-		border-bottom: 1px solid #e5e7eb;
-	}
-
-	.breadcrumb-list {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		list-style: none;
-		margin: 0;
-		padding: 0;
-	}
-
-	.breadcrumb-item a {
-		color: #6b7280;
-		text-decoration: none;
-		transition: color 0.3s ease;
-	}
-
-	.breadcrumb-item a:hover {
-		color: #079184;
-	}
-
-	.breadcrumb-separator {
-		color: #9ca3af;
-	}
-
-	.breadcrumb-item.active {
-		color: #111827;
-		font-weight: 500;
-	}
-
-	/* Status Badges */
-	.status-badge {
-		padding: 6px 16px;
-		border-radius: 20px;
-		font-size: 14px;
-		font-weight: 600;
-		display: inline-flex;
-		align-items: center;
-		gap: 6px;
-	}
-
-	.status-upcoming {
-		background: #dbeafe;
-		color: #1e40af;
-	}
-
-	.status-ongoing {
-		background: #dcfce7;
-		color: #166534;
-	}
-
-	.status-completed {
-		background: #f3f4f6;
-		color: #374151;
-	}
-
-	/* Responsive Design */
-	@media (max-width: 768px) {
-		.course-info {
-			margin-top: -30px;
-			padding: 24px;
-		}
-
-		.course-title {
-			font-size: 24px;
-		}
-
-		.course-meta {
-			grid-template-columns: 1fr;
-		}
-
-		.course-actions {
-			flex-direction: column;
-		}
-
-		.btn-enroll,
-		.btn-secondary {
-			width: 100%;
-			justify-content: center;
-		}
-
-		.tab-nav {
-			flex-direction: column;
-		}
-
-		.tab-btn {
-			text-align: left;
-			border-bottom: 1px solid #e5e7eb;
-			border-right: none;
-		}
-
-		.course-grid {
-			grid-template-columns: 1fr;
-		}
-	}
-
-	/* Animation Classes */
-	.fade-in {
-		animation: fadeIn 0.6s ease-out;
-	}
-
-	@keyframes fadeIn {
-		from {
-			opacity: 0;
-			transform: translateY(20px);
-		}
-
-		to {
-			opacity: 1;
-			transform: translateY(0);
-		}
-	}
-
-	.slide-in-left {
-		animation: slideInLeft 0.6s ease-out;
-	}
-
-	@keyframes slideInLeft {
-		from {
-			opacity: 0;
-			transform: translateX(-30px);
-		}
-
-		to {
-			opacity: 1;
-			transform: translateX(0);
-		}
-	}
-
-	.slide-in-right {
-		animation: slideInRight 0.6s ease-out;
-	}
-
-	@keyframes slideInRight {
-		from {
-			opacity: 0;
-			transform: translateX(30px);
-		}
-
-		to {
-			opacity: 1;
-			transform: translateX(0);
-		}
-	}
+}
 </style>
 @endpush
 
@@ -465,7 +466,8 @@
 			</li>
 			<li class="breadcrumb-separator">/</li>
 			<li class="breadcrumb-item">
-				<a href="{{ route('courses') }}" class="hover:text-primary">{{ __('courses') }}</a>
+				<a href="{{ route('courses') }}"
+					class="hover:text-primary">{{ __('courses') }}</a>
 			</li>
 			<li class="breadcrumb-separator">/</li>
 			<li class="breadcrumb-item active">{{ $course->title }}</li>
@@ -498,9 +500,11 @@
 				<!-- Course Image -->
 				<div class="mb-8 slide-in-left">
 					@if($course->main_image)
-					<img src="{{ $course->main_image }}" alt="{{ $course->title }}" class="course-image">
+					<img src="{{ $course->main_image }}" alt="{{ $course->title }}"
+						class="course-image">
 					@else
-					<div class="course-image bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
+					<div
+						class="course-image bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
 						<i class="fas fa-graduation-cap text-6xl text-blue-400"></i>
 					</div>
 					@endif
@@ -513,7 +517,8 @@
 					<div class="course-meta">
 						<div class="meta-item">
 							<i class="fas fa-clock meta-icon"></i>
-							<span class="meta-text">{{ $course->duration ?? 'N/A' }} {{ __('weeks') }}</span>
+							<span class="meta-text">{{ $course->duration ?? 'N/A' }}
+								{{ __('weeks') }}</span>
 						</div>
 						<div class="meta-item">
 							<i class="fas fa-calendar-alt meta-icon"></i>
@@ -531,18 +536,18 @@
 								@if($course->end_date)
 								{{ $course->end_date->format('M d, Y') }}
 								@else
-									{{ __('tba') }}
+								{{ __('tba') }}
 								@endif
 							</span>
 						</div>
-						
+
 					</div>
 
 					<div class="course-description">
 						{{ app()->getLocale() == 'ar' ? $course->description_ar : $course->description_en }}
 					</div>
 
-				
+
 
 					<div class="course-actions">
 						<button class="btn-enroll" onclick="enrollCourse()">
@@ -553,7 +558,7 @@
 							<i class="fas fa-share"></i>
 							{{ __('share course') }}
 						</a>
-						
+
 					</div>
 				</div>
 
@@ -655,11 +660,14 @@
 					<h3 class="text-lg font-semibold mb-4">{{ __('course details') }}</h3>
 					<div class="space-y-3">
 						<div class="flex justify-between">
-							<span class="text-gray-600">{{ __('duration') }}:</span>
-							<span class="font-medium">{{ $course->duration ?? 'N/A' }} weeks</span>
+							<span
+								class="text-gray-600">{{ __('duration') }}:</span>
+							<span class="font-medium">{{ $course->duration ?? 'N/A' }}
+								weeks</span>
 						</div>
 						<div class="flex justify-between">
-							<span class="text-gray-600">{{ __('start date') }}:</span>
+							<span
+								class="text-gray-600">{{ __('start date') }}:</span>
 							<span class="font-medium">
 								@if($course->start_date)
 								{{ $course->start_date->format('M d, Y') }}
@@ -669,7 +677,8 @@
 							</span>
 						</div>
 						<div class="flex justify-between">
-							<span class="text-gray-600">{{ __('end date') }}:</span>
+							<span
+								class="text-gray-600">{{ __('end date') }}:</span>
 							<span class="font-medium">
 								@if($course->end_date)
 								{{ $course->end_date->format('M d, Y') }}
@@ -678,19 +687,22 @@
 								@endif
 							</span>
 						</div>
-						
+
 						<div class="flex justify-between">
-							<span class="text-gray-600">{{ __('level') }}:</span>
-							<span class="font-medium">{{ $course->level ?? 'N/A' }}</span>
+							<span
+								class="text-gray-600">{{ __('level') }}:</span>
+							<span
+								class="font-medium">{{ $course->level ?? 'N/A' }}</span>
 						</div>
-					</div>	
+					</div>
 				</div>
 
 				<!-- Course URL -->
 				@if($course->url)
 				<div class="bg-white rounded-lg shadow-lg p-6 mb-6">
 					<h3 class="text-lg font-semibold mb-4">{{ __('course link') }}</h3>
-					<a href="{{ $course->url }}" target="_blank" class="btn-enroll w-full text-center">
+					<a href="{{ $course->url }}" target="_blank"
+						class="btn-enroll w-full text-center">
 						<i class="fas fa-external-link-alt"></i>
 						{{ __('visit course page') }}
 					</a>
@@ -711,27 +723,35 @@
 				@foreach($relatedCourses as $relatedCourse)
 				<div class="course-card">
 					@if($relatedCourse->main_image)
-					<img src="{{ $relatedCourse->main_image }}" alt="{{ $relatedCourse->title }}" class="course-card-image">
+					<img src="{{ $relatedCourse->main_image }}"
+						alt="{{ $relatedCourse->title }}" class="course-card-image">
 					@else
-					<div class="course-card-image bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
+					<div
+						class="course-card-image bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
 						<i class="fas fa-graduation-cap text-3xl text-blue-400"></i>
 					</div>
 					@endif
 					<div class="course-card-content">
-						<h3 class="course-card-title">{{ $relatedCourse->title }}</h3>
+						<h3 class="course-card-title">{{ $relatedCourse->title }}
+						</h3>
 						<p class="course-card-description">
 							{{ Str::limit(app()->getLocale() == 'ar' ? $relatedCourse->description_ar : $relatedCourse->description_en, 100) }}
 						</p>
 						<div class="course-card-meta">
 							<span class="course-card-duration">
 								<i class="fas fa-clock"></i>
-								{{ $relatedCourse->duration ?? 'N/A' }} {{ __('weeks') }}
+								{{ $relatedCourse->duration ?? 'N/A' }}
+								{{ __('weeks') }}
 							</span>
-							<span class="course-card-level">{{ $relatedCourse->level ?? 'N/A' }}</span>
+							<span
+								class="course-card-level">{{ $relatedCourse->level ?? 'N/A' }}</span>
 						</div>
-						<a href="{{ route('courses.show', $relatedCourse->id) }}" class="course-card-link">
+						<a href="{{ route('courses.show', $relatedCourse->id) }}"
+							class="course-card-link">
 							{{ __('view details') }}
-							<i class="fas fa-arrow-right"></i>
+
+							<i
+								class="fas fa-arrow-{{ app()->getLocale() === 'en' ? 'right' : 'left' }}"></i>
 						</a>
 					</div>
 				</div>
@@ -746,79 +766,80 @@
 
 @push('scripts')
 <script>
-	// Tab switching functionality
-	function switchTab(tabName) {
-		// Hide all tab panels
-		const panels = document.querySelectorAll('.tab-panel');
-		panels.forEach(panel => panel.classList.remove('active'));
+// Tab switching functionality
+function switchTab(tabName) {
+	// Hide all tab panels
+	const panels = document.querySelectorAll('.tab-panel');
+	panels.forEach(panel => panel.classList.remove('active'));
 
-		// Remove active class from all tab buttons
-		const buttons = document.querySelectorAll('.tab-btn');
-		buttons.forEach(button => button.classList.remove('active'));
+	// Remove active class from all tab buttons
+	const buttons = document.querySelectorAll('.tab-btn');
+	buttons.forEach(button => button.classList.remove('active'));
 
-		// Show selected panel
-		document.getElementById(tabName).classList.add('active');
+	// Show selected panel
+	document.getElementById(tabName).classList.add('active');
 
-		// Add active class to clicked button
-		event.target.classList.add('active');
+	// Add active class to clicked button
+	event.target.classList.add('active');
+}
+
+// Course enrollment
+function enrollCourse() {
+	// Add your enrollment logic here
+	alert('Enrollment functionality will be implemented soon!');
+}
+
+// Share course
+function shareCourse() {
+	if (navigator.share) {
+		navigator.share({
+			title: '{{ $course->title }}',
+			text: '{{ app()->getLocale() == "ar" ? $course->description_ar : $course->description_en }}',
+			url: window.location.href
+		});
+	} else {
+		// Fallback for browsers that don't support Web Share API
+		navigator.clipboard.writeText(window.location.href).then(() => {
+			alert('Course link copied to clipboard!');
+		});
 	}
+}
 
-	// Course enrollment
-	function enrollCourse() {
-		// Add your enrollment logic here
-		alert('Enrollment functionality will be implemented soon!');
-	}
+// Add to favorites
+function addToFavorites() {
+	// Add your favorites logic here
+	alert('Added to favorites!');
+}
 
-	// Share course
-	function shareCourse() {
-		if (navigator.share) {
-			navigator.share({
-				title: '{{ $course->title }}',
-				text: '{{ app()->getLocale() == "ar" ? $course->description_ar : $course->description_en }}',
-				url: window.location.href
-			});
-		} else {
-			// Fallback for browsers that don't support Web Share API
-			navigator.clipboard.writeText(window.location.href).then(() => {
-				alert('Course link copied to clipboard!');
-			});
-		}
-	}
-
-	// Add to favorites
-	function addToFavorites() {
-		// Add your favorites logic here
-		alert('Added to favorites!');
-	}
-
-	// Smooth scrolling for anchor links
-	document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-		anchor.addEventListener('click', function(e) {
-			e.preventDefault();
-			document.querySelector(this.getAttribute('href')).scrollIntoView({
+// Smooth scrolling for anchor links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+	anchor.addEventListener('click', function(e) {
+		e.preventDefault();
+		document.querySelector(this.getAttribute('href'))
+			.scrollIntoView({
 				behavior: 'smooth'
 			});
-		});
 	});
+});
 
-	// Animation on scroll
-	const observerOptions = {
-		threshold: 0.1,
-		rootMargin: '0px 0px -50px 0px'
-	};
+// Animation on scroll
+const observerOptions = {
+	threshold: 0.1,
+	rootMargin: '0px 0px -50px 0px'
+};
 
-	const observer = new IntersectionObserver((entries) => {
-		entries.forEach(entry => {
-			if (entry.isIntersecting) {
-				entry.target.style.opacity = '1';
-				entry.target.style.transform = 'translateY(0)';
-			}
-		});
-	}, observerOptions);
-
-	// Observe elements for animation
-	document.querySelectorAll('.fade-in, .slide-in-left, .slide-in-right').forEach(el => {
-		observer.observe(el);
+const observer = new IntersectionObserver((entries) => {
+	entries.forEach(entry => {
+		if (entry.isIntersecting) {
+			entry.target.style.opacity = '1';
+			entry.target.style.transform = 'translateY(0)';
+		}
 	});
+}, observerOptions);
+
+// Observe elements for animation
+document.querySelectorAll('.fade-in, .slide-in-left, .slide-in-right').forEach(el => {
+	observer.observe(el);
+});
 </script>
 @endpush

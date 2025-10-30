@@ -202,7 +202,7 @@
 						</svg>
 					</button>
 					<div id="clinicDropdown"
-  					class="z-[9999] absolute font-normal bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-40 sm:w-44">
+  					class="hidden z-[9999] absolute font-normal bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-40 sm:w-44">
 						<ul class="py-2 text-sm text-gray-700"
 							aria-labelledby="clinicLink">
 							<li>
@@ -239,7 +239,7 @@
 						</svg>
 					</button>
 					<div id="supplierDropdown"
-						class="z-[9999] absolute font-normal bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-40 sm:w-44">
+						class="hidden z-[9999] absolute font-normal bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-40 sm:w-44">
 						<ul class="py-2 text-sm text-gray-700"
 							aria-labelledby="supplierLink">
 							<li>
@@ -276,7 +276,7 @@
 						</svg>
 					</button>
 					<div id="patientDropdown"
-						class="z-[9999] absolute font-normal bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44">
+						class="hidden z-[9999] absolute font-normal bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44">
 						<ul class="py-2 text-sm text-gray-700"
 							aria-labelledby="patientLink">
 							@auth('patient')

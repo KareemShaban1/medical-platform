@@ -4,7 +4,7 @@
 <style>
 /* Supplier Details Page Styles */
 .supplier-header {
-	background: linear-gradient(135deg, #7c3aed, #a855f7);
+	background: var(--primary-gradient);
 	color: white;
 	padding: 40px 0;
 	margin-bottom: 32px;
@@ -172,7 +172,7 @@
 }
 
 .contact-icon {
-	color: #7c3aed;
+	color: var(--primary-color);
 	font-size: 18px;
 	width: 20px;
 }
@@ -236,7 +236,7 @@
 .section-title {
 	font-size: 24px;
 	font-weight: 700;
-	color: #111827;
+	color: var(--primary-color);
 	margin-bottom: 24px;
 	text-align: center;
 }
@@ -269,7 +269,7 @@
 }
 
 .supplier-card-category {
-	color: #7c3aed;
+	color: var(--primary-color);
 	font-weight: 500;
 	margin-bottom: 12px;
 }
@@ -304,7 +304,7 @@
 
 .supplier-card-btn {
 	flex: 1;
-	background: #7c3aed;
+	background: var(--primary-color);
 	color: white;
 	border: none;
 	padding: 8px 16px;
@@ -316,17 +316,17 @@
 }
 
 .supplier-card-btn:hover {
-	background: #a855f7;
+	background: var(--primary-light);
 }
 
 .supplier-card-btn-secondary {
 	background: transparent;
-	color: #7c3aed;
-	border: 1px solid #7c3aed;
+	color: var(--primary-color);
+	border: 1px solid var(--primary-color);
 }
 
 .supplier-card-btn-secondary:hover {
-	background: #7c3aed;
+	background: var(--primary-color);
 	color: white;
 }
 
@@ -467,11 +467,12 @@
 	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 		<ol class="breadcrumb-list">
 			<li class="breadcrumb-item">
-				<a href="{{ route('home') }}" class="hover:text-primary">Home</a>
+				<a href="{{ route('home') }}" class="hover:text-primary">{{ __('home') }}</a>
 			</li>
 			<li class="breadcrumb-separator">/</li>
 			<li class="breadcrumb-item">
-				<a href="{{ route('suppliers') }}" class="hover:text-primary">Suppliers</a>
+				<a href="{{ route('suppliers') }}"
+					class="hover:text-primary">{{ __('suppliers') }}</a>
 			</li>
 			<li class="breadcrumb-separator">/</li>
 			<li class="breadcrumb-item active">{{ $supplier->name }}</li>
@@ -514,39 +515,10 @@
 			<!-- Main Content -->
 			<div class="supplier-main">
 
-
-				<!-- Supplier Description -->
-				<div class="supplier-description">
-					<h3>About Our Company</h3>
-					<p>{{ $supplier->description ?? 'We are a leading medical equipment and supplies supplier with years of experience in the healthcare industry. Our company is committed to providing high-quality products and exceptional service to healthcare professionals worldwide.' }}
-					</p>
-					<p>Our extensive product range includes medical equipment, diagnostic
-						tools, surgical instruments, and pharmaceutical supplies. We
-						maintain strict quality standards and are certified by major
-						regulatory bodies.</p>
-				</div>
-
-				<!-- Specialties -->
-				<div class="supplier-description">
-					<h3>Our Specialties</h3>
-					<ul class="specialties-list">
-						<li><i class="fas fa-check specialty-icon"></i>Medical
-							Equipment Supply</li>
-						<li><i class="fas fa-check specialty-icon"></i>Diagnostic
-							Tools & Instruments</li>
-						<li><i class="fas fa-check specialty-icon"></i>Surgical
-							Equipment</li>
-						<li><i class="fas fa-check specialty-icon"></i>Pharmaceutical
-							Products</li>
-						<li><i class="fas fa-check specialty-icon"></i>Laboratory
-							Equipment</li>
-						<li><i class="fas fa-check specialty-icon"></i>Disposable
-							Medical Supplies</li>
-						<li><i class="fas fa-check specialty-icon"></i>Rehabilitation
-							Equipment</li>
-						<li><i class="fas fa-check specialty-icon"></i>Emergency
-							Medical Supplies</li>
-					</ul>
+				<div id="productsGrid"
+					class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-e gap-8">
+					@include('frontend.pages.products.partials.products-grid', ['products'
+					=> $supplier->products])
 				</div>
 
 
@@ -556,7 +528,7 @@
 			<div class="supplier-sidebar">
 				<!-- Contact Information -->
 				<div class="sidebar-card">
-					<h3 class="sidebar-title">Contact Information</h3>
+					<h3 class="sidebar-title">{{ __('contact information') }}</h3>
 					<div class="contact-info">
 						<div class="contact-item">
 							<i class="fas fa-map-marker-alt contact-icon"></i>
@@ -568,7 +540,7 @@
 							<span
 								class="contact-text">{{ $supplier->phone ?? '+1 (555) 123-4567' }}</span>
 						</div>
-						<div class="contact-item">
+						<!-- <div class="contact-item">
 							<i class="fas fa-envelope contact-icon"></i>
 							<span
 								class="contact-text">{{ $supplier->email ?? 'info@supplier.com' }}</span>
@@ -577,7 +549,7 @@
 							<i class="fas fa-globe contact-icon"></i>
 							<span
 								class="contact-text">{{ $supplier->website ?? 'www.supplier.com' }}</span>
-						</div>
+						</div> -->
 					</div>
 				</div>
 
@@ -585,12 +557,12 @@
 
 				<!-- Quick Contact -->
 				<div class="sidebar-card">
-					<h3 class="sidebar-title">Get in Touch</h3>
-					<p class="text-sm text-gray-600 mb-4">Ready to discuss your medical
-						supply needs?</p>
-					<button class="w-full bg-purple-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-purple-700 transition-colors"
+					<h3 class="sidebar-title">{{ __('get in touch') }}</h3>
+					<p class="text-sm text-gray-600 mb-4">
+						{{ __('ready to discuss your medical supply needs?') }}</p>
+					<button class="w-full bg-primary-gradient text-white py-3 px-4 rounded-lg font-semibold hover:bg-primary-light transition-colors"
 						onclick="contactSupplier()">
-						<i class="fas fa-phone mr-2"></i>Contact Now
+						<i class="fas fa-phone mr-2"></i>{{ __('contact now') }}
 					</button>
 				</div>
 			</div>
@@ -602,14 +574,14 @@
 @if($relatedSuppliers->count() > 0 || $similarSuppliers->count() > 0)
 <section class="related-suppliers mb-4">
 	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-		<h2 class="section-title">Related Suppliers</h2>
+		<h2 class="section-title">{{ __('related suppliers') }}</h2>
 		<div class="suppliers-grid">
 			@foreach($relatedSuppliers->take(4) as $relatedSupplier)
 			<div class="supplier-card"
 				onclick="window.location.href='{{ route('suppliers.show', $relatedSupplier->id) }}'">
 				<h3 class="supplier-card-title">{{ $relatedSupplier->name }}</h3>
 				<p class="supplier-card-category">{{ ucfirst($relatedSupplier->category) }}
-					Supplier</p>
+				</p>
 				<div class="supplier-card-meta">
 					<div class="supplier-card-meta-item">
 						<i class="fas fa-map-marker-alt"></i>
@@ -622,9 +594,9 @@
 					{{ Str::limit($relatedSupplier->description ?? 'Professional medical supplies and equipment supplier.', 100) }}
 				</p>
 				<div class="supplier-card-actions">
-					<button class="supplier-card-btn">View Details</button>
+					<button class="supplier-card-btn">{{ __('view details') }}</button>
 					<button
-						class="supplier-card-btn supplier-card-btn-secondary">Contact</button>
+						class="supplier-card-btn supplier-card-btn-secondary">{{ __('contact') }}</button>
 				</div>
 			</div>
 			@endforeach

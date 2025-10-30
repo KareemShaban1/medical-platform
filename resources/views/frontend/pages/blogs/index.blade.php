@@ -214,7 +214,8 @@ html {
 			<!-- Results Count -->
 			<div class="flex items-center space-x-4">
 				<div class="bg-gray-100 rounded-xl px-4 py-2">
-					<span class="text-gray-600">{{ __('showing') }} <span id="resultsCount"
+					<span class="text-gray-600">{{ __('showing') }} <span
+							id="resultsCount"
 							class="font-bold text-primary">{{ $blogPosts->total() }}</span>
 						{{ __('articles') }}</span>
 				</div>
@@ -239,7 +240,8 @@ html {
 			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 				<!-- Search Filter -->
 				<div class="group">
-					<label class="block text-sm font-semibold text-gray-700 mb-3">{{ __('search articles') }}</label>
+					<label
+						class="block text-sm font-semibold text-gray-700 mb-3">{{ __('search articles') }}</label>
 					<div class="relative">
 						<input type="text" id="search"
 							placeholder="{{ __('search articles') }}"
@@ -256,25 +258,30 @@ html {
 					<div class="relative">
 						<select id="category"
 							class="form-input w-full px-3 py-3 group-hover:scale-105 transition-transform duration-300">
-							<option value="">{{ __('all categories') }}</option>
+							<option value="">{{ __('all categories') }}
+							</option>
 							@foreach($categories as $category)
 							<option value="{{ $category->id }}">
 								{{ app()->getLocale() == 'ar' ? $category->name_ar : $category->name_en }}
 							</option>
 							@endforeach
 						</select>
-						
+
 					</div>
 				</div>
 				<!-- Sort Filter -->
 				<div class="group">
-					<label class="block text-sm font-semibold text-gray-700 mb-3">{{ __('sort by') }}</label>
+					<label
+						class="block text-sm font-semibold text-gray-700 mb-3">{{ __('sort by') }}</label>
 					<div class="relative">
 						<select id="sort"
 							class="form-input w-full px-3 py-3 group-hover:scale-105 transition-transform duration-300">
-							<option value="newest">{{ __('newest first') }}</option>
-							<option value="oldest">{{ __('oldest first') }}</option>
-							<option value="title">{{ __('title a-z') }}</option>
+							<option value="newest">{{ __('newest first') }}
+							</option>
+							<option value="oldest">{{ __('oldest first') }}
+							</option>
+							<option value="title">{{ __('title a-z') }}
+							</option>
 						</select>
 					</div>
 				</div>
@@ -283,7 +290,7 @@ html {
 				<div class="group flex items-end">
 					<button id="clearFilters" class="btn-secondary w-full group">
 						<i
-							class="fas fa-refresh mr-2 group-hover:rotate-180 transition-transform duration-500"></i>
+							class="fas fa-refresh mx-2 group-hover:rotate-180 transition-transform duration-500"></i>
 						{{ __('clear all filters') }}
 					</button>
 				</div>
