@@ -150,6 +150,8 @@ class AppointmentService
                 ['phone' => $user->phone ?? $data['phone'] ?? null]
             );
 
+            dd($patient);
+
             return $patient;
         }
 

@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Clinic;
 
@@ -13,40 +12,61 @@ class ClinicSeeder extends Seeder
      */
     public function run(): void
     {
-        //
-        $Clinic = Clinic::create([
-            'name' => 'Clinic 1',
-            'phone' => '1234567890',
-            'address' => '1234567890',
-            'is_allowed' => true,
-            'status' => true,            
-        ]);
+        $this->command->info('Creating clinics...');
 
-        // approvement
-        $Clinic->approvement()->create([
-            'module_id' => $Clinic->id,
-            'module_type' => 'App\Models\Clinic',
-            'action_by' => 1,
-            'action' => 'approved',
-            'notes' => 'Approved by admin',
-        ]);
+        $clinics = [
+            [
+                'name' => 'Medical Excellence Clinic',
+                'phone' => '0123456789',
+                'address' => '123 Medical District, Cairo, Egypt',
+                'is_allowed' => true,
+                'status' => true,
+            ],
+            [
+                'name' => 'City Health Center',
+                'phone' => '0123456790',
+                'address' => '456 Health Avenue, Alexandria, Egypt',
+                'is_allowed' => true,
+                'status' => true,
+            ],
+            [
+                'name' => 'Prime Care Medical Center',
+                'phone' => '0123456791',
+                'address' => '789 Care Street, Giza, Egypt',
+                'is_allowed' => true,
+                'status' => true,
+            ],
+            [
+                'name' => 'Family Wellness Clinic',
+                'phone' => '0123456792',
+                'address' => '321 Wellness Road, Mansoura, Egypt',
+                'is_allowed' => true,
+                'status' => true,
+            ],
+            [
+                'name' => 'Advanced Medical Institute',
+                'phone' => '0123456793',
+                'address' => '654 Institute Boulevard, Tanta, Egypt',
+                'is_allowed' => true,
+                'status' => true,
+            ],
+        ];
 
+        foreach ($clinics as $index => $clinicData) {
+            $clinic = Clinic::create($clinicData);
 
-        $Clinics = Clinic::factory()->count(20)->create();
-
-        foreach ($Clinics as $Clinic) {
-            // approvement
-            $Clinic->approvement()->create([
-                'module_id' => $Clinic->id,
+            // Create approval record
+            $clinic->approvement()->create([
+                'module_id' => $clinic->id,
                 'module_type' => 'App\Models\Clinic',
                 'action_by' => 1,
                 'action' => 'approved',
-                'notes' => 'Approved by admin',
+                'notes' => 'Approved by admin - Initial setup',
             ]);
+
+            $this->command->info("Created: {$clinic->name}");
         }
 
-
-
-
+        $this->command->info("✓ Successfully created " . count($clinics) . " clinics");
     }
 }

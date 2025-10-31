@@ -8,6 +8,10 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Permission\Traits\HasRoles;
 
+/**
+ * @method bool isDoctor()
+ * @method DoctorProfile|null getDoctorProfile()
+ */
 class ClinicUser extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\ClinicUserFactory> */
@@ -29,7 +33,7 @@ class ClinicUser extends Authenticatable
 
 
     // ------- attributes -------
-    
+
 
 
     // ------- scopes -------
@@ -64,9 +68,9 @@ class ClinicUser extends Authenticatable
     {
         return $this->hasMany(Payslip::class);
     }
-    
 
-    
+
+
     public function workingHours()
     {
         return $this->hasMany(WorkingHour::class);
@@ -76,6 +80,23 @@ class ClinicUser extends Authenticatable
     {
         return $this->hasMany(AttendanceLog::class);
     }
-    
+
+    // ------- helper methods -------
+
+    /**
+     * Check if this clinic user is a doctor (has a doctor profile)
+     */
+    public function isDoctor()
+    {
+        return $this->doctorProfile()->exists();
+    }
+
+    /**
+     * Get the doctor profile if exists
+     */
+    public function getDoctorProfile()
+    {
+        return $this->doctorProfile;
+    }
 
 }

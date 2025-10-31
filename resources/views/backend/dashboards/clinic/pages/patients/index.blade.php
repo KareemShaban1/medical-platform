@@ -30,6 +30,7 @@
                                 <th>{{ __('Email') }}</th>
                                 <th>{{ __('Type') }}</th>
                                 <th>{{ __('Status') }}</th>
+                                <th>{{ __('Assigned Doctors') }}</th>
                                 <th>{{ __('Actions') }}</th>
                             </tr>
                         </thead>
@@ -76,6 +77,20 @@
                         <small class="form-text text-muted">{{ __('Optional - Only required if email is provided') }}</small>
                         <div class="invalid-feedback"></div>
                     </div>
+
+                    @if(!$isDoctor)
+                    <div class="mb-3">
+                        <label for="doctor_profile_id" class="form-label">{{ __('Assign to Doctor') }}</label>
+                        <select class="form-select" id="doctor_profile_id" name="doctor_profile_id">
+                            <option value="">{{ __('Select Doctor (Optional)') }}</option>
+                            @foreach($doctors as $doctor)
+                                <option value="{{ $doctor->id }}">{{ $doctor->name }}</option>
+                            @endforeach
+                        </select>
+                        <small class="form-text text-muted">{{ __('Optional - Assign this patient to a specific doctor') }}</small>
+                        <div class="invalid-feedback"></div>
+                    </div>
+                    @endif
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
@@ -123,6 +138,20 @@
                         <small class="form-text text-muted">{{ __('Leave empty to keep current password') }}</small>
                         <div class="invalid-feedback"></div>
                     </div>
+
+                    @if(!$isDoctor)
+                    <div class="mb-3">
+                        <label for="edit_doctor_profile_id" class="form-label">{{ __('Assign to Doctor') }}</label>
+                        <select class="form-select" id="edit_doctor_profile_id" name="doctor_profile_id">
+                            <option value="">{{ __('Select Doctor (Optional)') }}</option>
+                            @foreach($doctors as $doctor)
+                                <option value="{{ $doctor->id }}">{{ $doctor->name }}</option>
+                            @endforeach
+                        </select>
+                        <small class="form-text text-muted">{{ __('Optional - Assign this patient to a specific doctor') }}</small>
+                        <div class="invalid-feedback"></div>
+                    </div>
+                    @endif
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
@@ -149,6 +178,7 @@ $(document).ready(function() {
             {data: 'email', name: 'email'},
             {data: 'type', name: 'type'},
             {data: 'status', name: 'status'},
+            {data: 'assigned_doctors', name: 'assigned_doctors', orderable: false, searchable: false},
             {data: 'action', name: 'action', orderable: false, searchable: false}
         ],
         order: [[0, 'desc']],

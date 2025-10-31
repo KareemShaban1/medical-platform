@@ -107,6 +107,13 @@ class DoctorProfile extends Model implements HasMedia
         return $this->hasOneThrough(Clinic::class, ClinicUser::class, 'id', 'id', 'clinic_user_id', 'clinic_id');
     }
 
+    public function patients()
+    {
+        return $this->belongsToMany(Patient::class, 'doctor_patient')
+            ->withPivot(['clinic_id', 'assigned_at', 'assigned_by'])
+            ->withTimestamps();
+    }
+
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('profile_photo')

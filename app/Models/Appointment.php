@@ -3,9 +3,10 @@
 namespace App\Models;
 
 use App\Enums\VisitType;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use App\Models\DoctorPatient;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Appointment extends Model
 {
@@ -80,6 +81,33 @@ class Appointment extends Model
                     ]
                 );
             }
+
+            //IF THE APPOINTMENT IS COMPLETED, ADD THIS PATIENT TO THE CLINIC PATIENTS TABLE
+            if ($appointment->status === self::STATUS_COMPLETED) {
+                $clinicId = optional($appointment->doctorProfile->clinic)->id;
+                if (!$clinicId) {
+                    return;
+                }
+
+                //check if the patient is already in the clinic patients table
+                $doctorPatient = DoctorPatient::where('doctor_profile_id', $appointment->doctorProfile->id)
+                    ->where('patient_id', $appointment->patient_id)
+                    ->where('clinic_id', $clinicId)
+                    ->first();
+
+                if ($doctorPatient) {
+                    return;
+                }
+
+                DoctorPatient::firstOrCreate(
+                    ['doctor_profile_id' => $appointment->doctorProfile->id, 'patient_id' => $appointment->patient_id, 'clinic_id' => $clinicId],
+                    [
+                        'doctor_profile_id' => $appointment->doctorProfile->id,
+                        'patient_id' => $appointment->patient_id,
+                        'clinic_id' => $clinicId,
+                    ]
+                );
+            }
         });
     }
 
@@ -87,7 +115,7 @@ class Appointment extends Model
     // Relationships
     public function doctorProfile()
     {
-        return $this->belongsTo(DoctorProfile::class);
+        return $this->belongsTo(DoctorProfile::class, 'doctor_profile_id');
     }
 
     public function patient()
