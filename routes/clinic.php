@@ -17,6 +17,8 @@ use App\Http\Controllers\Backend\Dashboards\Clinic\PayslipController;
 use App\Http\Controllers\Backend\Dashboards\Clinic\ExpenseCategoryController;
 use App\Http\Controllers\Backend\Dashboards\Clinic\ExpenseController;
 use App\Http\Controllers\Backend\Dashboards\Clinic\PrescriptionController;
+use App\Http\Controllers\Backend\Dashboards\Clinic\AnnouncementController as ClinicAnnouncementController;
+use App\Http\Controllers\Backend\Dashboards\Clinic\ClinicInfoController;
 use Illuminate\Support\Facades\Auth;
 
 Route::group(
@@ -36,6 +38,12 @@ Route::group(
         Route::get('/dashboard', [DashboardController::class, 'index'])
             ->name('dashboard');
 
+        // Clinic Info Settings
+        Route::group(['prefix' => 'settings'], function () {
+            Route::get('/clinic-info', [ClinicInfoController::class, 'index'])->name('settings.clinic-info');
+            Route::put('/clinic-info', [ClinicInfoController::class, 'update'])->name('settings.clinic-info.update');
+        });
+
         // Roles Management
         Route::get('roles/data', [RoleController::class, 'data'])->name('roles.data');
         Route::get('roles/trash', [RoleController::class, 'trash'])->name('roles.trash');
@@ -43,6 +51,9 @@ Route::group(
         Route::post('roles/{id}/restore', [RoleController::class, 'restore'])->name('roles.restore');
         Route::delete('roles/{id}/force-delete', [RoleController::class, 'forceDelete'])->name('roles.forceDelete');
         Route::resource('roles', RoleController::class);
+
+        // Announcements - dismiss
+        Route::post('announcements/{id}/dismiss', [ClinicAnnouncementController::class, 'dismiss'])->name('announcements.dismiss');
 
         // Rental Space Management
         Route::get('rental-spaces/data', [RentalSpaceController::class, 'data'])->name('rental-spaces.data');

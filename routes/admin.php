@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Backend\Dashboards\Admin\AnnouncementController;
 use App\Http\Controllers\Backend\Dashboards\Admin\BlogCategoryController;
 use App\Http\Controllers\Backend\Dashboards\Admin\DashboardController;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
@@ -51,6 +52,9 @@ Route::group(
         Route::delete('roles/{id}/force-delete', [\App\Http\Controllers\Backend\Dashboards\Admin\RoleController::class, 'forceDelete'])->name('roles.forceDelete');
         Route::resource('roles', \App\Http\Controllers\Backend\Dashboards\Admin\RoleController::class);
 
+        // Announcements
+        Route::get('announcements/data', [AnnouncementController::class, 'data'])->name('announcements.data');
+        Route::resource('announcements', AnnouncementController::class)->except(['show']);
         Route::get('clinics/data', [ClinicController::class, 'data'])->name('clinics.data');
         Route::get('clinics/{id}/users/data', [ClinicController::class, 'clinicUsersData'])->name('clinics.users.data');
         Route::put('clinics/{id}/update-status', [ClinicController::class, 'updateStatus'])->name('clinics.update-status');
@@ -223,3 +227,5 @@ Route::post('/admin/logout', function (Request $request) {
 
     return redirect()->to('/');
 })->name('admin.logout');
+
+

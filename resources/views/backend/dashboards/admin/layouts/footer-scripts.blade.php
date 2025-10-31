@@ -86,28 +86,24 @@ $(document).ready(function() {
 
 	// Handle Laravel session messages
 	@if(session('success'))
-	toastr.success('{{ session('
-		success ') }}');
+	toastr.success('{{ session('success') }}');
 	@endif
 
 	@if(session('error'))
-	toastr.error('{{ session('
-		error ') }}');
+	toastr.error('{{ session('error') }}');
 	@endif
 
 	@if(session('warning'))
-	toastr.warning('{{ session('
-		warning ') }}');
+	toastr.warning('{{ session('warning') }}');
 	@endif
 
 	@if(session('info'))
-	toastr.info('{{ session('
-		info ') }}');
+	toastr.info('{{ session('info') }}');
 	@endif
 
 	// Handle validation errors
-	@if($errors-> any())
-	@foreach($errors-> all() as $error)
+	@if($errors->any())
+	@foreach($errors->all() as $error)
 	toastr.error('{{ $error }}');
 	@endforeach
 	@endif
@@ -239,3 +235,4 @@ function toast_info(message) {
         </script>
 
  @stack('scripts')
+
