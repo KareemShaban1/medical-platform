@@ -23,11 +23,11 @@
 		{{ $description }}
 	</p>
 
-	<ul class="mt-5 space-y-2 text-start mx-auto w-fit">
-		 @foreach(array_slice($features, 0, 2) as $feature)
-		<x-frontend.feature-item item="{{ $feature }}" icon="fas fa-check" iconColor="{{ $iconColor }}" />
-		@endforeach
-	</ul>
+    <ul class="mt-5 space-y-2 text-start mx-auto w-fit">
+        @foreach(array_slice(\Illuminate\Support\Arr::wrap($features), 0, 2) as $feature)
+            <x-frontend.feature-item item="{{ $feature }}" icon="fas fa-check" iconColor="{{ $iconColor }}" />
+        @endforeach
+    </ul>
 
 	<!-- Glow Effect (behind content) -->
 	<!-- <div
