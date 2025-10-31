@@ -35,11 +35,20 @@
               <!-- <li class="side-nav-title side-nav-item">Navigation</li> -->
 
               <li class="side-nav-item">
-                  <a href="" class="side-nav-link">
+                  <a href="{{ route('supplier.dashboard') }}" class="side-nav-link">
                       <i class="uil-home-alt"></i>
                       <span>
                           {{ __('Supplier Dashboard') }}
                       </span>
+                  </a>
+              </li>
+
+
+              <!-- Supplier Info -->
+              <li class="side-nav-item">
+                  <a href="{{ route('supplier.settings.supplier-info') }}" class="side-nav-link">
+                      <i class="uil-cog"></i>
+                      <span> {{ __('Supplier Info') }} </span>
                   </a>
               </li>
 

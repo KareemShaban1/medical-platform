@@ -145,6 +145,14 @@
                 </div>
             </li>
 
+            <!-- Announcements -->
+            <li class="side-nav-item">
+                <a href="{{ route('admin.announcements.index') }}" class="side-nav-link">
+                    <i class="uil-megaphone"></i>
+                    <span> {{ __('Announcements') }} </span>
+                </a>
+            </li>
+
             <!-- Clinics -->
             <li class="side-nav-item">
                 <a data-bs-toggle="collapse" href="#sidebarClinics" aria-expanded="false" aria-controls="sidebarClinics"

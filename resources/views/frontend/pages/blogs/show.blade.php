@@ -4,7 +4,7 @@
 <style>
 /* Blog Details Page Styles */
 .blog-header {
-	background: linear-gradient(135deg, #1e40af, #3b82f6);
+	background: var(--primary-gradient);
 	color: white;
 	padding: 40px 0;
 	margin-bottom: 32px;
@@ -482,11 +482,12 @@
 	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 		<ol class="breadcrumb-list">
 			<li class="breadcrumb-item">
-				<a href="{{ route('home') }}" class="hover:text-primary">Home</a>
+				<a href="{{ route('home') }}" class="hover:text-primary">{{ __('home') }}</a>
 			</li>
 			<li class="breadcrumb-separator">/</li>
 			<li class="breadcrumb-item">
-				<a href="{{ route('blogs') }}" class="hover:text-primary">Blog</a>
+				<a href="{{ route('blogs') }}"
+					class="hover:text-primary">{{ __('medical blog') }}</a>
 			</li>
 			<li class="breadcrumb-separator">/</li>
 			<li class="breadcrumb-item active">{{ $blogPost->title }}</li>
@@ -513,10 +514,7 @@
 					<i class="fas fa-folder blog-meta-icon"></i>
 					<span>{{ app()->getLocale() == 'ar' ? $blogPost->blogCategory->name_ar : $blogPost->blogCategory->name_en }}</span>
 				</div>
-				<div class="blog-meta-item">
-					<i class="fas fa-clock blog-meta-icon"></i>
-					<span>5 min read</span>
-				</div>
+
 			</div>
 		</div>
 	</div>
@@ -563,7 +561,7 @@
 			<div class="blog-sidebar">
 				<!-- Categories -->
 				<div class="sidebar-card">
-					<h3 class="sidebar-title">Categories</h3>
+					<h3 class="sidebar-title">{{ __('categories') }}</h3>
 					<ul class="categories-list">
 						@foreach($categories as $category)
 						<li>
@@ -580,7 +578,7 @@
 
 				<!-- Recent Posts -->
 				<div class="sidebar-card">
-					<h3 class="sidebar-title">Recent Posts</h3>
+					<h3 class="sidebar-title">{{ __('recent articles') }}</h3>
 					<ul class="recent-posts-list">
 						@foreach($recentPosts as $recentPost)
 						<li
@@ -608,7 +606,7 @@
 @if($relatedPosts->count() > 0)
 <section class="related-posts">
 	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-		<h2 class="section-title">Related Articles</h2>
+		<h2 class="section-title">{{ __('related articles') }}</h2>
 		<div class="posts-grid">
 			@foreach($relatedPosts as $relatedPost)
 			<div class="post-card"

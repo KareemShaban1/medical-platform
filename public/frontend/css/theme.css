@@ -1,9 +1,12 @@
 /* Medical Platform Theme - Gradient Color Scheme */
 :root {
 	/* --primary-gradient: linear-gradient(rgba(0, 0, 0, 0.7), #079184); */
-	--primary-gradient: linear-gradient(#079184, #079184);
-	--primary-color: #079184;
-	--primary-dark: #056b5f;
+	/* --primary-gradient: linear-gradient(#079184, #079184); */
+    --primary-gradient: linear-gradient(#81D4FA, #29B6F6);
+	/* --primary-color: #079184; */
+    --primary-color: #29B6F6;
+    --text-primary-color: #29B6F6;
+	/* --primary-dark: #056b5f; */
 	--primary-light: #0aa896;
 	--secondary-color: #f8fafc;
 	--accent-color: #0ea5e9;
@@ -38,18 +41,18 @@ body {
 	background: linear-gradient(135deg, var(--primary-light), var(--primary-color));
 }
 
-.bg-gradient-primary-dark {
+/* .bg-gradient-primary-dark {
 	background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-}
+} */
 
 /* Text Colors */
 .text-primary {
 	color: var(--primary-color);
 }
 
-.text-primary-dark {
+/* .text-primary-dark {
 	color: var(--primary-dark);
-}
+} */
 
 .text-primary-light {
 	color: var(--primary-light);
@@ -72,7 +75,7 @@ body {
 }
 
 .btn-primary:hover {
-	background: var(--primary-dark);
+	/* background: var(--primary-dark); */
 	transform: translateY(-1px);
 	box-shadow: var(--shadow-medium);
 }
@@ -227,7 +230,7 @@ body {
 .alert-primary {
 	background: rgba(7, 145, 132, 0.1);
 	border-color: var(--primary-color);
-	color: var(--primary-dark);
+	/* color: var(--primary-dark); */
 }
 
 .alert-success {
@@ -316,7 +319,7 @@ body {
 }
 
 /* Dark Mode Support */
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
 	:root {
 		--text-primary: #f9fafb;
 		--text-secondary: #d1d5db;
@@ -345,7 +348,7 @@ body {
 		border-color: var(--border-color);
 		color: var(--text-primary);
 	}
-}
+} */
 
 /* Custom Swiper Navigation Buttons */
 .swiper-button-next,

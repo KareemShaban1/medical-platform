@@ -14,12 +14,14 @@
 	font-size: 25px;
 	font-weight: 700;
 	margin-bottom: 8px;
+	color: black;
 }
 
 .job-company {
 	font-size: 20px;
 	opacity: 0.9;
 	margin-bottom: 16px;
+	color: black;
 }
 
 .job-meta {
@@ -422,11 +424,11 @@
 	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 		<ol class="breadcrumb-list">
 			<li class="breadcrumb-item">
-				<a href="{{ route('home') }}" class="hover:text-primary">Home</a>
+				<a href="{{ route('home') }}" class="hover:text-primary">{{ __('home') }}</a>
 			</li>
 			<li class="breadcrumb-separator">/</li>
 			<li class="breadcrumb-item">
-				<a href="{{ route('jobs') }}" class="hover:text-primary">Jobs</a>
+				<a href="{{ route('jobs') }}" class="hover:text-primary">{{ __('jobs') }}</a>
 			</li>
 			<li class="breadcrumb-separator">/</li>
 			<li class="breadcrumb-item active">{{ $job->title }}</li>
@@ -440,7 +442,7 @@
 		<div class="flex items-center justify-between">
 			<div>
 				<h1 class="job-title">{{ $job->title }}</h1>
-				<p class="job-company">
+				<p class="job-company ">
 					<i class="fas fa-hospital job-meta-icon"></i>
 					{{ $job->clinic->name ?? 'Medical Clinic' }}
 				</p>
@@ -464,10 +466,10 @@
 			</div>
 
 			<div class="job-actions">
-				<a  href="{{ route('jobs.application', $job->id) }}" class="btn-apply">
+				<a href="{{ route('jobs.application', $job->id) }}" class="btn-apply">
 					<i class="fas fa-paper-plane mr-2"></i>Apply Now
 				</a>
-				
+
 			</div>
 		</div>
 	</div>
@@ -546,7 +548,7 @@
 				</div>
 
 
-				
+
 			</div>
 		</div>
 	</div>
@@ -557,7 +559,6 @@
 
 @push('scripts')
 <script>
-
 // Handle related job clicks
 document.addEventListener('DOMContentLoaded', function() {
 	document.querySelectorAll('.job-card').forEach(function(card) {

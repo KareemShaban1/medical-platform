@@ -13,29 +13,18 @@
 	</div>
 	<div class="p-4">
 		<a href="{{ route('clinics.show', $clinic->id) }}" class="font-semibold text-lg mb-2">{{ $clinic->name }}</a>
-		<p class="text-gray-600 text-sm mb-2">Specialized medical services</p>
+		<p class="text-gray-600 text-sm mb-2">{{ $clinic->specialization->name ?? 'Specialized medical services' }}</p>
 		<div class="flex items-center text-sm text-gray-500 mb-3">
-			<i class="fas fa-map-marker-alt mr-2"></i>
+			<i class="fas fa-map-marker-alt mx-2"></i>
 			<span>{{ $clinic->address ?? 'Location not specified' }}</span>
 		</div>
-		<!-- <div class="flex items-center mb-3">
-			<div class="flex text-yellow-400">
-				@for($i = 1; $i <= 5; $i++)
-					<i class="fas fa-star {{ $i <= ($clinic->rating ?? 4) ? '' : 'text-gray-300' }}"></i>
-					@endfor
-			</div>
-			<span class="text-sm text-gray-500 ml-2">({{ rand(20, 150) }} reviews)</span>
-		</div> -->
-		<!-- <div class="flex items-center text-sm text-gray-500 mb-3">
-			<i class="fas fa-clock mr-2"></i>
-			<span>{{ $clinic->status ? 'Open 24/7' : 'Closed' }}</span>
-		</div> -->
+		
 		<div class="flex items-center text-sm text-gray-500 mb-3">
-			<i class="fas fa-phone mr-2"></i>
+			<i class="fas fa-phone mx-2"></i>
 			<span>{{ $clinic->phone ?? 'Contact not available' }}</span>
 		</div>
 		<a href="{{ route('clinics.show', $clinic->id) }}" class="btn-primary w-full">
-			View Details
+			{{ __('view details') }}
 		</a>
 	</div>
 </div>
@@ -43,8 +32,8 @@
 <div class="col-span-full text-center py-12">
 	<div class="text-gray-500">
 		<i class="fas fa-search text-4xl mb-4"></i>
-		<h3 class="text-lg font-semibold mb-2">No clinics found</h3>
-		<p>Try adjusting your search criteria or filters.</p>
+		<h3 class="text-lg font-semibold mb-2">{{ __('no clinics found') }}</h3>
+		<p>{{ __('try adjusting your search criteria or filters') }}</p>
 	</div>
 </div>
 @endforelse

@@ -9,7 +9,7 @@
 					<a href="{{ route('jobs.show', $job->id) }}">{{ $job->title }}</a>
 				</h3>
 				<p class="text-gray-600 text-sm line-clamp-1">
-					{{ $job->clinic->name ?? 'Healthcare Company' }}
+					{{ __('clinic') }} : {{ $job->clinic->name }}
 				</p>
 			</div>
 
@@ -21,24 +21,24 @@
 				{{ ucfirst($job->type ?? 'Full Time') }}
 			</span>
 			<div class="flex items-center text-sm text-gray-500">
-				<i class="fas fa-map-marker-alt mr-2"></i>
+				<i class="fas fa-map-marker-alt mx-2"></i>
 				<span>{{ $job->location ?? '' }}</span>
 			</div>
 			<div class="flex items-center text-sm text-gray-500">
-				<i class="fas fa-dollar-sign mr-2"></i>
+				<i class="fas fa-dollar-sign mx-2"></i>
 				<span>{{ number_format($job->salary ?? '') }}</span>
 			</div>
 			<div class="flex items-center text-sm text-gray-500">
-				<i class="fas fa-clock mr-2"></i>
-				<span>Posted {{ $job->created_at->diffForHumans() }}</span>
+				<i class="fas fa-clock mx-2"></i>
+				<span>{{ __('posted') }} {{ $job->created_at->diffForHumans() }}</span>
 			</div>
 		</div>
 
 
 
 		<div class="flex justify-between items-center">
-			<a href="{{ route('jobs.application', $job->id) }}" class="btn-primary">
-				Apply Now
+			<a href="{{ route('jobs.application', $job->id) }}" class="btn-primary rounded-lg">
+				{{ __('apply now') }}
 			</a>
 			<!-- <button class="text-gray-500 hover:text-gray-700">
 				<i class="fas fa-heart"></i>
@@ -50,8 +50,8 @@
 <div class="col-span-full text-center py-12">
 	<div class="text-gray-500">
 		<i class="fas fa-search text-4xl mb-4"></i>
-		<h3 class="text-lg font-semibold mb-2">No jobs found</h3>
-		<p>Try adjusting your search criteria or filters.</p>
+		<h3 class="text-lg font-semibold mb-2">{{ __('no jobs found') }}</h3>
+		<p>{{ __('try adjusting your search criteria or filters') }}</p>
 	</div>
 </div>
 @endforelse

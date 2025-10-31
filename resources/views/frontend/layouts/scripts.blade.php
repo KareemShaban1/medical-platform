@@ -79,56 +79,58 @@ function toast_info(message) {
 <!-- Cart Dropdown Functionality -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    @auth('clinic')
-    loadCartData();
+	@auth('clinic')
+	loadCartData();
 
-    // Reload cart data when dropdown is opened
-    const cartButton = document.querySelector('[data-dropdown-toggle="cart-dropdown"]');
-    if (cartButton) {
-        cartButton.addEventListener('click', function() {
-            loadCartData();
-        });
-    }
-    @endauth
+	// Reload cart data when dropdown is opened
+	const cartButton = document.querySelector('[data-dropdown-toggle="cart-dropdown"]');
+	if (cartButton) {
+		cartButton.addEventListener('click', function() {
+			loadCartData();
+		});
+	}
+	@endauth
 
-    function loadCartData() {
-        fetch('{{ route("cart.data") }}')
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    updateCartDropdown(data);
-                }
-            })
-            .catch(error => console.error('Error loading cart:', error));
-    }
+	function loadCartData() {
+		fetch('{{ route("cart.data") }}')
+			.then(response => response.json())
+			.then(data => {
+				if (data.success) {
+					updateCartDropdown(data);
+				}
+			})
+			.catch(error => console.error('Error loading cart:', error));
+	}
 
-    function updateCartDropdown(data) {
-        const cartCountBadge = document.getElementById('cart-count-badge');
-        const emptyMessage = document.getElementById('empty-cart-message');
-        const cartItemsList = document.getElementById('cart-items-list');
-        const cartFooter = document.getElementById('cart-footer');
-        const cartSubtotal = document.getElementById('cart-subtotal');
+	function updateCartDropdown(data) {
+		const cartCountBadge = document.getElementById('cart-count-badge');
+		const emptyMessage = document.getElementById('empty-cart-message');
+		const cartItemsList = document.getElementById('cart-items-list');
+		const cartFooter = document.getElementById('cart-footer');
+		const cartSubtotal = document.getElementById('cart-subtotal');
 
-        // Update cart count
-        if (cartCountBadge) {
-            cartCountBadge.textContent = data.total_items;
-            cartCountBadge.style.display = data.total_items > 0 ? 'flex' : 'none';
-        }
+		// Update cart count
+		if (cartCountBadge) {
+			cartCountBadge.textContent = data.total_items;
+			cartCountBadge.style.display = data.total_items > 0 ? 'flex' : 'none';
+		}
 
-        if (data.items.length === 0) {
-            emptyMessage.classList.remove('hidden');
-            cartItemsList.classList.add('hidden');
-            cartFooter.classList.add('hidden');
-        } else {
-            emptyMessage.classList.add('hidden');
-            cartItemsList.classList.remove('hidden');
-            cartFooter.classList.remove('hidden');
+		if (data.items.length === 0) {
+			emptyMessage.classList.remove('hidden');
+			cartItemsList.classList.add('hidden');
+			cartFooter.classList.add('hidden');
+		} else {
+			emptyMessage.classList.add('hidden');
+			cartItemsList.classList.remove('hidden');
+			cartFooter.classList.remove('hidden');
 
-            // Build cart items HTML
-            let itemsHTML = '';
-            data.items.forEach(item => {
-                const imageUrl = item.product_image ? `/storage/${item.product_image}` : '';
-                itemsHTML += `
+			// Build cart items HTML
+			let itemsHTML = '';
+			data.items.forEach(item => {
+				const imageUrl = item.product_image ?
+					`/storage/${item.product_image}` :
+					'';
+				itemsHTML += `
                     <li class="px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-600">
                         <div class="flex items-center gap-3">
                             <div class="w-12 h-12 flex-shrink-0">
@@ -145,13 +147,52 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                     </li>
                 `;
-            });
+			});
 
-            cartItemsList.innerHTML = itemsHTML;
-            cartSubtotal.textContent = '$' + parseFloat(data.subtotal).toFixed(2);
-        }
-    }
+			cartItemsList.innerHTML = itemsHTML;
+			cartSubtotal.textContent = '$' + parseFloat(data.subtotal).toFixed(2);
+		}
+	}
 });
 </script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  // Select all dropdown toggle buttons
+  const dropdownButtons = document.querySelectorAll('[data-dropdown-toggle]');
+
+  dropdownButtons.forEach(button => {
+    button.addEventListener('click', function (e) {
+      e.stopPropagation();
+
+      const dropdownId = this.getAttribute('data-dropdown-toggle');
+      const dropdown = document.getElementById(dropdownId);
+
+      // Close all other dropdowns
+      document.querySelectorAll('[id$="Dropdown"]').forEach(el => {
+        if (el !== dropdown) {
+          el.classList.add('hidden');
+        }
+      });
+
+      // Toggle this dropdown
+      dropdown.classList.toggle('hidden');
+    });
+  });
+
+  // Close all dropdowns when clicking outside
+  document.addEventListener('click', function (e) {
+    if (!e.target.closest('[data-dropdown-toggle]') && !e.target.closest('[id$="Dropdown"]')) {
+      document.querySelectorAll('[id$="Dropdown"]').forEach(el => {
+        el.classList.add('hidden');
+      });
+    }
+  });
+});
+</script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
+
 
 @stack('scripts')

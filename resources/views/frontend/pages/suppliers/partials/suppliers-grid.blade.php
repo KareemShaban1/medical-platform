@@ -11,15 +11,15 @@
 	<div class="p-4">
 		<a href="{{ route('suppliers.show', $supplier->id) }}" class="font-semibold text-lg mb-2">{{ $supplier->name }}</a>
 		<div class="flex items-center text-sm text-gray-500 mb-3">
-			<i class="fas fa-map-marker-alt mr-2"></i>
+			<i class="fas fa-map-marker-alt mx-2"></i>
 			<span>{{ $supplier->address ?? 'Location not specified' }}</span>
 		</div>
 		<div class="flex items-center text-sm text-gray-500 mb-3">
-			<i class="fas fa-phone mr-2"></i>
+			<i class="fas fa-phone mx-2"></i>
 			<span>{{ $supplier->phone ?? 'Contact not available' }}</span>
 		</div>
 		<a href="{{ route('suppliers.show', $supplier->id) }}" class="btn-primary w-full">
-			Contact Supplier
+			{{ __('view details') }}
 		</a>
 	</div>
 </div>
@@ -27,8 +27,8 @@
 <div class="col-span-full text-center py-12">
 	<div class="text-gray-500">
 		<i class="fas fa-search text-4xl mb-4"></i>
-		<h3 class="text-lg font-semibold mb-2">No suppliers found</h3>
-		<p>Try adjusting your search criteria or filters.</p>
+		<h3 class="text-lg font-semibold mb-2">{{ __('no suppliers found') }}</h3>
+		<p>{{ __('try adjusting your search criteria or filters') }}</p>
 	</div>
 </div>
 @endforelse
