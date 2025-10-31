@@ -17,7 +17,18 @@ class PatientController extends Controller
 
     public function index()
     {
-        return view('backend.dashboards.clinic.pages.patients.index');
+        $clinicUser = auth('clinic')->user();
+        $isDoctor = $clinicUser->isDoctor();
+
+        // Get all doctors in the clinic for the dropdown (only if user is not a doctor)
+        $doctors = [];
+        if (!$isDoctor) {
+            $doctors = \App\Models\DoctorProfile::whereHas('clinicUser', function ($query) use ($clinicUser) {
+                $query->where('clinic_id', $clinicUser->clinic_id);
+            })->get(['id', 'name']);
+        }
+
+        return view('backend.dashboards.clinic.pages.patients.index', compact('isDoctor', 'doctors'));
     }
 
     public function data()
@@ -27,16 +38,25 @@ class PatientController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $clinicUser = auth('clinic')->user();
+
+        $rules = [
             'name' => 'required|string|max:255',
-            'phone' => 'required|string|max:20|unique:patients,phone,NULL,id,clinic_id,' . auth('clinic')->user()->clinic_id,
-            'email' => 'nullable|email|max:255|unique:patients,email',
+            'phone' => 'required|string|max:20|unique:patients,phone',
+            'email' => 'required|email|max:255',
             'password' => 'nullable|string|min:8',
-        ]);
+        ];
+
+        // If user is not a doctor, they can optionally assign to a doctor
+        if (!$clinicUser->isDoctor()) {
+            $rules['doctor_profile_id'] = 'nullable|exists:doctor_profiles,id';
+        }
+
+        $request->validate($rules);
 
         try {
             $this->patientRepo->store($request->all());
-            return $this->jsonResponse('success', __('Patient created successfully'));
+            return $this->jsonResponse('success', __('Patient created/assigned successfully'));
         } catch (\Exception $e) {
             return $this->jsonResponse('error', $e->getMessage());
         }
@@ -44,18 +64,78 @@ class PatientController extends Controller
 
     public function show($id)
     {
+        $clinicUser = auth('clinic')->user();
         $patient = $this->patientRepo->show($id);
-        return view('backend.dashboards.clinic.pages.patients.show', compact('patient'));
+
+        // Load all medical data for this patient in this clinic
+        $appointments = \App\Models\Appointment::where('patient_id', $id)
+            ->whereHas('doctorProfile.clinicUser', function($q) use ($clinicUser) {
+                $q->where('clinic_id', $clinicUser->clinic_id);
+            })
+            ->with(['doctorProfile', 'prescription.items'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $medicalRecords = \App\Models\MedicalRecord::where('patient_id', $id)
+            ->where('clinic_id', $clinicUser->clinic_id)
+            ->with(['doctor', 'appointment'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $prescriptions = \App\Models\Prescription::where('patient_id', $id)
+            ->where('clinic_id', $clinicUser->clinic_id)
+            ->with(['doctorProfile', 'items', 'appointment'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $labOrders = \App\Models\LabOrder::where('patient_id', $id)
+            ->where('clinic_id', $clinicUser->clinic_id)
+            ->with(['doctorProfile', 'creator'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // Calculate statistics
+        $stats = [
+            'total_appointments' => $appointments->count(),
+            'completed_appointments' => $appointments->where('status', 'completed')->count(),
+            'total_prescriptions' => $prescriptions->count(),
+            'total_lab_orders' => $labOrders->count(),
+            'total_medical_records' => $medicalRecords->count(),
+        ];
+
+        // Get assigned doctors for this patient in this clinic
+        $assignedDoctors = $patient->doctors()
+            ->wherePivot('clinic_id', $clinicUser->clinic_id)
+            ->get();
+
+        return view('backend.dashboards.clinic.pages.patients.show', compact(
+            'patient',
+            'appointments',
+            'medicalRecords',
+            'prescriptions',
+            'labOrders',
+            'stats',
+            'assignedDoctors'
+        ));
     }
 
     public function update(Request $request, $id)
     {
-        $request->validate([
+        $clinicUser = auth('clinic')->user();
+
+        $rules = [
             'name' => 'required|string|max:255',
-            'phone' => 'required|string|max:20|unique:patients,phone,' . $id . ',id,clinic_id,' . auth('clinic')->user()->clinic_id,
-            'email' => 'nullable|email|max:255|unique:patients,email,' . $id,
+            'phone' => 'required|string|max:20|unique:patients,phone,' . $id,
+            'email' => 'required|email|max:255',
             'password' => 'nullable|string|min:8',
-        ]);
+        ];
+
+        // If user is not a doctor, they can optionally assign to a doctor
+        if (!$clinicUser->isDoctor()) {
+            $rules['doctor_profile_id'] = 'nullable|exists:doctor_profiles,id';
+        }
+
+        $request->validate($rules);
 
         try {
             $this->patientRepo->update($request->all(), $id);

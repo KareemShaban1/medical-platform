@@ -16,8 +16,19 @@ class PatientRepository implements PatientRepositoryInterface
 
     public function data()
     {
-        $patients = Patient::with(['clinic', 'user'])
-            ->forClinic(auth('clinic')->user()->clinic_id);
+        $clinicUser = auth('clinic')->user();
+
+        // Check if the logged-in user is a doctor
+        if ($clinicUser->isDoctor()) {
+            // Show only patients assigned to this doctor in this clinic
+            $doctorProfile = $clinicUser->getDoctorProfile();
+            $patients = Patient::with(['user', 'doctors'])
+                ->forDoctorInClinic($doctorProfile->id, $clinicUser->clinic_id);
+        } else {
+            // Show all patients in the clinic
+            $patients = Patient::with(['user', 'doctors'])
+                ->forClinic($clinicUser->clinic_id);
+        }
 
         return datatables()->of($patients)
             ->addColumn('name', fn($item) => $item->user ? $item->user->name : 'N/A')
@@ -25,8 +36,9 @@ class PatientRepository implements PatientRepositoryInterface
             ->addColumn('email', fn($item) => $item->user ? $item->user->email : 'N/A')
             ->addColumn('status', fn($item) => $item->status_badge)
             ->addColumn('type', fn($item) => $this->getPatientType($item))
+            ->addColumn('assigned_doctors', fn($item) => $this->getAssignedDoctorsForClinic($item, $clinicUser->clinic_id))
             ->addColumn('action', fn($item) => $this->patientActions($item))
-            ->rawColumns(['status', 'type', 'action'])
+            ->rawColumns(['status', 'type', 'assigned_doctors', 'action'])
             ->make(true);
     }
 
@@ -34,6 +46,7 @@ class PatientRepository implements PatientRepositoryInterface
     {
         return DB::transaction(function () use ($request) {
             $data = $request;
+            $clinicUser = auth('clinic')->user();
 
             // First, create or find the user
             $user = \App\Models\User::where('email', $data['email'])->first();
@@ -47,21 +60,60 @@ class PatientRepository implements PatientRepositoryInterface
                 ]);
             }
 
-            // Check if phone is already used in this clinic
-            $existingPatient = Patient::where('clinic_id', auth('clinic')->user()->clinic_id)
-                ->where('phone', $data['phone'])
-                ->first();
+            // Create or find patient by user_id or phone
+            $patient = Patient::where('user_id', $user->id)->first();
 
-            if ($existingPatient) {
-                throw new \Exception('Phone number is already registered in this clinic.');
+            if (!$patient) {
+                // Check if phone already exists globally
+                $existingPatient = Patient::where('phone', $data['phone'])->first();
+                if ($existingPatient) {
+                    throw new \Exception('Phone number is already registered to another patient.');
+                }
+
+                // Create patient record linked to user
+                $patient = Patient::create([
+                    'user_id' => $user->id,
+                    'phone' => $data['phone'],
+                ]);
             }
 
-            // Create patient record linked to user with phone stored in patients table
-            $patient = Patient::create([
-                'clinic_id' => auth('clinic')->user()->clinic_id,
-                'user_id' => $user->id,
-                'phone' => $data['phone'],
-            ]);
+            // Check if patient is already assigned to a doctor in this clinic
+            $existingAssignment = $patient->doctors()
+                ->wherePivot('clinic_id', $clinicUser->clinic_id)
+                ->exists();
+
+            // If the logged-in user is a doctor, automatically assign the patient to them
+            if ($clinicUser->isDoctor()) {
+                $doctorProfile = $clinicUser->getDoctorProfile();
+
+                // Check if already assigned to this doctor in this clinic
+                $alreadyAssigned = $patient->doctors()
+                    ->wherePivot('doctor_profile_id', $doctorProfile->id)
+                    ->wherePivot('clinic_id', $clinicUser->clinic_id)
+                    ->exists();
+
+                if (!$alreadyAssigned) {
+                    $patient->doctors()->attach($doctorProfile->id, [
+                        'clinic_id' => $clinicUser->clinic_id,
+                        'assigned_by' => $clinicUser->id,
+                        'assigned_at' => now(),
+                    ]);
+                }
+            } elseif (isset($data['doctor_profile_id']) && !empty($data['doctor_profile_id'])) {
+                // If clinic staff is creating and selects a doctor, assign to that doctor
+                $alreadyAssigned = $patient->doctors()
+                    ->wherePivot('doctor_profile_id', $data['doctor_profile_id'])
+                    ->wherePivot('clinic_id', $clinicUser->clinic_id)
+                    ->exists();
+
+                if (!$alreadyAssigned) {
+                    $patient->doctors()->attach($data['doctor_profile_id'], [
+                        'clinic_id' => $clinicUser->clinic_id,
+                        'assigned_by' => $clinicUser->id,
+                        'assigned_at' => now(),
+                    ]);
+                }
+            }
 
             return $patient;
         });
@@ -69,15 +121,17 @@ class PatientRepository implements PatientRepositoryInterface
 
     public function show($id)
     {
-        return Patient::with(['clinic', 'user'])
-            ->forClinic(auth('clinic')->user()->clinic_id)
+        $clinicUser = auth('clinic')->user();
+        return Patient::with(['user', 'doctors'])
+            ->forClinic($clinicUser->clinic_id)
             ->findOrFail($id);
     }
 
     public function update($request, $id)
     {
         return DB::transaction(function () use ($request, $id) {
-            $patient = Patient::with('user')->forClinic(auth('clinic')->user()->clinic_id)->findOrFail($id);
+            $clinicUser = auth('clinic')->user();
+            $patient = Patient::with('user')->forClinic($clinicUser->clinic_id)->findOrFail($id);
             $data = $request;
 
             // Update the linked user information (name, email, password)
@@ -111,14 +165,13 @@ class PatientRepository implements PatientRepositoryInterface
             // Update patient record (phone is stored here)
             $patientUpdateData = [];
             if (!empty($data['phone']) && $data['phone'] !== $patient->phone) {
-                // Check if phone is already used in this clinic by another patient
-                $existingPatient = Patient::where('clinic_id', auth('clinic')->user()->clinic_id)
-                    ->where('phone', $data['phone'])
+                // Check if phone is already used by another patient
+                $existingPatient = Patient::where('phone', $data['phone'])
                     ->where('id', '!=', $patient->id)
                     ->first();
 
                 if ($existingPatient) {
-                    throw new \Exception('Phone number is already registered in this clinic.');
+                    throw new \Exception('Phone number is already registered to another patient.');
                 }
 
                 $patientUpdateData['phone'] = $data['phone'];
@@ -128,6 +181,25 @@ class PatientRepository implements PatientRepositoryInterface
                 $patient->update($patientUpdateData);
             }
 
+            // Handle doctor assignment updates (clinic staff only)
+            if (!$clinicUser->isDoctor() && isset($data['doctor_profile_id'])) {
+                if (!empty($data['doctor_profile_id'])) {
+                    // Check if already assigned to this doctor in this clinic
+                    $alreadyAssigned = $patient->doctors()
+                        ->wherePivot('doctor_profile_id', $data['doctor_profile_id'])
+                        ->wherePivot('clinic_id', $clinicUser->clinic_id)
+                        ->exists();
+
+                    if (!$alreadyAssigned) {
+                        $patient->doctors()->attach($data['doctor_profile_id'], [
+                            'clinic_id' => $clinicUser->clinic_id,
+                            'assigned_by' => $clinicUser->id,
+                            'assigned_at' => now(),
+                        ]);
+                    }
+                }
+            }
+
             return $patient->refresh();
         });
     }
@@ -135,8 +207,17 @@ class PatientRepository implements PatientRepositoryInterface
     public function destroy($id)
     {
         return DB::transaction(function () use ($id) {
-            $patient = Patient::forClinic(auth('clinic')->user()->clinic_id)->findOrFail($id);
-            $patient->delete();
+            $clinicUser = auth('clinic')->user();
+            $patient = Patient::forClinic($clinicUser->clinic_id)->findOrFail($id);
+
+            // Only remove the assignment in this clinic, don't delete the patient
+            $patient->doctors()->wherePivot('clinic_id', $clinicUser->clinic_id)->detach();
+
+            // If patient has no more assignments in any clinic, then delete the patient
+            if ($patient->doctors()->count() === 0) {
+                $patient->delete();
+            }
+
             return $patient;
         });
     }
@@ -149,6 +230,24 @@ class PatientRepository implements PatientRepositoryInterface
             return '<span class="badge bg-success">Registered User</span>';
         }
         return '<span class="badge bg-warning">Clinic Created</span>';
+    }
+
+    private function getAssignedDoctorsForClinic($item, $clinicId): string
+    {
+        // Filter doctors for this specific clinic
+        $doctorsInClinic = $item->doctors->filter(function ($doctor) use ($clinicId) {
+            return $doctor->pivot->clinic_id == $clinicId;
+        });
+
+        if ($doctorsInClinic->isEmpty()) {
+            return '<span class="badge bg-secondary">No Doctor Assigned</span>';
+        }
+
+        $doctors = $doctorsInClinic->map(function ($doctor) {
+            return '<span class="badge bg-primary me-1">' . $doctor->name . '</span>';
+        })->implode('');
+
+        return $doctors;
     }
 
     private function patientActions($item): string

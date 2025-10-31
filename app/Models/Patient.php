@@ -27,6 +27,25 @@ class Patient extends Authenticatable
     }
 
     /**
+     * Get the doctors assigned to this patient (with clinic information)
+     */
+    public function doctors()
+    {
+        return $this->belongsToMany(DoctorProfile::class, 'doctor_patient')
+            ->withPivot(['clinic_id', 'assigned_at', 'assigned_by'])
+            ->withTimestamps();
+    }
+
+    /**
+     * Get clinics this patient is associated with (through doctor assignments)
+     */
+    public function clinics()
+    {
+        return $this->belongsToMany(Clinic::class, 'doctor_patient')
+            ->distinct();
+    }
+
+    /**
      * Get OTPs for this patient
      */
     public function otps()
@@ -45,11 +64,34 @@ class Patient extends Authenticatable
     // ------- Scopes -------
 
     /**
-     * Scope to get patients for a specific clinic
+     * Scope to get patients for a specific clinic (through doctor_patient pivot)
      */
     public function scopeForClinic($query, $clinicId)
     {
-        return $query->where('clinic_id', $clinicId);
+        return $query->whereHas('doctors', function ($q) use ($clinicId) {
+            $q->where('doctor_patient.clinic_id', $clinicId);
+        });
+    }
+
+    /**
+     * Scope to get patients for a specific doctor
+     */
+    public function scopeForDoctor($query, $doctorProfileId)
+    {
+        return $query->whereHas('doctors', function ($q) use ($doctorProfileId) {
+            $q->where('doctor_profiles.id', $doctorProfileId);
+        });
+    }
+
+    /**
+     * Scope to get patients for a doctor within a specific clinic
+     */
+    public function scopeForDoctorInClinic($query, $doctorProfileId, $clinicId)
+    {
+        return $query->whereHas('doctors', function ($q) use ($doctorProfileId, $clinicId) {
+            $q->where('doctor_profiles.id', $doctorProfileId)
+              ->where('doctor_patient.clinic_id', $clinicId);
+        });
     }
 
     /**
