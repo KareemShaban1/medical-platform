@@ -36,14 +36,22 @@
 
   			<!-- <li class="side-nav-title side-nav-item">Navigation</li> -->
 
-  			<li class="side-nav-item">
-  				<a href="" class="side-nav-link">
-  					<i class="uil-home-alt"></i>
-  					<span>
-  						{{__('Clinic Dashboard')}}
-  					</span>
-  				</a>
-  			</li>
+			<li class="side-nav-item">
+				<a href="{{ route('clinic.dashboard') }}" class="side-nav-link">
+					<i class="uil-home-alt"></i>
+					<span>
+						{{__('Clinic Dashboard')}}
+					</span>
+				</a>
+			</li>
+
+			<!-- Clinic Info -->
+			<li class="side-nav-item">
+				<a href="{{ route('clinic.settings.clinic-info') }}" class="side-nav-link">
+					<i class="uil-cog"></i>
+					<span> {{ __('Clinic Info') }} </span>
+				</a>
+			</li>
 
 
   			<!-- Users Management -->

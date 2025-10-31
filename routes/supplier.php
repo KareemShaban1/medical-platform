@@ -4,6 +4,8 @@ use App\Http\Controllers\Backend\Dashboards\Supplier\DashboardController;
 use App\Http\Controllers\Backend\Dashboards\Supplier\SupplierController;
 use App\Http\Controllers\Backend\Dashboards\Supplier\ProductController;
 use App\Http\Controllers\Backend\Dashboards\Supplier\ApprovalController;
+use App\Http\Controllers\Backend\Dashboards\Supplier\AnnouncementController as SupplierAnnouncementController;
+use App\Http\Controllers\Backend\Dashboards\Supplier\SupplierInfoController;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
@@ -26,7 +28,15 @@ Route::group(
         Route::get('/dashboard', [DashboardController::class, 'index'])
             ->name('dashboard');
 
+        // Supplier Info Settings
+        Route::group(['prefix' => 'settings'], function () {
+            Route::get('/supplier-info', [SupplierInfoController::class, 'index'])->name('settings.supplier-info');
+            Route::put('/supplier-info', [SupplierInfoController::class, 'update'])->name('settings.supplier-info.update');
+        });
+
         // Add other supplier dashboard routes here...
+        // Announcements - dismiss
+        Route::post('announcements/{id}/dismiss', [SupplierAnnouncementController::class, 'dismiss'])->name('announcements.dismiss');
 
         Route::get('/register-supplier', function () {
             return view('backend.dashboards.supplier.auth.register-supplier');
