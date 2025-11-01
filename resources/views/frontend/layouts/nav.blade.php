@@ -1,11 +1,13 @@
 <nav class="navbar">
-	<div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-2 sm:p-4">
+	<div class="max-w-screen-2xl flex flex-wrap items-center justify-between mx-auto p-2 sm:p-4">
 		<a href="{{ route('home') }}" class="flex items-center space-x-2 sm:space-x-3 rtl:space-x-reverse">
-			<!-- <img src="https://flowbite.com/docs/images/logo.svg" class="h-8" alt="Flowbite Logo" /> -->
-			<span
-				class="navbar-brand text-lg sm:text-xl lg:text-2xl font-semibold whitespace-nowrap">{{ __('Teb Plus') }}</span>
+			<!-- <span
+			class="navbar-brand text-lg sm:text-xl lg:text-2xl font-semibold whitespace-nowrap">{{ __('Teb Plus') }}</span> -->
+
+			<img src="{{asset('frontend/images/logo.png')}}" w-16" style="    height: 70px;
+    width: 180px;">
 		</a>
-		<div class="flex items-center md:order-2 space-x-1 md:space-x-0 rtl:space-x-reverse">
+		<div class=" flex items-center md:order-2 space-x-1 md:space-x-0 rtl:space-x-reverse">
 			<button type="button" data-dropdown-toggle="language-dropdown-menu"
 				class="inline-flex items-center gap-1 sm:gap-2 font-medium justify-center px-2 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm text-gray-900 rounded-lg cursor-pointer hover:bg-gray-100">
 				@if (App::getLocale() == 'ar')
@@ -72,7 +74,8 @@
 				<div id="cart-dropdown"
 					class="z-50 hidden my-4 w-80 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow-lg">
 					<div class="px-4 py-3 text-sm text-gray-900 border-b border-gray-200">
-						<div class="font-semibold">{{ __('shopping cart') }}</div>
+						<div class="font-semibold">
+							{{ __('shopping cart') }}</div>
 					</div>
 
 					<!-- Cart Items -->
@@ -202,7 +205,7 @@
 						</svg>
 					</button>
 					<div id="clinicDropdown"
-  					class="hidden z-[9999] absolute font-normal bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-40 sm:w-44">
+						class="hidden z-[9999] absolute font-normal bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-40 sm:w-44">
 						<ul class="py-2 text-sm text-gray-700"
 							aria-labelledby="clinicLink">
 							<li>

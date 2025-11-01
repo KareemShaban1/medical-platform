@@ -93,10 +93,10 @@
 			<x-frontend.feature-card title="{{ __('courses service') }}"
 				description="{{ __('courses service description') }}"
 				:features=" __('courses service features')" icon="fas fa-book"
-				iconColor="text-[#90dfaa]" svgIcon="{{ asset('frontend/images/course.svg') }}"
-				bgColor="bg-[#90dfaa]" titleColor="group-hover:text-[#90dfaa]"
-				hoverBgColor="group-hover:bg-[#90dfaa]"
-				hoverShadowColor="group-hover:shadow-[#90dfaa]/50"
+				iconColor="text-[#0455bf]" svgIcon="{{ asset('frontend/images/course.svg') }}"
+				bgColor="bg-[#0455bf]" titleColor="group-hover:text-[#0455bf]"
+				hoverBgColor="group-hover:bg-[#0455bf]"
+				hoverShadowColor="group-hover:shadow-[#0455bf]/50"
 				hoverShadow="group-hover:shadow-2xl" />
 		</div>
 	</div>

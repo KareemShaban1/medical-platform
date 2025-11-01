@@ -13,7 +13,7 @@
 
 
 			<div class="flex flex-col sm:flex-row justify-center md:justify-start gap-4">
-				<a href="#"
+				<a href="#register-section"
 					class="btn-primary text-white px-6 py-3 rounded-full font-semibold shadow-md hover:bg-green-700 transition">
 					{{ __('register now') }}
 
@@ -26,17 +26,21 @@
 			</div>
 
 			<div class="pt-6">
-				<p class="text-sm font-medium text-gray-500 mb-3">
-					{{ __('partners and backers') }}</p>
-				<div class="flex items-center justify-center md:justify-start gap-6 opacity-80">
-					<img src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/customers/greenpeace.svg"
-						alt="Greenpeace" class="h-10">
-					<img src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/customers/united-nations.svg"
-						alt="UN" class="h-10">
-					<img src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/customers/wwf.svg"
-						alt="WWF" class="h-10">
-					<img src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/customers/oxfam.svg"
-						alt="Oxfam" class="h-10">
+				<p class="text-lg font-xl text-gray-500 mb-3">
+					{{ __('contact us on social media') }}</p>
+				<div class="flex space-x-4">
+					<a href="#"
+						class="text-[var(--primary-color)] hover:text-black transition text-2xl"><i
+							class="fab fa-facebook"></i></a>
+					<a href="#"
+						class="text-[var(--primary-color)] hover:text-black transition text-2xl"><i
+							class="fab fa-twitter"></i></a>
+					<a href="#"
+						class="text-[var(--primary-color)] hover:text-black transition text-2xl"><i
+							class="fab fa-linkedin"></i></a>
+					<a href="#"
+						class="text-[var(--primary-color)] hover:text-black transition text-2xl"><i
+							class="fab fa-instagram"></i></a>
 				</div>
 			</div>
 		</div>
