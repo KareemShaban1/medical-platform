@@ -302,11 +302,11 @@
 							</li>
 							@else
 							<li>
-								<a href="{{ route('register') }}"
+								<a href="{{ url('/patient/register') }}"
 									class="block px-4 py-2 hover:bg-gray-100">{{ __('register') }}</a>
 							</li>
 							<li>
-								<a href="{{ route('login') }}"
+								<a href="{{ url('/patient/login') }}"
 									class="block px-4 py-2 hover:bg-gray-100">{{ __('login') }}</a>
 							</li>
 							@endauth

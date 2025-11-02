@@ -49,6 +49,12 @@ class FortifyServiceProvider extends ServiceProvider
             Config::set('fortify.prefix', 'supplier');
         }
 
+        if ($request->is('patient/*')) {
+            Config::set('fortify.guard', 'patient');
+            Config::set('fortify.password', 'patients');
+            Config::set('fortify.prefix', 'patient');
+        }
+
         // Handle patient routes (frontend patient auth - login only)
         // Only set patient guard for exact frontend routes (not clinic/* or supplier/* routes)
         if (($request->is('login') || $request->is('register') || $request->is('forgot-password') || $request->is('reset-password'))
