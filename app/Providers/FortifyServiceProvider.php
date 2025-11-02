@@ -102,6 +102,18 @@ class FortifyServiceProvider extends ServiceProvider
         $this->app->instance(LogoutResponse::class, new class implements LogoutResponse {
             public function toResponse($request)
             {
+                // logout from all guards to ensure full logout
+                foreach (['admin', 'clinic', 'supplier', 'patient', 'web'] as $guard) {
+                    if (Auth::guard($guard)->check()) {
+                        Auth::guard($guard)->logout();
+                    }
+                }
+
+                // invalidate session and regenerate token
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+
+                // ✅ redirect to home instead of login
                 return redirect('/');
             }
         });

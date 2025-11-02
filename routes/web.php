@@ -13,6 +13,7 @@ use App\Http\Controllers\Frontend\SupplierController;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 use App\Http\Controllers\Frontend\Auth\PatientAuthController;
 use App\Http\Controllers\Frontend\ClinicUser\ProfileController;
+use Illuminate\Support\Facades\Auth;
 
 Route::group(
     [
@@ -138,8 +139,10 @@ Route::post('/user/logout', function (\Illuminate\Http\Request $request) {
     \Illuminate\Support\Facades\Auth::guard('patient')->logout();
     $request->session()->invalidate();
     $request->session()->regenerateToken();
-    return redirect()->to('/login');
+    return redirect()->to('/');
 })->name('user.logout');
+
+
 
 Route::post('/register', [PatientAuthController::class, 'register'])->name('register');
 
@@ -147,7 +150,3 @@ Route::post('/register', [PatientAuthController::class, 'register'])->name('regi
 require __DIR__ . '/admin.php';
 require __DIR__.'/clinic.php';
 require __DIR__.'/supplier.php';
-
-
-
-
