@@ -24,7 +24,10 @@ class DoctorProfileController extends Controller
         $endDate = Carbon::today()->addDays(30)->toDateString();
         $availableDays = $this->repo->getAvailableDays($id, $startDate, $endDate);
 
-        return view('frontend.pages.doctors.show', compact('doctor', 'availableDays'));
+        // Prefill patient data if authenticated as patient
+        $patient = auth('patient')->check() ? auth('patient')->user() : null;
+
+        return view('frontend.pages.doctors.show', compact('doctor', 'availableDays', 'patient'));
     }
 
     public function getAvailableDays($id)
@@ -66,4 +69,3 @@ class DoctorProfileController extends Controller
         }
     }
 }
-

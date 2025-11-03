@@ -921,22 +921,20 @@
 				<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
 					<div class="form-group">
 						<label class="form-label">{{ __('Name') }} *</label>
-						<input type="text" name="name" class="form-control" required
-							{{ auth()->check() ? 'readonly' : '' }}
-							value="{{ auth()->check() ? auth()->user()->name : '' }}">
+					<input type="text" name="name" class="form-control" required
+						value="{{ isset($patient) && $patient ? ($patient->user?->name) : '' }}">
 					</div>
 					<div class="form-group">
 						<label class="form-label">{{ __('Email') }} *</label>
-						<input type="email" name="email" class="form-control" required
-							{{ auth()->check() ? 'readonly' : '' }}
-							value="{{ auth()->check() ? auth()->user()->email : '' }}">
+					<input type="email" name="email" class="form-control" required
+						value="{{ isset($patient) && $patient ? ($patient->user?->email) : '' }}">
 					</div>
 				</div>
 
 				<div class="form-group">
 					<label class="form-label">{{ __('Phone') }} *</label>
 					<input type="tel" name="phone" class="form-control" required
-						value="{{ auth()->check() ? auth()->user()->phone : '' }}">
+						value="{{ isset($patient) && $patient ? ($patient->phone ?? $patient->user?->phone) : '' }}">
 				</div>
 
 				<div class="form-group">
