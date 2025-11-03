@@ -566,7 +566,7 @@
             <div class="row">
                 @forelse($appointments as $appointment)
                     <div class="col-md-6 mb-3">
-                        <div class="card stat-card appointment-card h-100">
+                        <div class="card stat-card appointment-card h-100 position-relative">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-start mb-3">
                                     <h5 class="card-title mb-0">
@@ -596,6 +596,7 @@
                                     </div>
                                 @endif
                             </div>
+                            <a href="{{ route('clinic.appointments.show', $appointment->id) }}" class="stretched-link" aria-label="{{ __('View appointment details') }}"></a>
                         </div>
                     </div>
                 @empty
@@ -615,7 +616,7 @@
             <div class="row">
                 @forelse($medicalRecords as $record)
                     <div class="col-12 mb-3">
-                        <div class="card stat-card medical-record-card">
+                        <div class="card stat-card medical-record-card position-relative">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-start mb-3">
                                     <div>
@@ -664,6 +665,9 @@
                                     @endif
                                 </div>
                             </div>
+                            @if(!empty($record->appointment) && !empty($record->appointment->id))
+                                <a href="{{ route('clinic.medical-records.edit', $record->appointment->id) }}" class="stretched-link" aria-label="{{ __('View medical record') }}"></a>
+                            @endif
                         </div>
                     </div>
                 @empty
@@ -683,7 +687,7 @@
             <div class="row">
                 @forelse($prescriptions as $prescription)
                     <div class="col-lg-6 mb-3">
-                        <div class="card stat-card prescription-card h-100">
+                        <div class="card stat-card prescription-card h-100 position-relative">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-start mb-3">
                                     <h5 class="card-title mb-0">
@@ -720,6 +724,7 @@
                                     </div>
                                 @endforeach
                             </div>
+                            <a href="{{ route('clinic.prescriptions.show', $prescription->id) }}" class="stretched-link" aria-label="{{ __('View prescription') }}"></a>
                         </div>
                     </div>
                 @empty
@@ -739,7 +744,7 @@
             <div class="row">
                 @forelse($labOrders as $labOrder)
                     <div class="col-md-6 mb-3">
-                        <div class="card stat-card lab-order-card h-100">
+                        <div class="card stat-card lab-order-card h-100 position-relative">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-start mb-3">
                                     <div>
@@ -793,6 +798,7 @@
                                     </div>
                                 @endif
                             </div>
+                            <a href="{{ route('clinic.lab-orders.show', $labOrder->id) }}" class="stretched-link" aria-label="{{ __('View lab order') }}"></a>
                         </div>
                     </div>
                 @empty
