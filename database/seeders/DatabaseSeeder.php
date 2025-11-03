@@ -11,6 +11,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+
         $this->command->info('═══════════════════════════════════════════════════════════');
         $this->command->info('   MEDICAL PLATFORM DATABASE SEEDER');
         $this->command->info('═══════════════════════════════════════════════════════════');
@@ -27,6 +28,14 @@ class DatabaseSeeder extends Seeder
             RoleAndPermissionSeeder::class,   // Create roles and permissions
             SpecialitySeeder::class,          // Create medical specialities
             ClinicSeeder::class,              // Create clinics
+            SupplierSeeder::class,
+            CategorySeeder::class,
+            ProductSeeder::class,
+            BlogCategorySeeder::class,
+            BlogPostSeeder::class,
+            CourseSeeder::class,
+            JobSeeder::class,
+            RentalSpaceSeeder::class,
         ]);
 
         $this->command->newLine();
