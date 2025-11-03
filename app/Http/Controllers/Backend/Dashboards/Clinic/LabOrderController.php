@@ -15,7 +15,8 @@ class LabOrderController extends Controller
 
     public function index()
     {
-        $patients = Patient::registered()->get();
+        $clinicId = auth('clinic')->user()->clinic_id;
+        $patients = Patient::registered()->forClinic($clinicId)->get();
         return view('backend.dashboards.clinic.pages.lab-orders.index', compact('patients'));
     }
 
@@ -26,7 +27,8 @@ class LabOrderController extends Controller
 
     public function create()
     {
-        $patients = Patient::registered()->get();
+        $clinicId = auth('clinic')->user()->clinic_id;
+        $patients = Patient::registered()->forClinic($clinicId)->get();
         return view('backend.dashboards.clinic.pages.lab-orders.create', compact('patients'));
     }
 

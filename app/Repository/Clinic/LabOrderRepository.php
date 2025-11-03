@@ -29,7 +29,12 @@ class LabOrderRepository implements LabOrderRepositoryInterface
         }
 
         if ($patientId = request('patient_id')) {
-            $query->where('patient_id', $patientId);
+            $belongs = Patient::forClinic($clinicId)
+                ->where('patients.id', $patientId)
+                ->exists();
+            if ($belongs) {
+                $query->where('patient_id', $patientId);
+            }
         }
 
         if ($dateFrom = request('date_from')) {
@@ -54,6 +59,14 @@ class LabOrderRepository implements LabOrderRepositoryInterface
     {
         return DB::transaction(function () use ($request) {
             $clinicUser = auth('clinic')->user();
+
+            // Ensure patient belongs to this clinic via doctor_patient pivot
+            $patientBelongs = Patient::forClinic($clinicUser->clinic_id)
+                ->where('patients.id', $request['patient_id'])
+                ->exists();
+            if (!$patientBelongs) {
+                throw new \Exception(__('Selected patient is not associated with your clinic'));
+            }
 
             $data = [
                 'clinic_id' => $clinicUser->clinic_id,
