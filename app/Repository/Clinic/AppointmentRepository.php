@@ -20,6 +20,15 @@ class AppointmentRepository implements AppointmentRepositoryInterface
             })
             ->with(['doctorProfile.clinicUser', 'doctorProfile.speciality', 'patient.user', 'period']);
 
+        // If the authenticated clinic user is a doctor, only show their appointments
+        $clinicUser = auth('clinic')->user();
+        if (method_exists($clinicUser, 'isDoctor') && $clinicUser->isDoctor()) {
+            $doctorProfileId = optional($clinicUser->getDoctorProfile())->id;
+            if ($doctorProfileId) {
+                $query->where('doctor_profile_id', $doctorProfileId);
+            }
+        }
+
         // Apply filters
         if (!empty($filters['doctor_profile_id'])) {
             $query->where('doctor_profile_id', $filters['doctor_profile_id']);
@@ -58,6 +67,15 @@ class AppointmentRepository implements AppointmentRepositoryInterface
             })
             ->with(['doctorProfile.clinicUser', 'doctorProfile.speciality', 'patient.user', 'period']);
 
+        // If the authenticated clinic user is a doctor, only show their appointments
+        $clinicUser = auth('clinic')->user();
+        if (method_exists($clinicUser, 'isDoctor') && $clinicUser->isDoctor()) {
+            $doctorProfileId = optional($clinicUser->getDoctorProfile())->id;
+            if ($doctorProfileId) {
+                $query->where('doctor_profile_id', $doctorProfileId);
+            }
+        }
+
         // Apply filters
         if (!empty($filters['doctor_profile_id'])) {
             $query->where('doctor_profile_id', $filters['doctor_profile_id']);
@@ -71,11 +89,24 @@ class AppointmentRepository implements AppointmentRepositoryInterface
             $query->where('status', $filters['status']);
         }
 
-        if (!empty($filters['start_date']) && !empty($filters['end_date'])) {
-            $query->whereHas('period', function ($q) use ($filters) {
-                $q->whereBetween('date', [$filters['start_date'], $filters['end_date']]);
-            });
+        // Date filter (defaults to today if not provided)
+        $startDate = $filters['start_date'] ?? null;
+        $endDate = $filters['end_date'] ?? null;
+
+        if (!$startDate && !$endDate) {
+            $startDate = $endDate = now()->toDateString();
+        } elseif ($startDate && !$endDate) {
+            $endDate = $startDate;
+        } elseif (!$startDate && $endDate) {
+            $startDate = $endDate;
         }
+
+        $query->whereHas('period', function ($q) use ($startDate, $endDate) {
+            $q->whereBetween('date', [$startDate, $endDate]);
+        });
+
+        // Default to latest first
+        $query->orderBy('created_at', 'desc');
 
         return datatables()->of($query)
             ->addColumn('doctor_name', function ($item) {

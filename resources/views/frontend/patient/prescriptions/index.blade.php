@@ -12,6 +12,22 @@
       </a>
     </div>
 
+    <form method="GET" action="{{ route('user.prescriptions.index') }}" class="mb-6">
+      <div class="flex flex-wrap items-end gap-3">
+        <div>
+          <label class="block text-sm text-gray-600 mb-1">{{ __('From') }}</label>
+          <input type="date" name="from" value="{{ request('from') }}" class="border rounded-md px-3 py-2">
+        </div>
+        <div>
+          <label class="block text-sm text-gray-600 mb-1">{{ __('To') }}</label>
+          <input type="date" name="to" value="{{ request('to') }}" class="border rounded-md px-3 py-2">
+        </div>
+        <div class="flex gap-2">
+          <button type="submit" class="px-4 py-2 bg-sky-600 text-white rounded-md">{{ __('Filter') }}</button>
+          <a href="{{ route('user.prescriptions.index') }}" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md">{{ __('Clear') }}</a>
+        </div>
+      </div>
+    </form>
     @if($prescriptions->count())
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         @foreach($prescriptions as $prescription)

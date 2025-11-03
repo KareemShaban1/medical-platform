@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Frontend\Patient;
 
 use App\Http\Controllers\Controller;
 use App\Interfaces\User\LabOrderRepositoryInterface;
+use Illuminate\Http\Request;
 
 class LabOrderController extends Controller
 {
@@ -11,10 +12,10 @@ class LabOrderController extends Controller
     {
     }
 
-    public function index()
+    public function index(Request $request)
     {
         $patient = auth('patient')->user();
-        $orders = $this->repo->listForPatient($patient->id);
+        $orders = $this->repo->listForPatient($patient->id, $request->input('from'), $request->input('to'));
         return view('frontend.patient.lab-orders.index', compact('orders', 'patient'));
     }
 
@@ -25,4 +26,3 @@ class LabOrderController extends Controller
         return view('frontend.patient.lab-orders.show', compact('order', 'patient'));
     }
 }
-

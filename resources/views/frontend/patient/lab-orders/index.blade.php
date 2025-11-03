@@ -6,13 +6,29 @@
 <div class="min-h-screen bg-gray-50 py-10 px-4">
 	<div class="max-w-4xl mx-auto">
 		<div class="bg-white shadow-2xl rounded-2xl overflow-hidden">
-			<div
-				class="flex justify-between items-center bg-gradient-to-r from-sky-600 to-blue-600 text-white px-6 py-4">
-				<h2 class="text-xl font-semibold">{{ __('My Lab Results') }}</h2>
-				<a href="{{ route('user.dashboard') }}"
-					class="text-white/90 hover:text-white text-sm">{{ __('Back to Dashboard') }}</a>
+		   <div class="flex justify-between items-center bg-gradient-to-r from-sky-600 to-blue-600 text-white px-6 py-4">
+                <h2 class="text-2xl font-bold text-gray-800">{{ __('My Lab Orders') }}</h2>
+				<a href="{{ route('user.dashboard') }}" class="px-4 py-2 rounded-lg bg-gray-200 text-gray-800 hover:bg-gray-300 transition">
+                    <i class="fas fa-arrow-left"></i> {{ __('Back to Dashboard') }}
+                </a>
 			</div>
 			<div class="p-6">
+				<form method="GET" action="{{ route('user.lab-orders.index') }}" class="mb-4">
+					<div class="flex flex-wrap items-end gap-3">
+						<div>
+							<label class="block text-sm text-gray-600 mb-1">{{ __('From') }}</label>
+							<input type="date" name="from" value="{{ request('from') }}" class="border rounded-md px-3 py-2">
+						</div>
+						<div>
+							<label class="block text-sm text-gray-600 mb-1">{{ __('To') }}</label>
+							<input type="date" name="to" value="{{ request('to') }}" class="border rounded-md px-3 py-2">
+						</div>
+						<div class="flex gap-2">
+							<button type="submit" class="px-4 py-2 bg-sky-600 text-white rounded-md">{{ __('Filter') }}</button>
+							<a href="{{ route('user.lab-orders.index') }}" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md">{{ __('Clear') }}</a>
+						</div>
+					</div>
+				</form>
 				@if($orders->count() === 0)
 				<p class="text-gray-600">
 					{{ __('No completed lab results yet.') }}</p>

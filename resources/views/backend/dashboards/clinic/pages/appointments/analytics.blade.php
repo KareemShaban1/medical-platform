@@ -30,7 +30,7 @@
                                 <label for="doctor_id" class="form-label">
                                     <i class="mdi mdi-doctor"></i> {{ __('Select Doctor') }}
                                 </label>
-                                <select class="form-select" id="doctor_id" name="doctor_id" onchange="changeDo ctor()">
+                                <select class="form-select" id="doctor_id" name="doctor_id" onchange="changeDoctor()">
                                     @foreach($doctors as $doctor)
                                         <option value="{{ $doctor->id }}" {{ $selectedDoctor && $selectedDoctor->id == $doctor->id ? 'selected' : '' }}>
                                             {{ $doctor->name }}

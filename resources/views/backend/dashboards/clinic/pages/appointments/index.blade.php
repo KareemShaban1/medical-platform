@@ -23,6 +23,24 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
+                    <div class="row g-2 align-items-end mb-3">
+                        <div class="col-md-3">
+                            <label class="form-label mb-1">{{ __('Start Date') }}</label>
+                            <input type="date" id="filter_start_date" class="form-control" value="{{ now()->toDateString() }}">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label mb-1">{{ __('End Date') }}</label>
+                            <input type="date" id="filter_end_date" class="form-control" value="{{ now()->toDateString() }}">
+                        </div>
+                        <div class="col-md-3 d-flex gap-2">
+                            <button id="applyFilters" class="btn btn-primary w-100" type="button">
+                                <i class="mdi mdi-filter"></i> {{ __('Filter') }}
+                            </button>
+                            <button id="resetToday" class="btn btn-outline-secondary w-100" type="button">
+                                <i class="mdi mdi-calendar-today"></i> {{ __('Today') }}
+                            </button>
+                        </div>
+                    </div>
                     <table id="appointments-table" class="table dt-responsive nowrap w-100">
                         <thead>
                             <tr>
@@ -266,7 +284,8 @@ let table = $('#appointments-table').DataTable({
     ajax: {
         url: '{{ route("clinic.appointments.data") }}',
         data: function (d) {
-            // Add filters here if needed
+            d.start_date = $('#filter_start_date').val();
+            d.end_date = $('#filter_end_date').val();
         }
     },
     columns: [
@@ -294,6 +313,18 @@ let table = $('#appointments-table').DataTable({
     drawCallback: function() {
         $('.dataTables_paginate > .pagination').addClass('pagination-rounded');
     }
+});
+
+// Apply and reset filters
+$('#applyFilters').on('click', function () {
+    table.ajax.reload();
+});
+
+$('#resetToday').on('click', function () {
+    const today = new Date().toISOString().slice(0,10);
+    $('#filter_start_date').val(today);
+    $('#filter_end_date').val(today);
+    table.ajax.reload();
 });
 
 // ============================================

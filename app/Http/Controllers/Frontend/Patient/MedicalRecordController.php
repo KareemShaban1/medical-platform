@@ -4,16 +4,23 @@ namespace App\Http\Controllers\Frontend\Patient;
 
 use App\Http\Controllers\Controller;
 use App\Models\MedicalRecord;
+use Illuminate\Http\Request;
 
 class MedicalRecordController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $patient = auth('patient')->user();
         $records = MedicalRecord::with(['appointment.period', 'doctor'])
             ->where('patient_id', $patient->id)
             ->where('is_shared_with_patient', true)
-            ->latest('updated_at')
+            ->when($request->filled('from'), function ($q) use ($request) {
+                $q->whereDate('created_at', '>=', $request->input('from'));
+            })
+            ->when($request->filled('to'), function ($q) use ($request) {
+                $q->whereDate('created_at', '<=', $request->input('to'));
+            })
+            ->latest('created_at')
             ->get();
 
         return view('frontend.patient.medical-records.index', compact('records', 'patient'));

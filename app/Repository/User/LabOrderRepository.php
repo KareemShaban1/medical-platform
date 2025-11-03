@@ -7,11 +7,17 @@ use App\Models\LabOrder;
 
 class LabOrderRepository implements LabOrderRepositoryInterface
 {
-    public function listForPatient($patientId)
+    public function listForPatient($patientId, ?string $from = null, ?string $to = null)
     {
         return LabOrder::with(['clinic'])
             ->forPatient($patientId)
             ->where('status', 'completed')
+            ->when($from, function ($q) use ($from) {
+                $q->whereDate('created_at', '>=', $from);
+            })
+            ->when($to, function ($q) use ($to) {
+                $q->whereDate('created_at', '<=', $to);
+            })
             ->latest()
             ->get();
     }
@@ -24,4 +30,3 @@ class LabOrderRepository implements LabOrderRepositoryInterface
             ->findOrFail($orderId);
     }
 }
-

@@ -54,7 +54,7 @@ class AppointmentController extends Controller
         }
     }
 
-    public function myAppointments()
+    public function myAppointments(Request $request)
     {
         if (!auth('patient')->check()) {
             return redirect()->route('login')->with('error', __('Please login to view your appointments'));
@@ -64,8 +64,15 @@ class AppointmentController extends Controller
 
         $appointments = $patient->appointments()
             ->with(['doctorProfile.clinicUser.clinic', 'doctorProfile.speciality', 'period'])
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->when($request->filled('from'), function ($q) use ($request) {
+                $q->whereDate('created_at', '>=', $request->input('from'));
+            })
+            ->when($request->filled('to'), function ($q) use ($request) {
+                $q->whereDate('created_at', '<=', $request->input('to'));
+            })
+            ->latest()
+            ->paginate(10)
+            ->appends($request->only(['from', 'to']));
 
         return view('frontend.pages.appointments.my-appointments', compact('appointments', 'patient'));
     }

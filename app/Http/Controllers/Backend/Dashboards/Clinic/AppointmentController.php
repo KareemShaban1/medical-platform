@@ -29,9 +29,21 @@ class AppointmentController extends Controller
     public function index(Request $request)
     {
         $clinicId = auth('clinic')->user()->clinic_id;
-        $doctors = DoctorProfile::whereHas('clinicUser', function ($q) use ($clinicId) {
+        $clinicUser = auth('clinic')->user();
+
+        $doctorsQuery = DoctorProfile::whereHas('clinicUser', function ($q) use ($clinicId) {
             $q->where('clinic_id', $clinicId);
-        })->where('status', DoctorProfile::STATUS_APPROVED)->get();
+        })->where('status', DoctorProfile::STATUS_APPROVED);
+
+        // If clinic user is a doctor, limit list to their profile
+        if (method_exists($clinicUser, 'isDoctor') && $clinicUser->isDoctor()) {
+            $doctorProfileId = optional($clinicUser->getDoctorProfile())->id;
+            if ($doctorProfileId) {
+                $doctorsQuery->where('id', $doctorProfileId);
+            }
+        }
+
+        $doctors = $doctorsQuery->get();
 
         $patients = Patient::all();
         $visitTypes = Appointment::getVisitTypeOptions();
@@ -144,19 +156,41 @@ class AppointmentController extends Controller
 
     public function analytics(Request $request, $doctorId = null)
     {
-        $clinicId = auth('clinic')->user()->clinic_id;
+        $clinicUser = auth('clinic')->user();
+        $clinicId = $clinicUser->clinic_id;
 
-        // Get all doctors in the clinic
-        $doctors = DoctorProfile::whereHas('clinicUser', function ($q) use ($clinicId) {
+        // Build allowed doctors list
+        $baseDoctorsQuery = DoctorProfile::whereHas('clinicUser', function ($q) use ($clinicId) {
             $q->where('clinic_id', $clinicId);
-        })->where('status', DoctorProfile::STATUS_APPROVED)->get();
+        })->where('status', DoctorProfile::STATUS_APPROVED);
 
-        // Set default doctor if not provided
-        if (!$doctorId && $doctors->isNotEmpty()) {
-            $doctorId = $doctors->first()->id;
+        if (method_exists($clinicUser, 'isDoctor') && $clinicUser->isDoctor()) {
+            $myDoctor = $clinicUser->getDoctorProfile();
+            $doctors = $myDoctor ? collect([$myDoctor]) : collect([]);
+        } else {
+            $doctors = $baseDoctorsQuery->get();
         }
 
-        $selectedDoctor = DoctorProfile::find($doctorId);
+        // Ensure selected doctor is allowed; default when missing
+        if (!$doctorId) {
+            $selectedDoctor = $doctors->first();
+            $doctorId = $selectedDoctor?->id;
+        } else {
+            if (method_exists($clinicUser, 'isDoctor') && $clinicUser->isDoctor()) {
+                // Doctors can view only their own analytics
+                $allowedId = optional($clinicUser->getDoctorProfile())->id;
+                abort_if((int)$doctorId !== (int)$allowedId, 403);
+            } else {
+                // Clinic staff can view only doctors in their clinic
+                $exists = DoctorProfile::where('id', $doctorId)
+                    ->whereHas('clinicUser', function ($q) use ($clinicId) {
+                        $q->where('clinic_id', $clinicId);
+                    })
+                    ->exists();
+                abort_if(!$exists, 403);
+            }
+            $selectedDoctor = DoctorProfile::find($doctorId);
+        }
 
         // Date range filters
         $startDate = $request->get('start_date', now()->startOfMonth()->toDateString());
@@ -246,4 +280,3 @@ class AppointmentController extends Controller
         ));
     }
 }
-
