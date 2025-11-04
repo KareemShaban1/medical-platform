@@ -91,7 +91,7 @@
   					<ul class="side-nav-second-level">
   						<li>
   							<a href="{{ route('clinic.users.index') }}">
-  								<span> {{__('Users')}} </span>
+  								<span> {{__('Employees')}} </span>
   							</a>
   						</li>
   						<li>
