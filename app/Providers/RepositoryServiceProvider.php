@@ -17,6 +17,8 @@ use App\Repository\Clinic\LabOrderRepository as ClinicLabOrderRepository;
 use App\Interfaces\User\LabOrderRepositoryInterface as UserLabOrderRepositoryInterface;
 
 use App\Repository\User\LabOrderRepository as UserLabOrderRepository;
+use App\Interfaces\Clinic\InvoiceRepositoryInterface;
+use App\Repository\Clinic\InvoiceRepository;
 
 use Illuminate\Support\ServiceProvider;
 
@@ -204,6 +206,9 @@ class RepositoryServiceProvider extends ServiceProvider
 
         $this->app->bind(UserLabOrderRepositoryInterface::class, UserLabOrderRepository::class);
 
+        // Invoices Repository (Clinic)
+        $this->app->bind(InvoiceRepositoryInterface::class, InvoiceRepository::class);
+
 
 
         // Medical Records
@@ -227,7 +232,6 @@ class RepositoryServiceProvider extends ServiceProvider
     }
 
 }
-
 
 
 

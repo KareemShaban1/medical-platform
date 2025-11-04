@@ -150,8 +150,6 @@ class AppointmentService
                 ['phone' => $user->phone ?? $data['phone'] ?? null]
             );
 
-            dd($patient);
-
             return $patient;
         }
 
@@ -191,4 +189,3 @@ class AppointmentService
         // This would send an email with the confirmation code
     }
 }
-

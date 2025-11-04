@@ -227,11 +227,6 @@
   				</div>
   			</li>
 
-
-
-
-
-
   			<!-- Lab Orders -->
   			<li class="side-nav-item">
   				<a data-bs-toggle="collapse" href="#sidebarLabOrders" aria-expanded="false"
@@ -259,6 +254,14 @@
   					<span> {{ __('Medical Records') }} </span>
   				</a>
   			</li>
+        
+          <!-- Invoices -->
+            <li class="side-nav-item">
+                <a href="{{ route('clinic.invoices.index') }}" class="side-nav-link">
+                    <i class="uil-receipt-alt"></i>
+                    <span> {{ __('Invoices') }} </span>
+                </a>
+            </li>
 
 
   			<!-- Expense Categories Management -->
