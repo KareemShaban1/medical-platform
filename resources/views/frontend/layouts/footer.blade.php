@@ -12,7 +12,7 @@
 					<a href="#" class="text-gray-400 hover:text-white transition"><i
 							class="fab fa-facebook"></i></a>
 					<a href="#" class="text-gray-400 hover:text-white transition"><i
-							class="fab fa-twitter"></i></a>
+							class="fab fa-x"></i></a>
 					<a href="#" class="text-gray-400 hover:text-white transition"><i
 							class="fab fa-linkedin"></i></a>
 					<a href="#" class="text-gray-400 hover:text-white transition"><i
