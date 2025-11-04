@@ -96,8 +96,8 @@
 					<div class="mb-3">
 						<label for="doctor_profile_id"
 							class="form-label">{{ __('Assign to Doctor') }}</label>
-						<select class="form-select" id="doctor_profile_id"
-							name="doctor_profile_id">
+						<select class="form-select select2" id="doctor_profile_id"
+							required multiple name="doctor_profile_id">
 							<option value="">
 								{{ __('Select Doctor (Optional)') }}
 							</option>
@@ -178,7 +178,7 @@
 							class="form-label">{{ __('Assign to Doctor') }}</label>
 						<select class="form-select select2"
 							id="edit_doctor_profile_id" multiple
-							ultiple="multiple" name="doctor_profile_id" []>
+							name="doctor_profile_id" required>
 							<option value="">
 								{{ __('Select Doctor (Optional)') }}
 							</option>
