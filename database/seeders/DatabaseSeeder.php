@@ -24,18 +24,31 @@ class DatabaseSeeder extends Seeder
         $this->command->info('───────────────────────────────────────────────────────────');
 
         $this->call([
-            AdminSeeder::class,               // Create admin user
-            RoleAndPermissionSeeder::class,   // Create roles and permissions
-            SpecialitySeeder::class,          // Create medical specialities
-            ClinicSeeder::class,              // Create clinics
-            SupplierSeeder::class,
-            CategorySeeder::class,
-            ProductSeeder::class,
+            AdminSeeder::class,               // Create base admin user
+            SystemAdminSeeder::class,         // Create system admin (separate account)
+            RoleAndPermissionSeeder::class,   // Create roles and permissions (guards/teams)
+
+            // Core domain dictionaries
+            SpecialitySeeder::class,          // Medical specialities
+            CategorySeeder::class,            // Product categories
+
+            // Core organizations/entities
+            ClinicSeeder::class,              // Clinics
+            SupplierSeeder::class,            // Suppliers
+
+            // Users for suppliers and initial content
+            SupplierUserSeeder::class,        // Supplier users + roles
+            ProductSeeder::class,             // Products
             BlogCategorySeeder::class,
             BlogPostSeeder::class,
             CourseSeeder::class,
             JobSeeder::class,
             RentalSpaceSeeder::class,
+
+            // Optional geo/auxiliary seeds (safe even if empty)
+            GovernorateSeeder::class,
+            CitySeeder::class,
+            AreaSeeder::class,
         ]);
 
         $this->command->newLine();
@@ -111,8 +124,8 @@ class DatabaseSeeder extends Seeder
         $this->command->newLine();
 
         // Step 8: Invoices (based on completed appointments)
-        $this->command->info('dY"# STEP 8: Generating invoices...');
-        $this->command->info('******************************************');
+    $this->command->info('💳 STEP 8: Generating invoices...');
+    $this->command->info('───────────────────────────────────────────────────────────');
 
         $this->call([
             InvoiceSeeder::class,
