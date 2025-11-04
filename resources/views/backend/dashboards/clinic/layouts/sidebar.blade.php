@@ -334,6 +334,14 @@
                 </a>
             </li>
 
+            <!-- Invoices -->
+            <li class="side-nav-item">
+                <a href="{{ route('clinic.invoices.index') }}" class="side-nav-link">
+                    <i class="uil-receipt-alt"></i>
+                    <span> {{ __('Invoices') }} </span>
+                </a>
+            </li>
+
             <!-- Requests Management (Tickets System) -->
   			<li class="side-nav-item">
   				<a data-bs-toggle="collapse" href="#sidebarRequests" aria-expanded="false"

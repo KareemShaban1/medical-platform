@@ -80,6 +80,37 @@ class Appointment extends Model
                         'created_by' => auth('clinic')->id() ?: null,
                     ]
                 );
+
+                // Create invoice if it doesn't exist yet
+                try {
+                    /** @var \App\Models\Invoice $invoice */
+                    $invoice = \App\Models\Invoice::firstOrCreate(
+                        ['appointment_id' => $appointment->id],
+                        [
+                            'clinic_id' => $clinicId,
+                            'patient_id' => $appointment->patient_id,
+                            'doctor_profile_id' => $appointment->doctor_profile_id,
+                            'subtotal' => 0,
+                            'discount' => 0,
+                            'tax' => 0,
+                            'total' => 0,
+                            'status' => 'unpaid',
+                        ]
+                    );
+
+                    // Ensure default consultation item exists once
+                    if ($invoice->items()->count() === 0) {
+                        $invoice->items()->create([
+                            'description' => __('Clinic Consultation'),
+                            'quantity' => 1,
+                            'unit_price' => $appointment->cost_amount ?? 0,
+                        ]);
+                        $invoice->refresh();
+                        $invoice->recalcTotals();
+                    }
+                } catch (\Throwable $e) {
+                    // swallow invoice creation errors to not block completion
+                }
             }
 
             //IF THE APPOINTMENT IS COMPLETED, ADD THIS PATIENT TO THE CLINIC PATIENTS TABLE

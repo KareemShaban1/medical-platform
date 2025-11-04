@@ -101,6 +101,25 @@ class DatabaseSeeder extends Seeder
 
         $this->command->newLine();
 
+        // Expenses categories and expenses
+        $this->command->info('Seeding expense categories and expenses...');
+        $this->call([
+            ExpenseCategorySeeder::class,
+            ExpenseSeeder::class,
+        ]);
+
+        $this->command->newLine();
+
+        // Step 8: Invoices (based on completed appointments)
+        $this->command->info('dY"# STEP 8: Generating invoices...');
+        $this->command->info('******************************************');
+
+        $this->call([
+            InvoiceSeeder::class,
+        ]);
+
+        $this->command->newLine();
+
         // Final Summary
         $endTime = microtime(true);
         $executionTime = round($endTime - $startTime, 2);
@@ -154,3 +173,5 @@ class DatabaseSeeder extends Seeder
         $this->command->info('═══════════════════════════════════════════════════════════');
     }
 }
+
+

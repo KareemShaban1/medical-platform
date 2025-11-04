@@ -288,7 +288,7 @@ Route::group(
         Route::delete('expenses/{id}/force-delete', [ExpenseController::class, 'forceDelete'])->name('expenses.force-delete');
         Route::get('expenses/analytics', [ExpenseController::class, 'analytics'])->name('expenses.analytics');
         Route::resource('expenses', ExpenseController::class);
-            // Lab Orders
+        // Lab Orders
         Route::get('lab-orders', [\App\Http\Controllers\Backend\Dashboards\Clinic\LabOrderController::class, 'index'])->name('lab-orders.index');
         Route::get('lab-orders/data', [\App\Http\Controllers\Backend\Dashboards\Clinic\LabOrderController::class, 'data'])->name('lab-orders.data');
         Route::get('lab-orders/create', [\App\Http\Controllers\Backend\Dashboards\Clinic\LabOrderController::class, 'create'])->name('lab-orders.create');
@@ -298,6 +298,16 @@ Route::group(
         Route::post('lab-orders/{id}/complete', [\App\Http\Controllers\Backend\Dashboards\Clinic\LabOrderController::class, 'complete'])->name('lab-orders.complete');
 
         // Medical Records
+
+        // Invoices
+        Route::get('invoices', [\App\Http\Controllers\Backend\Dashboards\Clinic\InvoiceController::class, 'index'])->name('invoices.index');
+        Route::get('invoices/data', [\App\Http\Controllers\Backend\Dashboards\Clinic\InvoiceController::class, 'data'])->name('invoices.data');
+        Route::get('invoices/{id}', [\App\Http\Controllers\Backend\Dashboards\Clinic\InvoiceController::class, 'show'])->name('invoices.show');
+        Route::post('invoices/{id}/header', [\App\Http\Controllers\Backend\Dashboards\Clinic\InvoiceController::class, 'updateHeader'])->name('invoices.update-header');
+        Route::post('invoices/{id}/items', [\App\Http\Controllers\Backend\Dashboards\Clinic\InvoiceController::class, 'addItem'])->name('invoices.items.add');
+        Route::post('invoices/{id}/items/{itemId}', [\App\Http\Controllers\Backend\Dashboards\Clinic\InvoiceController::class, 'updateItem'])->name('invoices.items.update');
+        Route::delete('invoices/{id}/items/{itemId}', [\App\Http\Controllers\Backend\Dashboards\Clinic\InvoiceController::class, 'deleteItem'])->name('invoices.items.delete');
+        Route::post('invoices/{id}/mark-paid', [\App\Http\Controllers\Backend\Dashboards\Clinic\InvoiceController::class, 'markPaid'])->name('invoices.mark-paid');
         Route::prefix('medical-records')->group(function () {
             Route::get('/data', [\App\Http\Controllers\Backend\Dashboards\Clinic\MedicalRecordController::class, 'data'])->name('medical-records.data');
             Route::get('/', [\App\Http\Controllers\Backend\Dashboards\Clinic\MedicalRecordController::class, 'index'])->name('medical-records.index');
