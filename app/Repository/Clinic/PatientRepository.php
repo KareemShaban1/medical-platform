@@ -127,6 +127,35 @@ class PatientRepository implements PatientRepositoryInterface
             ->findOrFail($id);
     }
 
+    public function edit($request, $id)
+    {
+        $clinicUser = auth('clinic')->user();
+
+        $patient = Patient::with(['user', 'doctors'])
+            ->forClinic($clinicUser->clinic_id)
+            ->findOrFail($id);
+
+        $assignedDoctorIds = $patient->doctors->pluck('id')->toArray();
+
+        if ($request->ajax()) {
+            return response()->json([
+                'id'     => $patient->id,
+                'name'   => $patient->user->name ?? null,
+                'phone'  => $patient->user->phone ?? null,
+                'email'  => $patient->user->email ?? null,
+                'doctors'=> $patient->doctors->map(function ($doctor) {
+                    return [
+                        'id'   => $doctor->id,
+                        'name' => $doctor->name,
+                    ];
+                }),
+                'assigned_doctor_ids' => $assignedDoctorIds,
+            ]);
+        }
+
+        return $patient;
+    }
+
     public function update($request, $id)
     {
         return DB::transaction(function () use ($request, $id) {

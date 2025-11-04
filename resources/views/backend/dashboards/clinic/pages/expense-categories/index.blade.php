@@ -267,7 +267,7 @@ $('#expenseCategoriesForm').on('submit', function(e) {
 });
 
 // Edit
-function editCategory(id) {
+function editExpenseCategory(id) {
 	$.get('{{ route("clinic.expense-categories.index") }}/' + id, function(data) {
 		$('#expenseCategoriesId').val(data.id);
 		$('#name').val(data.name);
@@ -328,7 +328,8 @@ $(document).on('change', '.toggle-boolean', function(e) {
 	let field = $(this).data('field');
 	let value = $(this).is(':checked') ? 1 : 0;
 
-	let url = '{{ route("clinic.expense-categories.update-status", ":id") }}'.replace(':id', id);
+	let url = '{{ route("clinic.expense-categories.update-status", ":id") }}'.replace(':id',
+		id);
 
 	$.ajax({
 		url: url,

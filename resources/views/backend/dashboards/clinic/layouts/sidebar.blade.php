@@ -36,172 +36,21 @@
 
   			<!-- <li class="side-nav-title side-nav-item">Navigation</li> -->
 
-			<li class="side-nav-item">
-				<a href="{{ route('clinic.dashboard') }}" class="side-nav-link">
-					<i class="uil-home-alt"></i>
-					<span>
-						{{__('Clinic Dashboard')}}
-					</span>
-				</a>
-			</li>
-
-			<!-- Clinic Info -->
-			<li class="side-nav-item">
-				<a href="{{ route('clinic.settings.clinic-info') }}" class="side-nav-link">
-					<i class="uil-cog"></i>
-					<span> {{ __('Clinic Info') }} </span>
-				</a>
-			</li>
-
-
-  			<!-- Users Management -->
   			<li class="side-nav-item">
-  				<a data-bs-toggle="collapse" href="#sidebarUsers" aria-expanded="false"
-  					aria-controls="sidebarUsers" class="side-nav-link">
-  					<i class="uil-users-alt"></i>
-  					<span> {{__('Users')}} </span>
-  					<span class="menu-arrow"></span>
+  				<a href="{{ route('clinic.dashboard') }}" class="side-nav-link">
+  					<i class="uil-home-alt"></i>
+  					<span>
+  						{{__('Clinic Dashboard')}}
+  					</span>
   				</a>
-  				<div class="collapse" id="sidebarUsers">
-  					<ul class="side-nav-second-level">
-  						<li>
-  							<a href="{{ route('clinic.users.index') }}">
-  								<span> {{__('Users')}} </span>
-  							</a>
-  						</li>
-  						<li>
-  							<a href="{{ route('clinic.users.trash') }}">
-  								<span> {{__('Trash Users')}} </span>
-  							</a>
-  						</li>
-  					</ul>
-  				</div>
   			</li>
 
-  			<!-- Salary Contracts Management -->
+  			<!-- Clinic Info -->
   			<li class="side-nav-item">
-  				<a data-bs-toggle="collapse" href="#sidebarSalaryContracts"
-  					aria-expanded="false" aria-controls="sidebarSalaryContracts"
-  					class="side-nav-link">
-  					<i class="uil-file-medical"></i>
-  					<span> {{__('Salary Contracts')}} </span>
-  					<span class="menu-arrow"></span>
+  				<a href="{{ route('clinic.settings.clinic-info') }}" class="side-nav-link">
+  					<i class="uil-cog"></i>
+  					<span> {{ __('Clinic Info') }} </span>
   				</a>
-  				<div class="collapse" id="sidebarSalaryContracts">
-  					<ul class="side-nav-second-level">
-  						<li>
-  							<a
-  								href="{{ route('clinic.salary-contracts.index') }}">
-  								<span> {{__('Salary Contracts')}}
-  								</span>
-  							</a>
-  						</li>
-
-  						<li>
-  							<a
-  								href="{{ route('clinic.salary-contracts.trash') }}">
-  								<span> {{__('Trash Salary Contracts')}}
-  								</span>
-  							</a>
-  						</li>
-
-  						<!-- payslip -->
-  						<li>
-  							<a href="{{ route('clinic.payslips.index') }}">
-  								<span> {{__('Payslip')}}
-  								</span>
-  							</a>
-  						</li>
-  					</ul>
-  				</div>
-  			</li>
-
-
-  			<!-- Doctor Profiles Management -->
-  			<li class="side-nav-item">
-  				<a data-bs-toggle="collapse" href="#sidebarDoctorProfiles"
-  					aria-expanded="false" aria-controls="sidebarDoctorProfiles"
-  					class="side-nav-link">
-  					<i class="uil-user-circle"></i>
-  					<span> {{__('Doctor Profiles')}} </span>
-  					<span class="menu-arrow"></span>
-  				</a>
-  				<div class="collapse" id="sidebarDoctorProfiles">
-  					<ul class="side-nav-second-level">
-  						<li>
-  							<a
-  								href="{{ route('clinic.doctor-profiles.index') }}">
-  								<span> {{__('Doctor Profiles')}}
-  								</span>
-  							</a>
-  						</li>
-  					</ul>
-  				</div>
-  			</li>
-  		<!-- Working Hours -->
-  		<li class="side-nav-item">
-  			<a href="{{ route('clinic.working-hours.index') }}" class="side-nav-link">
-  				<i class="uil-schedule"></i>
-  				<span> {{ __('Working Hours') }} </span>
-  			</a>
-  		</li>
-
-  		<!-- Attendance -->
-  		<li class="side-nav-item">
-  			<a href="{{ route('clinic.attendance.index') }}" class="side-nav-link">
-  				<i class="uil-clock-eight"></i>
-  				<span> {{ __('Attendance') }} </span>
-  			</a>
-  		</li>
-
-		<!-- Appointments Management -->
-		<li class="side-nav-item">
-			<a data-bs-toggle="collapse" href="#sidebarAppointments" aria-expanded="false"
-				aria-controls="sidebarAppointments" class="side-nav-link">
-				<i class="uil-calendar-alt"></i>
-				<span> {{__('Appointments')}} </span>
-				<span class="menu-arrow"></span>
-			</a>
-			<div class="collapse" id="sidebarAppointments">
-				<ul class="side-nav-second-level">
-					<li>
-						<a href="{{ route('clinic.appointments.index') }}">
-							<span> {{__('All Appointments')}} </span>
-						</a>
-					</li>
-                    <li>
-						<a href="{{ route('clinic.availability-overrides.index') }}">
-							<span> {{__('Availability Overrides')}} </span>
-						</a>
-					</li>
-					<li>
-						<a href="{{ route('clinic.daily-periods.index') }}">
-							<span> {{__('Daily Periods')}} </span>
-						</a>
-					</li>
-
-				</ul>
-			</div>
-		</li>
-
-  			<!-- Patients Management -->
-  			<li class="side-nav-item">
-  				<a data-bs-toggle="collapse" href="#sidebarPatients" aria-expanded="false"
-  					aria-controls="sidebarPatients" class="side-nav-link">
-  					<i class="uil-user-square"></i>
-  					<span> {{__('Patients')}} </span>
-  					<span class="menu-arrow"></span>
-  				</a>
-  				<div class="collapse" id="sidebarPatients">
-  					<ul class="side-nav-second-level">
-  						<li>
-  							<a href="{{ route('clinic.patients.index') }}">
-  								<span> {{__('All Patients')}} </span>
-  							</a>
-  						</li>
-
-  					</ul>
-  				</div>
   			</li>
 
 
@@ -230,14 +79,62 @@
   			</li>
 
 
-  			<!-- Clinic Inventory Management -->
+  			<!-- HR Management -->
+  			<li class="side-nav-item">
+  				<a data-bs-toggle="collapse" href="#sidebarUsers" aria-expanded="false"
+  					aria-controls="sidebarUsers" class="side-nav-link">
+  					<i class="uil-users-alt"></i>
+  					<span> {{__('HR Management')}} </span>
+  					<span class="menu-arrow"></span>
+  				</a>
+  				<div class="collapse" id="sidebarUsers">
+  					<ul class="side-nav-second-level">
+  						<li>
+  							<a href="{{ route('clinic.users.index') }}">
+  								<span> {{__('Users')}} </span>
+  							</a>
+  						</li>
+  						<li>
+  							<a
+  								href="{{ route('clinic.doctor-profiles.index') }}">
+  								<span> {{__('Doctor Profiles')}}
+  								</span>
+  							</a>
+  						</li>
+  						<li>
+  							<a
+  								href="{{ route('clinic.salary-contracts.index') }}">
+  								<span> {{__('Salary Contracts')}}
+  								</span>
+  							</a>
+  						</li>
+  						<li>
+  							<a href="{{ route('clinic.payslips.index') }}">
+  								<span> {{__('Payslip')}}
+  								</span>
+  							</a>
+  						</li>
+
+  						<a href="{{ route('clinic.working-hours.index') }}"
+  							class="side-nav-link">
+  							<i class="uil-schedule"></i>
+  							<span> {{ __('Working Hours') }} </span>
+  						</a>
+
+
+  					</ul>
+  				</div>
+  			</li>
+
+
+  			<!-- Clinic Management -->
   			<li class="side-nav-item">
   				<a data-bs-toggle="collapse" href="#sidebarClinicInventory"
   					aria-expanded="false" aria-controls="sidebarClinicInventory"
   					class="side-nav-link">
   					<!-- inventory icon -->
   					<i class="uil-file-medical"></i>
-  					<span> {{__('Clinic Inventory')}} </span>
+  					<span> {{__('Clinic Management')}} </span>
   					<span class=" menu-arrow"></span>
   				</a>
   				<div class="collapse" id="sidebarClinicInventory">
@@ -249,115 +146,120 @@
   								</span>
   							</a>
   						</li>
-  						<li>
-  							<a
-  								href="{{ route('clinic.clinic-inventories.trash') }}">
-  								<span> {{__('Trash Clinic Inventory')}}
-  								</span>
-  							</a>
-  						</li>
-  					</ul>
-  				</div>
-  			</li>
-  			</li>
 
-  			<!-- Rental Space Management -->
-  			<li class="side-nav-item">
-  				<a data-bs-toggle="collapse" href="#sidebarRentalSpace" aria-expanded="false"
-  					aria-controls="sidebarRentalSpace" class="side-nav-link">
-  					<i class="uil-users-alt"></i>
-  					<span> {{__('Rental Space')}} </span>
-  					<span class="menu-arrow"></span>
-  				</a>
-  				<div class="collapse" id="sidebarRentalSpace">
-  					<ul class="side-nav-second-level">
   						<li>
   							<a
   								href="{{ route('clinic.rental-spaces.index') }}">
   								<span> {{__('Rental Space')}} </span>
   							</a>
   						</li>
-  						<li>
-  							<a
-  								href="{{ route('clinic.rental-spaces.trash') }}">
-  								<span> {{__('Trash Rental Space')}}
-  								</span>
-  							</a>
-  						</li>
-  					</ul>
-  				</div>
-  			</li>
 
-  			<!-- Jobs Management -->
-  			<li class="side-nav-item">
-  				<a data-bs-toggle="collapse" href="#sidebarJobs" aria-expanded="false"
-  					aria-controls="sidebarJobs" class="side-nav-link">
-  					<i class="uil-briefcase"></i>
-  					<span> {{__('Jobs')}} </span>
-  					<span class="menu-arrow"></span>
-  				</a>
-  				<div class="collapse" id="sidebarJobs">
-  					<ul class="side-nav-second-level">
+  						<!-- jobs -->
   						<li>
   							<a href="{{ route('clinic.jobs.index') }}">
   								<span> {{__('Jobs')}} </span>
   							</a>
   						</li>
-  						<li>
-  							<a href="{{ route('clinic.jobs.trash') }}">
-  								<span> {{__('Trash Jobs')}} </span>
-  							</a>
-  						</li>
-  					</ul>
-  				</div>
-  			</li>
-            	<!-- Lab Orders -->
-  			<li class="side-nav-item">
-                <a data-bs-toggle="collapse" href="#sidebarLabOrders" aria-expanded="false" aria-controls="sidebarLabOrders" class="side-nav-link">
-                    <i class="uil-flask"></i>
-                    <span> {{__('Lab Orders')}} </span>
-                    <span class="menu-arrow"></span>
-                </a>
-                <div class="collapse" id="sidebarLabOrders">
-                    <ul class="side-nav-second-level">
-                        <li><a href="{{ route('clinic.lab-orders.index') }}"><span> {{__('All Lab Orders')}} </span></a></li>
-                        <li><a href="{{ route('clinic.lab-orders.create') }}"><span> {{__('Create Lab Order')}} </span></a></li>
-                    </ul>
-                </div>
-            </li>
 
-            <!-- Medical Records -->
-            <li class="side-nav-item">
-                <a href="{{ route('clinic.medical-records.index') }}" class="side-nav-link">
-                    <i class="uil-notes"></i>
-                    <span> {{ __('Medical Records') }} </span>
-                </a>
-            </li>
-
-            <!-- Requests Management (Tickets System) -->
-  			<li class="side-nav-item">
-  				<a data-bs-toggle="collapse" href="#sidebarRequests" aria-expanded="false"
-  					aria-controls="sidebarRequests" class="side-nav-link">
-  					<i class="uil-clipboard-notes"></i>
-  					<span> {{__('Purchase Requests')}} </span>
-  					<span class="menu-arrow"></span>
-  				</a>
-  				<div class="collapse" id="sidebarRequests">
-  					<ul class="side-nav-second-level">
   						<li>
   							<a href="{{ route('clinic.requests.index') }}">
   								<span> {{__('My Requests')}} </span>
   							</a>
   						</li>
-  						<li>
-  							<a href="{{ route('clinic.requests.create') }}">
-  								<span> {{__('Create Request')}}
-  								</span>
-  							</a>
-  						</li>
   					</ul>
   				</div>
   			</li>
+
+
+
+  			<!-- Appointments Management -->
+  			<li class="side-nav-item">
+  				<a data-bs-toggle="collapse" href="#sidebarAppointments" aria-expanded="false"
+  					aria-controls="sidebarAppointments" class="side-nav-link">
+  					<i class="uil-calendar-alt"></i>
+  					<span> {{__('Appointments')}} </span>
+  					<span class="menu-arrow"></span>
+  				</a>
+  				<div class="collapse" id="sidebarAppointments">
+  					<ul class="side-nav-second-level">
+  						<li>
+  							<a
+  								href="{{ route('clinic.appointments.index') }}">
+  								<span> {{__('All Appointments')}}
+  								</span>
+  							</a>
+  						</li>
+  						<li>
+  							<a
+  								href="{{ route('clinic.availability-overrides.index') }}">
+  								<span> {{__('Availability Overrides')}}
+  								</span>
+  							</a>
+  						</li>
+  						<li>
+  							<a
+  								href="{{ route('clinic.daily-periods.index') }}">
+  								<span> {{__('Daily Periods')}} </span>
+  							</a>
+  						</li>
+
+  					</ul>
+  				</div>
+  			</li>
+
+  			<!-- Patients Management -->
+  			<li class="side-nav-item">
+  				<a data-bs-toggle="collapse" href="#sidebarPatients" aria-expanded="false"
+  					aria-controls="sidebarPatients" class="side-nav-link">
+  					<i class="uil-user-square"></i>
+  					<span> {{__('Patients')}} </span>
+  					<span class="menu-arrow"></span>
+  				</a>
+  				<div class="collapse" id="sidebarPatients">
+  					<ul class="side-nav-second-level">
+  						<li>
+  							<a href="{{ route('clinic.patients.index') }}">
+  								<span> {{__('All Patients')}} </span>
+  							</a>
+  						</li>
+
+  					</ul>
+  				</div>
+  			</li>
+
+
+
+
+
+
+  			<!-- Lab Orders -->
+  			<li class="side-nav-item">
+  				<a data-bs-toggle="collapse" href="#sidebarLabOrders" aria-expanded="false"
+  					aria-controls="sidebarLabOrders" class="side-nav-link">
+  					<i class="uil-flask"></i>
+  					<span> {{__('Lab Orders')}} </span>
+  					<span class="menu-arrow"></span>
+  				</a>
+  				<div class="collapse" id="sidebarLabOrders">
+  					<ul class="side-nav-second-level">
+  						<li><a href="{{ route('clinic.lab-orders.index') }}"><span>
+  									{{__('All Lab Orders')}}
+  								</span></a></li>
+  						<li><a href="{{ route('clinic.lab-orders.create') }}"><span>
+  									{{__('Create Lab Order')}}
+  								</span></a></li>
+  					</ul>
+  				</div>
+  			</li>
+
+  			<!-- Medical Records -->
+  			<li class="side-nav-item">
+  				<a href="{{ route('clinic.medical-records.index') }}" class="side-nav-link">
+  					<i class="uil-notes"></i>
+  					<span> {{ __('Medical Records') }} </span>
+  				</a>
+  			</li>
+
 
   			<!-- Expense Categories Management -->
   			<li class="side-nav-item">

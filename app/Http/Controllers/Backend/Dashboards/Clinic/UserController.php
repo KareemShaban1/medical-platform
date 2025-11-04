@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Backend\Dashboards\Clinic;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\User\StoreUserRequest;
-use App\Http\Requests\User\UpdateUserRequest;
+use App\Http\Requests\User\StoreClinicUserRequest;
+use App\Http\Requests\User\UpdateClinicUserRequest;
 use App\Interfaces\Clinic\UserRepositoryInterface;
 use App\Models\ClinicUser;
 use App\Models\Role;
@@ -28,7 +28,7 @@ class UserController extends Controller
         return $this->userRepo->data();
     }
 
-    public function store(StoreUserRequest $request)
+    public function store(StoreClinicUserRequest $request)
     {
 
         $this->userRepo->store($request->validated());
@@ -43,7 +43,7 @@ class UserController extends Controller
         : view('backend.dashboards.clinic.pages.users.show', compact('user'));
     }
 
-    public function update(UpdateUserRequest $request, $id)
+    public function update(UpdateClinicUserRequest $request, $id)
     {
         $this->userRepo->update($request->validated(), $id);
         return $this->jsonResponse('success', __('User updated successfully'));

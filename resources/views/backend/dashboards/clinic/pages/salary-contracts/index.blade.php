@@ -11,6 +11,14 @@
 						<i class="mdi mdi-plus"></i>
 						{{ __('Add Salary Contract') }}
 					</a>
+
+					<!-- Trash -->
+					<a href="{{ route('clinic.salary-contracts.trash') }}"
+						class="btn btn-danger">
+						<i class="mdi mdi-trash-can"></i>
+						{{ __('Trash') }}
+					</a>
+
 				</div>
 				<h4 class="page-title">{{ __('Salary Contracts') }}</h4>
 			</div>
@@ -24,7 +32,7 @@
 					<table id="salary-contract-table"
 						class="table dt-responsive nowrap w-100">
 						<thead>
-							
+
 							<tr>
 								<th>{{ __('ID') }}</th>
 								<th>{{ __('User') }}</th>
@@ -68,7 +76,7 @@ let table = $('#salary-contract-table').DataTable({
 			data: 'effective_to',
 			name: 'effective_to'
 		},
-		
+
 		{
 			data: 'action',
 			name: 'action',
