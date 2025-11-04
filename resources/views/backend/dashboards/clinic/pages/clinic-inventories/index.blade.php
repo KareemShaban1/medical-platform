@@ -11,6 +11,12 @@
 						<i class="mdi mdi-plus"></i>
 						{{ __('Add Clinic Inventory') }}
 					</a>
+					<!-- Trash -->
+					<a href="{{ route('clinic.clinic-inventories.trash') }}"
+						class="btn btn-danger">
+						<i class="mdi mdi-trash-can"></i>
+						{{ __('Trash') }}
+					</a>
 				</div>
 				<h4 class="page-title">{{ __('Clinic Inventories') }}</h4>
 			</div>
@@ -53,7 +59,9 @@ let table = $('#clinic-inventory-table').DataTable({
 	serverSide: true,
 	ajax: {
 		url: '{{ route("clinic.clinic-inventories.data") }}',
-		data: function(d){ d.low_stock = lowOnly ? 1 : 0; }
+		data: function(d) {
+			d.low_stock = lowOnly ? 1 : 0;
+		}
 	},
 	columns: [{
 			data: 'id',
@@ -115,9 +123,13 @@ let table = $('#clinic-inventory-table').DataTable({
 			}
 		},
 		{
-			text: '{{ __('Low Stock Only') }}',
+			text: '{{ __('
+			Low Stock Only ') }}',
 			className: 'btn btn-danger',
-			action: function(){ lowOnly = !lowOnly; table.ajax.reload(); }
+			action: function() {
+				lowOnly = !lowOnly;
+				table.ajax.reload();
+			}
 		},
 	],
 	drawCallback: function() {

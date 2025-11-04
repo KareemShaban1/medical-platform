@@ -8,7 +8,7 @@
 @include('frontend.pages.home.partials.hero')
 
 
-<section class="relative z-10 overflow-hidden bg-primary-gradient py-16 px-8">
+<section class="relative overflow-hidden bg-primary-gradient py-16 px-8">
 	<div class="container">
 		<div class="-mx-4 flex flex-wrap items-center">
 			<div class="w-full px-4 lg:w-1/2">

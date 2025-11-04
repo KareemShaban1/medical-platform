@@ -119,6 +119,12 @@ class PatientController extends Controller
         ));
     }
 
+    public function edit(Request $request, $id)
+    {
+        $patient = $this->patientRepo->edit($request, $id);
+        return $patient;
+    }
+
     public function update(Request $request, $id)
     {
         $clinicUser = auth('clinic')->user();

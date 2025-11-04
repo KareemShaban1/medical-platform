@@ -136,7 +136,7 @@ class ExpenseCategoryRepository implements ExpenseCategoryRepositoryInterface
         return <<<HTML
         <div class="d-flex gap-2">
            <a href="{$showUrl}" class="btn btn-sm btn-info"><i class="fa fa-eye"></i></a>
-           <a href="{$editUrl}" class="btn btn-sm btn-warning text-white"><i class="fa fa-edit"></i></a>
+           <button onclick="editExpenseCategory({$item->id})" class="btn btn-sm btn-warning text-white"><i class="fa fa-edit"></i></button>
            <button onclick="deleteExpenseCategory({$item->id})" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>
         </div>
         HTML;

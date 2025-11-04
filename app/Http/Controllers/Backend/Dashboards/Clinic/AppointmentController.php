@@ -45,7 +45,7 @@ class AppointmentController extends Controller
 
         $doctors = $doctorsQuery->get();
 
-        $patients = Patient::all();
+        $patients = Patient::forClinic($clinicId)->get();
         $visitTypes = Appointment::getVisitTypeOptions();
 
         return view('backend.dashboards.clinic.pages.appointments.index', compact('doctors', 'patients', 'visitTypes'));
