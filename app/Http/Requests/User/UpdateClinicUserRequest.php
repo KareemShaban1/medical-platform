@@ -5,7 +5,7 @@ namespace App\Http\Requests\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class StoreUserRequest extends FormRequest
+class UpdateClinicUserRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,15 +25,24 @@ class StoreUserRequest extends FormRequest
         $guard = $this->route()->getName();
         $guard = strpos($guard, 'clinic.') === 0 ? 'clinic' : 'supplier';
         $table = $guard === 'clinic' ? 'clinic_users' : 'supplier_users';
+        $userId = $this->route('id');
 
         return [
             'name'              => ['required', 'string', 'max:255'],
             'position_title'    => [$guard === 'clinic' ? 'required' : 'nullable', 'string', 'max:255'],
-            'email'             => ['required', 'email', 'max:255', Rule::unique($table, 'email')],
-            'phone'             => ['required', 'string', 'max:20'],
-            'password'          => ['required', 'string', 'min:8', 'confirmed'],
+            'email'             => ['required', 'email', 'max:255', Rule::unique($table, 'email')->ignore($userId)],
+            'phone'             => ['required', 'string', 'max:20', 'phone:EG'],
+            'password'          => ['nullable', 'string', 'min:8', 'confirmed'],
             'role'              => ['required', 'exists:roles,name'],
             'status'            => ['nullable', 'boolean'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'phone.phone' => 'The phone number must be a valid Egyptian phone number.',
+
         ];
     }
 

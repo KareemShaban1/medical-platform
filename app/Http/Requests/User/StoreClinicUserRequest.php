@@ -5,7 +5,7 @@ namespace App\Http\Requests\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class UpdateUserRequest extends FormRequest
+class StoreClinicUserRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,16 +25,15 @@ class UpdateUserRequest extends FormRequest
         $guard = $this->route()->getName();
         $guard = strpos($guard, 'clinic.') === 0 ? 'clinic' : 'supplier';
         $table = $guard === 'clinic' ? 'clinic_users' : 'supplier_users';
-        $userId = $this->route('id');
 
         return [
-            'name'              => ['required', 'string', 'max:255'],
-            'position_title'    => [$guard === 'clinic' ? 'required' : 'nullable', 'string', 'max:255'],
-            'email'             => ['required', 'email', 'max:255', Rule::unique($table, 'email')->ignore($userId)],
-            'phone'             => ['required', 'string', 'max:20'],
-            'password'          => ['nullable', 'string', 'min:8', 'confirmed'],
-            'role'              => ['required', 'exists:roles,name'],
-            'status'            => ['nullable', 'boolean'],
+            'name' => ['required', 'string', 'max:255'],
+            'position_title' => [$guard === 'clinic' ? 'required' : 'nullable', 'string', 'max:255'],
+            'email' => ['required', 'email:rfc,dns,spoof', 'max:255', Rule::unique('users', 'email')],
+            'phone' => ['required', 'string', 'max:20',  'phone:EG'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'role' => ['required', 'exists:roles,name'],
+            'status' => ['nullable', 'boolean'],
         ];
     }
 

@@ -28,10 +28,10 @@ class SalaryContractController extends Controller
         return $this->salaryContractRepo->data();
     }
 
-    // create 
+    // create
     public function create()
     {
-        $clinicUsers = ClinicUser::all();
+        $clinicUsers = ClinicUser::forClinic()->get();
         return view('backend.dashboards.clinic.pages.salary-contracts.create', compact('clinicUsers'));
     }
 
@@ -51,7 +51,7 @@ class SalaryContractController extends Controller
 
     public function edit($id){
         $salaryContract = $this->salaryContractRepo->show($id);
-        $clinicUsers = ClinicUser::all();
+        $clinicUsers = ClinicUser::forClinic()->get();
         return view('backend.dashboards.clinic.pages.salary-contracts.edit', compact('salaryContract', 'clinicUsers'));
 
     }
@@ -75,7 +75,7 @@ class SalaryContractController extends Controller
     {
         return $this->salaryContractRepo->trashData();
     }
-    
+
 
     public function restore($id)
     {

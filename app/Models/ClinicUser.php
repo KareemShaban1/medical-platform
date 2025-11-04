@@ -42,6 +42,11 @@ class ClinicUser extends Authenticatable
         return $query->where('status', true);
     }
 
+    public function scopeForClinic($query)
+    {
+        return $query->where('clinic_id', auth('clinic')->user()->clinic_id);
+    }
+
     // ------- relations -------
     public function clinic()
     {

@@ -42,8 +42,8 @@ class PatientController extends Controller
 
         $rules = [
             'name' => 'required|string|max:255',
-            'phone' => 'required|string|max:20|unique:patients,phone',
-            'email' => 'required|email|max:255',
+            'phone' => 'required|string|max:20|phone:EG|unique:patients,phone',
+            'email' => 'required|email:rfc,dns,spoof|max:255',
             'password' => 'nullable|string|min:8',
         ];
 
@@ -119,14 +119,20 @@ class PatientController extends Controller
         ));
     }
 
+    public function edit(Request $request, $id)
+    {
+        $patient = $this->patientRepo->edit($request, $id);
+        return $patient;
+    }
+
     public function update(Request $request, $id)
     {
         $clinicUser = auth('clinic')->user();
 
         $rules = [
             'name' => 'required|string|max:255',
-            'phone' => 'required|string|max:20|unique:patients,phone,' . $id,
-            'email' => 'required|email|max:255',
+            'phone' => 'required|string|max:20|phone:EG|unique:patients,phone,' . $id,
+            'email' => 'required|email:rfc,dns,spoof|max:255',
             'password' => 'nullable|string|min:8',
         ];
 
