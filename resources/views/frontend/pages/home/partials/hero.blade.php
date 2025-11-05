@@ -29,12 +29,13 @@
 				<p class="text-lg font-xl text-gray-500 mb-3">
 					{{ __('contact us on social media') }}</p>
 				<div class="flex space-x-4">
+
 					<a href="#"
 						class="text-[var(--primary-color)] hover:text-black transition text-2xl"><i
 							class="fab fa-facebook"></i></a>
 					<a href="#"
 						class="text-[var(--primary-color)] hover:text-black transition text-2xl"><i
-							class="fab fa-twitter"></i></a>
+							class="fab fa-x"></i></a>
 					<a href="#"
 						class="text-[var(--primary-color)] hover:text-black transition text-2xl"><i
 							class="fab fa-linkedin"></i></a>
