@@ -41,12 +41,12 @@ $(function(){
         columns: [
             { data: 'id', name: 'id' },
             { data: 'appointment_date', name: 'appointment_date', orderable: false, searchable: false },
-            { data: 'patient_name', name: 'patient.name', orderable: false },
+            { data: 'patient_name', name: 'patient.user.name', orderable: false },
             { data: 'doctor_name', name: 'doctor.name', orderable: false },
             { data: 'visit_type_label', name: 'visit_type', orderable: false },
             { data: 'shared_badge', name: 'is_shared_with_patient', orderable: false, searchable: false },
             { data: 'actions', name: 'actions', orderable: false, searchable: false },
-        ],
+    ],
         order: [[0,'desc']],
         language: languages[language],
         drawCallback: function(){

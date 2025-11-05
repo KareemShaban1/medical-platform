@@ -67,7 +67,7 @@ $(function(){
         },
         columns: [
             { data: 'id' },
-            { data: 'patient', name: 'patient.name' },
+            { data: 'patient', name: 'patient.user.name' },
             { data: 'test_name' },
             { data: 'status_badge', orderable:false, searchable:false },
             { data: 'doctor', name: 'creator.name' },

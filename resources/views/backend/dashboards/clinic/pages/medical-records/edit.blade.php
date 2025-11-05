@@ -96,7 +96,13 @@
                         <dt class="col-sm-5">{{ __('Date') }}</dt>
                         <dd class="col-sm-7">{{ optional($appointment->period?->date)->format('Y-m-d') ?: 'N/A' }}</dd>
                         <dt class="col-sm-5">{{ __('Visit Type') }}</dt>
-                        <dd class="col-sm-7">{{ [0=>__('Initial'),1=>__('Follow-up'),2=>__('Consultation')][$record->visit_type] ?? 'N/A' }}</dd>
+                        <dd class="col-sm-7">
+                            {{ $record->visit_type instanceof \App\Enums\VisitType ? $record->visit_type->label() : (
+                                [0=>__('Initial'),1=>__('Follow-up'),2=>__('Consultation')][$record->visit_type ?? 0] ?? 'N/A'
+                            ) }}
+                        </dd>
+
+
                     </dl>
                 </div>
             </div>
