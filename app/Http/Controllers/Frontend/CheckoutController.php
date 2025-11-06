@@ -315,7 +315,7 @@ class CheckoutController extends Controller
             ]);
 
             if (! $orderNumber) {
-                return redirect()->route('checkout.index')
+                return redirect()->route('checkout.failed')
                     ->with('error', 'Order not found');
             }
 
@@ -326,7 +326,7 @@ class CheckoutController extends Controller
             ]);
 
             if (! $order) {
-                return redirect()->route('checkout.index')
+                return redirect()->route('checkout.failed')
                     ->with('error', 'Order not found');
             }
 
@@ -426,7 +426,7 @@ class CheckoutController extends Controller
 
                 session()->forget('payment_order_id');
 
-                return redirect()->route('checkout.index')
+                return redirect()->route('checkout.failed')
                     ->with('error', 'Payment failed. Please try again.');
             }
 
@@ -447,7 +447,7 @@ class CheckoutController extends Controller
                 'payment_status' => 'failed',
             ]);
 
-            return redirect()->route('checkout.index')
+            return redirect()->route('checkout.failed')
                 ->with('error', $paymentResponse->message ?? 'Payment failed');
 
         } catch (\Exception $e) {
@@ -456,7 +456,7 @@ class CheckoutController extends Controller
                 'request' => $request->all(),
             ]);
 
-            return redirect()->route('checkout.index')
+            return redirect()->route('checkout.failed')
                 ->with('error', 'Payment verification failed');
         }
     }

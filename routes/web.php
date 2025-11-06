@@ -89,6 +89,7 @@ Route::group([
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/checkout/place-order', [CheckoutController::class, 'placeOrder'])->name('checkout.place-order');
     Route::get('/checkout/success/{order}', [CheckoutController::class, 'success'])->name('checkout.success');
+    Route::get('/checkout/failed', [CheckoutController::class, 'failed'])->name('checkout.failed');
 
     // Profile routes
     Route::get('/profile/orders', [ProfileController::class, 'orders'])->name('profile.orders');
