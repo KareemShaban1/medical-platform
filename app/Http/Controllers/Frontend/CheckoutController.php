@@ -296,6 +296,14 @@ class CheckoutController extends Controller
     }
 
     /**
+     * Display order failed page.
+     */
+    public function failed()
+    {
+        return view('frontend.pages.checkout.failed');
+    }
+
+    /**
      * Handle payment gateway return (user redirect after payment)
      */
     public function paymentReturn(Request $request, string $gateway)
