@@ -35,19 +35,23 @@ $(document).ready(function() {
 
 	// Handle Laravel session messages
 	@if(session('success'))
-	toastr.success('{{ session('success') }}');
+	toastr.success('{{ session('
+		success ') }}');
 	@endif
 
 	@if(session('error'))
-	toastr.error('{{ session('error') }}');
+	toastr.error('{{ session('
+		error ') }}');
 	@endif
 
 	@if(session('warning'))
-	toastr.warning('{{ session('warning') }}');
+	toastr.warning('{{ session('
+		warning ') }}');
 	@endif
 
 	@if(session('info'))
-	toastr.info('{{ session('info') }}');
+	toastr.info('{{ session('
+		info ') }}');
 	@endif
 
 	// Handle validation errors
@@ -131,17 +135,17 @@ document.addEventListener('DOMContentLoaded', function() {
 					`/storage/${item.product_image}` :
 					'';
 				itemsHTML += `
-                    <li class="px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-600">
+                    <li class="px-4 py-3 hover:bg-gray-50">
                         <div class="flex items-center gap-3">
                             <div class="w-12 h-12 flex-shrink-0">
                                 ${imageUrl ? `<img src="${imageUrl}" alt="${item.product_name}" class="w-full h-full object-cover rounded">` :
-                                `<div class="w-full h-full bg-gray-200 dark:bg-gray-700 rounded"></div>`}
+                                `<div class="w-full h-full bg-gray-200 rounded"></div>`}
                             </div>
                             <div class="flex-grow min-w-0">
-                                <p class="text-sm font-medium text-gray-900 dark:text-white truncate">${item.product_name}</p>
-                                <p class="text-xs text-gray-500 dark:text-gray-400">${item.quantity} × $${parseFloat(item.price).toFixed(2)}</p>
+                                <p class="text-sm font-medium text-black truncate">${item.product_name}</p>
+                                <p class="text-xs text-gray-500">${item.quantity} × $${parseFloat(item.price).toFixed(2)}</p>
                             </div>
-                            <div class="text-sm font-semibold text-gray-900 dark:text-white">
+                            <div class="text-sm font-semibold text-black">
                                 $${parseFloat(item.total).toFixed(2)}
                             </div>
                         </div>
@@ -157,37 +161,53 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-  // Select all dropdown toggle buttons
-  const dropdownButtons = document.querySelectorAll('[data-dropdown-toggle]');
+document.addEventListener('DOMContentLoaded', function() {
+	// Select all dropdown toggle buttons
+	const dropdownButtons = document.querySelectorAll('[data-dropdown-toggle]');
 
-  dropdownButtons.forEach(button => {
-    button.addEventListener('click', function (e) {
-      e.stopPropagation();
+	dropdownButtons.forEach(button => {
+		button.addEventListener('click', function(e) {
+			e.stopPropagation();
 
-      const dropdownId = this.getAttribute('data-dropdown-toggle');
-      const dropdown = document.getElementById(dropdownId);
+			const dropdownId = this
+				.getAttribute(
+					'data-dropdown-toggle'
+					);
+			const dropdown = document
+				.getElementById(
+					dropdownId
+					);
 
-      // Close all other dropdowns
-      document.querySelectorAll('[id$="Dropdown"]').forEach(el => {
-        if (el !== dropdown) {
-          el.classList.add('hidden');
-        }
-      });
+			// Close all other dropdowns
+			document.querySelectorAll(
+				'[id$="Dropdown"]'
+				).forEach(
+				el => {
+					if (el !==
+						dropdown) {
+						el.classList
+							.add(
+								'hidden');
+					}
+				});
 
-      // Toggle this dropdown
-      dropdown.classList.toggle('hidden');
-    });
-  });
+			// Toggle this dropdown
+			dropdown.classList.toggle(
+				'hidden');
+		});
+	});
 
-  // Close all dropdowns when clicking outside
-  document.addEventListener('click', function (e) {
-    if (!e.target.closest('[data-dropdown-toggle]') && !e.target.closest('[id$="Dropdown"]')) {
-      document.querySelectorAll('[id$="Dropdown"]').forEach(el => {
-        el.classList.add('hidden');
-      });
-    }
-  });
+	// Close all dropdowns when clicking outside
+	document.addEventListener('click', function(e) {
+		if (!e.target.closest('[data-dropdown-toggle]') && !e.target
+			.closest('[id$="Dropdown"]')) {
+			document.querySelectorAll('[id$="Dropdown"]')
+				.forEach(el => {
+					el.classList.add(
+						'hidden');
+				});
+		}
+	});
 });
 </script>
 
