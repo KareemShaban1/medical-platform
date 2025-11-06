@@ -22,6 +22,7 @@ use App\Models\ExpenseCategory;
 use App\Observers\ExpenseCategoryObserver;
 use App\Models\Expense;
 use App\Observers\ExpenseObserver;
+use App\PaymentGateways\PaymentGatewayManager;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -30,7 +31,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(PaymentGatewayManager::class, function ($app) {
+            return new PaymentGatewayManager();
+        });
     }
 
     /**

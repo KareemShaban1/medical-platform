@@ -8,7 +8,8 @@ class Order extends Model
 {
     protected $fillable = [
         'clinic_user_id', 'clinic_id', 'number', 'status', 'total',
-        'shipping', 'tax', 'discount', 'payment_method', 'payment_status'
+        'shipping', 'tax', 'discount', 'payment_method', 'payment_status',
+        'payment_gateway', 'transaction_id'
     ];
     
     public static function generateOrderNumber()

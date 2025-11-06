@@ -95,6 +95,10 @@ Route::group([
     Route::get('/profile/orders/{id}', [ProfileController::class, 'orderDetails'])->name('profile.order-details');
 });
 
+// Payment gateway callbacks (no auth required for webhooks and returns)
+Route::post('/payment/callback/{gateway}', [CheckoutController::class, 'paymentCallback'])->name('payment.callback');
+Route::get('/payment/return/{gateway}', [CheckoutController::class, 'paymentReturn'])->name('payment.return');
+
 // Patient Dashboard Routes
 Route::group([
     'prefix' => LaravelLocalization::setLocale() . '/user',
