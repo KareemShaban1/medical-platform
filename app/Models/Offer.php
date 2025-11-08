@@ -17,10 +17,17 @@ class Offer extends Model
         'request_id',
         'supplier_id',
         'price',
+        'shipping',
         'delivery_time',
         'terms',
         'discount',
+        'tax',
+        'total',
         'status',
+        'payment_method',
+        'payment_status',
+        'payment_gateway',
+        'transaction_id',
     ];
 
     protected $casts = [

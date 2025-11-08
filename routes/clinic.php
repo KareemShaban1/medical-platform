@@ -162,6 +162,9 @@ Route::group(
             Route::get('/data', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'data'])->name('requests.data');
             Route::get('/categories', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'getCategories'])->name('requests.categories');
             Route::post('/{id}/accept-offer', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'acceptOffer'])->name('requests.accept-offer');
+            Route::post('/{id}/process-offer-payment', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'processOfferPayment'])->name('requests.process-offer-payment');
+            Route::get('/{id}/payment-return/{gateway}', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'offerPaymentReturn'])->name('requests.payment-return');
+            Route::post('/{id}/payment-callback/{gateway}', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'offerPaymentCallback'])->name('requests.payment-callback');
             Route::post('/{id}/cancel', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'cancel'])->name('requests.cancel');
             Route::get('/', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'index'])->name('requests.index');
             Route::get('/create', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'create'])->name('requests.create');
