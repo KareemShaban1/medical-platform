@@ -4,8 +4,7 @@
 			<!-- <span
 			class="navbar-brand text-lg sm:text-xl lg:text-2xl font-semibold whitespace-nowrap">{{ __('Teb Plus') }}</span> -->
 
-			<img src="{{asset('frontend/images/logo.png')}}" w-16" style="    height: 70px;
-    width: 180px;">
+			<img src="{{asset('frontend/images/logo.png')}}" style="height: 70px; width: 180px;">
 		</a>
 		<div class=" flex items-center md:order-2 space-x-1 md:space-x-0 rtl:space-x-reverse">
 			<button type="button" data-dropdown-toggle="language-dropdown-menu"
@@ -165,7 +164,8 @@
 						@endif>{{ __('products') }}</a>
 				</li>
 				<li>
-					<a href="{{ route('rental-spaces') }}" @if (Route::is('rental-spaces'))
+					<a href="{{ route('rental-spaces') }}" 
+					    @if (Route::is('rental-spaces'))
 						class="block mx-2 rtl:mx-2 py-2 px-3 rounded-sm md:bg-transparent md:text-[var(--primary-color)] md:p-0 text-sm sm:text-base"
 						@else
 						class="block mx-2 rtl:mx-2 py-2 px-3 rounded-sm md:bg-transparent md:text-gray-700 md:p-0 text-sm sm:text-base"
@@ -276,7 +276,7 @@
 				<li>
 					<button id="patientLink" data-dropdown-toggle="patientDropdown"
 						class="flex items-center justify-between w-full mx-2 rtl:mx-2 py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:w-auto">
-						{{ __('Account') }}
+						{{ __('patient') }}
 						<svg class="w-2.5 h-2.5 ms-2.5" aria-hidden="true"
 							xmlns="http://www.w3.org/2000/svg" fill="none"
 							viewBox="0 0 10 6">
@@ -310,11 +310,11 @@
 							@else
 							<li>
 								<a href="{{ url('/patient/register') }}"
-									class="block px-4 py-2 hover:bg-gray-100">{{ __('register') }}</a>
+									class="block px-4 py-2 hover:bg-gray-100">{{ __('patient register') }}</a>
 							</li>
 							<li>
 								<a href="{{ url('/patient/login') }}"
-									class="block px-4 py-2 hover:bg-gray-100">{{ __('login') }}</a>
+									class="block px-4 py-2 hover:bg-gray-100">{{ __('patient login') }}</a>
 							</li>
 							@endauth
 						</ul>
