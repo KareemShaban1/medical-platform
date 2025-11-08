@@ -1,7 +1,7 @@
 <section class="py-16 bg-gray-50">
 	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-		<x-frontend.section-header title="Rental Spaces" description="Medical office spaces for rent"
-			button-text="View All Rental Spaces" button-url="#" button-icon="fas fa-building"
+    	<x-frontend.section-header title="Rental Spaces" description="Medical office spaces for rent"
+			button-text="View All Rental Spaces" button-url="{{ route('rental-spaces') }}" button-icon="fas fa-building"
 			button-color="bg-green-600 hover:bg-green-700" />
 		<div class="swiper rentalSwiper">
 			<div class="swiper-wrapper">
@@ -44,9 +44,10 @@
 
 
 							<div class="flex justify-between items-center">
-								<button
-									class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">View
-									Details</button>
+								<a href="{{ route('rental-spaces.show', $rentalSpace->id) }}"
+									class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">
+									{{ __('View Details') }}
+								</a>
 							</div>
 						</div>
 					</div>

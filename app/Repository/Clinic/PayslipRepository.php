@@ -25,7 +25,7 @@ class PayslipRepository implements PayslipRepositoryInterface
         $startOfMonth = $month . '-01';
         $endOfMonth = date('Y-m-t', strtotime($startOfMonth));
 
-        $clinicUsers = ClinicUser::with(['payslips' => function ($query) use ($startOfMonth, $endOfMonth) {
+        $clinicUsers = ClinicUser::forClinic()->with(['payslips' => function ($query) use ($startOfMonth, $endOfMonth) {
             $query->where(function ($q) use ($startOfMonth, $endOfMonth) {
                 // overlap between payslip period and selected month
                 $q->whereBetween('period_start', [$startOfMonth, $endOfMonth])
