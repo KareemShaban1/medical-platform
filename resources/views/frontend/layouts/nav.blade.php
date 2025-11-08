@@ -165,6 +165,13 @@
 						@endif>{{ __('products') }}</a>
 				</li>
 				<li>
+					<a href="{{ route('rental-spaces') }}" @if (Route::is('rental-spaces'))
+						class="block mx-2 rtl:mx-2 py-2 px-3 rounded-sm md:bg-transparent md:text-[var(--primary-color)] md:p-0 text-sm sm:text-base"
+						@else
+						class="block mx-2 rtl:mx-2 py-2 px-3 rounded-sm md:bg-transparent md:text-gray-700 md:p-0 text-sm sm:text-base"
+						@endif>{{ __('rental spaces') }}</a>
+				</li>
+				<li>
 					<a href="{{ route('jobs') }}" @if (Route::is('jobs'))
 						class="block mx-2 rtl:mx-2 py-2 px-3 rounded-sm md:bg-transparent md:text-[var(--primary-color)] md:p-0 text-sm sm:text-base"
 						@else

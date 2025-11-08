@@ -44,36 +44,50 @@
 						}
 					})
 					.then(response => response.json())
-					.then(data => {
-						if (data.html !=='') {
-							clinicsGrid
-								.innerHTML =
-								data
-								.html;
-							paginationContainer
-								.innerHTML =
-							data
-							.pagination;
-						resultsCount
-							.textContent =
-							data
-							.count;
-					} else {
-						clinicsGrid
-							.innerHTML =
-							'<div class="col-span-full text-center py-8 text-gray-500">No clinics found</div>';
-						paginationContainer
-							.innerHTML =
-							'';
-						resultsCount
-							.textContent =
-							'0';
-					}
-					})
-					.catch(error => {
-						console.error('Error:', error);
-						clinicsGrid.innerHTML = '<div class="col-span-full text-center py-8 text-red-500">Error loading clinics</div>';
-					});
+                .then(data => {
+                    if (data && data.success && data.html !== '') {
+                        clinicsGrid.innerHTML = data.html;
+                        if (paginationContainer) {
+                          paginationContainer.innerHTML = data.pagination || '';
+                        }
+                        if (resultsCount) {
+                          resultsCount.textContent = data.count ?? 0;
+                        }
+                    } else {
+                        clinicsGrid.innerHTML = `
+                          <div class="col-span-full text-center py-12">
+                            <div class="text-gray-500">
+                              <i class="fas fa-search text-4xl mb-4"></i>
+                              <h3 class="text-lg font-semibold mb-2">{{ __('no clinics found') }}</h3>
+                              <p>{{ __('try adjusting your search criteria or filters') }}</p>
+                            </div>
+                          </div>`;
+                        if (paginationContainer) {
+                          paginationContainer.innerHTML = '';
+                        }
+                        if (resultsCount) {
+                          resultsCount.textContent = '0';
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    // Graceful fallback (same empty state UI)
+                    clinicsGrid.innerHTML = `
+                      <div class="col-span-full text-center py-12">
+                        <div class="text-gray-500">
+                          <i class="fas fa-search text-4xl mb-4"></i>
+                          <h3 class="text-lg font-semibold mb-2">{{ __('no clinics found') }}</h3>
+                          <p>{{ __('try adjusting your search criteria or filters') }}</p>
+                        </div>
+                      </div>`;
+                    if (paginationContainer) {
+                      paginationContainer.innerHTML = '';
+                    }
+                    if (resultsCount) {
+                      resultsCount.textContent = '0';
+                    }
+                });
 			}, searchInput === document.activeElement ? 500 : 0);
 		}
 

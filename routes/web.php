@@ -8,6 +8,7 @@ use App\Http\Controllers\Frontend\HomeController;
 use App\Http\Controllers\Frontend\ClinicController;
 use App\Http\Controllers\Frontend\CourseController;
 use App\Http\Controllers\Frontend\ProductController;
+use App\Http\Controllers\Frontend\RentalSpaceController as FrontendRentalSpaceController;
 use App\Http\Controllers\Frontend\CheckoutController;
 use App\Http\Controllers\Frontend\SupplierController;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
@@ -35,6 +36,11 @@ Route::group(
 		Route::get('/products/on-sale', [ProductController::class, 'onSale'])->name('products.on-sale');
 		Route::get('/products/in-stock', [ProductController::class, 'inStock'])->name('products.in-stock');
 		Route::get('/products/recent', [ProductController::class, 'recent'])->name('products.recent');
+
+		// Rental Spaces (Frontend)
+		Route::get('/rental-spaces', [FrontendRentalSpaceController::class, 'index'])->name('rental-spaces');
+		Route::get('/rental-spaces/{id}', [FrontendRentalSpaceController::class, 'show'])->name('rental-spaces.show');
+		Route::post('/rental-spaces/filter', [FrontendRentalSpaceController::class, 'filter'])->name('rental-spaces.filter');
 
 		Route::get('/clinics', [ClinicController::class, 'index'])->name('clinics');
 		Route::get('/clinics/{id}', [ClinicController::class, 'show'])->name('clinics.show');
