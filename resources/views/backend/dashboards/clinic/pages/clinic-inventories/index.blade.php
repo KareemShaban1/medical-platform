@@ -123,8 +123,7 @@ let table = $('#clinic-inventory-table').DataTable({
 			}
 		},
 		{
-			text: '{{ __('
-			Low Stock Only ') }}',
+			text: '{{ __('Low Stock Only') }}',
 			className: 'btn btn-danger',
 			action: function() {
 				lowOnly = !lowOnly;
