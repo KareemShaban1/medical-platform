@@ -19,6 +19,7 @@ return new class extends Migration
             $table->timestamp('assigned_at')->useCurrent();
             $table->foreignId('assigned_by')->nullable()->constrained('clinic_users')->onDelete('set null');
             $table->timestamps();
+            $table->softDeletes();
 
             // Ensure unique combination: a patient can only be assigned to a doctor once in a clinic
             $table->unique(['doctor_profile_id', 'patient_id', 'clinic_id']);

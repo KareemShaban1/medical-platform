@@ -179,6 +179,10 @@ Route::group(
         // Patients Management
         Route::group(['prefix' => 'patients'], function () {
             Route::get('/data', [\App\Http\Controllers\Backend\Dashboards\Clinic\PatientController::class, 'data'])->name('patients.data');
+            Route::get('/trash', [\App\Http\Controllers\Backend\Dashboards\Clinic\PatientController::class, 'trash'])->name('patients.trash');
+            Route::get('/trash/data', [\App\Http\Controllers\Backend\Dashboards\Clinic\PatientController::class, 'trashData'])->name('patients.trash.data');
+            Route::post('/{id}/restore', [\App\Http\Controllers\Backend\Dashboards\Clinic\PatientController::class, 'restore'])->name('patients.restore');
+            Route::delete('/{id}/force-delete', [\App\Http\Controllers\Backend\Dashboards\Clinic\PatientController::class, 'forceDelete'])->name('patients.force-delete');
             Route::get('/{id}/edit', [\App\Http\Controllers\Backend\Dashboards\Clinic\PatientController::class, 'edit'])->name('patients.edit');
             Route::get('/', [\App\Http\Controllers\Backend\Dashboards\Clinic\PatientController::class, 'index'])->name('patients.index');
             Route::post('/', [\App\Http\Controllers\Backend\Dashboards\Clinic\PatientController::class, 'store'])->name('patients.store');
