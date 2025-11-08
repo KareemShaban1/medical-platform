@@ -402,6 +402,8 @@ class RequestController extends Controller
             // Verify payment
             $paymentResponse = $gateway->verifyPayment($paymentData);
 
+            Log::info('Payment response: ' . json_encode($paymentResponse));
+
             if ($paymentResponse->success) {
                 // Accept the offer with payment info
                 $this->requestRepository->acceptOffer($requestId, $offerId, [

@@ -70,7 +70,7 @@
 							</div>
 
 							<!-- shipping -->
-							<div class="col-md-4">
+							<div class="col-md-6">
 								<div class="mb-3">
 									<label for="shipping"
 										class="form-label">{{ __('Shipping') }}
@@ -92,7 +92,7 @@
 								</div>
 							</div>
 
-							<div class="col-md-6">
+							<div class="col-md-4">
 								<div class="mb-3">
 									<label for="discount"
 										class="form-label">{{ __('Discount (Optional)') }}</label>
