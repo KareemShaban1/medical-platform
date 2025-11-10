@@ -316,28 +316,7 @@ class PaymentController extends Controller
             $analysis['indicators'][] = 'Real card used (PAN: ' . $pan . ')';
         }
 
-        // Check 3D Secure status (only treat as error if 3D Secure is required)
-        $is3DSecure = $transactionDetails['is_3d_secure'] ?? false;
-        $sourceType = $transactionDetails['source_data']['type'] ?? null;
-        $require3DSecure = config('payment_gateways.paymob.require_3d_secure', true);
-        
-        if (!$is3DSecure && $sourceType === 'card') {
-            if ($require3DSecure) {
-                // 3D Secure is required but not completed - this is an error
-                $analysis['indicators'][] = '3D Secure not completed (is_3d_secure: false)';
-                if (!$analysis['inferred_reason']) {
-                    $analysis['inferred_reason'] = 'Payment failed. 3D Secure authentication was not completed. This could be due to: card not supporting 3D Secure, authentication cancelled, or bank security restrictions. Please try again or contact your bank.';
-                    $analysis['confidence'] = 'medium';
-                }
-            } else {
-                // 3D Secure is optional - just note it, don't treat as error
-                $analysis['indicators'][] = '3D Secure not completed (optional, is_3d_secure: false)';
-            }
-        } elseif ($is3DSecure) {
-            $analysis['indicators'][] = '3D Secure was completed';
-        }
-
-        // Check if card was voided or refunded
+        // Check if card was voided or refunded (highest priority - these are definitive)
         if ($transactionDetails['is_voided'] ?? false) {
             $analysis['indicators'][] = 'Transaction was voided';
             if (!$analysis['inferred_reason']) {
@@ -354,10 +333,52 @@ class PaymentController extends Controller
             }
         }
 
-        // Check payment method
+        // Check payment method - prioritize this as it's a strong indicator of failure
         $paymentMethod = $transactionDetails['order']['payment_method'] ?? null;
+        $require3DSecure = config('payment_gateways.paymob.require_3d_secure', true);
+        $is3DSecure = $transactionDetails['is_3d_secure'] ?? false;
+        $sourceType = $transactionDetails['source_data']['type'] ?? null;
+        
         if ($paymentMethod === 'tbc' || $paymentMethod === null) {
             $analysis['indicators'][] = 'Payment method not finalized';
+            if (!$analysis['inferred_reason']) {
+                // Payment method not finalized - this is a strong indicator of failure
+                $message = 'Payment failed. The payment method was not finalized. This usually means: ';
+                $causes = [];
+                
+                // Only include 3D Secure if it's required and not completed
+                if (!$is3DSecure && $sourceType === 'card' && $require3DSecure) {
+                    $causes[] = '3D Secure authentication was not completed';
+                }
+                $causes[] = 'Card was declined by the bank';
+                $causes[] = 'Insufficient funds';
+                $causes[] = 'Card details are incorrect or card is expired';
+                $causes[] = 'Bank security restrictions blocked the transaction';
+                
+                $message .= implode(', ', $causes) . '. ';
+                $message .= 'Please verify your card details, ensure sufficient funds, and try again. If the issue persists, contact your bank.';
+                
+                $analysis['inferred_reason'] = $message;
+                $analysis['confidence'] = 'high';
+            }
+        }
+
+        // Check 3D Secure status (only treat as error if 3D Secure is required AND payment_method is not tbc)
+        // If payment_method is tbc, we've already set a more specific reason above
+        if (!$is3DSecure && $sourceType === 'card' && ($paymentMethod !== 'tbc' && $paymentMethod !== null)) {
+            if ($require3DSecure) {
+                // 3D Secure is required but not completed - this is an error
+                $analysis['indicators'][] = '3D Secure not completed (is_3d_secure: false)';
+                if (!$analysis['inferred_reason']) {
+                    $analysis['inferred_reason'] = 'Payment failed. 3D Secure authentication was not completed. This could be due to: card not supporting 3D Secure, authentication cancelled, or bank security restrictions. Please try again or contact your bank.';
+                    $analysis['confidence'] = 'medium';
+                }
+            } else {
+                // 3D Secure is optional - just note it, don't treat as error
+                $analysis['indicators'][] = '3D Secure not completed (optional, is_3d_secure: false)';
+            }
+        } elseif ($is3DSecure) {
+            $analysis['indicators'][] = '3D Secure was completed';
         }
 
         // Check if amount is 0 or very small
@@ -453,6 +474,68 @@ class PaymentController extends Controller
         }
 
         return $analysis;
+    }
+
+    /**
+     * Build user-friendly error message for toast notifications (concise)
+     */
+    protected function buildUserFriendlyErrorMessage(array $errorDetails, ?string $fallbackMessage = null): string
+    {
+        // Priority 1: Use fallback message if provided and concise
+        if ($fallbackMessage && strlen($fallbackMessage) <= 150) {
+            return $fallbackMessage;
+        }
+        
+        // Priority 2: Extract concise message from error_details
+        $errorMessage = $errorDetails['error_message'] ?? null;
+        
+        if ($errorMessage) {
+            // If message is too long, extract the first sentence or truncate
+            if (strlen($errorMessage) > 150) {
+                // Try to get first sentence
+                $firstSentence = strstr($errorMessage, '.', true);
+                if ($firstSentence && strlen($firstSentence) <= 150) {
+                    return $firstSentence . '.';
+                }
+                // Otherwise truncate
+                return substr($errorMessage, 0, 147) . '...';
+            }
+            return $errorMessage;
+        }
+        
+        // Priority 3: Use inferred reason from analysis if available
+        $inferredReason = $errorDetails['analysis']['inferred_reason'] ?? null;
+        if ($inferredReason) {
+            // Extract first sentence or truncate
+            if (strlen($inferredReason) > 150) {
+                $firstSentence = strstr($inferredReason, '.', true);
+                if ($firstSentence && strlen($firstSentence) <= 150) {
+                    return $firstSentence . '.';
+                }
+                return substr($inferredReason, 0, 147) . '...';
+            }
+            return $inferredReason;
+        }
+        
+        // Priority 4: Build message based on error type
+        if ($errorDetails['error_occurred'] ?? false) {
+            if ($errorDetails['error_type'] === 'declined') {
+                return 'Your payment was declined. Please check your card details or try a different payment method.';
+            } elseif ($errorDetails['error_code']) {
+                return 'Payment failed. Please try again or contact support.';
+            } else {
+                return 'Payment failed. Please try again or contact support.';
+            }
+        }
+        
+        // Priority 5: Check response codes
+        $responseCodes = $errorDetails['response_codes'] ?? [];
+        if (!empty($responseCodes['response_code_message'])) {
+            return $responseCodes['response_code_message'];
+        }
+        
+        // Default fallback
+        return $fallbackMessage ?? 'Payment failed. Please try again.';
     }
 
     /**
@@ -684,20 +767,8 @@ class PaymentController extends Controller
                 ],
             ]);
             
-            // Build user-friendly error message
-            $errorMessage = 'Payment failed. Please try again.';
-            
-            if ($errorDetails['error_message']) {
-                $errorMessage = $errorDetails['error_message'];
-            } elseif ($errorDetails['error_occurred']) {
-                if ($errorDetails['error_type'] === 'declined') {
-                    $errorMessage = 'Your payment was declined. Please check your card details or try a different payment method.';
-                } elseif ($errorDetails['error_code']) {
-                    $errorMessage = 'Payment failed (Error Code: ' . $errorDetails['error_code'] . '). Please try again or contact support.';
-                } else {
-                    $errorMessage = 'Payment failed due to an error. Please try again or contact support.';
-                }
-            }
+            // Build user-friendly error message for toast (concise)
+            $errorMessage = $this->buildUserFriendlyErrorMessage($errorDetails);
             
             $order->update([
                 'payment_status' => 'failed',
@@ -746,10 +817,8 @@ class PaymentController extends Controller
             ],
         ]);
         
-        // Build error message
-        $errorMessage = $paymentResponse->message 
-            ?? $errorDetails['error_message'] 
-            ?? 'Payment failed. Please try again.';
+        // Build user-friendly error message for toast (concise)
+        $errorMessage = $this->buildUserFriendlyErrorMessage($errorDetails, $paymentResponse->message);
         
         $order->update([
             'payment_status' => 'failed',
@@ -913,20 +982,8 @@ class PaymentController extends Controller
                 ],
             ]);
             
-            // Build user-friendly error message
-            $errorMessage = 'Payment failed. Please try again.';
-            
-            if ($errorDetails['error_message']) {
-                $errorMessage = $errorDetails['error_message'];
-            } elseif ($errorDetails['error_occurred']) {
-                if ($errorDetails['error_type'] === 'declined') {
-                    $errorMessage = 'Your payment was declined. Please check your card details or try a different payment method.';
-                } elseif ($errorDetails['error_code']) {
-                    $errorMessage = 'Payment failed (Error Code: ' . $errorDetails['error_code'] . '). Please try again or contact support.';
-                } else {
-                    $errorMessage = 'Payment failed due to an error. Please try again or contact support.';
-                }
-            }
+            // Build user-friendly error message for toast (concise)
+            $errorMessage = $this->buildUserFriendlyErrorMessage($errorDetails);
             
             $offer->update([
                 'payment_status' => 'failed',
@@ -986,10 +1043,8 @@ class PaymentController extends Controller
             ],
         ]);
         
-        // Build error message
-        $errorMessage = $paymentResponse->message 
-            ?? $errorDetails['error_message'] 
-            ?? 'Payment failed. Please try again.';
+        // Build user-friendly error message for toast (concise)
+        $errorMessage = $this->buildUserFriendlyErrorMessage($errorDetails, $paymentResponse->message);
         
         // Mark offer payment as failed
         $offer->update([
