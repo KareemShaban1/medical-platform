@@ -387,21 +387,42 @@ class PaymentController extends Controller
         if (!$analysis['inferred_reason'] && ($transactionDetails['error_occured'] ?? false)) {
             // Build detailed failure reason based on available indicators
             $reasons = [];
+            $require3DSecure = config('payment_gateways.paymob.require_3d_secure', true);
             
             if ($paymentStatus === 'UNPAID') {
                 $reasons[] = 'Payment status: UNPAID';
             }
             
-            if (!$is3DSecure && $sourceType === 'card') {
+            // Only include 3D Secure as a reason if it's required
+            if (!$is3DSecure && $sourceType === 'card' && $require3DSecure) {
                 $reasons[] = '3D Secure authentication not completed';
             }
             
-            if ($paymentMethod === 'tbc') {
+            if ($paymentMethod === 'tbc' || $paymentMethod === null) {
                 $reasons[] = 'Payment method not finalized (tbc)';
             }
             
-            // Build comprehensive message
-            if ($paymentStatus === 'UNPAID' && !$is3DSecure) {
+            // Build comprehensive message - prioritize payment_method: tbc as most specific indicator
+            if ($paymentMethod === 'tbc' || $paymentMethod === null) {
+                // Payment method not finalized - this is a strong indicator of failure
+                $message = 'Payment failed. The payment method was not finalized. This usually means: ';
+                $causes = [];
+                
+                if (!$is3DSecure && $sourceType === 'card' && $require3DSecure) {
+                    $causes[] = '3D Secure authentication was not completed';
+                }
+                $causes[] = 'Card was declined by the bank';
+                $causes[] = 'Insufficient funds';
+                $causes[] = 'Card details are incorrect or card is expired';
+                $causes[] = 'Bank security restrictions blocked the transaction';
+                
+                $message .= implode(', ', $causes) . '. ';
+                $message .= 'Please verify your card details, ensure sufficient funds, and try again. If the issue persists, contact your bank.';
+                
+                $analysis['inferred_reason'] = $message;
+                $analysis['confidence'] = 'high';
+            } elseif ($paymentStatus === 'UNPAID' && !$is3DSecure && $require3DSecure) {
+                // UNPAID with missing 3D Secure (when required)
                 $analysis['inferred_reason'] = 'Payment failed. The transaction was not completed. Likely causes: ' . 
                     '1) 3D Secure authentication was not completed, ' .
                     '2) Insufficient funds, ' .
@@ -410,6 +431,7 @@ class PaymentController extends Controller
                     'Please check your card details, ensure sufficient funds, and try again. If the issue persists, contact your bank.';
                 $analysis['confidence'] = 'medium';
             } elseif ($paymentStatus === 'UNPAID') {
+                // UNPAID without 3D Secure requirement or 3D Secure was completed
                 $analysis['inferred_reason'] = 'Payment failed. Transaction status: UNPAID. Common reasons: ' .
                     '1) Insufficient funds, ' .
                     '2) Card declined by bank, ' .
