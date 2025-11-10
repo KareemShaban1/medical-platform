@@ -23,7 +23,7 @@ class StoreSalaryContractRequest extends FormRequest
     {
         return [
             'clinic_user_id' => 'required|exists:clinic_users,id',
-            'salary_type' => 'required|in:fixed,hours,percentage,bonus,deduction',
+            'salary_type' => 'required|in:fixed,hourly,percentage,bonus,deduction',
             'base_amount' => 'nullable|numeric',
             'percentage_rate' => 'nullable|numeric',
             'effective_from' => 'required|date',

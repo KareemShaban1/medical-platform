@@ -4,7 +4,7 @@
 			<!-- <span
 			class="navbar-brand text-lg sm:text-xl lg:text-2xl font-semibold whitespace-nowrap">{{ __('Teb Plus') }}</span> -->
 
-			<img src="{{asset('frontend/images/logo.png')}}" style="height: 70px; width: 180px;">
+			<img src="{{asset('frontend/images/logo-teb-plus.png')}}" w-16" style=" height: 70px; width: 180px;">
 		</a>
 		<div class=" flex items-center md:order-2 space-x-1 md:space-x-0 rtl:space-x-reverse">
 			<button type="button" data-dropdown-toggle="language-dropdown-menu"
