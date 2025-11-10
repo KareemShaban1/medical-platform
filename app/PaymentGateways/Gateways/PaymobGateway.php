@@ -349,6 +349,54 @@ class PaymobGateway extends BasePaymentGateway
     }
 
     /**
+     * Get transaction details from Paymob API
+     * This can provide detailed error information that's not in the redirect response
+     */
+    public function getTransactionDetails(string $transactionId): ?array
+    {
+        try {
+            $authToken = $this->getAuthToken();
+            if (!$authToken) {
+                Log::warning('Failed to get auth token for transaction details', [
+                    'transaction_id' => $transactionId,
+                ]);
+                return null;
+            }
+
+            // Paymob API endpoint to get transaction details
+            $response = Http::withHeaders([
+                'Authorization' => "Bearer {$authToken}",
+            ])->get(self::API_URL . '/acceptance/transactions/' . $transactionId);
+
+            if ($response->successful()) {
+                $transactionData = $response->json();
+                
+                Log::info('Paymob transaction details retrieved', [
+                    'transaction_id' => $transactionId,
+                    'has_data' => !empty($transactionData),
+                ]);
+                
+                return $transactionData;
+            }
+
+            Log::warning('Failed to get transaction details from Paymob', [
+                'transaction_id' => $transactionId,
+                'status' => $response->status(),
+                'response' => $response->body(),
+            ]);
+
+            return null;
+        } catch (\Exception $e) {
+            Log::error('Error fetching Paymob transaction details: ' . $e->getMessage(), [
+                'transaction_id' => $transactionId,
+                'exception' => $e,
+            ]);
+
+            return null;
+        }
+    }
+
+    /**
      * Calculate HMAC for webhook verification
      */
     private function calculateHmac(array $data): string
