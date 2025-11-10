@@ -4,7 +4,7 @@
 			<!-- <span
 			class="navbar-brand text-lg sm:text-xl lg:text-2xl font-semibold whitespace-nowrap">{{ __('Teb Plus') }}</span> -->
 
-			<img src="{{asset('frontend/images/logo-teb-plus.png')}}" w-16" style=" height: 70px; width: 180px;">
+			<img src="{{asset('frontend/images/logo-teb-plus.png')}}" style=" height: 70px; width: 180px;">
 		</a>
 		<div class=" flex items-center md:order-2 space-x-1 md:space-x-0 rtl:space-x-reverse">
 			<button type="button" data-dropdown-toggle="language-dropdown-menu"
@@ -164,7 +164,7 @@
 						@endif>{{ __('products') }}</a>
 				</li>
 				<li>
-					<a href="{{ route('rental-spaces') }}" 
+					<a href="{{ route('rental-spaces') }}"
 					    @if (Route::is('rental-spaces'))
 						class="block mx-2 rtl:mx-2 py-2 px-3 rounded-sm md:bg-transparent md:text-[var(--primary-color)] md:p-0 text-sm sm:text-base"
 						@else
