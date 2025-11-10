@@ -79,8 +79,15 @@ class FortifyServiceProvider extends ServiceProvider
                 }
 
                 if ($request->user('clinic')) {
-                    // redirect clinic to /clinic/dashboard
-                    return redirect('/clinic/dashboard');
+                    $clinicUser = $request->user('clinic');
+                    // Check if user has clinic or is a standalone doctor
+                    if ($clinicUser->has_clinic) {
+                        // redirect clinic to /clinic/dashboard
+                        return redirect('/clinic/dashboard');
+                    } else {
+                        // redirect standalone doctor to home page
+                        return redirect('/');
+                    }
                 }
 
                 if ($request->user('admin')) {

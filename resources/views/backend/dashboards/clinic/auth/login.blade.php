@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-	<title>Clinic Login</title>
+	<title>Clinic / doctor Login</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="csrf-token" content="{{ csrf_token() }}">
@@ -44,7 +44,7 @@
 							@csrf
 
 							<div class="login-header">
-								<h4>{{ __('Clinic Login') }}</h4>
+								<h4>{{ __('Clinic / doctor Login') }}</h4>
 								<p>{{ __('Please enter your credentials to continue') }}</p>
 							</div>
 

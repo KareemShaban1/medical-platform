@@ -18,7 +18,19 @@ class CustomAuthentication
         $email = $request->email;
         $password = $request->password;
 
+        // First, check for doctors without clinics (has_clinic = false)
+        $doctorUser = ClinicUser::where('email', '=', $email)
+            ->where('has_clinic', false)
+            ->where('status', 1)
+            ->first();
+
+        if ($doctorUser && Hash::check($password, $doctorUser->password)) {
+            return $doctorUser;
+        }
+
+        // Then check for clinic users with clinics
         $user = ClinicUser::where('email', '=', $email)
+        ->where('has_clinic', true)
         ->whereHas('clinic',function($query){
             $query->where('status', 1)
             ->where('is_allowed', 1);
@@ -26,6 +38,7 @@ class CustomAuthentication
         ->first();
 
         $unverifiedUser = ClinicUser::where('email', '=', $email)
+        ->where('has_clinic', true)
         ->whereHas('clinic',function($query){
             $query->where('is_allowed', 0);
         })

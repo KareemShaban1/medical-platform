@@ -119,7 +119,8 @@
 				<div class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow-sm"
 					id="my-account-dropdown">
 					<ul class="py-2 font-medium" role="none">
-
+						@if(auth('clinic')->user()->has_clinic)
+						<!-- Clinic user with clinic -->
 						<li>
 							<!-- my orders -->
 							<a href="{{ route('profile.orders') }}"
@@ -129,6 +130,27 @@
 									class="fa-solid fa-cart-shopping"></i>
 							</a>
 						</li>
+						@else
+						<!-- Standalone doctor -->
+						<li>
+							<!-- doctor dashboard -->
+							<a href="{{ route('doctor.dashboard') }}"
+								class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+								{{ __('Dashboard') }}
+								<i
+									class="fa-solid fa-tachometer-alt"></i>
+							</a>
+						</li>
+						<li>
+							<!-- my orders -->
+							<a href="{{ route('doctor.orders.index') }}"
+								class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+								{{ __('my orders') }}
+								<i
+									class="fa-solid fa-cart-shopping"></i>
+							</a>
+						</li>
+						@endif
 						<!-- logout -->
 						<li>
 							<form method="POST"
@@ -320,6 +342,61 @@
 						</ul>
 					</div>
 				</li>
+
+				<!-- Doctor Authentication -->
+				@php
+				    $isDoctor = auth('clinic')->check() && optional(auth('clinic')->user())->clinic_id === null;
+				@endphp
+				@if(!$isDoctor && !auth('clinic')->check())
+				<li>
+					<button id="doctorLink" data-dropdown-toggle="doctorDropdown"
+						class="flex items-center justify-between w-full mx-2 rtl:mx-2 py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:w-auto">
+						{{ __('doctor') }}
+						<svg class="w-2.5 h-2.5 ms-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+							<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4" />
+						</svg>
+					</button>
+					<div id="doctorDropdown" class="hidden z-[9999] absolute font-normal bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44">
+						<ul class="py-2 text-sm text-gray-700" aria-labelledby="doctorLink">
+							<li>
+								<a href="{{ route('doctors.index') }}" class="block px-4 py-2 hover:bg-gray-100">{{ __('view doctors') }}</a>
+							</li>
+							<li>
+								<a href="{{ route('doctor.register.show') }}" class="block px-4 py-2 hover:bg-gray-100">{{ __('doctor register') }}</a>
+							</li>
+							<li>
+								<a href="{{ url('/clinic/login')}}" class="block px-4 py-2 hover:bg-gray-100">{{ __('doctor login') }}</a>
+							</li>
+						</ul>
+					</div>
+				</li>
+				@elseif($isDoctor)
+				<li>
+					<button id="doctorLink" data-dropdown-toggle="doctorDropdown"
+						class="flex items-center justify-between w-full mx-2 rtl:mx-2 py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:w-auto">
+						{{ __('doctor') }}
+						<svg class="w-2.5 h-2.5 ms-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+							<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4" />
+						</svg>
+					</button>
+					<div id="doctorDropdown" class="hidden z-[9999] absolute font-normal bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44">
+						<ul class="py-2 text-sm text-gray-700" aria-labelledby="doctorLink">
+							<li>
+								<a href="{{ route('doctor.dashboard') }}" class="block px-4 py-2 hover:bg-gray-100">{{ __('dashboard') }}</a>
+							</li>
+							<li>
+								<a href="{{ route('doctors.index') }}" class="block px-4 py-2 hover:bg-gray-100">{{ __('view doctors') }}</a>
+							</li>
+							<li>
+								<form method="POST" action="{{ route('clinic.logout') }}" class="inline w-full">
+									@csrf
+									<button type="submit" class="block px-4 py-2 hover:bg-gray-100">{{ __('logout') }}</button>
+								</form>
+							</li>
+						</ul>
+					</div>
+				</li>
+				@endif
 
 			</ul>
 		</div>
