@@ -36,9 +36,12 @@ class DoctorController extends Controller
         if ($request->filled('search')) {
             $searchTerm = $request->search;
             $query->where(function ($q) use ($searchTerm) {
-                $q->where('name', 'like', "%{$searchTerm}%")
-                    ->orWhere('email', 'like', "%{$searchTerm}%")
-                    ->orWhere('bio', 'like', "%{$searchTerm}%");
+                $q->where('doctor_profiles.name', 'like', "%{$searchTerm}%")
+                    ->orWhere('doctor_profiles.email', 'like', "%{$searchTerm}%")
+                    ->orWhere('doctor_profiles.bio', 'like', "%{$searchTerm}%")
+                    ->orWhereHas('clinicUser', function ($qq) use ($searchTerm) {
+                        $qq->where('name', 'like', "%{$searchTerm}%");
+                    });
             });
         }
 
