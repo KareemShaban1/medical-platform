@@ -24,6 +24,96 @@ class PaymentController extends Controller
     }
 
     /**
+     * Extract error details from payment response
+     */
+    protected function extractPaymentError(array $paymentData, $gatewayInstance = null): array
+    {
+        $errorDetails = [
+            'error_occurred' => false,
+            'error_message' => null,
+            'error_code' => null,
+            'error_type' => null,
+            'raw_data' => [],
+        ];
+
+        // Check for error_occured field (Paymob typo)
+        $errorOccurred = $paymentData['error_occured'] ?? $paymentData['error_occurred'] ?? false;
+        if ($errorOccurred === 'true' || $errorOccurred === true || $errorOccurred === '1') {
+            $errorDetails['error_occurred'] = true;
+        }
+
+        // Extract error message from various possible locations
+        $errorMessage = null;
+        
+        // Check Paymob specific error fields
+        if (isset($paymentData['data']['message'])) {
+            $errorMessage = $paymentData['data']['message'];
+        } elseif (isset($paymentData['obj']['data']['message'])) {
+            $errorMessage = $paymentData['obj']['data']['message'];
+        } elseif (isset($paymentData['message'])) {
+            $errorMessage = $paymentData['message'];
+        } elseif (isset($paymentData['error_message'])) {
+            $errorMessage = $paymentData['error_message'];
+        }
+
+        // Check for error codes
+        $errorCode = $paymentData['error_code'] 
+            ?? $paymentData['data']['error_code'] 
+            ?? $paymentData['obj']['data']['error_code'] 
+            ?? null;
+
+        // Check transaction status for clues
+        $status = $paymentData['status'] 
+            ?? $paymentData['obj']['status'] 
+            ?? null;
+
+        // Check if card was declined
+        $isDeclined = isset($paymentData['is_voided']) && ($paymentData['is_voided'] === 'true' || $paymentData['is_voided'] === true)
+            || isset($paymentData['is_refunded']) && ($paymentData['is_refunded'] === 'true' || $paymentData['is_refunded'] === true);
+
+        // Try to get error from verifyPayment if gateway instance is provided
+        if ($gatewayInstance && !$errorMessage) {
+            try {
+                $paymentResponse = $gatewayInstance->verifyPayment($paymentData);
+                if (!$paymentResponse->success && $paymentResponse->message) {
+                    $errorMessage = $paymentResponse->message;
+                }
+            } catch (\Exception $e) {
+                // If verification throws exception, that's also an error
+                if (!$errorMessage) {
+                    $errorMessage = $e->getMessage();
+                }
+            }
+        }
+
+        // Determine error type
+        $errorType = 'unknown';
+        if ($isDeclined) {
+            $errorType = 'declined';
+        } elseif ($errorCode) {
+            $errorType = 'error_code';
+        } elseif ($errorOccurred) {
+            $errorType = 'payment_error';
+        } elseif ($status === 'failed' || $status === 'declined') {
+            $errorType = 'failed';
+        }
+
+        $errorDetails['error_message'] = $errorMessage;
+        $errorDetails['error_code'] = $errorCode;
+        $errorDetails['error_type'] = $errorType;
+        $errorDetails['raw_data'] = [
+            'success' => $paymentData['success'] ?? null,
+            'error_occured' => $errorOccurred,
+            'status' => $status,
+            'is_voided' => $paymentData['is_voided'] ?? null,
+            'is_refunded' => $paymentData['is_refunded'] ?? null,
+            'pending' => $paymentData['pending'] ?? null,
+        ];
+
+        return $errorDetails;
+    }
+
+    /**
      * Handle payment gateway return (user redirect after payment)
      */
     public function paymentReturn(Request $request, string $gateway)
@@ -97,18 +187,26 @@ class PaymentController extends Controller
         $gatewayInstance = $this->paymentGatewayManager->gateway($gateway);
 
         // For Paymob, check if payment was successful
-        $success = $request->get('success') === 'true' || $request->get('success') === true;
+        // Paymob can return data via query params (redirect) or POST body
+        $successValue = $paymentData['success'] ?? $request->get('success');
+        $errorOccurred = $paymentData['error_occured'] ?? $paymentData['error_occurred'] ?? $request->get('error_occured') ?? $request->get('error_occurred');
+        
+        // Check for various possible success indicators
+        $success = $successValue === 'true'
+            || $successValue === true
+            || $successValue === '1'
+            || $request->get('txn_response_code') === 'APPROVED';
+        
+        // If error_occured is true, payment definitely failed
+        if ($errorOccurred === 'true' || $errorOccurred === true || $errorOccurred === '1') {
+            $success = false;
+        }
 
         if ($gateway === 'paymob') {
-            // Paymob returns data in query params after payment
-            // Check for various possible success indicators
-            $success = $request->get('success') === 'true'
-                || $request->get('success') === true
-                || $request->get('success') === '1'
-                || $request->get('txn_response_code') === 'APPROVED';
-
             // Get transaction ID from various possible fields
-            $transactionId = $request->get('id')
+            $transactionId = $paymentData['id'] 
+                ?? $paymentData['transaction_id']
+                ?? $request->get('id')
                 ?? $request->get('transaction_id')
                 ?? $request->get('obj.id')
                 ?? null;
@@ -116,7 +214,10 @@ class PaymentController extends Controller
             // Log the request for debugging
             Log::info('Paymob return request', [
                 'all_params' => $request->all(),
+                'payment_data' => $paymentData,
+                'success_value' => $successValue,
                 'success' => $success,
+                'error_occured' => $errorOccurred,
                 'transaction_id' => $transactionId,
                 'order_number' => $orderNumber,
             ]);
@@ -174,7 +275,37 @@ class PaymentController extends Controller
                     ->with('success', 'Payment processed successfully');
             }
 
-            // If payment failed, restore stock and mark order as failed
+            // If payment failed, extract error details and restore stock
+            $errorDetails = $this->extractPaymentError($paymentData, $gatewayInstance);
+            
+            // Log comprehensive error details for debugging
+            Log::error('Payment failed (order)', [
+                'order_id' => $order->id,
+                'order_number' => $orderNumber,
+                'error_details' => $errorDetails,
+                'payment_data_summary' => [
+                    'success' => $paymentData['success'] ?? null,
+                    'error_occured' => $paymentData['error_occured'] ?? null,
+                    'transaction_id' => $transactionId,
+                    'amount_cents' => $paymentData['amount_cents'] ?? null,
+                ],
+            ]);
+            
+            // Build user-friendly error message
+            $errorMessage = 'Payment failed. Please try again.';
+            
+            if ($errorDetails['error_message']) {
+                $errorMessage = $errorDetails['error_message'];
+            } elseif ($errorDetails['error_occurred']) {
+                if ($errorDetails['error_type'] === 'declined') {
+                    $errorMessage = 'Your payment was declined. Please check your card details or try a different payment method.';
+                } elseif ($errorDetails['error_code']) {
+                    $errorMessage = 'Payment failed (Error Code: ' . $errorDetails['error_code'] . '). Please try again or contact support.';
+                } else {
+                    $errorMessage = 'Payment failed due to an error. Please try again or contact support.';
+                }
+            }
+            
             $order->update([
                 'payment_status' => 'failed',
             ]);
@@ -187,10 +318,10 @@ class PaymentController extends Controller
                 }
             }
 
-            session()->forget('payment_order_id');
+            session()->forget('payment_order_number');
 
             return redirect()->route('checkout.failed')
-                ->with('error', 'Payment failed. Please try again.');
+                ->with('error', $errorMessage);
         }
 
         // For other gateways, use verifyPayment
@@ -206,12 +337,33 @@ class PaymentController extends Controller
                 ->with('success', 'Payment processed successfully');
         }
 
+        // Extract error details for logging
+        $errorDetails = $this->extractPaymentError($paymentData, $gatewayInstance);
+        
+        // Log comprehensive error details
+        Log::error('Payment failed (order - other gateway)', [
+            'order_id' => $order->id,
+            'order_number' => $orderNumber,
+            'gateway' => $gateway,
+            'error_details' => $errorDetails,
+            'payment_response' => [
+                'success' => $paymentResponse->success,
+                'message' => $paymentResponse->message,
+                'transaction_id' => $paymentResponse->transactionId,
+            ],
+        ]);
+        
+        // Build error message
+        $errorMessage = $paymentResponse->message 
+            ?? $errorDetails['error_message'] 
+            ?? 'Payment failed. Please try again.';
+        
         $order->update([
             'payment_status' => 'failed',
         ]);
 
         return redirect()->route('checkout.failed')
-            ->with('error', $paymentResponse->message ?? 'Payment failed');
+            ->with('error', $errorMessage);
     }
 
     /**
@@ -252,18 +404,26 @@ class PaymentController extends Controller
         $gatewayInstance = $this->paymentGatewayManager->gateway($gateway);
 
         // For Paymob, check if payment was successful
-        $success = $request->get('success') === 'true' || $request->get('success') === true;
+        // Paymob can return data via query params (redirect) or POST body
+        $successValue = $paymentData['success'] ?? $request->get('success');
+        $errorOccurred = $paymentData['error_occured'] ?? $paymentData['error_occurred'] ?? $request->get('error_occured') ?? $request->get('error_occurred');
+        
+        // Check for various possible success indicators
+        $success = $successValue === 'true'
+            || $successValue === true
+            || $successValue === '1'
+            || $request->get('txn_response_code') === 'APPROVED';
+        
+        // If error_occured is true, payment definitely failed
+        if ($errorOccurred === 'true' || $errorOccurred === true || $errorOccurred === '1') {
+            $success = false;
+        }
 
         if ($gateway === 'paymob') {
-            // Paymob returns data in query params after payment
-            // Check for various possible success indicators
-            $success = $request->get('success') === 'true'
-                || $request->get('success') === true
-                || $request->get('success') === '1'
-                || $request->get('txn_response_code') === 'APPROVED';
-
             // Get transaction ID from various possible fields
-            $transactionId = $request->get('id')
+            $transactionId = $paymentData['id'] 
+                ?? $paymentData['transaction_id']
+                ?? $request->get('id')
                 ?? $request->get('transaction_id')
                 ?? $request->get('obj.id')
                 ?? null;
@@ -271,7 +431,10 @@ class PaymentController extends Controller
             // Log the request for debugging
             Log::info('Paymob return request (offer)', [
                 'all_params' => $request->all(),
+                'payment_data' => $paymentData,
+                'success_value' => $successValue,
                 'success' => $success,
+                'error_occured' => $errorOccurred,
                 'transaction_id' => $transactionId,
                 'order_number' => $orderNumber,
                 'offer_id' => $offerId,
@@ -332,7 +495,37 @@ class PaymentController extends Controller
                     ->with('success', 'Payment processed successfully and offer accepted');
             }
 
-            // If payment failed, mark offer payment as failed
+            // If payment failed, extract error details and mark offer payment as failed
+            $errorDetails = $this->extractPaymentError($paymentData, $gatewayInstance);
+            
+            // Log comprehensive error details for debugging
+            Log::error('Payment failed (offer)', [
+                'offer_id' => $offerId,
+                'order_number' => $orderNumber,
+                'error_details' => $errorDetails,
+                'payment_data_summary' => [
+                    'success' => $paymentData['success'] ?? null,
+                    'error_occured' => $paymentData['error_occured'] ?? null,
+                    'transaction_id' => $transactionId,
+                    'amount_cents' => $paymentData['amount_cents'] ?? null,
+                ],
+            ]);
+            
+            // Build user-friendly error message
+            $errorMessage = 'Payment failed. Please try again.';
+            
+            if ($errorDetails['error_message']) {
+                $errorMessage = $errorDetails['error_message'];
+            } elseif ($errorDetails['error_occurred']) {
+                if ($errorDetails['error_type'] === 'declined') {
+                    $errorMessage = 'Your payment was declined. Please check your card details or try a different payment method.';
+                } elseif ($errorDetails['error_code']) {
+                    $errorMessage = 'Payment failed (Error Code: ' . $errorDetails['error_code'] . '). Please try again or contact support.';
+                } else {
+                    $errorMessage = 'Payment failed due to an error. Please try again or contact support.';
+                }
+            }
+            
             $offer->update([
                 'payment_status' => 'failed',
             ]);
@@ -347,7 +540,7 @@ class PaymentController extends Controller
             ]);
 
             return redirect()->route('clinic.requests.show', ['id' => $offer->request_id])
-                ->with('error', 'Payment failed. Please try again.');
+                ->with('error', $errorMessage);
         }
 
         // For other gateways, use verifyPayment
@@ -375,7 +568,28 @@ class PaymentController extends Controller
                 ->with('success', 'Payment processed successfully and offer accepted');
         }
 
-        // If payment failed, mark offer payment as failed
+        // If payment failed, extract error details
+        $errorDetails = $this->extractPaymentError($paymentData, $gatewayInstance);
+        
+        // Log comprehensive error details
+        Log::error('Payment failed (offer - other gateway)', [
+            'offer_id' => $offerId,
+            'order_number' => $orderNumber,
+            'gateway' => $gateway,
+            'error_details' => $errorDetails,
+            'payment_response' => [
+                'success' => $paymentResponse->success,
+                'message' => $paymentResponse->message,
+                'transaction_id' => $paymentResponse->transactionId,
+            ],
+        ]);
+        
+        // Build error message
+        $errorMessage = $paymentResponse->message 
+            ?? $errorDetails['error_message'] 
+            ?? 'Payment failed. Please try again.';
+        
+        // Mark offer payment as failed
         $offer->update([
             'payment_status' => 'failed',
         ]);
@@ -390,7 +604,7 @@ class PaymentController extends Controller
         ]);
 
         return redirect()->route('clinic.requests.show', ['id' => $offer->request_id])
-            ->with('error', $paymentResponse->message ?? 'Payment failed');
+            ->with('error', $errorMessage);
     }
 
     /**
