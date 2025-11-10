@@ -74,7 +74,9 @@ class PaymentController extends Controller
 
         // For Paymob, try to fetch detailed transaction info from API if we have transaction ID
         $transactionId = $paymentData['id'] ?? $paymentData['transaction_id'] ?? null;
-        if ($gatewayInstance && $transactionId && $errorOccurred && !$errorMessage) {
+        $analysis = null;
+        
+        if ($gatewayInstance && $transactionId && $errorOccurred) {
             try {
                 // Try to get detailed transaction info from Paymob API
                 if (method_exists($gatewayInstance, 'getTransactionDetails')) {
@@ -82,27 +84,59 @@ class PaymentController extends Controller
                     
                     if ($transactionDetails) {
                         // Extract error information from transaction details
-                        $errorMessage = $transactionDetails['data']['message'] 
+                        $apiErrorMessage = $transactionDetails['data']['message'] 
                             ?? $transactionDetails['message'] 
                             ?? $transactionDetails['error_message'] 
                             ?? null;
                         
-                        $errorCode = $transactionDetails['data']['error_code'] 
+                        $apiErrorCode = $transactionDetails['data']['error_code'] 
                             ?? $transactionDetails['error_code'] 
                             ?? $transactionDetails['data']['transaction_error_code']
                             ?? $transactionDetails['transaction_error_code']
                             ?? null;
                         
-                        if ($errorCode) {
-                            $errorDetails['error_code'] = $errorCode;
+                        // Always analyze transaction details to infer failure reason
+                        $analysis = $this->analyzePaymobTransactionFailure($transactionDetails);
+                        
+                        // Use API error message if available, otherwise use analysis
+                        if ($apiErrorMessage) {
+                            $errorMessage = $apiErrorMessage;
+                        } elseif ($analysis['inferred_reason']) {
+                            $errorMessage = $analysis['inferred_reason'];
                         }
                         
-                        // Log the detailed transaction info
-                        Log::info('Paymob transaction details retrieved', [
+                        // Use API error code if available, otherwise use analysis
+                        if ($apiErrorCode) {
+                            $errorCode = $apiErrorCode;
+                            $errorDetails['error_code'] = $apiErrorCode;
+                        } elseif ($analysis['error_code']) {
+                            $errorCode = $analysis['error_code'];
+                            $errorDetails['error_code'] = $analysis['error_code'];
+                        }
+                        
+                        // Always store analysis in error details for tracking
+                        $errorDetails['analysis'] = $analysis;
+                        $errorDetails['transaction_analysis'] = [
+                            'payment_status' => $transactionDetails['order']['payment_status'] ?? null,
+                            'is_3d_secure' => $transactionDetails['is_3d_secure'] ?? false,
+                            'card_type' => $transactionDetails['card_type'] ?? null,
+                            'card_pan' => isset($transactionDetails['source_data']['pan']) 
+                                ? substr($transactionDetails['source_data']['pan'], -4) 
+                                : null,
+                            'payment_method' => $transactionDetails['order']['payment_method'] ?? null,
+                            'is_voided' => $transactionDetails['is_voided'] ?? false,
+                            'is_refunded' => $transactionDetails['is_refunded'] ?? false,
+                            'amount_cents' => $transactionDetails['amount_cents'] ?? null,
+                        ];
+                        
+                        // Log the detailed transaction info with analysis
+                        Log::info('Paymob transaction details retrieved with analysis', [
                             'transaction_id' => $transactionId,
                             'error_message' => $errorMessage,
                             'error_code' => $errorCode,
-                            'transaction_data' => $transactionDetails,
+                            'analysis' => $analysis,
+                            'transaction_analysis' => $errorDetails['transaction_analysis'],
+                            'has_transaction_details' => true,
                         ]);
                     }
                 }
@@ -110,6 +144,7 @@ class PaymentController extends Controller
                 Log::warning('Failed to fetch transaction details from Paymob API', [
                     'transaction_id' => $transactionId,
                     'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
                 ]);
             }
         }
@@ -211,6 +246,159 @@ class PaymentController extends Controller
         }
 
         return $errorDetails;
+    }
+
+    /**
+     * Analyze Paymob transaction details to infer failure reason
+     * Since Paymob doesn't always provide error messages, we analyze available data
+     */
+    protected function analyzePaymobTransactionFailure(array $transactionDetails): array
+    {
+        $analysis = [
+            'inferred_reason' => null,
+            'error_code' => null,
+            'indicators' => [],
+            'confidence' => 'low', // low, medium, high
+        ];
+
+        // Check payment status
+        $paymentStatus = $transactionDetails['order']['payment_status'] ?? null;
+        if ($paymentStatus === 'UNPAID') {
+            $analysis['indicators'][] = 'Payment status: UNPAID';
+        }
+
+        // Check if it's a test card or invalid card
+        $pan = $transactionDetails['source_data']['pan'] ?? null;
+        // Known test card patterns: 1111, 0000, or very low numbers like 0001-0999
+        $isTestCard = false;
+        if ($pan) {
+            if ($pan === '1111' || $pan === '0000') {
+                $isTestCard = true;
+            } elseif (is_numeric($pan) && strlen($pan) === 4) {
+                $panNum = (int)$pan;
+                // Test cards are typically 0000-0999 range
+                if ($panNum >= 0 && $panNum < 1000) {
+                    $isTestCard = true;
+                }
+            }
+        }
+        
+        if ($isTestCard) {
+            $analysis['indicators'][] = 'Test card detected (PAN: ' . $pan . ')';
+            $analysis['inferred_reason'] = 'Payment failed. Test cards may not work in production. Please use a real card for payment.';
+            $analysis['confidence'] = 'high';
+        } elseif ($pan && strlen($pan) === 4) {
+            // Real card but payment failed - check other indicators
+            $analysis['indicators'][] = 'Real card used (PAN: ' . $pan . ')';
+        }
+
+        // Check 3D Secure status
+        $is3DSecure = $transactionDetails['is_3d_secure'] ?? false;
+        $sourceType = $transactionDetails['source_data']['type'] ?? null;
+        if (!$is3DSecure && $sourceType === 'card') {
+            $analysis['indicators'][] = '3D Secure not completed (is_3d_secure: false)';
+            if (!$analysis['inferred_reason']) {
+                $analysis['inferred_reason'] = 'Payment failed. 3D Secure authentication was not completed. This could be due to: card not supporting 3D Secure, authentication cancelled, or bank security restrictions. Please try again or contact your bank.';
+                $analysis['confidence'] = 'medium';
+            }
+        } elseif ($is3DSecure) {
+            $analysis['indicators'][] = '3D Secure was attempted';
+        }
+
+        // Check if card was voided or refunded
+        if ($transactionDetails['is_voided'] ?? false) {
+            $analysis['indicators'][] = 'Transaction was voided';
+            if (!$analysis['inferred_reason']) {
+                $analysis['inferred_reason'] = 'Payment was voided. The transaction was cancelled before completion.';
+                $analysis['confidence'] = 'high';
+            }
+        }
+
+        if ($transactionDetails['is_refunded'] ?? false) {
+            $analysis['indicators'][] = 'Transaction was refunded';
+            if (!$analysis['inferred_reason']) {
+                $analysis['inferred_reason'] = 'Payment was refunded. Please contact support if this was not expected.';
+                $analysis['confidence'] = 'high';
+            }
+        }
+
+        // Check payment method
+        $paymentMethod = $transactionDetails['order']['payment_method'] ?? null;
+        if ($paymentMethod === 'tbc' || $paymentMethod === null) {
+            $analysis['indicators'][] = 'Payment method not finalized';
+        }
+
+        // Check if amount is 0 or very small
+        $amountCents = $transactionDetails['amount_cents'] ?? 0;
+        if ($amountCents <= 0) {
+            $analysis['indicators'][] = 'Invalid amount';
+            if (!$analysis['inferred_reason']) {
+                $analysis['inferred_reason'] = 'Payment failed due to invalid amount.';
+                $analysis['confidence'] = 'high';
+            }
+        }
+
+        // Check integration type
+        $integrationType = $transactionDetails['integration_type'] ?? null;
+        if ($integrationType && $integrationType !== 'online') {
+            $analysis['indicators'][] = "Integration type: {$integrationType}";
+        }
+
+        // Check if it's a card issue
+        $cardType = $transactionDetails['card_type'] ?? null;
+        $sourceType = $transactionDetails['source_data']['type'] ?? null;
+        if ($sourceType === 'card' && !$cardType) {
+            $analysis['indicators'][] = 'Card type not recognized';
+        }
+
+        // If no specific reason found but error occurred, provide generic analysis
+        if (!$analysis['inferred_reason'] && ($transactionDetails['error_occured'] ?? false)) {
+            // Build detailed failure reason based on available indicators
+            $reasons = [];
+            
+            if ($paymentStatus === 'UNPAID') {
+                $reasons[] = 'Payment status: UNPAID';
+            }
+            
+            if (!$is3DSecure && $sourceType === 'card') {
+                $reasons[] = '3D Secure authentication not completed';
+            }
+            
+            if ($paymentMethod === 'tbc') {
+                $reasons[] = 'Payment method not finalized (tbc)';
+            }
+            
+            // Build comprehensive message
+            if ($paymentStatus === 'UNPAID' && !$is3DSecure) {
+                $analysis['inferred_reason'] = 'Payment failed. The transaction was not completed. Likely causes: ' . 
+                    '1) 3D Secure authentication was not completed, ' .
+                    '2) Insufficient funds, ' .
+                    '3) Card declined by bank, or ' .
+                    '4) Bank security restrictions. ' .
+                    'Please check your card details, ensure sufficient funds, and try again. If the issue persists, contact your bank.';
+                $analysis['confidence'] = 'medium';
+            } elseif ($paymentStatus === 'UNPAID') {
+                $analysis['inferred_reason'] = 'Payment failed. Transaction status: UNPAID. Common reasons: ' .
+                    '1) Insufficient funds, ' .
+                    '2) Card declined by bank, ' .
+                    '3) Bank security restrictions, or ' .
+                    '4) Card expired/invalid. ' .
+                    'Please verify your card details and try again, or contact your bank. Transaction ID: ' . ($transactionDetails['id'] ?? 'N/A');
+                $analysis['confidence'] = 'medium';
+            } else {
+                $analysis['inferred_reason'] = 'Payment failed. The transaction could not be processed. ' .
+                    'Please verify your card details and try again. ' .
+                    'If the problem persists, contact support with transaction ID: ' . ($transactionDetails['id'] ?? 'N/A');
+                $analysis['confidence'] = 'low';
+            }
+            
+            // Add all indicators to the analysis
+            if (!empty($reasons)) {
+                $analysis['indicators'] = array_merge($analysis['indicators'], $reasons);
+            }
+        }
+
+        return $analysis;
     }
 
     /**
@@ -598,11 +786,20 @@ class PaymentController extends Controller
             // If payment failed, extract error details and mark offer payment as failed
             $errorDetails = $this->extractPaymentError($paymentData, $gatewayInstance);
             
-            // Log comprehensive error details for debugging
+            // Log comprehensive error details for debugging with analysis prominently displayed
             Log::error('Payment failed (offer)', [
                 'offer_id' => $offerId,
                 'order_number' => $orderNumber,
-                'error_details' => $errorDetails,
+                'transaction_id' => $transactionId,
+                'failure_analysis' => $errorDetails['analysis'] ?? null,
+                'transaction_analysis' => $errorDetails['transaction_analysis'] ?? null,
+                'inferred_reason' => $errorDetails['analysis']['inferred_reason'] ?? null,
+                'failure_indicators' => $errorDetails['analysis']['indicators'] ?? [],
+                'confidence_level' => $errorDetails['analysis']['confidence'] ?? null,
+                'error_message' => $errorDetails['error_message'] ?? null,
+                'error_code' => $errorDetails['error_code'] ?? null,
+                'error_type' => $errorDetails['error_type'] ?? null,
+                'full_error_details' => $errorDetails,
                 'payment_data_summary' => [
                     'success' => $paymentData['success'] ?? null,
                     'error_occured' => $paymentData['error_occured'] ?? null,
