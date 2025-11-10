@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Log;
 class RequestController extends Controller
 {
     protected $requestRepository;
+
     protected $paymentGatewayManager;
 
     public function __construct(
@@ -36,6 +37,7 @@ class RequestController extends Controller
     public function create()
     {
         $categories = $this->requestRepository->getCategories();
+
         return view('backend.dashboards.clinic.pages.requests.create', compact('categories'));
     }
 
@@ -43,9 +45,10 @@ class RequestController extends Controller
     {
         try {
             $this->requestRepository->store($request->validated());
+
             return response()->json([
                 'success' => true,
-                'message' => 'Request created successfully and sent to suppliers.'
+                'message' => 'Request created successfully and sent to suppliers.',
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -59,6 +62,7 @@ class RequestController extends Controller
     {
         try {
             $request = $this->requestRepository->show($id);
+
             return view('backend.dashboards.clinic.pages.requests.show', compact('request'));
         } catch (\Exception $e) {
             return redirect()->route('clinic.requests.index')->with('error', $e->getMessage());
@@ -70,6 +74,7 @@ class RequestController extends Controller
         try {
             $request = $this->requestRepository->show($id);
             $categories = $this->requestRepository->getCategories();
+
             return view('backend.dashboards.clinic.pages.requests.edit', compact('request', 'categories'));
         } catch (\Exception $e) {
             return redirect()->route('clinic.requests.index')->with('error', $e->getMessage());
@@ -80,14 +85,15 @@ class RequestController extends Controller
     {
         try {
             $this->requestRepository->update($request->validated(), $id);
+
             return response()->json([
                 'success' => true,
-                'message' => 'Request updated successfully.'
+                'message' => 'Request updated successfully.',
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 400);
         }
     }
@@ -96,14 +102,15 @@ class RequestController extends Controller
     {
         try {
             $this->requestRepository->destroy($id);
+
             return response()->json([
                 'success' => true,
-                'message' => 'Request deleted successfully.'
+                'message' => 'Request deleted successfully.',
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 400);
         }
     }
@@ -113,14 +120,15 @@ class RequestController extends Controller
         try {
             $offerId = $request->input('offer_id');
             $this->requestRepository->acceptOffer($requestId, $offerId);
+
             return response()->json([
                 'success' => true,
-                'message' => 'Offer accepted successfully. Request has been closed.'
+                'message' => 'Offer accepted successfully. Request has been closed.',
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 400);
         }
     }
@@ -129,14 +137,15 @@ class RequestController extends Controller
     {
         try {
             $this->requestRepository->cancelRequest($id);
+
             return response()->json([
                 'success' => true,
-                'message' => 'Request canceled successfully.'
+                'message' => 'Request canceled successfully.',
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 400);
         }
     }
@@ -145,14 +154,15 @@ class RequestController extends Controller
     {
         try {
             $categories = $this->requestRepository->getCategories();
+
             return response()->json([
                 'success' => true,
-                'data' => $categories
+                'data' => $categories,
             ]);
-    } catch (\Exception $e) {
+        } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 400);
         }
     }
@@ -199,20 +209,20 @@ class RequestController extends Controller
                 abort(403);
             }
 
-            if (!$offer->canBeAccepted()) {
+            if (! $offer->canBeAccepted()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Offer cannot be accepted'
+                    'message' => 'Offer cannot be accepted',
                 ], 400);
             }
 
             $gatewayName = $request->input('payment_gateway');
             $gateway = $this->paymentGatewayManager->gateway($gatewayName);
 
-            if (!$gateway->isEnabled()) {
+            if (! $gateway->isEnabled()) {
                 return response()->json([
                     'success' => false,
-                    'message' => "Payment gateway '{$gatewayName}' is not enabled."
+                    'message' => "Payment gateway '{$gatewayName}' is not enabled.",
                 ], 400);
             }
 
@@ -229,7 +239,7 @@ class RequestController extends Controller
 
                 return response()->json([
                     'success' => true,
-                    'message' => 'Offer accepted successfully. Payment will be collected on delivery.'
+                    'message' => 'Offer accepted successfully. Payment will be collected on delivery.',
                 ]);
             }
 
@@ -240,7 +250,7 @@ class RequestController extends Controller
             if ($gatewayName === 'paymob' && $payMethod === 'wallet' && empty($walletPhone)) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Wallet phone is required for wallet payments'
+                    'message' => 'Wallet phone is required for wallet payments',
                 ], 422);
             }
 
@@ -254,7 +264,7 @@ class RequestController extends Controller
 
             // Prepare payment data
             // Generate unique order number to avoid Paymob duplicate errors on retries
-            $uniqueOrderNumber = 'OFFER-' . $offer->id . '-' . time() . '-' . uniqid();
+            $uniqueOrderNumber = 'OFFER-'.$offer->id.'-'.time().'-'.uniqid();
 
             $paymentData = [
                 'amount' => $totalAmount,
@@ -282,10 +292,10 @@ class RequestController extends Controller
             // Process payment
             $paymentResponse = $gateway->processPayment($paymentData);
 
-            if (!$paymentResponse->success) {
+            if (! $paymentResponse->success) {
                 return response()->json([
                     'success' => false,
-                    'message' => $paymentResponse->message
+                    'message' => $paymentResponse->message,
                 ], 400);
             }
 
@@ -298,18 +308,18 @@ class RequestController extends Controller
             return response()->json([
                 'success' => true,
                 'redirect_url' => $paymentResponse->redirectUrl,
-                'message' => 'Redirecting to payment gateway...'
+                'message' => 'Redirecting to payment gateway...',
             ]);
 
         } catch (\Exception $e) {
-            Log::error('Offer payment processing error: ' . $e->getMessage(), [
+            Log::error('Offer payment processing error: '.$e->getMessage(), [
                 'request_id' => $requestId,
-                'exception' => $e
+                'exception' => $e,
             ]);
 
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 400);
         }
     }
@@ -320,7 +330,7 @@ class RequestController extends Controller
             $offerId = session()->get('offer_payment_offer_id');
             $gatewayName = session()->get('offer_payment_gateway', 'paymob');
 
-            if (!$offerId) {
+            if (! $offerId) {
                 return redirect()->route('clinic.requests.show', $requestId)
                     ->with('error', 'Payment session expired. Please try again.');
             }
@@ -353,7 +363,7 @@ class RequestController extends Controller
                             'offer_payment_offer_id',
                             'offer_payment_request_id',
                             'offer_payment_gateway',
-                            'offer_payment_transaction_id'
+                            'offer_payment_transaction_id',
                         ]);
 
                         return redirect()->route('clinic.requests.show', $requestId)
@@ -362,7 +372,7 @@ class RequestController extends Controller
                 } catch (\Exception $e) {
                     Log::warning('Payment verification failed in return handler', [
                         'error' => $e->getMessage(),
-                        'success_flag' => $success
+                        'success_flag' => $success,
                     ]);
                 }
             }
@@ -372,14 +382,15 @@ class RequestController extends Controller
                 'offer_payment_offer_id',
                 'offer_payment_request_id',
                 'offer_payment_gateway',
-                'offer_payment_transaction_id'
+                'offer_payment_transaction_id',
             ]);
 
             return redirect()->route('clinic.requests.show', $requestId)
                 ->with('error', 'Payment was not successful. Please try again.');
 
         } catch (\Exception $e) {
-            Log::error('Offer payment return error: ' . $e->getMessage());
+            Log::error('Offer payment return error: '.$e->getMessage());
+
             return redirect()->route('clinic.requests.show', $requestId)
                 ->with('error', 'Payment processing error. Please contact support.');
         }
@@ -391,8 +402,9 @@ class RequestController extends Controller
             $offerId = session()->get('offer_payment_offer_id');
             $gatewayName = session()->get('offer_payment_gateway', 'paymob');
 
-            if (!$offerId) {
+            if (! $offerId) {
                 Log::warning('Offer payment callback: No offer ID in session');
+
                 return response()->json(['success' => false, 'message' => 'Session expired'], 400);
             }
 
@@ -402,7 +414,7 @@ class RequestController extends Controller
             // Verify payment
             $paymentResponse = $gateway->verifyPayment($paymentData);
 
-            Log::info('Payment response: ' . json_encode($paymentResponse));
+            Log::info('Payment response: '.json_encode($paymentResponse));
 
             if ($paymentResponse->success) {
                 // Accept the offer with payment info
@@ -418,28 +430,28 @@ class RequestController extends Controller
                     'offer_payment_offer_id',
                     'offer_payment_request_id',
                     'offer_payment_gateway',
-                    'offer_payment_transaction_id'
+                    'offer_payment_transaction_id',
                 ]);
 
                 return response()->json([
                     'success' => true,
-                    'message' => 'Payment successful and offer accepted'
+                    'message' => 'Payment successful and offer accepted',
                 ]);
             } else {
                 return response()->json([
                     'success' => false,
-                    'message' => $paymentResponse->message ?? 'Payment verification failed'
+                    'message' => $paymentResponse->message ?? 'Payment verification failed',
                 ], 400);
             }
 
         } catch (\Exception $e) {
-            Log::error('Offer payment callback error: ' . $e->getMessage(), [
-                'exception' => $e
+            Log::error('Offer payment callback error: '.$e->getMessage(), [
+                'exception' => $e,
             ]);
 
             return response()->json([
                 'success' => false,
-                'message' => 'Payment callback processing error'
+                'message' => 'Payment callback processing error',
             ], 500);
         }
     }
