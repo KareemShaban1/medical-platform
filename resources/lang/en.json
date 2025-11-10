@@ -22,7 +22,7 @@
   "rental spaces": "Rental Spaces",
   "blogs": "Blogs",
   "register clinic": "Register Clinic",
-  "login clinic": "Clinic Login",
+  "login clinic": "Clinic / doctor Login",
   "view clinics": "View Clinics",
   "suppliers": "Suppliers",
   "register supplier": "Register Supplier",
@@ -261,7 +261,7 @@
   "contact us on social media": "Contact Us on Social Media",
   "patient registration": "Patient Registration",
   "register now to get access to our platform": "Register now to get access to our platform",
-  "login now if you have an account": "Login now if you have an account",
+  "login now if you have an account": "Login now",
   "register now as a patient": "Register Now",
   "register now as a supplier": "Register Now",
   "login now as a supplier": "Login Now",
@@ -273,7 +273,7 @@
   "clinic registration": "Clinic Registration",
   "register now as a clinic": "Register Now",
   "login now as a clinic": "Login Now",
-  "clinic login": "Clinic Login",
+  "clinic login": "Clinic / doctor Login",
   "Contact Clinic to Reserve": "Contact Clinic to Reserve",
   "Reach out to the clinic to check availability and make a reservation for this space.": "Reach out to the clinic to check availability and make a reservation for this space.",
   "Call Now": "Call Now",
@@ -307,5 +307,7 @@
   "services": "Services",
   "medical courses": "Medical Courses",
   "copyright": "© :year TEBBPLUS Medical Platform. All rights reserved.",
-  "discover available medical rooms and clinic spaces for rent" : "Discover available medical rooms and clinic spaces for rent"
+  "discover available medical rooms and clinic spaces for rent" : "Discover available medical rooms and clinic spaces for rent",
+  "doctor": "Doctor",
+  "view doctors" : "View Doctors"
 }

@@ -21,6 +21,7 @@ class ClinicUser extends Authenticatable
 
     protected $fillable = [
         'clinic_id',
+        'has_clinic',
         'name',
         'position_title',
         'email',

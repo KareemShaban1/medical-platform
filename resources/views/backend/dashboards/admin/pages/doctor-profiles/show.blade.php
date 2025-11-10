@@ -264,10 +264,10 @@
                                 @if($exp['position'])
                                     <h6 class="mb-1">{{ $exp['position'] }}</h6>
                                 @endif
-                                @if($exp['company'])
+                                @if(isset($exp['company']))
                                     <p class="text-muted mb-1">{{ $exp['company'] }}</p>
                                 @endif
-                                @if($exp['start_year'] || $exp['end_year'])
+                                @if(isset($exp['start_year']) || isset($exp['end_year']))
                                     <small class="text-muted">
                                         {{ $exp['start_year'] ?: 'Unknown' }} - {{ $exp['end_year'] ?: 'Present' }}
                                     </small>

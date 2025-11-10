@@ -267,7 +267,7 @@
     "contact us on social media": "شاركنا على منصات التواصل الاجتماعي",
     "patient registration": "تسجيل المريض",
     "register now to get access to our platform": "تسجيل الآن للحصول على إذن الدخول إلى منصتنا",
-    "login now if you have an account": "تسجيل الدخول الآن إذا كنت لديك حساب",
+    "login now if you have an account": "تسجيل الدخول الآن",
     "register now as a patient": "سجل الان",
     "register now as a supplier": "سجل الان",
     "login now as a supplier": "سجل الدخول الآن كمزود",
@@ -279,7 +279,7 @@
     "clinic registration": "تسجيل العيادة",
     "register now as a clinic": "سجل الان",
     "login now as a clinic": "سجل الدخول الآن كعيادة",
-    "clinic login": "تسجيل الدخول كعيادة",
+    "clinic login": "تسجيل الدخول كدكتور او عيادة",
     "order failed": "فشل الطلب",
     "sorry, your order could not be processed. please try again or contact support": "عذراً، لا يمكن معالجة الطلب. يرجى المحاولة مرة أخرى أو الاتصال بالدعم.",
     "try again": "حاول مرة أخرى",
@@ -335,6 +335,8 @@
     "copyright": "© :year منصة طب بلس الطبية. جميع الحقوق محفوظة.",
     "discover available medical rooms and clinic spaces for rent" : "اكتشف الغرف الطبية والمساحات في العيادات المتاحة للإيجار",
     "patient": "المريض",
-    "patient register": "أنشاء حساب المريض"
+    "patient register": "أنشاء حساب المريض",
+    "doctor": "الطبيب",
+    "view doctors" : "عرض الأطباء"
 
 }
