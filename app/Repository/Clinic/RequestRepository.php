@@ -147,9 +147,9 @@ class RequestRepository implements RequestRepositoryInterface
         });
     }
 
-    public function acceptOffer($requestId, $offerId)
+    public function acceptOffer($requestId, $offerId, $paymentData = [])
     {
-        return DB::transaction(function () use ($requestId, $offerId) {
+        return DB::transaction(function () use ($requestId, $offerId, $paymentData) {
             $request = Request::mine()->findOrFail($requestId);
             $offer = Offer::where('request_id', $requestId)->findOrFail($offerId);
 
@@ -157,8 +157,25 @@ class RequestRepository implements RequestRepositoryInterface
                 throw new \Exception('Offer cannot be accepted');
             }
 
+            // Calculate total amount
+            $totalAmount = $offer->price - ($offer->discount ?? 0) + ($offer->shipping ?? 0) + ($offer->tax ?? 0);
+
+            // Prepare update data
+            $updateData = [
+                'status' => Offer::STATUS_ACCEPTED,
+                'total' => $totalAmount,
+            ];
+
+            // Add payment information if provided
+            if (!empty($paymentData)) {
+                $updateData['payment_method'] = $paymentData['payment_method'] ?? 0;
+                $updateData['payment_status'] = $paymentData['payment_status'] ?? 'pending';
+                $updateData['payment_gateway'] = $paymentData['payment_gateway'] ?? null;
+                $updateData['transaction_id'] = $paymentData['transaction_id'] ?? null;
+            }
+
             // Accept the selected offer
-            $offer->update(['status' => Offer::STATUS_ACCEPTED]);
+            $offer->update($updateData);
 
             // Decline all other offers for this request
             $otherOffers = Offer::where('request_id', $requestId)

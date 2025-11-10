@@ -13,5 +13,6 @@ class AreaSeeder extends Seeder
     public function run(): void
     {
         //
+        
     }
 }

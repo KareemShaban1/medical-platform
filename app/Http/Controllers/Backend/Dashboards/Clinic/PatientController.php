@@ -36,6 +36,16 @@ class PatientController extends Controller
         return $this->patientRepo->data();
     }
 
+    public function trash()
+    {
+        return view('backend.dashboards.clinic.pages.patients.trash');
+    }
+
+    public function trashData()
+    {
+        return $this->patientRepo->trashData();
+    }
+
     public function store(Request $request)
     {
         $clinicUser = auth('clinic')->user();
@@ -156,6 +166,26 @@ class PatientController extends Controller
         try {
             $this->patientRepo->destroy($id);
             return $this->jsonResponse('success', __('Patient deleted successfully'));
+        } catch (\Exception $e) {
+            return $this->jsonResponse('error', $e->getMessage());
+        }
+    }
+
+    public function restore($id)
+    {
+        try {
+            $this->patientRepo->restore($id);
+            return $this->jsonResponse('success', __('Patient restored successfully'));
+        } catch (\Exception $e) {
+            return $this->jsonResponse('error', $e->getMessage());
+        }
+    }
+
+    public function forceDelete($id)
+    {
+        try {
+            $this->patientRepo->forceDelete($id);
+            return $this->jsonResponse('success', __('Patient permanently deleted successfully'));
         } catch (\Exception $e) {
             return $this->jsonResponse('error', $e->getMessage());
         }

@@ -11,6 +11,12 @@
 						<i class="mdi mdi-plus"></i>
 						{{ __('Add Clinic Inventory') }}
 					</a>
+                    <!-- Preview Products -->
+                    <a href="{{ url(app()->getLocale().'/products') }}"
+                       class="btn btn-success">
+                        <i class="mdi mdi-cart-outline"></i>
+                        {{ __('Preview Products') }}
+                    </a>
 					<!-- Trash -->
 					<a href="{{ route('clinic.clinic-inventories.trash') }}"
 						class="btn btn-danger">
@@ -123,8 +129,7 @@ let table = $('#clinic-inventory-table').DataTable({
 			}
 		},
 		{
-			text: '{{ __('
-			Low Stock Only ') }}',
+			text: '{{ __('Low Stock Only') }}',
 			className: 'btn btn-danger',
 			action: function() {
 				lowOnly = !lowOnly;

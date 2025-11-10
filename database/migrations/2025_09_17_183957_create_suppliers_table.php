@@ -18,6 +18,9 @@ return new class extends Migration
             $table->text('address');
             $table->boolean('is_allowed')->default(true);
             $table->boolean('status')->default(true);
+            $table->foreignId('governorate_id')->nullable()->constrained('governorates')->cascadeOnDelete();
+            $table->foreignId('city_id')->nullable()->constrained('cities')->cascadeOnDelete();
+            $table->foreignId('area_id')->nullable()->constrained('areas')->cascadeOnDelete();
             $table->rememberToken();
             $table->timestamps();
         });

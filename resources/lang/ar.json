@@ -280,6 +280,25 @@
     "register now as a clinic": "سجل الان",
     "login now as a clinic": "سجل الدخول الآن كعيادة",
     "clinic login": "تسجيل الدخول كعيادة",
+    "order failed": "فشل الطلب",
+    "sorry, your order could not be processed. please try again or contact support": "عذراً، لا يمكن معالجة الطلب. يرجى المحاولة مرة أخرى أو الاتصال بالدعم.",
+    "try again": "حاول مرة أخرى",
+    "go to home": "العودة إلى الرئيسية",
+    "continue shopping": "استمرار التسوق",
+    "order placed successfully": "تم إنشاء الطلب بنجاح",
+    "thank you for your order. we will process it shortly": "شكراً لك على طلبك. سيصل إليك قريباً.",
+    "order details": "تفاصيل الطلب",
+    "order number": "رقم الطلب",
+    "order date": "تاريخ الطلب",
+    "payment method": "طريقة الدفع",
+    "order status": "حالة الطلب",
+    "items ordered": "العناصر المطلوبة",
+    "quantity": "الكمية",
+    "subtotal": "المجموع",
+    "shipping": "الشحن",
+    "tax": "الضريبة",
+    "discount": "الخصم",
+    "total": "المجموع",
     "Contact Clinic to Reserve": "تواصل مع العيادة للحجز",
     "Reach out to the clinic to check availability and make a reservation for this space.": "تواصل مع العيادة للتحقق من التوفر وإتمام الحجز لهذه المساحة.",
     "Call Now": "اتصل الآن",
@@ -315,5 +334,7 @@
     "medical courses": "الدورات الطبية",
     "copyright": "© :year منصة طب بلس الطبية. جميع الحقوق محفوظة.",
     "discover available medical rooms and clinic spaces for rent" : "اكتشف الغرف الطبية والمساحات في العيادات المتاحة للإيجار"
+    "patient": "المريض",
+    "patient register": "أنشاء حساب المريض"
 
 }

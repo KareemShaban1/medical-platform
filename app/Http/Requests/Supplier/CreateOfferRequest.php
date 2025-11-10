@@ -24,6 +24,7 @@ class CreateOfferRequest extends FormRequest
         return [
             'request_id' => 'required|exists:requests,id',
             'price' => 'required|numeric|min:0.01|max:999999.99',
+            'shipping' => 'required|numeric|min:0.01|max:999999.99',
             'delivery_time' => 'required|date|after:today',
             'terms' => 'required|string|min:10|max:1000',
             'discount' => 'nullable|numeric|min:0|max:' . ($this->price ?? 0),

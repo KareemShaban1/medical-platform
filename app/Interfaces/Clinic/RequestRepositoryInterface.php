@@ -11,6 +11,6 @@ interface RequestRepositoryInterface
     public function update($request, $id);
     public function destroy($id);
     public function getCategories();
-    public function acceptOffer($requestId, $offerId);
+    public function acceptOffer($requestId, $offerId, $paymentData = []);
     public function cancelRequest($id);
 }
