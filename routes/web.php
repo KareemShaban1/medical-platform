@@ -15,7 +15,7 @@ use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 use App\Http\Controllers\Frontend\Auth\PatientAuthController;
 use App\Http\Controllers\Frontend\ClinicUser\ProfileController;
 use Illuminate\Support\Facades\Auth;
-
+use App\Http\Controllers\Backend\PaymentController;
 Route::group(
     [
         'prefix' => LaravelLocalization::setLocale(),
@@ -103,8 +103,8 @@ Route::group([
 });
 
 // Payment gateway callbacks (no auth required for webhooks and returns)
-Route::post('/payment/callback/{gateway}', [CheckoutController::class, 'paymentCallback'])->name('payment.callback');
-Route::get('/payment/return/{gateway}', [CheckoutController::class, 'paymentReturn'])->name('payment.return');
+Route::post('/payment/callback/{gateway}', [PaymentController::class, 'paymentCallback'])->name('payment.callback');
+Route::get('/payment/return/{gateway}', [PaymentController::class, 'paymentReturn'])->name('payment.return');
 
 // Patient Dashboard Routes
 Route::group([
