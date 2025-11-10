@@ -47,7 +47,10 @@ class PaymentController extends Controller
         $hmacError = false;
         
         // Check Paymob specific error fields first (before HMAC verification)
-        if (isset($paymentData['data']['message'])) {
+        // Paymob can return error messages in data_message field
+        if (isset($paymentData['data_message']) && !empty($paymentData['data_message'])) {
+            $errorMessage = $paymentData['data_message'];
+        } elseif (isset($paymentData['data']['message'])) {
             $errorMessage = $paymentData['data']['message'];
         } elseif (isset($paymentData['obj']['data']['message'])) {
             $errorMessage = $paymentData['obj']['data']['message'];
@@ -57,11 +60,26 @@ class PaymentController extends Controller
             $errorMessage = $paymentData['error_message'];
         }
 
-        // Check for error codes
-        $errorCode = $paymentData['error_code'] 
+        // Check for error codes - Paymob provides response codes
+        $errorCode = $paymentData['acq_response_code']  // Acquirer response code (most important)
+            ?? $paymentData['txn_response_code']  // Transaction response code
+            ?? $paymentData['error_code'] 
             ?? $paymentData['data']['error_code'] 
             ?? $paymentData['obj']['data']['error_code'] 
             ?? null;
+        
+        // Map response codes to human-readable messages if available
+        $responseCodeMessage = null;
+        if ($paymentData['acq_response_code'] ?? null) {
+            $responseCodeMessage = $this->getPaymobResponseCodeMessage($paymentData['acq_response_code']);
+        } elseif ($paymentData['txn_response_code'] ?? null) {
+            $responseCodeMessage = $this->getPaymobResponseCodeMessage($paymentData['txn_response_code']);
+        }
+        
+        // Use response code message if no other error message found
+        if (!$errorMessage && $responseCodeMessage) {
+            $errorMessage = $responseCodeMessage;
+        }
 
         // Check transaction status for clues
         $status = $paymentData['status'] 
@@ -210,6 +228,11 @@ class PaymentController extends Controller
         $errorDetails['error_code'] = $errorCode;
         $errorDetails['error_type'] = $errorType;
         $errorDetails['hmac_error'] = $hmacError;
+        $errorDetails['response_codes'] = [
+            'acq_response_code' => $paymentData['acq_response_code'] ?? null,
+            'txn_response_code' => $paymentData['txn_response_code'] ?? null,
+            'response_code_message' => $responseCodeMessage,
+        ];
         $errorDetails['raw_data'] = [
             'success' => $paymentData['success'] ?? null,
             'error_occured' => $errorOccurred,
@@ -219,6 +242,7 @@ class PaymentController extends Controller
             'pending' => $paymentData['pending'] ?? null,
             'source_data_type' => $paymentData['source_data_type'] ?? null,
             'source_data_pan' => isset($paymentData['source_data_pan']) ? substr($paymentData['source_data_pan'], -4) : null, // Last 4 digits only
+            'data_message' => $paymentData['data_message'] ?? null,
         ];
 
         // Log all available fields from payment data for analysis
@@ -399,6 +423,57 @@ class PaymentController extends Controller
         }
 
         return $analysis;
+    }
+
+    /**
+     * Get human-readable message for Paymob response codes
+     */
+    protected function getPaymobResponseCodeMessage(string $code): ?string
+    {
+        // Common Paymob/Acquirer response codes
+        $codeMessages = [
+            // Approved
+            'APPROVED' => 'Payment approved',
+            '00' => 'Payment approved',
+            
+            // Declined codes
+            '05' => 'Payment declined - Do not honor',
+            '14' => 'Payment declined - Invalid card number',
+            '51' => 'Payment declined - Insufficient funds',
+            '54' => 'Payment declined - Expired card',
+            '57' => 'Payment declined - Transaction not permitted',
+            '61' => 'Payment declined - Exceeds withdrawal limit',
+            '62' => 'Payment declined - Restricted card',
+            '65' => 'Payment declined - Exceeds withdrawal frequency',
+            '91' => 'Payment declined - Issuer or switch is inoperative',
+            '96' => 'Payment declined - System malfunction',
+            
+            // 3D Secure related
+            'AUTHENTICATION_FAILED' => '3D Secure authentication failed',
+            'AUTHENTICATION_CANCELLED' => '3D Secure authentication was cancelled',
+            
+            // General errors
+            'INVALID_CARD' => 'Invalid card number',
+            'INSUFFICIENT_FUNDS' => 'Insufficient funds',
+            'CARD_EXPIRED' => 'Card expired',
+            'CARD_DECLINED' => 'Card declined by bank',
+        ];
+        
+        // Check exact match first
+        if (isset($codeMessages[$code])) {
+            return $codeMessages[$code];
+        }
+        
+        // Check if code contains known patterns
+        $codeUpper = strtoupper($code);
+        foreach ($codeMessages as $pattern => $message) {
+            if (stripos($codeUpper, $pattern) !== false) {
+                return $message;
+            }
+        }
+        
+        // Return null if no match found
+        return null;
     }
 
     /**
