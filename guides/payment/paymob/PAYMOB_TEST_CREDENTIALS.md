@@ -58,19 +58,74 @@ This guide provides test card credentials for testing Paymob payment integration
 
 ## 🔐 3D Secure Test Cards
 
-### Card 8: 3D Secure Required
+### ⚠️ Important: 3D Secure is Required
+
+**Most Paymob integrations require 3D Secure authentication**. If you see `is_3d_secure: false` in your logs, it means:
+- ❌ 3D Secure authentication was **not completed**
+- ❌ User may have **cancelled** the authentication popup
+- ❌ Card may not support 3D Secure
+- ❌ Browser may have **blocked** the 3D Secure popup
+- ❌ Bank security restrictions
+
+### Card 8: 3D Secure Required (Success)
+- **Card Number**: `4987654321098769`
+- **Expiry Date**: Any future date (e.g., `12/25`)
+- **CVV**: Any 3 digits (e.g., `123`)
+- **3D Secure Password**: 
+  - In **test mode**: Usually `1234` or `0000` (check Paymob test page)
+  - Or use the OTP/password shown on the 3D Secure page
+- **Steps to Success**:
+  1. Enter card details in Paymob iframe
+  2. **Wait for 3D Secure popup/page** to appear
+  3. **DO NOT close the popup** - this is critical!
+  4. Enter the 3D Secure password/OTP (usually `1234` in test mode)
+  5. Click "Submit" or "Authenticate"
+  6. Wait for redirect back to your application
+- **Result**: ✅ Payment approved (`is_3d_secure: true`, `payment_status: PAID`)
+
+### Card 9: 3D Secure Failed (Cancelled by User)
 - **Card Number**: `4987654321098769`
 - **Expiry Date**: Any future date
 - **CVV**: Any 3 digits
-- **3D Secure Password**: `1234` (or as shown in Paymob test page)
-- **Result**: Requires 3D Secure authentication
+- **Action**: **Close the 3D Secure popup/page without completing authentication**
+- **Result**: ❌ Payment failed (`is_3d_secure: false`, `payment_status: UNPAID`)
+- **Error Message**: "Payment failed. 3D Secure authentication was not completed..."
+- **This matches your current issue!**
 
-### Card 9: 3D Secure Failed
+### Card 10: 3D Secure Failed (Wrong Password)
 - **Card Number**: `5123456789012346`
 - **Expiry Date**: Any future date
 - **CVV**: Any 3 digits
 - **3D Secure Password**: Wrong password (e.g., `9999`)
-- **Result**: 3D Secure authentication failed
+- **Result**: ❌ 3D Secure authentication failed
+
+### Common 3D Secure Issues & Solutions
+
+1. **3D Secure popup blocked by browser**:
+   - ✅ **Solution**: Allow popups for Paymob domain (`accept.paymob.com`)
+   - Check browser popup blocker settings
+   - Try different browser
+
+2. **3D Secure page not appearing** (Your Current Issue):
+   - ✅ **Solution**: This is a Paymob dashboard configuration issue
+   - **Step 1**: Go to Paymob Dashboard → Settings → Integrations
+   - **Step 2**: Select your Card Integration (the one with Integration ID you're using)
+   - **Step 3**: Check "3D Secure" settings:
+     - Ensure "Require 3D Secure" is **enabled**
+     - Or "Allow non-3D Secure" should be **disabled**
+   - **Step 4**: Save settings and test again
+   - **Step 5**: If still not appearing, contact Paymob support
+   - **Note**: Some integrations may have 3D Secure disabled by default
+   - **Alternative**: Use a different integration ID that has 3D Secure enabled
+
+3. **User closes 3D Secure popup** (Your current issue):
+   - ✅ **Solution**: **Complete the 3D Secure authentication**
+   - Don't close the popup/page
+   - Enter password and submit
+
+4. **3D Secure timeout**:
+   - ✅ **Solution**: Complete authentication within 5-10 minutes
+   - Don't leave the page open too long
 
 ## 📱 Wallet Payment Test (Mobile Wallet)
 
@@ -95,11 +150,23 @@ Card: 1111 (last 4 digits)
 Expected: System detects as test card, shows appropriate error
 ```
 
-### Scenario 3: 3D Secure Flow
+### Scenario 3: 3D Secure Flow (Success)
 ```
 Card: 4987654321098769
-3D Secure: Complete authentication
-Expected: Payment approved after 3D Secure
+Expiry: 12/25
+CVV: 123
+3D Secure: Enter password (usually 1234 or 0000 in test mode)
+Expected: Payment approved after 3D Secure (is_3d_secure: true)
+```
+
+### Scenario 3b: 3D Secure Flow (Failure)
+```
+Card: 4987654321098769
+Expiry: 12/25
+CVV: 123
+3D Secure: Close popup or cancel authentication
+Expected: Payment failed - 3D Secure not completed (is_3d_secure: false)
+Error: "Payment failed. 3D Secure authentication was not completed..."
 ```
 
 ### Scenario 4: Payment Decline
@@ -163,11 +230,13 @@ When testing, you'll see these response codes in logs:
 
 ## ⚡ Quick Reference
 
-**Most Common Test Card (Success)**:
+**Most Common Test Card (Success with 3D Secure)**:
 ```
 Card: 4987654321098769
 Expiry: 12/25
 CVV: 123
+3D Secure Password: 1234 (or as shown)
+Expected: ✅ Payment approved (is_3d_secure: true)
 ```
 
 **Test Card (Decline)**:
@@ -175,6 +244,52 @@ CVV: 123
 Card: 1111111111111111
 Expiry: 12/25
 CVV: 123
-Expected: Invalid card number error
+Expected: ❌ Invalid card number error
 ```
+
+**3D Secure Not Completed (Your Current Issue)**:
+```
+Card: 4987654321098769
+Expiry: 12/25
+CVV: 123
+3D Secure: Not completed (popup closed/cancelled)
+Expected: ❌ Payment failed - 3D Secure not completed
+Error Message: "Payment failed. 3D Secure authentication was not completed..."
+Log Shows: is_3d_secure: false, payment_status: UNPAID
+```
+
+## 🔧 Troubleshooting 3D Secure Issues
+
+### Issue: Payment fails with "3D Secure not completed"
+
+**Possible Causes:**
+1. ✅ **User cancelled 3D Secure** - Most common
+   - Solution: Complete the 3D Secure authentication
+   - Don't close the popup/page
+
+2. ✅ **Browser blocked popup**
+   - Solution: Allow popups for Paymob domain
+   - Check browser settings
+
+3. ✅ **Card doesn't support 3D Secure**
+   - Solution: Use a card that supports 3D Secure
+   - Or configure Paymob to allow non-3D Secure cards
+
+4. ✅ **3D Secure timeout**
+   - Solution: Complete authentication quickly
+   - Usually 5-10 minute timeout
+
+5. ✅ **Paymob integration requires 3D Secure**
+   - Solution: Check Paymob dashboard settings
+   - May need to enable "Allow non-3D Secure" if available
+
+### How to Test 3D Secure Successfully:
+
+1. **Use test card**: `4987654321098769`
+2. **Enter card details** in Paymob iframe
+3. **Wait for 3D Secure page** to appear (don't close!)
+4. **Enter 3D Secure password**: Usually `1234` or `0000` in test mode
+5. **Click "Authenticate"** or "Submit"
+6. **Wait for redirect** back to your application
+7. **Check logs**: Should show `is_3d_secure: true`
 

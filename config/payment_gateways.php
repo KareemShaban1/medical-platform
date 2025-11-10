@@ -24,5 +24,6 @@ return [
         'hmac_secret' => env('PAYMOB_HMAC_SECRET'),
         'currency' => env('PAYMOB_CURRENCY', 'EGP'),
         'return_url' => env('PAYMOB_RETURN_URL', null), // Configure in Paymob dashboard instead
+        'require_3d_secure' => env('PAYMOB_REQUIRE_3D_SECURE', true), // Set to false to allow non-3D Secure payments (less secure)
     ],
 ];

@@ -316,17 +316,25 @@ class PaymentController extends Controller
             $analysis['indicators'][] = 'Real card used (PAN: ' . $pan . ')';
         }
 
-        // Check 3D Secure status
+        // Check 3D Secure status (only treat as error if 3D Secure is required)
         $is3DSecure = $transactionDetails['is_3d_secure'] ?? false;
         $sourceType = $transactionDetails['source_data']['type'] ?? null;
+        $require3DSecure = config('payment_gateways.paymob.require_3d_secure', true);
+        
         if (!$is3DSecure && $sourceType === 'card') {
-            $analysis['indicators'][] = '3D Secure not completed (is_3d_secure: false)';
-            if (!$analysis['inferred_reason']) {
-                $analysis['inferred_reason'] = 'Payment failed. 3D Secure authentication was not completed. This could be due to: card not supporting 3D Secure, authentication cancelled, or bank security restrictions. Please try again or contact your bank.';
-                $analysis['confidence'] = 'medium';
+            if ($require3DSecure) {
+                // 3D Secure is required but not completed - this is an error
+                $analysis['indicators'][] = '3D Secure not completed (is_3d_secure: false)';
+                if (!$analysis['inferred_reason']) {
+                    $analysis['inferred_reason'] = 'Payment failed. 3D Secure authentication was not completed. This could be due to: card not supporting 3D Secure, authentication cancelled, or bank security restrictions. Please try again or contact your bank.';
+                    $analysis['confidence'] = 'medium';
+                }
+            } else {
+                // 3D Secure is optional - just note it, don't treat as error
+                $analysis['indicators'][] = '3D Secure not completed (optional, is_3d_secure: false)';
             }
         } elseif ($is3DSecure) {
-            $analysis['indicators'][] = '3D Secure was attempted';
+            $analysis['indicators'][] = '3D Secure was completed';
         }
 
         // Check if card was voided or refunded

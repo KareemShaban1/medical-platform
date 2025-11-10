@@ -10,6 +10,7 @@ PAYMOB_INTEGRATION_ID=1234567
 PAYMOB_IFRAME_ID=1234567
 PAYMOB_HMAC_SECRET=ABCD1234EFGH5678IJKL9012MNOP3456QRST7890UVWX1234YZAB5678CDEF
 PAYMOB_CURRENCY=EGP
+PAYMOB_REQUIRE_3D_SECURE=true
 ```
 
 ## Where to Get Each Value:
@@ -35,6 +36,13 @@ PAYMOB_CURRENCY=EGP
 5. **PAYMOB_CURRENCY**: 
    - Set to your currency code (EGP, USD, EUR, etc.)
    - Default: EGP
+
+6. **PAYMOB_REQUIRE_3D_SECURE**: 
+   - Set to `true` to require 3D Secure authentication (recommended for security)
+   - Set to `false` to allow non-3D Secure payments (less secure, not recommended)
+   - Default: `true`
+   - **Note**: Even if set to `false`, Paymob dashboard integration settings may still require 3D Secure
+   - **Warning**: Disabling 3D Secure increases fraud risk and may violate some payment regulations
 
 ## After Adding to .env:
 
