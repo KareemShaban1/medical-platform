@@ -74,7 +74,8 @@ class PaymobGateway extends BasePaymentGateway
                 ? ($this->getConfigValue('wallet_integration_id') ?? $this->getConfigValue('integration_id'))
                 : $this->getConfigValue('integration_id');
 
-            $paymentKey = $this->createPaymentKey($authToken, [
+            // Prepare payment key data
+            $paymentKeyData = [
                 'amount_cents' => (int)($amount * 100),
                 'currency' => $data['currency'] ?? 'EGP',
                 'order_id' => $paymobOrder['id'],
@@ -95,7 +96,21 @@ class PaymobGateway extends BasePaymentGateway
                     'last_name' => $lastName,
                     'state' => !empty($customerInfo['state']) ? $customerInfo['state'] : 'NA',
                 ],
+            ];
+            
+            // Force 3D Secure if configured (some Paymob integrations support this)
+            // Note: 3D Secure is usually controlled by Paymob dashboard integration settings
+            // If your integration requires 3D Secure, it should trigger automatically
+            // If it's not appearing, check Paymob dashboard → Integrations → Your Integration → 3D Secure settings
+            
+            Log::info('Creating Paymob payment key', [
+                'integration_id' => $integrationId,
+                'amount_cents' => $paymentKeyData['amount_cents'],
+                'order_id' => $paymobOrder['id'],
+                'note' => '3D Secure is controlled by Paymob integration settings. Check dashboard if 3D Secure not appearing.',
             ]);
+            
+            $paymentKey = $this->createPaymentKey($authToken, $paymentKeyData);
 
             if (!$paymentKey) {
                 return PaymentResponse::failure(
@@ -129,6 +144,13 @@ class PaymobGateway extends BasePaymentGateway
                 // Card - Use iframe
                 $iframeId = $this->getConfigValue('iframe_id', $this->getConfigValue('integration_id'));
                 $redirectUrl = "https://accept.paymob.com/api/acceptance/iframes/{$iframeId}?payment_token={$paymentKey}";
+
+                Log::info('Paymob iframe URL generated', [
+                    'iframe_id' => $iframeId,
+                    'integration_id' => $integrationId,
+                    'redirect_url' => $redirectUrl,
+                    'note' => 'If 3D Secure not appearing, check Paymob dashboard integration settings for 3D Secure configuration',
+                ]);
 
                 return PaymentResponse::success(
                     message: 'Payment URL generated successfully',
