@@ -2,12 +2,9 @@
 <footer class="footer bg-primary-gradient">
 	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
 		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-			<div>
-				<h3 class="text-lg font-semibold mb-4">Medical Platform</h3>
-				<p class="text-white-400 mb-4">Your trusted healthcare
-					partner
-					providing quality medical services and solutions.
-				</p>
+            <div>
+                <h3 class="text-lg font-semibold mb-4">{{ __('medical platform') }}</h3>
+                <p class="text-white-400 mb-4">{{ __('footer tagline') }}</p>
 				<div class="flex space-x-4">
 					<a href="#" class="text-gray-400 hover:text-white transition"><i
 							class="fab fa-facebook"></i></a>
@@ -36,22 +33,19 @@
 					</li>
 				</ul>
 			</div>
-			<div>
-				<h3 class="text-lg font-semibold mb-4">{{ __('services') }}</h3>
-				<ul class="space-y-2">
-					<li><a href="{{ route('products') }}"
-							class="text-white-400 hover:text-white transition">{{ __('about item 1') }}</a>
-					</li>
-					<li><a href="{{ route('jobs') }}"
-							class="text-white-400 hover:text-white transition">{{ __('about item 2') }}</a>
-					</li>
-					<li><a href="#" class="text-white-400 hover:text-white transition">Rental
-							Spaces</a></li>
-					<li><a href="{{ route('courses') }}"
-							class="text-white-400 hover:text-white transition">Medical
-							Courses</a></li>
-				</ul>
-			</div>
+            <div>
+                <h3 class="text-lg font-semibold mb-4">{{ __('services') }}</h3>
+                <ul class="space-y-2">
+                    <li><a href="{{ route('products') }}"
+                        class="text-white-400 hover:text-white transition">{{ __('about item 1') }}</a>
+                    </li>
+                    <li><a href="{{ route('jobs') }}"
+                        class="text-white-400 hover:text-white transition">{{ __('about item 2') }}</a>
+                    </li>
+                    <li><a href="{{ route('rental-spaces') }}" class="text-white-400 hover:text-white transition">{{ __('rental spaces') }}</a></li>
+                    <li><a href="{{ route('courses') }}" class="text-white-400 hover:text-white transition">{{ __('medical courses') }}</a></li>
+                </ul>
+            </div>
 			<div>
 				<h3 class="text-lg font-semibold mb-4">{{ __('contact info') }}</h3>
 				<ul class="space-y-2 text-white-400">
@@ -63,8 +57,8 @@
 				</ul>
 			</div>
 		</div>
-		<div class="border-t border-white-800 mt-8 pt-8 text-center text-white-400">
-			<p>&copy; 2025 TEBBPLUS Medical Platform. All rights reserved.</p>
-		</div>
+        <div class="border-t border-white-800 mt-8 pt-8 text-center text-white-400">
+            <p>{{ __('copyright', ['year' => date('Y')]) }}</p>
+        </div>
 	</div>
 </footer>
