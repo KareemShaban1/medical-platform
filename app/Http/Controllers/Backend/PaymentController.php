@@ -44,8 +44,9 @@ class PaymentController extends Controller
 
         // Extract error message from various possible locations
         $errorMessage = null;
+        $hmacError = false;
         
-        // Check Paymob specific error fields
+        // Check Paymob specific error fields first (before HMAC verification)
         if (isset($paymentData['data']['message'])) {
             $errorMessage = $paymentData['data']['message'];
         } elseif (isset($paymentData['obj']['data']['message'])) {
@@ -71,17 +72,89 @@ class PaymentController extends Controller
         $isDeclined = isset($paymentData['is_voided']) && ($paymentData['is_voided'] === 'true' || $paymentData['is_voided'] === true)
             || isset($paymentData['is_refunded']) && ($paymentData['is_refunded'] === 'true' || $paymentData['is_refunded'] === true);
 
-        // Try to get error from verifyPayment if gateway instance is provided
+        // For Paymob, try to fetch detailed transaction info from API if we have transaction ID
+        $transactionId = $paymentData['id'] ?? $paymentData['transaction_id'] ?? null;
+        if ($gatewayInstance && $transactionId && $errorOccurred && !$errorMessage) {
+            try {
+                // Try to get detailed transaction info from Paymob API
+                if (method_exists($gatewayInstance, 'getTransactionDetails')) {
+                    $transactionDetails = $gatewayInstance->getTransactionDetails((string)$transactionId);
+                    
+                    if ($transactionDetails) {
+                        // Extract error information from transaction details
+                        $errorMessage = $transactionDetails['data']['message'] 
+                            ?? $transactionDetails['message'] 
+                            ?? $transactionDetails['error_message'] 
+                            ?? null;
+                        
+                        $errorCode = $transactionDetails['data']['error_code'] 
+                            ?? $transactionDetails['error_code'] 
+                            ?? $transactionDetails['data']['transaction_error_code']
+                            ?? $transactionDetails['transaction_error_code']
+                            ?? null;
+                        
+                        if ($errorCode) {
+                            $errorDetails['error_code'] = $errorCode;
+                        }
+                        
+                        // Log the detailed transaction info
+                        Log::info('Paymob transaction details retrieved', [
+                            'transaction_id' => $transactionId,
+                            'error_message' => $errorMessage,
+                            'error_code' => $errorCode,
+                            'transaction_data' => $transactionDetails,
+                        ]);
+                    }
+                }
+            } catch (\Exception $e) {
+                Log::warning('Failed to fetch transaction details from Paymob API', [
+                    'transaction_id' => $transactionId,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        }
+
+        // For Paymob, check if payment actually failed (success: false, error_occured: true)
+        // This is the real payment failure, not just HMAC verification
+        if ($errorOccurred && !$errorMessage) {
+            // Payment failed but no specific message - provide generic message based on context
+            if ($isDeclined) {
+                $errorMessage = 'Payment was declined by the bank. Please check your card details or try a different payment method.';
+            } else {
+                $errorMessage = 'Payment failed. The transaction could not be processed. Please try again or contact support.';
+            }
+        }
+
+        // Try to get additional info from verifyPayment, but don't let HMAC errors mask real payment errors
         if ($gatewayInstance && !$errorMessage) {
             try {
                 $paymentResponse = $gatewayInstance->verifyPayment($paymentData);
                 if (!$paymentResponse->success && $paymentResponse->message) {
-                    $errorMessage = $paymentResponse->message;
+                    // Only use verifyPayment message if it's not just an HMAC error
+                    // HMAC errors should be logged separately, not as the main error
+                    if (stripos($paymentResponse->message, 'HMAC') === false) {
+                        $errorMessage = $paymentResponse->message;
+                    } else {
+                        $hmacError = true;
+                        // Log HMAC error separately but don't use it as main error message
+                        Log::warning('HMAC verification failed (but payment may have failed for other reasons)', [
+                            'payment_data' => [
+                                'success' => $paymentData['success'] ?? null,
+                                'error_occured' => $errorOccurred,
+                                'transaction_id' => $paymentData['id'] ?? null,
+                            ],
+                        ]);
+                    }
                 }
             } catch (\Exception $e) {
-                // If verification throws exception, that's also an error
-                if (!$errorMessage) {
+                // If verification throws exception, log it but don't use as main error if we have payment failure
+                if (!$errorMessage && !$errorOccurred) {
                     $errorMessage = $e->getMessage();
+                } else {
+                    Log::warning('Payment verification exception (payment already marked as failed)', [
+                        'exception' => $e->getMessage(),
+                        'error_occured' => $errorOccurred,
+                    ]);
                 }
             }
         }
@@ -101,6 +174,7 @@ class PaymentController extends Controller
         $errorDetails['error_message'] = $errorMessage;
         $errorDetails['error_code'] = $errorCode;
         $errorDetails['error_type'] = $errorType;
+        $errorDetails['hmac_error'] = $hmacError;
         $errorDetails['raw_data'] = [
             'success' => $paymentData['success'] ?? null,
             'error_occured' => $errorOccurred,
@@ -108,7 +182,33 @@ class PaymentController extends Controller
             'is_voided' => $paymentData['is_voided'] ?? null,
             'is_refunded' => $paymentData['is_refunded'] ?? null,
             'pending' => $paymentData['pending'] ?? null,
+            'source_data_type' => $paymentData['source_data_type'] ?? null,
+            'source_data_pan' => isset($paymentData['source_data_pan']) ? substr($paymentData['source_data_pan'], -4) : null, // Last 4 digits only
         ];
+
+        // Log all available fields from payment data for analysis
+        // This helps identify what Paymob actually sends when payment fails
+        if ($errorOccurred) {
+            Log::info('Paymob payment failure - all available fields', [
+                'transaction_id' => $transactionId,
+                'all_payment_fields' => array_keys($paymentData),
+                'payment_data_sample' => [
+                    'success' => $paymentData['success'] ?? null,
+                    'error_occured' => $paymentData['error_occured'] ?? null,
+                    'pending' => $paymentData['pending'] ?? null,
+                    'is_voided' => $paymentData['is_voided'] ?? null,
+                    'is_refunded' => $paymentData['is_refunded'] ?? null,
+                    'is_3d_secure' => $paymentData['is_3d_secure'] ?? null,
+                    'integration_id' => $paymentData['integration_id'] ?? null,
+                    'order' => $paymentData['order'] ?? null,
+                    'amount_cents' => $paymentData['amount_cents'] ?? null,
+                    'currency' => $paymentData['currency'] ?? null,
+                    // Check for any fields that might contain error info
+                    'data' => $paymentData['data'] ?? null,
+                    'obj' => isset($paymentData['obj']) ? 'present' : null,
+                ],
+            ]);
+        }
 
         return $errorDetails;
     }
