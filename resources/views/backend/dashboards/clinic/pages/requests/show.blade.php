@@ -1,5 +1,13 @@
 @extends('backend.dashboards.clinic.layouts.app')
 
+@push('styles')
+<style>
+	.hidden {
+		display:none;
+	}
+</style>
+@endpush
+
 @section('title', __('Request Details'))
 
 @section('content')
