@@ -337,6 +337,7 @@
     "patient": "المريض",
     "patient register": "أنشاء حساب المريض",
     "doctor": "الطبيب",
-    "view doctors" : "عرض الأطباء"
+    "view doctors" : "عرض الأطباء",
+    "doctor registration" : "تسجيل الطبيب"
 
 }
