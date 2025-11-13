@@ -152,6 +152,15 @@ Route::group(
             Route::post('/mark-as-read/{id}', [\App\Http\Controllers\Backend\Dashboards\Supplier\NotificationController::class, 'markAsRead'])->name('notifications.mark-as-read');
             Route::post('/mark-all-as-read', [\App\Http\Controllers\Backend\Dashboards\Supplier\NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-as-read');
         });
+
+          // Location dropdowns endpoints
+          Route::get('/governorates', [SupplierController::class, 'getGovernorates'])
+          ->name('governorates')->withoutMiddleware(['auth:supplier', 'check.supplier.approval']);
+      Route::get('/cities', [SupplierController::class, 'getCities'])
+          ->name('cities')->withoutMiddleware(['auth:supplier', 'check.supplier.approval']);
+      Route::get('/areas', [SupplierController::class, 'getAreas'])
+          ->name('areas')->withoutMiddleware(['auth:supplier', 'check.supplier.approval']);
+
     }
 );
 
