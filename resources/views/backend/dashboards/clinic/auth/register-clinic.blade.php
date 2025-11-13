@@ -121,88 +121,185 @@
 										</div>
 									</div>
 
-									<div class="form-group">
-										<label
-											class="form-label required">{{ __('Address') }}</label>
-										<textarea name="address"
-											id="address"
-											rows="3"
-											class="form-control @error('address') is-invalid @enderror"
-											required>{{ old('address') }}</textarea>
-										<div class="validation-feedback"
-											id="address_feedback">
-										</div>
-										@error('address')
+									<!-- Governorate , City , Area -->
+									<div class="row">
 										<div
-											class="validation-feedback invalid">
-											<i
-												class="fa fa-exclamation-circle"></i>
-											{{ $message }}
-										</div>
-										@enderror
-									</div>
-
-									<div class="form-group">
-										<label
-											class="form-label">{{ __('Clinic Images') }}</label>
-										<div
-											class="file-input-wrapper">
-											<input type="file"
-												name="images[]"
-												id="images"
-												multiple
-												accept="image/*">
-											<label for="images"
-												class="file-input-label">
-												<i
-													class="fa fa-cloud-upload"></i>
-												<span
-													class="file-text">{{ __('Click to upload images or drag and drop') }}</span>
-												<small
-													class="file-info">{{ __('PNG, JPG, GIF up to 10MB each') }}</small>
-											</label>
-										</div>
-										<div class="progress-bar"
-											id="upload-progress"
-											style="display: none;">
-											<div class="progress-fill"
-												id="progress-fill">
+											class="col-md-4">
+											<div
+												class="form-group">
+												<label
+													class="form-label required">{{ __('Governorate') }}</label>
+												<select name="governorate_id"
+													id="governorate_id"
+													class="form-control p-0 @error('governorate_id') is-invalid @enderror"
+													required>
+													<option
+														value="">
+														{{ __('Select Governorate') }}
+													</option>
+												</select>
+												<div class="validation-feedback"
+													id="governorate_id_feedback">
+												</div>
+												@error('governorate_id')
+												<div
+													class="validation-feedback invalid">
+													<i
+														class="fa fa-exclamation-circle"></i>
+													{{ $message }}
+												</div>
+												@enderror
 											</div>
 										</div>
-										<div class="validation-feedback"
-											id="images_feedback">
-										</div>
-										@error('images')
 										<div
-											class="validation-feedback invalid">
-											<i
-												class="fa fa-exclamation-circle"></i>
-											{{ $message }}
+											class="col-md-4">
+											<div
+												class="form-group">
+												<label
+													class="form-label required">{{ __('City') }}</label>
+												<select name="city_id"
+													id="city_id"
+													class="form-control p-0 @error('city_id') is-invalid @enderror"
+													required
+													disabled>
+													<option
+														value="">
+														{{ __('Select City') }}
+													</option>
+												</select>
+												<div class="validation-feedback"
+													id="city_id_feedback">
+												</div>
+												@error('city_id')
+												<div
+													class="validation-feedback invalid">
+													<i
+														class="fa fa-exclamation-circle"></i>
+													{{ $message }}
+												</div>
+												@enderror
+											</div>
 										</div>
-										@enderror
+
+										<div
+											class="col-md-4">
+											<div
+												class="form-group">
+												<label
+													class="form-label required">{{ __('Area') }}</label>
+												<select name="area_id"
+													id="area_id"
+													class="form-control p-0 @error('area_id') is-invalid @enderror"
+													required
+													disabled>
+													<option
+														value="">
+														{{ __('Select Area') }}
+													</option>
+												</select>
+												<div class="validation-feedback"
+													id="area_id_feedback">
+												</div>
+												@error('area_id')
+												<div
+													class="validation-feedback invalid">
+													<i
+														class="fa fa-exclamation-circle"></i>
+													{{ $message }}
+												</div>
+												@enderror
+											</div>
+										</div>
+										<div
+											class="form-group col-md-12">
+											<label
+												class="form-label required">{{ __('Address') }}</label>
+											<textarea name="address"
+												id="address"
+												rows="3"
+												class="form-control @error('address') is-invalid @enderror"
+												required>{{ old('address') }}</textarea>
+											<div class="validation-feedback"
+												id="address_feedback">
+											</div>
+											@error('address')
+											<div
+												class="validation-feedback invalid">
+												<i
+													class="fa fa-exclamation-circle"></i>
+												{{ $message }}
+											</div>
+											@enderror
+										</div>
+
+										<div
+											class="form-group">
+											<label
+												class="form-label">{{ __('Clinic Images') }}</label>
+											<div
+												class="file-input-wrapper">
+												<input type="file"
+													name="images[]"
+													id="images"
+													multiple
+													accept="image/*">
+												<label for="images"
+													class="file-input-label">
+													<i
+														class="fa fa-cloud-upload"></i>
+													<span
+														class="file-text">{{ __('Click to upload images or drag and drop') }}</span>
+													<small
+														class="file-info">{{ __('PNG, JPG, GIF up to 10MB each') }}</small>
+												</label>
+											</div>
+											<div class="progress-bar"
+												id="upload-progress"
+												style="display: none;">
+												<div class="progress-fill"
+													id="progress-fill">
+												</div>
+											</div>
+											<div class="validation-feedback"
+												id="images_feedback">
+											</div>
+											@error('images')
+											<div
+												class="validation-feedback invalid">
+												<i
+													class="fa fa-exclamation-circle"></i>
+												{{ $message }}
+											</div>
+											@enderror
+										</div>
+
+										<div
+											class="text-end">
+											<button type="button"
+												class="btn btn-primary next-step"
+												id="nextBtn"
+												disabled>
+												{{ __('Next') }}
+												<i
+													class="fa fa-arrow-right"></i>
+											</button>
+										</div>
+										<div
+											class="back-to-home text-center">
+											<a href="{{ route('home') }}"
+												class="btn btn-link">
+												<i
+													class="fa fa-arrow-left"></i>
+												{{ __('Back to Home') }}
+											</a>
+										</div>
 									</div>
 
-									<div class="text-end">
-										<button type="button"
-											class="btn btn-primary next-step"
-											id="nextBtn"
-											disabled>
-											{{ __('Next') }}
-											<i
-												class="fa fa-arrow-right"></i>
-										</button>
-									</div>
-                                    <div class="back-to-home text-center">
-                                        <a href="{{ route('home') }}" class="btn btn-link">
-                                            <i class="fa fa-arrow-left"></i>
-                                            {{ __('Back to Home') }}
-                                        </a>
-                                    </div>
 								</div>
-
 								<!-- Step 2: User Details -->
 								<div class="step step-2">
-									<div class="step-header">
+									<div
+										class="step-header">
 										<h4>{{ __('Step 2: User Information') }}
 										</h4>
 										<p>{{ __('Create your admin account for the clinic') }}
@@ -334,7 +431,8 @@
 
 								<!-- Step 3: OTP Verification -->
 								<div class="step step-3">
-									<div class="step-header">
+									<div
+										class="step-header">
 										<h4>{{ __('Step 3: Email Verification') }}
 										</h4>
 										<p>{{ __('Please enter the 6-digit code sent to your email') }}

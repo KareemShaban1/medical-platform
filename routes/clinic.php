@@ -117,6 +117,14 @@ Route::group(
             ->name('resend-otp')->withoutMiddleware(['auth:clinic', 'check.clinic.approval']);
         // ->middleware('throttle:1,1');
 
+          // Location dropdowns endpoints
+          Route::get('/governorates', [ClinicController::class, 'getGovernorates'])
+          ->name('governorates')->withoutMiddleware(['auth:clinic', 'check.clinic.approval']);
+      Route::get('/cities', [ClinicController::class, 'getCities'])
+          ->name('cities')->withoutMiddleware(['auth:clinic', 'check.clinic.approval']);
+      Route::get('/areas', [ClinicController::class, 'getAreas'])
+          ->name('areas')->withoutMiddleware(['auth:clinic', 'check.clinic.approval']);
+
         // Approval routes (without approval middleware)
         Route::get('/approval', [\App\Http\Controllers\Backend\Dashboards\Clinic\ApprovalController::class, 'show'])
             ->name('approval.show')->withoutMiddleware('check.clinic.approval');

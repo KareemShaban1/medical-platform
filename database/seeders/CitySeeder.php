@@ -14,6 +14,9 @@ class CitySeeder extends Seeder
     {
         //
         
+        $cities = [ 
+            
+
 
 
 

@@ -21,9 +21,12 @@ class SupplierInfoController extends Controller
             'name' => 'required|string|max:255',
             'phone' => 'required|string|max:255',
             'address' => 'required|string',
+            'governorate_id' => 'required|exists:governorates,id',
+            'city_id' => 'required|exists:cities,id',
+            'area_id' => 'required|exists:areas,id',
         ]);
 
-        $supplier->update($request->only(['name', 'phone', 'address']));
+        $supplier->update($request->only(['name', 'phone', 'address', 'governorate_id', 'city_id', 'area_id']));
 
         if ($request->ajax()) {
             return response()->json(['success' => true, 'message' => __('Supplier info updated successfully')]);
@@ -32,4 +35,3 @@ class SupplierInfoController extends Controller
         return redirect()->back()->with('success', __('Supplier info updated successfully'));
     }
 }
-

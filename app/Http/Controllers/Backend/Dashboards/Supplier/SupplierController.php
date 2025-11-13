@@ -12,6 +12,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
+use App\Models\Governorate;
+use App\Models\City;
+use App\Models\Area;
 
 class SupplierController extends Controller
 {
@@ -47,6 +50,9 @@ class SupplierController extends Controller
             'user_name' => 'required|string|min:2',
             'user_email' => 'required|email',
             'password' => 'required|string|min:8',
+            'governorate_id' => 'required|exists:governorates,id',
+            'city_id' => 'required|exists:cities,id',
+            'area_id' => 'required|exists:areas,id',
             'images' => 'nullable|array',
             'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
         ];
@@ -74,6 +80,12 @@ class SupplierController extends Controller
             'images.*.image' => 'Only image files are allowed.',
             'images.*.mimes' => 'Images must be jpeg, png, jpg, or gif format.',
             'images.*.max' => 'Image size must be less than 10MB.',
+            'governorate_id.required' => 'Governorate is required.',
+            'governorate_id.exists' => 'Invalid governorate.',
+            'city_id.required' => 'City is required.',
+            'city_id.exists' => 'Invalid city.',
+            'area_id.required' => 'Area is required.',
+            'area_id.exists' => 'Invalid area.',
         ]);
 
         if ($validator->fails()) {
@@ -101,10 +113,13 @@ class SupplierController extends Controller
                 // Create new supplier and user
                 $supplier = Supplier::create([
                     'name' => $request->supplier_name,
-                    'phone' => $request->phone,
+                    'phone' => $request->phone, 
                     'address' => $request->address,
                     'is_allowed' => false,
-                    'status' => false
+                    'status' => false,
+                    'governorate_id' => $request->governorate_id,
+                    'city_id' => $request->city_id,
+                    'area_id' => $request->area_id,
                 ]);
 
                 // Handle images
@@ -270,5 +285,37 @@ class SupplierController extends Controller
 
         // Create new OTP
         return $supplier->otps()->create([]);
+    }
+
+    public function getGovernorates()
+    {
+        $governorates = Governorate::orderBy('name')->get();
+        return response()->json($governorates);
+    }
+
+    public function getCities(Request $request)
+    {
+        $request->validate([
+            'governorate_id' => 'required|exists:governorates,id'
+        ]);
+
+        $cities = City::where('governorate_id', $request->governorate_id)
+            ->orderBy('name')
+            ->get();
+
+        return response()->json($cities);
+    }
+
+    public function getAreas(Request $request)
+    {
+        $request->validate([
+            'city_id' => 'required|exists:cities,id'
+        ]);
+
+        $areas = Area::where('city_id', $request->city_id)
+            ->orderBy('name')
+            ->get();
+
+        return response()->json($areas);
     }
 }
