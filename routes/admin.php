@@ -215,6 +215,11 @@ Route::group(
         Route::post('areas/{id}/restore', [\App\Http\Controllers\Backend\Dashboards\Admin\AreaController::class, 'restore'])->name('areas.restore');
         Route::delete('areas/{id}/force-delete', [\App\Http\Controllers\Backend\Dashboards\Admin\AreaController::class, 'forceDelete'])->name('areas.force-delete');
         Route::resource('areas', \App\Http\Controllers\Backend\Dashboards\Admin\AreaController::class);
+
+        Route::get('course-enrollments', [\App\Http\Controllers\Backend\Dashboards\Admin\CourseEnrollmentController::class, 'index'])->name('course-enrollments.index');
+        Route::get('course-enrollments/data', [\App\Http\Controllers\Backend\Dashboards\Admin\CourseEnrollmentController::class, 'data'])->name('course-enrollments.data');
+        Route::put('course-enrollments/{id}/status', [\App\Http\Controllers\Backend\Dashboards\Admin\CourseEnrollmentController::class, 'updateStatus'])->name('course-enrollments.update-status');
+        Route::delete('course-enrollments/{id}', [\App\Http\Controllers\Backend\Dashboards\Admin\CourseEnrollmentController::class, 'destroy'])->name('course-enrollments.destroy');
     }
 );
 

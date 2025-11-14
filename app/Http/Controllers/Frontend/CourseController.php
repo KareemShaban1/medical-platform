@@ -4,7 +4,11 @@ namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
 use App\Models\Course;
+use App\Models\CourseEnrollment;
+use App\Models\Admin;
+use App\Notifications\Admin\NewCourseEnrollmentNotification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CourseController extends Controller
 {
@@ -125,11 +129,11 @@ class CourseController extends Controller
 	/**
 	 * Show course details
 	 */
-	public function show($id)
-	{
-		$course = Course::active()
-			->where('status', true)
-			->findOrFail($id);
+    public function show($id)
+    {
+        $course = Course::active()
+            ->where('status', true)
+            ->findOrFail($id);
 
 		// Get related courses from the same category
 		$relatedCourses = Course::active()
@@ -139,13 +143,61 @@ class CourseController extends Controller
 			->get();
 
 		// Get courses with similar level
-		$similarCourses = Course::active()
-			->where('status', true)
-			->where('id', '!=', $id)
-			->where('level', $course->level)
-			->limit(4)
-			->get();
+        $similarCourses = Course::active()
+            ->where('status', true)
+            ->where('id', '!=', $id)
+            ->where('level', $course->level)
+            ->limit(4)
+            ->get();
 
-		return view('frontend.pages.courses.show', compact('course', 'relatedCourses', 'similarCourses'));
-	}
+        $enrollment = null;
+        if (Auth::guard('clinic')->check()) {
+            $enrollment = CourseEnrollment::where('course_id', $course->id)
+                ->where('clinic_user_id', Auth::guard('clinic')->id())
+                ->first();
+        }
+
+        return view('frontend.pages.courses.show', compact('course', 'relatedCourses', 'similarCourses', 'enrollment'));
+    }
+
+    /**
+     * Enroll a clinic user into a course
+     */
+    public function enroll(Request $request, $id)
+    {
+        if (!Auth::guard('clinic')->check()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => __('You must be logged in as a clinic user to enroll.')
+            ], 401);
+        }
+
+        $course = Course::active()->where('status', true)->findOrFail($id);
+        $clinicUserId = Auth::guard('clinic')->id();
+
+        $enrollment = CourseEnrollment::firstOrCreate(
+            [
+                'course_id' => $course->id,
+                'clinic_user_id' => $clinicUserId,
+            ],
+            [
+                'status' => 'pending',
+            ]
+        );
+
+        if ($enrollment->wasRecentlyCreated) {
+            // Notify all admins
+            Admin::query()->each(function ($admin) use ($enrollment) {
+                $admin->notify(new NewCourseEnrollmentNotification($enrollment));
+            });
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => $enrollment->wasRecentlyCreated
+                ? __('Enrollment submitted successfully and pending approval.')
+                : __('You are already enrolled in this course.'),
+            'enrollment' => $enrollment
+        ]);
+    }
 }

@@ -87,6 +87,11 @@ class ClinicUser extends Authenticatable
         return $this->hasMany(AttendanceLog::class);
     }
 
+    public function courseEnrollments()
+    {
+        return $this->hasMany(CourseEnrollment::class);
+    }
+
     // ------- helper methods -------
 
     /**
