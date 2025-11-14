@@ -734,88 +734,74 @@
 								class="font-medium">{{ $course->level ?? 'N/A' }}</span>
 						</div>
 					</div>
-				</div>
+                </div>
 
-				<!-- Course URL / Access -->
-				@if($course->url)
-				<div class="bg-white rounded-lg shadow-lg p-6 mb-6 course-access-card">
-					<div class="flex items-center justify-between mb-4">
-						<div>
-							<h3 class="text-lg font-semibold text-gray-900">
-								{{ __('Course Access') }}</h3>
-							<p class="text-sm text-gray-500">
-								{{ __('Unlock premium materials once you enroll') }}
-							</p>
-						</div>
-						<i class="fas fa-lock-open text-2xl text-emerald-500"></i>
-					</div>
+                <!-- Course URL / Access -->
+                @if($course->url)
+                <div class="bg-white rounded-lg shadow-lg p-6 mb-6 course-access-card">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900">{{ __('Course Access') }}</h3>
+                            <p class="text-sm text-gray-500">{{ __('Unlock premium materials once you enroll') }}</p>
+                        </div>
+                        <i class="fas fa-lock-open text-2xl text-emerald-500"></i>
+                    </div>
 
-					@auth('clinic')
-					@if($enrollment)
-					<div
-						class="p-4 rounded-xl border {{ $enrollment->status === 'approved' ? 'border-green-200 bg-green-50' : 'border-yellow-200 bg-yellow-50' }}">
-						<div class="flex items-center justify-between mb-3">
-							<div>
-								<p class="text-sm text-gray-500">
-									{{ __('Enrollment status') }}
-								</p>
-								<p
-									class="text-lg font-semibold text-gray-900">
-									{{ ucfirst($enrollment->status) }}
-								</p>
-							</div>
-							<span
-								class="status-badge {{ $enrollment->status === 'approved' ? 'status-ongoing' : ($enrollment->status === 'rejected' ? 'status-completed' : 'status-upcoming') }}">
-								{{ ucfirst($enrollment->status) }}
-							</span>
-						</div>
-						@if($enrollment->status === 'approved')
-						<a href="{{ $course->url }}" target="_blank"
-							class="btn-enroll w-full text-center">
-							<i class="fas fa-external-link-alt"></i>
-							{{ __('Access course workspace') }}
-						</a>
-						@elseif($enrollment->status === 'pending')
-						<p class="text-sm text-gray-600">
-							{{ __('Your enrollment is pending approval. You will receive an email once it is approved.') }}
-						</p>
-						@else
-						<p class="text-sm text-gray-600">
-							{{ __('This enrollment was rejected. Please contact support if you believe this is a mistake.') }}
-						</p>
-						@endif
-					</div>
-					@else
-					<div
-						class="p-4 rounded-xl border border-dashed border-gray-200 bg-gray-50 text-center">
-						<p class="mb-4 text-gray-600">
-							{{ __('Enroll to unlock the private course link and resources.') }}
-						</p>
-						<button class="btn-enroll w-full justify-center"
-							data-enroll-trigger="access-card">
-							<i class="fas fa-unlock"></i>
-							{{ __('Enroll to unlock access') }}
-						</button>
-					</div>
-					@endif
-					@else
-					<div
-						class="p-4 rounded-xl border border-dashed border-gray-200 bg-gray-50 text-center">
-						<p class="mb-4 text-gray-600">
-							{{ __('Login with your clinic account to enroll and unlock this course link.') }}
-						</p>
-						<a href="{{ url('/clinic/login') }}"
-							class="btn-enroll w-full justify-center">
-							<i class="fas fa-sign-in-alt"></i>
-							{{ __('Login to continue') }}
-						</a>
-					</div>
-					@endauth
-				</div>
-				@endif
-			</div>
-		</div>
-	</div>
+                    @auth('clinic')
+                        @if($enrollment)
+                            <div class="p-4 rounded-xl border {{ $enrollment->status === 'approved' ? 'border-green-200 bg-green-50' : 'border-yellow-200 bg-yellow-50' }}">
+                                <div class="flex items-center justify-between mb-3">
+                                    <div>
+                                        <p class="text-sm text-gray-500">{{ __('Enrollment status') }}</p>
+                                        <p class="text-lg font-semibold text-gray-900">{{ ucfirst($enrollment->status) }}</p>
+                                    </div>
+                                    <span class="status-badge {{ $enrollment->status === 'approved' ? 'status-ongoing' : ($enrollment->status === 'rejected' ? 'status-completed' : 'status-upcoming') }}">
+                                        {{ ucfirst($enrollment->status) }}
+                                    </span>
+                                </div>
+                                @if($enrollment->status === 'approved')
+                                    <a href="{{ $course->url }}" target="_blank"
+                                        class="btn-enroll w-full text-center">
+                                        <i class="fas fa-external-link-alt"></i>
+                                        {{ __('Access course workspace') }}
+                                    </a>
+                                @elseif($enrollment->status === 'pending')
+                                    <p class="text-sm text-gray-600">
+                                        {{ __('Your enrollment is pending approval. You will receive an email once it is approved.') }}
+                                    </p>
+                                @else
+                                    <p class="text-sm text-gray-600">
+                                        {{ __('This enrollment was rejected. Please contact support if you believe this is a mistake.') }}
+                                    </p>
+                                @endif
+                            </div>
+                        @else
+                            <div class="p-4 rounded-xl border border-dashed border-gray-200 bg-gray-50 text-center">
+                                <p class="mb-4 text-gray-600">
+                                    {{ __('Enroll to unlock the private course link and resources.') }}
+                                </p>
+                                <button class="btn-enroll w-full justify-center" data-enroll-trigger="access-card">
+                                    <i class="fas fa-unlock"></i>
+                                    {{ __('Enroll to unlock access') }}
+                                </button>
+                            </div>
+                        @endif
+                    @else
+                        <div class="p-4 rounded-xl border border-dashed border-gray-200 bg-gray-50 text-center">
+                            <p class="mb-4 text-gray-600">
+                                {{ __('Login with your clinic/doctor account to enroll and unlock this course link.') }}
+                            </p>
+                            <a href="{{ url('/clinic/login') }}" class="btn-enroll w-full justify-center">
+                                <i class="fas fa-sign-in-alt"></i>
+                                {{ __('Login to continue') }}
+                            </a>
+                        </div>
+                    @endauth
+                </div>
+                @endif
+            </div>
+        </div>
+    </div>
 </section>
 
 <!-- Related Courses -->

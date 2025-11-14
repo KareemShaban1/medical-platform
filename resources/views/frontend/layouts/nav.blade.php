@@ -233,30 +233,42 @@
 								d="m1 1 4 4 4-4" />
 						</svg>
 					</button>
-					<div id="clinicDropdown"
-						class="hidden z-[9999] absolute font-normal bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-40 sm:w-44">
-						<ul class="py-2 text-sm text-gray-700"
-							aria-labelledby="clinicLink">
-							<li>
-								<a href="{{ route('clinics') }}"
-									class="block px-3 sm:px-4 py-2 hover:bg-gray-100 text-xs sm:text-sm">{{ __('view clinics') }}</a>
-							</li>
-
-							@if(!auth('clinic')->check() &&
-							!auth('patient')->check() &&
-							!auth('supplier')->check() )
-							<li>
-								<a href="{{ route('clinic.register-clinic') }}"
-									class="block px-3 sm:px-4 py-2 hover:bg-gray-100 text-xs sm:text-sm">{{ __('register clinic') }}</a>
-							</li>
-							<li>
-								<a href="{{ url('/clinic/login') }}"
-									class="block px-3 sm:px-4 py-2 hover:bg-gray-100  text-xs sm:text-sm">{{ __('login clinic') }}</a>
-							</li>
-							@endif
-
-						</ul>
-					</div>
+                        <div id="clinicDropdown"
+                            class="hidden z-[9999] absolute font-normal bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-40 sm:w-44">
+                            <ul class="py-2 text-sm text-gray-700" aria-labelledby="clinicLink">
+                                @php
+                                    $isClinicUser = auth('clinic')->check() && optional(auth('clinic')->user())->clinic_id !== null;
+                                @endphp
+                                @if($isClinicUser)
+                                    <li>
+                                        <a href="{{ route('clinic.dashboard') }}" class="block px-3 sm:px-4 py-2 hover:bg-gray-100 text-xs sm:text-sm">{{ __('dashboard') }}</a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ route('clinics') }}" class="block px-3 sm:px-4 py-2 hover:bg-gray-100 text-xs sm:text-sm">{{ __('view clinics') }}</a>
+                                    </li>
+                                    <li>
+                                        <form method="POST" action="{{ route('clinic.logout') }}" class="inline w-full">
+                                            @csrf
+                                            <button type="submit" class="block px-4 py-2 hover:bg-gray-100">{{ __('logout') }}</button>
+                                        </form>
+                                    </li>
+                                @else
+                                    <li>
+                                        <a href="{{ route('clinics') }}" class="block px-3 sm:px-4 py-2 hover:bg-gray-100 text-xs sm:text-sm">{{ __('view clinics') }}</a>
+                                    </li>
+                                    	@if(!auth('clinic')->check() &&
+                                      !auth('patient')->check() &&
+                                       !auth('supplier')->check() )     
+                                      <li>
+                                          <a href="{{ route('clinic.register-clinic') }}" class="block px-3 sm:px-4 py-2 hover:bg-gray-100 text-xs sm:text-sm">{{ __('register clinic') }}</a>
+                                      </li>
+                                      <li>
+                                          <a href="{{ url('/clinic/login') }}" class="block px-3 sm:px-4 py-2 hover:bg-gray-100  text-xs sm:text-sm">{{ __('login clinic') }}</a>
+                                      </li>
+                                    @endif
+                                @endif
+                            </ul>
+                        </div>
 				</li>
 
 
@@ -276,32 +288,39 @@
 								d="m1 1 4 4 4-4" />
 						</svg>
 					</button>
-					<div id="supplierDropdown"
-						class="hidden z-[9999] absolute font-normal bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-40 sm:w-44">
-						<ul class="py-2 text-sm text-gray-700"
-							aria-labelledby="supplierLink">
-							<li>
-								<a href="{{ route('suppliers') }}"
-									class="block px-3 sm:px-4 py-2 hover:bg-gray-100 text-xs sm:text-sm">
-									{{ __('view suppliers') }}</a>
-							</li>
-							@if(!auth('clinic')->check() &&
-							!auth('patient')->check() &&
-							!auth('supplier')->check() )
-							<li>
-								<a href="{{ route('supplier.register-supplier') }}"
-									class="block px-3 sm:px-4 py-2 hover:bg-gray-100 text-xs sm:text-sm">
-									{{ __('register supplier') }}</a>
-							</li>
-							<li>
-								<a href="{{ url('/supplier/login') }}"
-									class="block px-3 sm:px-4 py-2 hover:bg-gray-100 text-xs sm:text-sm">
-									{{ __('login supplier') }}
-								</a>
-							</li>
-							@endif
-						</ul>
-					</div>
+                        <div id="supplierDropdown"
+                            class="hidden z-[9999] absolute font-normal bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-40 sm:w-44">
+                            <ul class="py-2 text-sm text-gray-700" aria-labelledby="supplierLink">
+                                @auth('supplier')
+                                    <li>
+                                        <a href="{{ route('supplier.dashboard') }}" class="block px-3 sm:px-4 py-2 hover:bg-gray-100 text-xs sm:text-sm">{{ __('dashboard') }}</a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ route('suppliers') }}" class="block px-3 sm:px-4 py-2 hover:bg-gray-100 text-xs sm:text-sm">{{ __('view suppliers') }}</a>
+                                    </li>
+                                    <li>
+                                        <form method="POST" action="{{ route('supplier.logout') }}" class="inline w-full">
+                                            @csrf
+                                            <button type="submit" class="block px-4 py-2 hover:bg-gray-100">{{ __('logout') }}</button>
+                                        </form>
+                                    </li>
+                                @else
+                                    <li>
+                                        <a href="{{ route('suppliers') }}" class="block px-3 sm:px-4 py-2 hover:bg-gray-100 text-xs sm:text-sm">{{ __('view suppliers') }}</a>
+                                    </li>
+                                    	@if(!auth('clinic')->check() &&
+                                        !auth('patient')->check() &&
+                                        !auth('supplier')->check() )
+                                        <li>
+                                            <a href="{{ route('supplier.register-supplier') }}" class="block px-3 sm:px-4 py-2 hover:bg-gray-100 text-xs sm:text-sm">{{ __('register supplier') }}</a>
+                                        </li>
+                                        <li>
+                                            <a href="{{ url('/supplier/login') }}" class="block px-3 sm:px-4 py-2 hover:bg-gray-100 text-xs sm:text-sm">{{ __('login supplier') }}</a>
+                                        </li>
+                                       @endif 
+                                @endauth
+                            </ul>
+                        </div>
 				</li>
 
 				<!-- Patient/User Authentication -->
