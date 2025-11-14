@@ -65,7 +65,13 @@ class AppointmentRepository implements AppointmentRepositoryInterface
             ->whereHas('doctorProfile.clinicUser', function ($q) use ($clinicId) {
                 $q->where('clinic_id', $clinicId);
             })
-            ->with(['doctorProfile.clinicUser', 'doctorProfile.speciality', 'patient.user', 'period']);
+            ->leftJoin('doctor_profiles', 'appointments.doctor_profile_id', '=', 'doctor_profiles.id')
+            ->leftJoin('patients', 'appointments.patient_id', '=', 'patients.id')
+            ->leftJoin('users', 'patients.user_id', '=', 'users.id')
+            ->leftJoin('daily_periods', 'appointments.period_id', '=', 'daily_periods.id')
+            ->select('appointments.*')
+            ->with(['doctorProfile.clinicUser', 'doctorProfile.speciality', 'patient.user', 'period'])
+            ->distinct();
 
         // If the authenticated clinic user is a doctor, only show their appointments
         $clinicUser = auth('clinic')->user();
@@ -109,6 +115,33 @@ class AppointmentRepository implements AppointmentRepositoryInterface
         $query->orderBy('created_at', 'desc');
 
         return datatables()->of($query)
+            ->filterColumn('doctor_name', function($query, $keyword) {
+                $query->where(function($q) use ($keyword) {
+                    $q->where('doctor_profiles.name', 'like', "%{$keyword}%");
+                });
+            })
+            ->filterColumn('patient_name', function($query, $keyword) {
+                $query->where(function($q) use ($keyword) {
+                    $q->where('users.name', 'like', "%{$keyword}%");
+                });
+            })
+            ->filterColumn('appointment_date', function($query, $keyword) {
+                $query->where(function($q) use ($keyword) {
+                    $q->whereRaw("DATE_FORMAT(daily_periods.date, '%Y-%m-%d') LIKE ?", ["%{$keyword}%"])
+                      ->orWhereRaw("DATE_FORMAT(daily_periods.date, '%d/%m/%Y') LIKE ?", ["%{$keyword}%"]);
+                });
+            })
+            ->filterColumn('appointment_time', function($query, $keyword) {
+                $query->where(function($q) use ($keyword) {
+                    $q->where('daily_periods.start_time', 'like', "%{$keyword}%")
+                      ->orWhere('daily_periods.end_time', 'like', "%{$keyword}%");
+                });
+            })
+            ->filterColumn('status', function($query, $keyword) {
+                $query->where(function($q) use ($keyword) {
+                    $q->where('appointments.status', 'like', "%{$keyword}%");
+                });
+            })
             ->addColumn('doctor_name', function ($item) {
                 return $item->doctorProfile->name ?? 'N/A';
             })

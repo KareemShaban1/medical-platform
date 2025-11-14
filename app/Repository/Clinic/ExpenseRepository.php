@@ -19,11 +19,18 @@ class ExpenseRepository implements ExpenseRepositoryInterface
 
     public function data()
     {
-        $expenses = Expense::query();
+        $expenses = Expense::with('category');
 
         return datatables()->of($expenses)
             ->addColumn('category', fn($item) => $item->category->name)
             ->addColumn('action', fn($item) => $this->expenseActions($item))
+            ->filterColumn('category', function($query, $keyword) {
+                $query->where(function($q) use ($keyword) {
+                    $q->whereHas('category', function($q) use ($keyword) {
+                        $q->where('name', 'like', "%{$keyword}%");
+                    });
+                });
+            })
             ->rawColumns(['action', 'category', 'supplier'])
             ->make(true);
     }

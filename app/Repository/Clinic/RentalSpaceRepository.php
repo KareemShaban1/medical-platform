@@ -22,7 +22,7 @@ class RentalSpaceRepository implements RentalSpaceRepositoryInterface
 
     public function data()
     {
-        $rentalSpaces = RentalSpace::query();
+        $rentalSpaces = RentalSpace::forCurrentClinic();
 
         return datatables()->of($rentalSpaces)
             ->editColumn('status', fn($item) => $this->rentalSpaceStatus($item))
