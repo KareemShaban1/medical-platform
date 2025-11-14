@@ -33,8 +33,8 @@
 					<div class="row">
 						<div class="col-md-6">
 							<script>
-								document.write(new Date().getFullYear())
-							</script> © Medical Platform
+							document.write(new Date().getFullYear())
+							</script> © tebbplus
 						</div>
 					</div>
 				</div>

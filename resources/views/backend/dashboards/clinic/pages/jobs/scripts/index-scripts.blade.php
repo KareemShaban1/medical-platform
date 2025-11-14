@@ -10,7 +10,9 @@ let table = $('#job-table').DataTable({
 		},
 		{
 			data: 'main_image',
-			name: 'main_image'
+			name: 'main_image',
+			orderable: false,
+			searchable: false
 		},
 		{
 			data: 'title',
@@ -23,7 +25,9 @@ let table = $('#job-table').DataTable({
 		},
 		{
 			data: 'job_applications',
-			name: 'job_applications'
+			name: 'job_applications',
+			orderable: false,
+			searchable: false
 		},
 		{
 			data: 'action',

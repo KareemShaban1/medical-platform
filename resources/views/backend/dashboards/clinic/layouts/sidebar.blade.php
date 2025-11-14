@@ -215,17 +215,23 @@
   					<span> {{__('Patients')}} </span>
   					<span class="menu-arrow"></span>
   				</a>
-  				<div class="collapse" id="sidebarPatients">
-  					<ul class="side-nav-second-level">
-  						<li>
-  							<a href="{{ route('clinic.patients.index') }}">
-  								<span> {{__('All Patients')}} </span>
-  							</a>
-  						</li>
+				<div class="collapse" id="sidebarPatients">
+					<ul class="side-nav-second-level">
+						<li>
+							<a href="{{ route('clinic.patients.index') }}">
+								<span> {{__('All Patients')}} </span>
+							</a>
+						</li>
 
-  					</ul>
-  				</div>
-  			</li>
+						<li>
+							<a href="{{ route('clinic.patients.trash') }}">
+								<span> {{__('Trash Patients')}} </span>
+							</a>
+						</li>
+
+					</ul>
+				</div>
+			</li>
 
   			<!-- Lab Orders -->
   			<li class="side-nav-item">

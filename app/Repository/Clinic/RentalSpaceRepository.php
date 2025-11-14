@@ -4,6 +4,8 @@ namespace App\Repository\Clinic;
 
 use App\Interfaces\Clinic\RentalSpaceRepositoryInterface;
 use App\Models\ModuleApprovement;
+use App\Models\Admin;
+use App\Notifications\Admin\RentalSpaceSubmittedForReview;
 use App\Models\RentalSpace;
 use App\Traits\HandlesMediaUploads;
 use Illuminate\Support\Facades\DB;
@@ -20,7 +22,7 @@ class RentalSpaceRepository implements RentalSpaceRepositoryInterface
 
     public function data()
     {
-        $rentalSpaces = RentalSpace::query();
+        $rentalSpaces = RentalSpace::forCurrentClinic();
 
         return datatables()->of($rentalSpaces)
             ->editColumn('status', fn($item) => $this->rentalSpaceStatus($item))
@@ -129,6 +131,12 @@ class RentalSpaceRepository implements RentalSpaceRepositoryInterface
                     'action' => 'under_review',
                     'action_by' => auth()->user()->id,
                 ]);
+
+                // Notify all admins that a new rental space was submitted
+                $admins = Admin::all();
+                foreach ($admins as $admin) {
+                    $admin->notify(new RentalSpaceSubmittedForReview($rentalSpace));
+                }
             }
 
 

@@ -4,6 +4,7 @@ namespace App\Repository\Clinic;
 
 use App\Interfaces\Clinic\PatientRepositoryInterface;
 use App\Models\Patient;
+use App\Models\DoctorPatient;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
@@ -22,15 +23,38 @@ class PatientRepository implements PatientRepositoryInterface
         if ($clinicUser->isDoctor()) {
             // Show only patients assigned to this doctor in this clinic
             $doctorProfile = $clinicUser->getDoctorProfile();
-            $patients = Patient::with(['user', 'doctors'])
-                ->forDoctorInClinic($doctorProfile->id, $clinicUser->clinic_id);
+            $patients = Patient::query()
+                ->forDoctorInClinic($doctorProfile->id, $clinicUser->clinic_id)
+                ->leftJoin('users', 'patients.user_id', '=', 'users.id')
+                ->select('patients.*')
+                ->with(['user', 'doctors'])
+                ->distinct();
         } else {
             // Show all patients in the clinic
-            $patients = Patient::with(['user', 'doctors'])
-                ->forClinic($clinicUser->clinic_id);
+            $patients = Patient::query()
+                ->forClinic($clinicUser->clinic_id)
+                ->leftJoin('users', 'patients.user_id', '=', 'users.id')
+                ->select('patients.*')
+                ->with(['user', 'doctors'])
+                ->distinct();
         }
 
         return datatables()->of($patients)
+            ->filterColumn('name', function($query, $keyword) {
+                $query->where(function($q) use ($keyword) {
+                    $q->where('users.name', 'like', "%{$keyword}%");
+                });
+            })
+            ->filterColumn('email', function($query, $keyword) {
+                $query->where(function($q) use ($keyword) {
+                    $q->where('users.email', 'like', "%{$keyword}%");
+                });
+            })
+            ->filterColumn('phone', function($query, $keyword) {
+                $query->where(function($q) use ($keyword) {
+                    $q->where('patients.phone', 'like', "%{$keyword}%");
+                });
+            })
             ->addColumn('name', fn($item) => $item->user ? $item->user->name : 'N/A')
             ->addColumn('phone', fn($item) => $item->phone)
             ->addColumn('email', fn($item) => $item->user ? $item->user->email : 'N/A')
@@ -239,15 +263,137 @@ class PatientRepository implements PatientRepositoryInterface
             $clinicUser = auth('clinic')->user();
             $patient = Patient::forClinic($clinicUser->clinic_id)->findOrFail($id);
 
-            // Only remove the assignment in this clinic, don't delete the patient
-            $patient->doctors()->wherePivot('clinic_id', $clinicUser->clinic_id)->detach();
+            // Soft delete doctor-patient assignments for this clinic only (move to trash)
+            $assignments = DoctorPatient::where('patient_id', $patient->id)
+                ->where('clinic_id', $clinicUser->clinic_id)
+                ->when($clinicUser->isDoctor(), function($q) use ($clinicUser) {
+                    $q->where('doctor_profile_id', $clinicUser->getDoctorProfile()->id);
+                })
+                ->whereNull('deleted_at')
+                ->get();
 
-            // If patient has no more assignments in any clinic, then delete the patient
-            if ($patient->doctors()->count() === 0) {
+            foreach ($assignments as $assignment) {
+                $assignment->delete();
+            }
+
+            // If patient has no more ACTIVE assignments in any clinic, soft-delete the patient
+            $activeAssignmentsExist = DoctorPatient::where('patient_id', $patient->id)
+                ->whereNull('deleted_at')
+                ->exists();
+            if (!$activeAssignmentsExist) {
                 $patient->delete();
             }
 
             return $patient;
+        });
+    }
+
+    public function trashData()
+    {
+        $clinicUser = auth('clinic')->user();
+
+        // Base query for trashed assignments in this clinic
+        $trashedAssignmentsQuery = DoctorPatient::onlyTrashed()
+            ->where('clinic_id', $clinicUser->clinic_id)
+            ->with(['patient' => function($query) {
+                $query->withTrashed()->with('user'); // Include soft-deleted patients
+            }, 'doctorProfile']);
+
+        // Check if the logged-in user is a doctor
+        if ($clinicUser->isDoctor()) {
+            // Show only trashed patients that were assigned to this doctor
+            $doctorProfile = $clinicUser->getDoctorProfile();
+            $trashedAssignmentsQuery->where('doctor_profile_id', $doctorProfile->id);
+        }
+
+        $trashedAssignments = $trashedAssignmentsQuery->get();
+
+        // Group by patient to present a single row per patient with aggregated doctors
+        $grouped = $trashedAssignments->groupBy('patient_id')->map(function ($items, $patientId) {
+            $first = $items->first();
+            return (object) [
+                'id' => $first->patient ? $first->patient->id : $patientId,
+                'patient' => $first->patient,
+                'doctors' => $items->pluck('doctorProfile')->filter(),
+            ];
+        })->values();
+
+        return datatables()->of($grouped)
+            ->addColumn('name', function ($row) {
+                return $row->patient && $row->patient->user ? $row->patient->user->name : 'N/A';
+            })
+            ->addColumn('phone', function ($row) {
+                return $row->patient ? $row->patient->phone : 'N/A';
+            })
+            ->addColumn('email', function ($row) {
+                return $row->patient && $row->patient->user ? $row->patient->user->email : 'N/A';
+            })
+            ->addColumn('assigned_doctors', function ($row) {
+                if (!$row->doctors || $row->doctors->isEmpty()) {
+                    return '<span class="badge bg-secondary">No Doctor</span>';
+                }
+                return $row->doctors->map(function ($doctor) {
+                    return '<span class="badge bg-primary me-1">' . e($doctor->name) . '</span>';
+                })->implode('');
+            })
+            ->addColumn('trash_action', function ($row) {
+                $actions = '<div class="d-flex gap-2">';
+                $actions .= '<button onclick="restore(' . $row->id . ')" class="btn btn-sm btn-success" title="Restore"><i class="mdi mdi-restore"></i></button>';
+                $actions .= '<button onclick="forceDelete(' . $row->id . ')" class="btn btn-sm btn-danger" title="Delete Permanently"><i class="mdi mdi-delete-forever"></i></button>';
+                $actions .= '</div>';
+                return $actions;
+            })
+            ->rawColumns(['assigned_doctors', 'trash_action'])
+            ->make(true);
+    }
+
+    public function restore($patientId)
+    {
+        return DB::transaction(function () use ($patientId) {
+            $clinicUser = auth('clinic')->user();
+
+            // Restore patient (if soft-deleted) when restoring assignments
+            $patient = Patient::withTrashed()->findOrFail($patientId);
+            if ($patient->trashed()) {
+                $patient->restore();
+            }
+
+            $restoreAssignments = DoctorPatient::onlyTrashed()
+                ->where('patient_id', $patientId)
+                ->where('clinic_id', $clinicUser->clinic_id)
+                ->when($clinicUser->isDoctor(), function($q) use ($clinicUser) {
+                    $q->where('doctor_profile_id', $clinicUser->getDoctorProfile()->id);
+                })
+                ->get();
+
+            foreach ($restoreAssignments as $assignment) {
+                $assignment->restore();
+            }
+
+            return $patient;
+        });
+    }
+
+    public function forceDelete($patientId)
+    {
+        return DB::transaction(function () use ($patientId) {
+            $clinicUser = auth('clinic')->user();
+
+            // Permanently remove trashed assignments for this clinic (scope by doctor if applicable)
+            $forceAssignments = DoctorPatient::onlyTrashed()
+                ->where('patient_id', $patientId)
+                ->where('clinic_id', $clinicUser->clinic_id)
+                ->when($clinicUser->isDoctor(), function($q) use ($clinicUser) {
+                    $q->where('doctor_profile_id', $clinicUser->getDoctorProfile()->id);
+                })
+                ->get();
+
+            foreach ($forceAssignments as $assignment) {
+                $assignment->forceDelete();
+            }
+
+            // If patient now has no assignments at all (active or trashed) in any clinic, we may leave patient record as-is.
+            return true;
         });
     }
 

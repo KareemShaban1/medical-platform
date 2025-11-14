@@ -8,13 +8,14 @@ use App\Http\Controllers\Frontend\HomeController;
 use App\Http\Controllers\Frontend\ClinicController;
 use App\Http\Controllers\Frontend\CourseController;
 use App\Http\Controllers\Frontend\ProductController;
+use App\Http\Controllers\Frontend\RentalSpaceController as FrontendRentalSpaceController;
 use App\Http\Controllers\Frontend\CheckoutController;
 use App\Http\Controllers\Frontend\SupplierController;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 use App\Http\Controllers\Frontend\Auth\PatientAuthController;
 use App\Http\Controllers\Frontend\ClinicUser\ProfileController;
 use Illuminate\Support\Facades\Auth;
-
+use App\Http\Controllers\Backend\PaymentController;
 Route::group(
     [
         'prefix' => LaravelLocalization::setLocale(),
@@ -35,6 +36,11 @@ Route::group(
 		Route::get('/products/on-sale', [ProductController::class, 'onSale'])->name('products.on-sale');
 		Route::get('/products/in-stock', [ProductController::class, 'inStock'])->name('products.in-stock');
 		Route::get('/products/recent', [ProductController::class, 'recent'])->name('products.recent');
+
+		// Rental Spaces (Frontend)
+		Route::get('/rental-spaces', [FrontendRentalSpaceController::class, 'index'])->name('rental-spaces');
+		Route::get('/rental-spaces/{id}', [FrontendRentalSpaceController::class, 'show'])->name('rental-spaces.show');
+		Route::post('/rental-spaces/filter', [FrontendRentalSpaceController::class, 'filter'])->name('rental-spaces.filter');
 
 		Route::get('/clinics', [ClinicController::class, 'index'])->name('clinics');
 		Route::get('/clinics/{id}', [ClinicController::class, 'show'])->name('clinics.show');
@@ -58,6 +64,8 @@ Route::group(
 		Route::post('/courses/filter', [CourseController::class, 'filter'])->name('courses.filter');
 
 		// Doctor Profile Routes
+		Route::get('/doctors', [\App\Http\Controllers\Frontend\DoctorController::class, 'index'])->name('doctors.index');
+		Route::post('/doctors/filter', [\App\Http\Controllers\Frontend\DoctorController::class, 'filter'])->name('doctors.filter');
 		Route::get('/doctors/{id}', [\App\Http\Controllers\Frontend\DoctorProfileController::class, 'show'])->name('doctors.show');
 		Route::get('/doctors/{id}/available-days', [\App\Http\Controllers\Frontend\DoctorProfileController::class, 'getAvailableDays'])->name('doctors.available-days');
 		Route::get('/doctors/{id}/available-periods', [\App\Http\Controllers\Frontend\DoctorProfileController::class, 'getAvailablePeriods'])->name('doctors.available-periods');
@@ -89,11 +97,51 @@ Route::group([
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/checkout/place-order', [CheckoutController::class, 'placeOrder'])->name('checkout.place-order');
     Route::get('/checkout/success/{order}', [CheckoutController::class, 'success'])->name('checkout.success');
+    Route::get('/checkout/failed', [CheckoutController::class, 'failed'])->name('checkout.failed');
 
-    // Profile routes
+    // Profile routes (for clinic users with clinics)
     Route::get('/profile/orders', [ProfileController::class, 'orders'])->name('profile.orders');
     Route::get('/profile/orders/{id}', [ProfileController::class, 'orderDetails'])->name('profile.order-details');
 });
+
+// Doctor Routes (standalone doctors without clinics)
+Route::group([
+    'prefix' => LaravelLocalization::setLocale() . '/doctor',
+    'as' => 'doctor.',
+    'middleware' => [
+        'auth:clinic',
+        'localeCookieRedirect',
+        'localizationRedirect',
+        'localeViewPath'
+    ]
+], function () {
+    Route::get('/dashboard', [\App\Http\Controllers\Frontend\Doctor\DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/profile', [\App\Http\Controllers\Frontend\Doctor\ProfileController::class, 'index'])->name('profile.index');
+    Route::get('/profile/create', [\App\Http\Controllers\Frontend\Doctor\ProfileController::class, 'create'])->name('profile.create');
+    Route::post('/profile', [\App\Http\Controllers\Frontend\Doctor\ProfileController::class, 'store'])->name('profile.store');
+    Route::get('/profile/edit', [\App\Http\Controllers\Frontend\Doctor\ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [\App\Http\Controllers\Frontend\Doctor\ProfileController::class, 'update'])->name('profile.update');
+    Route::post('/profile/submit', [\App\Http\Controllers\Frontend\Doctor\ProfileController::class, 'submit'])->name('profile.submit');
+    Route::get('/orders', [\App\Http\Controllers\Frontend\Doctor\OrderController::class, 'index'])->name('orders.index');
+    Route::get('/orders/{id}/details', [\App\Http\Controllers\Frontend\Doctor\OrderController::class, 'orderDetails'])->name('orders.show');
+});
+
+// Doctor Registration Routes (public)
+Route::group([
+    'prefix' => LaravelLocalization::setLocale(),
+    'middleware' => [
+        'localeCookieRedirect',
+        'localizationRedirect',
+        'localeViewPath'
+    ]
+], function () {
+    Route::get('/doctor/register', [\App\Http\Controllers\Frontend\Doctor\DoctorAuthController::class, 'showRegisterForm'])->name('doctor.register.show');
+    Route::post('/doctor/register', [\App\Http\Controllers\Frontend\Doctor\DoctorAuthController::class, 'register'])->name('doctor.register');
+});
+
+// Payment gateway callbacks (no auth required for webhooks and returns)
+Route::post('/payment/callback/{gateway}', [PaymentController::class, 'paymentCallback'])->name('payment.callback');
+Route::get('/payment/return/{gateway}', [PaymentController::class, 'paymentReturn'])->name('payment.return');
 
 // Patient Dashboard Routes
 Route::group([

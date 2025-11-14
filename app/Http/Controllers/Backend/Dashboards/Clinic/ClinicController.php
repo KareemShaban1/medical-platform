@@ -14,6 +14,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 use Illuminate\Http\Request;
+use App\Models\Governorate;
+use App\Models\City;
+use App\Models\Area;
 
 class ClinicController extends Controller
 {
@@ -47,6 +50,9 @@ class ClinicController extends Controller
             'clinic_name' => 'required|string|min:2',
             'phone' => 'required|string|max:255',
             'address' => 'required|string|min:10',
+            'governorate_id' => 'required|exists:governorates,id',
+            'city_id' => 'required|exists:cities,id',
+            'area_id' => 'required|exists:areas,id',
             'user_name' => 'required|string|min:2',
             'user_email' => 'required|email',
             'password' => 'required|string|min:8',
@@ -67,6 +73,12 @@ class ClinicController extends Controller
             'phone.unique' => 'This phone number is already registered.',
             'address.required' => 'Address is required.',
             'address.min' => 'Address must be at least 10 characters.',
+            'governorate_id.required' => 'Governorate is required.',
+            'governorate_id.exists' => 'Invalid governorate.',
+            'city_id.required' => 'City is required.',
+            'city_id.exists' => 'Invalid city.',
+            'area_id.required' => 'Area is required.',
+            'area_id.exists' => 'Invalid area.',
             'user_name.required' => 'User name is required.',
             'user_name.min' => 'User name must be at least 2 characters.',
             'user_email.required' => 'Email is required.',
@@ -108,7 +120,10 @@ class ClinicController extends Controller
                     'phone' => $request->phone,
                     'address' => $request->address,
                     'is_allowed' => false,
-                    'status' => false
+                    'status' => false,
+                    'governorate_id' => $request->governorate_id,
+                    'city_id' => $request->city_id,
+                    'area_id' => $request->area_id,
                 ]);
 
                 // Handle images
@@ -276,6 +291,35 @@ class ClinicController extends Controller
         // Create new OTP
         return $clinic->otps()->create([]);
     }
+    public function getGovernorates()
+    {
+        $governorates = Governorate::orderBy('name')->get();
+        return response()->json($governorates);
+    }
 
+    public function getCities(Request $request)
+    {
+        $request->validate([
+            'governorate_id' => 'required|exists:governorates,id'
+        ]);
 
+        $cities = City::where('governorate_id', $request->governorate_id)
+            ->orderBy('name')
+            ->get();
+
+        return response()->json($cities);
+    }
+
+    public function getAreas(Request $request)
+    {
+        $request->validate([
+            'city_id' => 'required|exists:cities,id'
+        ]);
+
+        $areas = Area::where('city_id', $request->city_id)
+            ->orderBy('name')
+            ->get();
+
+        return response()->json($areas);
+    }
 }

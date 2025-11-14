@@ -121,6 +121,99 @@
 										</div>
 									</div>
 
+									<div class="row">
+
+										<div
+											class="col-md-4">
+											<div
+												class="form-group">
+												<label
+													class="form-label required">{{ __('Governorate') }}</label>
+												<select name="governorate_id"
+													id="governorate_id"
+													class="form-control p-0 @error('governorate_id') is-invalid @enderror"
+													required>
+													<option
+														value="">
+														{{ __('Select Governorate') }}
+													</option>
+												</select>
+												<div class="validation-feedback"
+													id="governorate_id_feedback">
+												</div>
+												@error('governorate_id')
+												<div
+													class="validation-feedback invalid">
+													<i
+														class="fa fa-exclamation-circle"></i>
+													{{ $message }}
+												</div>
+												@enderror
+											</div>
+										</div>
+										<div
+											class="col-md-4">
+											<div
+												class="form-group">
+												<label
+													class="form-label required">{{ __('City') }}</label>
+												<select name="city_id"
+													id="city_id"
+													class="form-control p-0 @error('city_id') is-invalid @enderror"
+													required
+													disabled>
+													<option
+														value="">
+														{{ __('Select City') }}
+													</option>
+												</select>
+												<div class="validation-feedback"
+													id="city_id_feedback">
+												</div>
+												@error('city_id')
+												<div
+													class="validation-feedback invalid">
+													<i
+														class="fa fa-exclamation-circle"></i>
+													{{ $message }}
+												</div>
+												@enderror
+											</div>
+										</div>
+
+										<div
+											class="col-md-4">
+											<div
+												class="form-group">
+												<label
+													class="form-label required">{{ __('Area') }}</label>
+												<select name="area_id"
+													id="area_id"
+													class="form-control p-0 @error('area_id') is-invalid @enderror"
+													required
+													disabled>
+													<option
+														value="">
+														{{ __('Select Area') }}
+													</option>
+												</select>
+												<div class="validation-feedback"
+													id="area_id_feedback">
+												</div>
+												@error('area_id')
+												<div
+													class="validation-feedback invalid">
+													<i
+														class="fa fa-exclamation-circle"></i>
+													{{ $message }}
+												</div>
+												@enderror
+											</div>
+										</div>
+
+									</div>
+									
+
 									<div class="form-group">
 										<label
 											class="form-label required">{{ __('Address') }}</label>

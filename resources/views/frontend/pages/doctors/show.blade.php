@@ -872,27 +872,29 @@
 		</div>
 
 		<!-- Booking Section -->
-		<div class="booking-section">
-			<div class="booking-header">
-				<h2><i class="fas fa-calendar-alt" style="color: #059669;"></i> {{ __('Book Your Appointment') }}</h2>
-				<p>{{ __('Select a date to view available time slots') }}</p>
-			</div>
+        @if($doctor->clinicUser->clinic_id != null)
+            <div class="booking-section">
+                <div class="booking-header">
+                    <h2><i class="fas fa-calendar-alt" style="color: #059669;"></i> {{ __('Book Your Appointment') }}</h2>
+                    <p>{{ __('Select a date to view available time slots') }}</p>
+                </div>
 
-			<div class="days-slider-container">
-				<div class="slider-nav prev" onclick="scrollDays('left')">
-					<i class="fas fa-chevron-left"></i>
-				</div>
-				<div class="slider-nav next" onclick="scrollDays('right')">
-					<i class="fas fa-chevron-right"></i>
-				</div>
+                <div class="days-slider-container">
+                    <div class="slider-nav prev" onclick="scrollDays('left')">
+                        <i class="fas fa-chevron-left"></i>
+                    </div>
+                    <div class="slider-nav next" onclick="scrollDays('right')">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
 
-				<div class="days-slider" id="daysSlider">
-					<div class="days-grid" id="daysGrid">
-						<!-- Days will be dynamically loaded here -->
-					</div>
-				</div>
-			</div>
-		</div>
+                    <div class="days-slider" id="daysSlider">
+                        <div class="days-grid" id="daysGrid">
+                            <!-- Days will be dynamically loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
 	</div>
 </section>
 

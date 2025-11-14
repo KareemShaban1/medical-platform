@@ -6,6 +6,7 @@ use App\Interfaces\Clinic\SalaryContractRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 use App\Traits\HandlesMediaUploads;
 use App\Models\SalaryContract;
+use Yajra\DataTables\Facades\DataTables;
 
 class SalaryContractRepository implements SalaryContractRepositoryInterface
 {
@@ -20,6 +21,7 @@ class SalaryContractRepository implements SalaryContractRepositoryInterface
     public function data()
     {
         $salaryContracts = SalaryContract::forCurrentClinic()->with('clinicUser');
+
 
         return datatables()->of($salaryContracts)
             ->addColumn('user', fn($item) => $item->clinicUser->name)

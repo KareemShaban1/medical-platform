@@ -117,6 +117,14 @@ Route::group(
             ->name('resend-otp')->withoutMiddleware(['auth:clinic', 'check.clinic.approval']);
         // ->middleware('throttle:1,1');
 
+          // Location dropdowns endpoints
+          Route::get('/governorates', [ClinicController::class, 'getGovernorates'])
+          ->name('governorates')->withoutMiddleware(['auth:clinic', 'check.clinic.approval']);
+      Route::get('/cities', [ClinicController::class, 'getCities'])
+          ->name('cities')->withoutMiddleware(['auth:clinic', 'check.clinic.approval']);
+      Route::get('/areas', [ClinicController::class, 'getAreas'])
+          ->name('areas')->withoutMiddleware(['auth:clinic', 'check.clinic.approval']);
+
         // Approval routes (without approval middleware)
         Route::get('/approval', [\App\Http\Controllers\Backend\Dashboards\Clinic\ApprovalController::class, 'show'])
             ->name('approval.show')->withoutMiddleware('check.clinic.approval');
@@ -162,6 +170,9 @@ Route::group(
             Route::get('/data', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'data'])->name('requests.data');
             Route::get('/categories', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'getCategories'])->name('requests.categories');
             Route::post('/{id}/accept-offer', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'acceptOffer'])->name('requests.accept-offer');
+            Route::post('/{id}/process-offer-payment', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'processOfferPayment'])->name('requests.process-offer-payment');
+            Route::get('/{id}/payment-return/{gateway}', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'offerPaymentReturn'])->name('requests.payment-return');
+            Route::post('/{id}/payment-callback/{gateway}', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'offerPaymentCallback'])->name('requests.payment-callback');
             Route::post('/{id}/cancel', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'cancel'])->name('requests.cancel');
             Route::get('/', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'index'])->name('requests.index');
             Route::get('/create', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'create'])->name('requests.create');
@@ -179,6 +190,10 @@ Route::group(
         // Patients Management
         Route::group(['prefix' => 'patients'], function () {
             Route::get('/data', [\App\Http\Controllers\Backend\Dashboards\Clinic\PatientController::class, 'data'])->name('patients.data');
+            Route::get('/trash', [\App\Http\Controllers\Backend\Dashboards\Clinic\PatientController::class, 'trash'])->name('patients.trash');
+            Route::get('/trash/data', [\App\Http\Controllers\Backend\Dashboards\Clinic\PatientController::class, 'trashData'])->name('patients.trash.data');
+            Route::post('/{id}/restore', [\App\Http\Controllers\Backend\Dashboards\Clinic\PatientController::class, 'restore'])->name('patients.restore');
+            Route::delete('/{id}/force-delete', [\App\Http\Controllers\Backend\Dashboards\Clinic\PatientController::class, 'forceDelete'])->name('patients.force-delete');
             Route::get('/{id}/edit', [\App\Http\Controllers\Backend\Dashboards\Clinic\PatientController::class, 'edit'])->name('patients.edit');
             Route::get('/', [\App\Http\Controllers\Backend\Dashboards\Clinic\PatientController::class, 'index'])->name('patients.index');
             Route::post('/', [\App\Http\Controllers\Backend\Dashboards\Clinic\PatientController::class, 'store'])->name('patients.store');

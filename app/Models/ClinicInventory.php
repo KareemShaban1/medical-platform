@@ -21,12 +21,20 @@ class ClinicInventory extends Model implements HasMedia
         'min_quantity',
         'unit',
     ];
-        
+
     public $appends = ['main_image', 'images', 'is_low_stock'];
+
+    // scope for current clinic
+    public function scopeForCurrentClinic($query)
+    {
+        return $query->where('clinic_id', auth('clinic')->user()->clinic_id);
+    }
 
     public function getMainImageAttribute()
     {
-        return $this->getMedia('main_image')->first()?->getUrl() ?? null;
+        return $this->getMedia('main_image')->map(function ($media) {
+            return $media?->getUrl() ?? null;
+        })->toArray();
     }
 
     public function getIsLowStockAttribute()
@@ -41,7 +49,7 @@ class ClinicInventory extends Model implements HasMedia
             return $media?->getUrl() ?? null;
         })->toArray();
     }
-    
+
 
     public function clinic()
     {

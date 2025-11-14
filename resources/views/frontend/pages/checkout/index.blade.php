@@ -2,137 +2,244 @@
 
 @section('content')
 <div class="container mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold mb-6 text-gray-900 dark:text-white">Checkout</h1>
+	<h1 class="text-3xl font-bold mb-6 text-gray-900">Checkout</h1>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Order Items Review -->
-        <div class="lg:col-span-2">
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
-                <h2 class="text-xl font-bold mb-4 text-gray-900 dark:text-white">Order Items</h2>
-                
-                @foreach($cart->items as $item)
-                <div class="flex items-center gap-4 py-3 border-b border-gray-200 dark:border-gray-700 last:border-0">
-                    <div class="w-16 h-16 flex-shrink-0">
-                        @if($item->product->image)
-                        <img src="{{ asset('storage/' . $item->product->image) }}" alt="{{ $item->product->name }}" class="w-full h-full object-cover rounded">
-                        @else
-                        <div class="w-full h-full bg-gray-200 dark:bg-gray-700 rounded"></div>
-                        @endif
-                    </div>
-                    <div class="flex-grow">
-                        <h3 class="font-semibold text-gray-900 dark:text-white">{{ $item->product->name }}</h3>
-                        <p class="text-sm text-gray-600 dark:text-gray-400">Qty: {{ $item->quantity }} × ${{ number_format($item->price, 2) }}</p>
-                    </div>
-                    <div class="text-right">
-                        <p class="font-bold text-gray-900 dark:text-white">${{ number_format($item->total, 2) }}</p>
-                    </div>
-                </div>
-                @endforeach
-            </div>
+	<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+		<!-- Order Items Review -->
+		<div class="lg:col-span-2">
+			<div class="bg-white rounded-lg shadow-md p-6 mb-6">
+				<h2 class="text-xl font-bold mb-4 text-gray-900">Order Items
+				</h2>
 
-            <!-- Payment Method Selection -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-                <h2 class="text-xl font-bold mb-4 text-gray-900 dark:text-white">Payment Method</h2>
-                
-                <div class="space-y-3">
-                    <label class="flex items-center p-4 border-2 border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:border-blue-500 dark:hover:border-blue-400 transition">
-                        <input type="radio" name="payment_method" value="0" class="w-4 h-4 text-blue-600" checked>
-                        <div class="ml-3">
-                            <div class="font-semibold text-gray-900 dark:text-white">Cash on Delivery (COD)</div>
-                            <div class="text-sm text-gray-600 dark:text-gray-400">Pay when you receive your order</div>
-                        </div>
-                    </label>
+				@foreach($cart->items as $item)
+				<div
+					class="flex items-center gap-4 py-3 border-b border-gray-200 last:border-0">
+					<div class="w-16 h-16 flex-shrink-0">
+						@if($item->product->image)
+						<img src="{{ asset('storage/' . $item->product->image) }}"
+							alt="{{ $item->product->name }}"
+							class="w-full h-full object-cover rounded">
+						@else
+						<div class="w-full h-full bg-gray-200 rounded">
+						</div>
+						@endif
+					</div>
+					<div class="flex-grow">
+						<h3 class="font-semibold text-gray-900">
+							{{ $item->product->name }}</h3>
+						<p class="text-sm text-gray-600">Qty:
+							{{ $item->quantity }} ×
+							${{ number_format($item->price, 2) }}</p>
+					</div>
+					<div class="text-right">
+						<p class="font-bold text-gray-900">
+							${{ number_format($item->total, 2) }}</p>
+					</div>
+				</div>
+				@endforeach
+			</div>
 
-                    <label class="flex items-center p-4 border-2 border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:border-blue-500 dark:hover:border-blue-400 transition">
-                        <input type="radio" name="payment_method" value="1" class="w-4 h-4 text-blue-600">
-                        <div class="ml-3">
-                            <div class="font-semibold text-gray-900 dark:text-white">Online Payment</div>
-                            <div class="text-sm text-gray-600 dark:text-gray-400">Pay securely online</div>
-                        </div>
-                    </label>
-                </div>
-            </div>
-        </div>
+			<!-- Payment Method Selection -->
+			<div class="bg-white rounded-lg shadow-md p-6">
+				<h2 class="text-xl font-bold mb-4 text-gray-900">Payment Method
+				</h2>
 
-        <!-- Order Summary -->
-        <div class="lg:col-span-1">
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 sticky top-4">
-                <h2 class="text-xl font-bold mb-4 text-gray-900 dark:text-white">Order Summary</h2>
-                
-                <div class="space-y-3 mb-6">
-                    <div class="flex justify-between text-gray-700 dark:text-gray-300">
-                        <span>Subtotal:</span>
-                        <span>${{ number_format($cart->subtotal, 2) }}</span>
-                    </div>
-                    <div class="flex justify-between text-gray-700 dark:text-gray-300">
-                        <span>Shipping:</span>
-                        <span>${{ number_format($cart->shipping, 2) }}</span>
-                    </div>
-                    <div class="flex justify-between text-gray-700 dark:text-gray-300">
-                        <span>Tax (14%):</span>
-                        <span>${{ number_format($cart->tax, 2) }}</span>
-                    </div>
-                    <div class="flex justify-between text-gray-700 dark:text-gray-300">
-                        <span>Discount:</span>
-                        <span>-${{ number_format($cart->discount, 2) }}</span>
-                    </div>
-                    <div class="border-t border-gray-300 dark:border-gray-600 pt-3 flex justify-between text-xl font-bold text-gray-900 dark:text-white">
-                        <span>Total:</span>
-                        <span>${{ number_format($cart->total, 2) }}</span>
-                    </div>
-                </div>
+				<div class="space-y-3">
+					@foreach($availableGateways as $gateway)
+					<label
+						class="flex items-center p-4 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 transition">
+						<input type="radio" name="payment_gateway"
+							value="{{ $gateway['name'] }}"
+							class="w-4 h-4 text-blue-600"
+							{{ $loop->first ? 'checked' : '' }}>
+						<div class="ml-3">
+							<div class="font-semibold text-gray-900">
+								{{ $gateway['display_name'] }}</div>
+							<div class="text-sm text-gray-600">
+								@if($gateway['name'] === 'cod')
+								Pay when you receive your order
+								@else
+								Pay securely online
+								@endif
+							</div>
+						</div>
+					</label>
+					@endforeach
 
-                <button type="button" id="place-order-btn" class="w-full px-6 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 focus:ring-4 focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700">
-                    Place Order
-                </button>
+					<!-- Paymob sub-options: Card or Wallet -->
+					<div id="paymob-options" class="mt-3 hidden">
+						<div class="flex items-center gap-4">
+							<label class="flex items-center gap-2 cursor-pointer">
+								<input type="radio" name="pay_method" value="card" class="text-blue-600" checked>
+								<span class="text-sm text-gray-800">Card</span>
+							</label>
+							<label class="flex items-center gap-2 cursor-pointer">
+								<input type="radio" name="pay_method" value="wallet" class="text-blue-600">
+								<span class="text-sm text-gray-800">Wallet (Vodafone, Etisalat, Orange, WE)</span>
+							</label>
+						</div>
+						<div id="wallet-phone-wrapper" class="mt-3 hidden">
+							<label class="block text-sm text-gray-700 mb-1">Wallet Phone (Egypt)</label>
+							<input type="tel" id="wallet-phone" placeholder="01XXXXXXXXX"
+								class="w-full border rounded px-3 py-2 focus:outline-none focus:ring" />
+							<p class="text-xs text-gray-500 mt-1">Enter the wallet phone number starting with 01</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
 
-                <a href="{{ route('cart.index') }}" class="block w-full text-center px-6 py-3 mt-3 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600">
-                    Back to Cart
-                </a>
-            </div>
-        </div>
-    </div>
+		<!-- Order Summary -->
+		<div class="lg:col-span-1">
+			<div class="bg-white rounded-lg shadow-md p-6 sticky top-4">
+				<h2 class="text-xl font-bold mb-4 text-gray-900">Order Summary
+				</h2>
+
+				<div class="space-y-3 mb-6">
+					<div class="flex justify-between text-gray-700">
+						<span>Subtotal:</span>
+						<span>${{ number_format($cart->subtotal, 2) }}</span>
+					</div>
+					<div class="flex justify-between text-gray-700">
+						<span>Shipping:</span>
+						<span>${{ number_format($cart->shipping, 2) }}</span>
+					</div>
+					<div class="flex justify-between text-gray-700">
+						<span>Tax (14%):</span>
+						<span>${{ number_format($cart->tax, 2) }}</span>
+					</div>
+					<div class="flex justify-between text-gray-700">
+						<span>Discount:</span>
+						<span>-${{ number_format($cart->discount, 2) }}</span>
+					</div>
+					<div
+						class="border-t border-gray-300 pt-3 flex justify-between text-xl font-bold text-gray-900">
+						<span>Total:</span>
+						<span>${{ number_format($cart->total, 2) }}</span>
+					</div>
+				</div>
+
+				<button type="button" id="place-order-btn"
+					class="w-full px-6 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 focus:ring-4 focus:ring-green-300">
+					Place Order
+				</button>
+
+				<a href="{{ route('cart.index') }}"
+					class="block w-full text-center px-6 py-3 mt-3 bg-gray-200 text-gray-900 font-semibold rounded-lg hover:bg-gray-300">
+					Back to Cart
+				</a>
+			</div>
+		</div>
+	</div>
 </div>
 
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
-    const placeOrderBtn = document.getElementById('place-order-btn');
+	const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+	const placeOrderBtn = document.getElementById('place-order-btn');
+	const paymobOptions = document.getElementById('paymob-options');
+	const walletPhoneWrapper = document.getElementById('wallet-phone-wrapper');
+	const walletPhoneInput = document.getElementById('wallet-phone');
 
-    placeOrderBtn.addEventListener('click', function() {
-        const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
-        
-        placeOrderBtn.disabled = true;
-        placeOrderBtn.textContent = 'Processing...';
+	function updatePaymobUI() {
+		const selectedGateway = document.querySelector('input[name="payment_gateway"]:checked')?.value;
+		if (selectedGateway === 'paymob') {
+			paymobOptions.classList.remove('hidden');
+			const payMethod = document.querySelector('input[name="pay_method"]:checked')?.value || 'card';
+			if (payMethod === 'wallet') {
+				walletPhoneWrapper.classList.remove('hidden');
+			} else {
+				walletPhoneWrapper.classList.add('hidden');
+			}
+		} else {
+			paymobOptions.classList.add('hidden');
+			walletPhoneWrapper.classList.add('hidden');
+		}
+	}
 
-        fetch('{{ route("checkout.place-order") }}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': csrfToken
-            },
-            body: JSON.stringify({
-                payment_method: paymentMethod
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                window.location.href = data.redirect_url;
-            } else {
-                alert(data.message);
-                placeOrderBtn.disabled = false;
-                placeOrderBtn.textContent = 'Place Order';
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred. Please try again.');
-            placeOrderBtn.disabled = false;
-            placeOrderBtn.textContent = 'Place Order';
-        });
-    });
+	// Listen for changes
+	document.querySelectorAll('input[name="payment_gateway"]').forEach(el => el.addEventListener('change', updatePaymobUI));
+	document.addEventListener('change', (e) => {
+		if (e.target && e.target.name === 'pay_method') updatePaymobUI();
+	});
+
+	// Initialize UI
+	updatePaymobUI();
+
+	placeOrderBtn.addEventListener('click', function() {
+		const paymentGateway = document.querySelector(
+				'input[name="payment_gateway"]:checked')
+			.value;
+		let payMethod = 'card';
+		let walletPhone = null;
+		if (paymentGateway === 'paymob') {
+			payMethod = document.querySelector('input[name="pay_method"]:checked')?.value || 'card';
+			if (payMethod === 'wallet') {
+				walletPhone = walletPhoneInput.value.trim();
+				if (!walletPhone) {
+					alert('Please enter wallet phone number');
+					return;
+				}
+			}
+		}
+
+		placeOrderBtn.disabled = true;
+		placeOrderBtn.textContent = 'Processing...';
+
+		fetch('{{ route("checkout.place-order") }}', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'X-CSRF-TOKEN': csrfToken
+				},
+				body: JSON.stringify({
+					payment_gateway: paymentGateway,
+					pay_method: payMethod,
+					wallet_phone: walletPhone
+				})
+			})
+			.then(response => response.json())
+			.then(data => {
+				if (data.success) {
+					// If payment requires redirect (online payment), redirect to payment page
+					if (data.requires_payment &&
+						data
+						.redirect_url
+					) {
+						window.location
+							.href =
+							data
+							.redirect_url;
+					} else {
+						// Otherwise, go to success page
+						window.location
+							.href =
+							data
+							.redirect_url;
+					}
+				} else {
+					alert(data.message);
+					placeOrderBtn
+						.disabled =
+						false;
+					placeOrderBtn
+						.textContent =
+						'Place Order';
+				}
+			})
+			.catch(error => {
+				console.error('Error:',
+					error);
+				alert(
+					'An error occurred. Please try again.'
+				);
+				placeOrderBtn.disabled =
+					false;
+				placeOrderBtn.textContent =
+					'Place Order';
+			});
+	});
 });
 </script>
 @endpush
