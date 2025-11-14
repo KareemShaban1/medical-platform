@@ -1557,7 +1557,6 @@
     "login now as a supplier": "Login Now",
     "login now if you have an account": "Login now",
     "login supplier": "Supplier Login",
-    "logout": "Logout",
     "low_stock": "low_stock",
     "lowest price": "Lowest Price",
     "manage my tickets": "Manage My Tickets",
@@ -1697,5 +1696,7 @@
     "submit application": "Submit Application",
     "subtotal": "subtotal",
     "view doctors" : "View Doctors",
-    "course enrollments": "Course Enrollments"
+    "course enrollments": "Course Enrollments",
+    "doctor register": "Doctor Register",
+    "doctor login": "Doctor Login"
 }
