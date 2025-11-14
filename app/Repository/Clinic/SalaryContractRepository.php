@@ -19,11 +19,18 @@ class SalaryContractRepository implements SalaryContractRepositoryInterface
 
     public function data()
     {
-        $salaryContracts = SalaryContract::query();
+        $salaryContracts = SalaryContract::forCurrentClinic()->with('clinicUser');
 
         return datatables()->of($salaryContracts)
             ->addColumn('user', fn($item) => $item->clinicUser->name)
             ->addColumn('action', fn($item) => $this->salaryContractActions($item))
+            ->filterColumn('user', function($query, $keyword) {
+                $query->where(function($q) use ($keyword) {
+                    $q->whereHas('clinicUser', function($q) use ($keyword) {
+                        $q->where('name', 'like', "%{$keyword}%");
+                    });
+                });
+            })
             ->rawColumns(['action', 'user'])
             ->make(true);
     }

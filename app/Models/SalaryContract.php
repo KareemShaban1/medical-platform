@@ -25,6 +25,14 @@ class SalaryContract extends Model implements HasMedia
         'notes',
     ];
 
+    // scope for current clinic
+    public function scopeForCurrentClinic($query)
+    {
+        return $query->whereHas('clinicUser', function ($query) {
+            $query->where('clinic_id', auth('clinic')->user()->clinic_id);
+        });
+    }
+
     public function clinicUser()
     {
         return $this->belongsTo(ClinicUser::class);
