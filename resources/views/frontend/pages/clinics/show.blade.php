@@ -145,15 +145,22 @@
 
 .services-list li {
 	display: flex;
-	align-items: center;
-	gap: 8px;
-	padding: 8px 0;
+	align-items: start;
+	gap: 12px;
+	padding: 12px 0;
 	color: #374151;
+	border-bottom: 1px solid #f3f4f6;
+}
+
+.services-list li:last-child {
+	border-bottom: none;
 }
 
 .service-icon {
 	color: #10b981;
 	font-size: 16px;
+	margin-top: 3px;
+	flex-shrink: 0;
 }
 
 .contact-info {
@@ -425,21 +432,31 @@
 /* Gallery Styles */
 .clinic-gallery {
 	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+	grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
 	gap: 12px;
 	margin-bottom: 24px;
 }
 
 .gallery-item {
-	height: 150px;
+	height: 100px;
 	border-radius: 8px;
 	overflow: hidden;
 	cursor: pointer;
-	transition: transform 0.3s ease;
+	transition: transform 0.3s ease, box-shadow 0.3s ease;
+	border: 2px solid transparent;
+	background: transparent;
+	padding: 0;
 }
 
 .gallery-item:hover {
 	transform: scale(1.05);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+	border-color: #059669;
+}
+
+.gallery-item.active {
+	border-color: #059669;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .gallery-item img {
@@ -447,6 +464,9 @@
 	height: 100%;
 	object-fit: cover;
 }
+
+/* Carousel Enhancements */
+
 </style>
 @endpush
 
@@ -483,10 +503,10 @@
 						<i class="fas fa-map-marker-alt clinic-meta-icon"></i>
 						<span>{{ $clinic->address }}</span>
 					</div>
-					<div class="clinic-meta-item">
+					{{-- <div class="clinic-meta-item">
 						<i class="fas fa-star clinic-meta-icon"></i>
 						<span>{{ $clinic->rating ?? 4.5 }} Rating</span>
-					</div>
+					</div> --}}
 					<div class="clinic-meta-item">
 						<i class="fas fa-clock clinic-meta-icon"></i>
 						<span>{{ $clinic->status ? 'Open Now' : 'Closed' }}</span>
@@ -497,7 +517,7 @@
 					</div>
 				</div>
 			</div>
-
+{{--
 			<div class="clinic-actions">
 				<a href="#" class="btn-book" onclick="bookAppointment()">
 					<i class="fas fa-calendar-plus mr-2"></i>Book Appointment
@@ -505,7 +525,7 @@
 				<a href="#" class="btn-contact" onclick="contactClinic()">
 					<i class="fas fa-phone mr-2"></i>Contact
 				</a>
-			</div>
+			</div> --}}
 		</div>
 	</div>
 </section>
@@ -516,42 +536,74 @@
 		<div class="clinic-content">
 			<!-- Main Content -->
 			<div class="clinic-main">
-				<!-- Clinic Image -->
-				<img src="/images/clinics/clinic-{{ $clinic->id }}.jpg"
-					alt="{{ $clinic->name }}" class="clinic-image">
+				<!-- Clinic Images -->
+				@php
+					$clinicImages = $clinic->getMedia('clinic_images');
+					$hasMultipleImages = $clinicImages->count() > 1;
+					$hasSingleImage = $clinicImages->count() === 1;
+					$hasNoImages = $clinicImages->count() === 0;
+				@endphp
+
+				@if($hasMultipleImages)
+					<div class="mb-4">
+						<div class="rounded-lg overflow-hidden mb-4">
+							<img src="{{ $clinicImages->first()->getUrl() }}" class="clinic-image main-clinic-image" alt="{{ $clinic->name }}">
+						</div>
+
+						<!-- Thumbnail Gallery -->
+						<div class="clinic-gallery">
+							@foreach($clinicImages as $index => $media)
+								<button type="button" class="gallery-item {{ $index === 0 ? 'active' : '' }}" data-image="{{ $media->getUrl() }}"
+									aria-label="Show image {{ $index + 1 }} of {{ $clinicImages->count() }}">
+									<img src="{{ $media->getUrl() }}" alt="{{ $clinic->name }}">
+								</button>
+							@endforeach
+						</div>
+					</div>
+				@elseif($hasSingleImage)
+					<img src="{{ $clinicImages->first()->getUrl() }}" alt="{{ $clinic->name }}" class="clinic-image">
+				@else
+					<!-- Default Avatar -->
+					<img src="https://ui-avatars.com/api/?name={{ urlencode($clinic->name) }}&size=512&background=0D8ABC&color=fff"
+						alt="{{ $clinic->name }}" class="clinic-image">
+				@endif
 
 				<!-- Clinic Description -->
 				<div class="clinic-description">
 					<h3>About Our Clinic</h3>
-					<p>{{ $clinic->description ?? 'We are a leading healthcare provider committed to delivering exceptional patient care and professional medical services. Our clinic is equipped with state-of-the-art facilities and staffed by experienced medical professionals.' }}
+					<p>{{ $clinic->about ?? ($clinic->description ?? 'We are a leading healthcare provider committed to delivering exceptional patient care and professional medical services. Our clinic is equipped with state-of-the-art facilities and staffed by experienced medical professionals.') }}
 					</p>
-					<p>Our team of dedicated healthcare professionals is committed to
-						providing comprehensive medical care in a comfortable and
-						welcoming environment. We prioritize patient safety,
-						comfort, and positive health outcomes.</p>
 				</div>
 
 				<!-- Services -->
 				<div class="clinic-description">
 					<h3>Our Services</h3>
+					@if($clinic->services_offered && count($clinic->services_offered) > 0)
+					<ul class="services-list">
+						@foreach($clinic->services_offered as $service)
+						<li>
+							<i class="fas fa-check-circle service-icon"></i>
+							<div>
+								<strong>{{ $service['name'] }}</strong>
+								@if(!empty($service['description']))
+								<p class="text-muted small mb-0">{{ $service['description'] }}</p>
+								@endif
+							</div>
+						</li>
+						@endforeach
+					</ul>
+					@else
 					<ul class="services-list">
 						<li><i class="fas fa-check service-icon"></i>General Medical
 							Consultations</li>
 						<li><i class="fas fa-check service-icon"></i>Specialized
-							{{ ucfirst($clinic->specialization) }} Care</li>
+							{{ ucfirst($clinic->specialization ?? 'Medical') }} Care</li>
 						<li><i class="fas fa-check service-icon"></i>Diagnostic
 							Services</li>
 						<li><i class="fas fa-check service-icon"></i>Preventive
 							Health Screenings</li>
-						<li><i class="fas fa-check service-icon"></i>Emergency
-							Medical Care</li>
-						<li><i class="fas fa-check service-icon"></i>Follow-up
-							Consultations</li>
-						<li><i class="fas fa-check service-icon"></i>Health
-							Education and Counseling</li>
-						<li><i class="fas fa-check service-icon"></i>Telemedicine
-							Services</li>
 					</ul>
+					@endif
 				</div>
 
 				<!-- Doctors -->
@@ -635,16 +687,28 @@
 							<span
 								class="contact-text">{{ $clinic->phone ?? '+1 (555) 123-4567' }}</span>
 						</div>
+						@if($clinic->clinic_email)
 						<div class="contact-item">
 							<i class="fas fa-envelope contact-icon"></i>
-							<span
-								class="contact-text">{{ $clinic->email ?? 'info@clinic.com' }}</span>
+							<a href="mailto:{{ $clinic->clinic_email }}"
+								class="contact-text text-decoration-none">{{ $clinic->clinic_email }}</a>
 						</div>
+						@endif
+						@if($clinic->clinic_website)
 						<div class="contact-item">
 							<i class="fas fa-globe contact-icon"></i>
-							<span
-								class="contact-text">{{ $clinic->website ?? 'www.clinic.com' }}</span>
+							<a href="{{ $clinic->clinic_website }}" target="_blank"
+								class="contact-text text-decoration-none">{{ $clinic->clinic_website }}</a>
 						</div>
+						@endif
+						@if($clinic->has_emergency)
+						<div class="contact-item">
+							<i class="fas fa-ambulance contact-icon text-danger"></i>
+							<span class="contact-text">
+								<strong class="text-danger">Emergency Services Available</strong>
+							</span>
+						</div>
+						@endif
 					</div>
 				</div>
 
@@ -652,6 +716,21 @@
 				<div class="sidebar-card">
 					<h3 class="sidebar-title">Working Hours</h3>
 					<div class="working-hours">
+						@if($clinic->working_hours && count($clinic->working_hours) > 0)
+							@foreach($clinic->working_hours as $hours)
+								@if(isset($hours['is_open']) && $hours['is_open'])
+								<div class="hours-item">
+									<span class="day">{{ __(ucfirst($hours['day'])) }}</span>
+									<span class="time">{{ date('g:i A', strtotime($hours['open_time'])) }} - {{ date('g:i A', strtotime($hours['close_time'])) }}</span>
+								</div>
+								@else
+								<div class="hours-item">
+									<span class="day">{{ __(ucfirst($hours['day'])) }}</span>
+									<span class="time text-muted">Closed</span>
+								</div>
+								@endif
+							@endforeach
+						@else
 						<div class="hours-item">
 							<span class="day">Monday - Friday</span>
 							<span class="time">8:00 AM - 6:00 PM</span>
@@ -664,15 +743,12 @@
 							<span class="day">Sunday</span>
 							<span class="time">Closed</span>
 						</div>
-						<div class="hours-item">
-							<span class="day">Emergency</span>
-							<span class="time">24/7 Available</span>
-						</div>
+						@endif
 					</div>
 				</div>
 
 				<!-- Rating & Reviews -->
-				<div class="sidebar-card">
+				{{-- <div class="sidebar-card">
 					<h3 class="sidebar-title">Patient Rating</h3>
 					<div class="rating-display">
 						<div class="rating-stars">
@@ -689,10 +765,10 @@
 					</div>
 					<p class="text-sm text-gray-600">Based on patient feedback and
 						satisfaction surveys.</p>
-				</div>
+				</div> --}}
 
 				<!-- Quick Book -->
-				<div class="sidebar-card">
+				{{-- <div class="sidebar-card">
 					<h3 class="sidebar-title">Book Appointment</h3>
 					<p class="text-sm text-gray-600 mb-4">Schedule your visit with our
 						medical professionals.</p>
@@ -700,10 +776,10 @@
 						onclick="bookAppointment()">
 						<i class="fas fa-calendar-plus mr-2"></i>Book Now
 					</button>
-				</div>
+				</div> --}}
 
 				<!-- Map -->
-				<div class="sidebar-card">
+				{{-- <div class="sidebar-card">
 					<h3 class="sidebar-title">Location</h3>
 					<div class="map-container">
 						<!-- Placeholder for map -->
@@ -713,7 +789,7 @@
 						</div>
 					</div>
 					<p class="text-sm text-gray-600 mt-2">Click to view directions</p>
-				</div>
+				</div> --}}
 			</div>
 		</div>
 	</div>
@@ -736,10 +812,10 @@
 						<i class="fas fa-map-marker-alt"></i>
 						<span>{{ $relatedClinic->address }}</span>
 					</div>
-					<div class="clinic-card-meta-item">
+					{{-- <div class="clinic-card-meta-item">
 						<i class="fas fa-star"></i>
 						<span>{{ $relatedClinic->rating ?? 4.5 }} Rating</span>
-					</div>
+					</div> --}}
 					<div class="clinic-card-meta-item">
 						<i class="fas fa-clock"></i>
 						<span>{{ $relatedClinic->status ? 'Open' : 'Closed' }}</span>
@@ -823,5 +899,25 @@ document.addEventListener('DOMContentLoaded', function() {
 			}
 		});
 	});
+
+	const mainImage = document.querySelector('.main-clinic-image');
+	const thumbnailButtons = document.querySelectorAll('.clinic-gallery .gallery-item');
+
+	if (mainImage && thumbnailButtons.length) {
+		thumbnailButtons.forEach(function(button) {
+			button.addEventListener('click', function() {
+				const newSrc = this.getAttribute('data-image');
+				if (!newSrc || mainImage.src === newSrc) {
+					return;
+				}
+
+				mainImage.src = newSrc;
+				thumbnailButtons.forEach(function(btn) {
+					btn.classList.remove('active');
+				});
+				this.classList.add('active');
+			});
+		});
+	}
 });
 </script>

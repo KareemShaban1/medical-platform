@@ -5,24 +5,29 @@
 	data-rating="{{ $clinic->rating ?? rand(3, 5) }}"
 	data-name="{{ $clinic->name }}">
 	<div class="h-48 bg-gray-200 flex items-center justify-center">
-		@if($clinic->images && count($clinic->images) > 0)
-		<img src="{{ $clinic->images[0] }}" alt="{{ $clinic->name }}" class="w-full h-full object-cover">
-		@else
-		<i class="fas fa-hospital text-4xl text-gray-400"></i>
-		@endif
+		@php
+			$clinicImages = $clinic->getMedia('clinic_images');
+			$primaryImage = $clinicImages->first()
+				? $clinicImages->first()->getUrl()
+				: 'https://ui-avatars.com/api/?name=' . urlencode($clinic->name) . '&size=512&background=0D8ABC&color=fff';
+		@endphp
+		<img src="{{ $primaryImage }}" alt="{{ $clinic->name }}" class="w-full h-full object-cover">
 	</div>
 	<div class="p-4">
 		<a href="{{ route('clinics.show', $clinic->id) }}" class="font-semibold text-lg mb-2">{{ $clinic->name }}</a>
 		<p class="text-gray-600 text-sm mb-2">{{ $clinic->specialization->name ?? 'Specialized medical services' }}</p>
-		<div class="flex items-center text-sm text-gray-500 mb-3">
+
+		<div class="flex items-center text-sm text-gray-500 mb-2">
 			<i class="fas fa-map-marker-alt mx-2"></i>
-			<span>{{ $clinic->address ?? 'Location not specified' }}</span>
+			<span>{{ Str::limit($clinic->address ?? 'Location not specified', 40) }}</span>
 		</div>
-		
+
 		<div class="flex items-center text-sm text-gray-500 mb-3">
 			<i class="fas fa-phone mx-2"></i>
 			<span>{{ $clinic->phone ?? 'Contact not available' }}</span>
 		</div>
+
+
 		<a href="{{ route('clinics.show', $clinic->id) }}" class="btn-primary w-full">
 			{{ __('view details') }}
 		</a>

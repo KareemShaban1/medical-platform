@@ -21,6 +21,14 @@ return new class extends Migration
             $table->foreignId('governorate_id')->nullable()->constrained('governorates')->cascadeOnDelete();
             $table->foreignId('city_id')->nullable()->constrained('cities')->cascadeOnDelete();
             $table->foreignId('area_id')->nullable()->constrained('areas')->cascadeOnDelete();
+            $table->string('clinic_email')->nullable()->unique();
+            $table->string('clinic_website')->nullable()->unique();
+            $table->text('about')->nullable();
+            $table->json('services_offered')->nullable();
+            $table->json('working_hours')->nullable();
+            $table->boolean('has_emergency')->default(false);
+            $table->float('patient_rating')->default(0);
+            $table->integer('rating_reviews_count')->default(0);
             $table->rememberToken();
             $table->timestamps();
         });
