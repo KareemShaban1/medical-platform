@@ -6,6 +6,7 @@ use App\Interfaces\Clinic\SalaryContractRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 use App\Traits\HandlesMediaUploads;
 use App\Models\SalaryContract;
+use Yajra\DataTables\Facades\DataTables;
 
 class SalaryContractRepository implements SalaryContractRepositoryInterface
 {
@@ -19,11 +20,18 @@ class SalaryContractRepository implements SalaryContractRepositoryInterface
 
     public function data()
     {
-        $salaryContracts = SalaryContract::query();
+        $salaryContracts = SalaryContract::with('clinicUser');
 
         return datatables()->of($salaryContracts)
             ->addColumn('user', fn($item) => $item->clinicUser->name)
             ->addColumn('action', fn($item) => $this->salaryContractActions($item))
+            ->filterColumn('user', function($query, $keyword) {
+                $query->where(function($q) use ($keyword) {
+                    $q->whereHas('clinicUser', function($q) use ($keyword) {
+                        $q->where('name', 'like', "%{$keyword}%");
+                    });
+                });
+            })
             ->rawColumns(['action', 'user'])
             ->make(true);
     }

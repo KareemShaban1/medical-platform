@@ -58,7 +58,10 @@ class DailyPeriodRepository implements DailyPeriodRepositoryInterface
             ->whereHas('doctorProfile.clinicUser', function ($q) use ($clinicId) {
                 $q->where('clinic_id', $clinicId);
             })
-            ->with(['doctorProfile.clinicUser', 'doctorProfile.speciality']);
+            ->leftJoin('doctor_profiles', 'daily_periods.doctor_profile_id', '=', 'doctor_profiles.id')
+            ->select('daily_periods.*')
+            ->with(['doctorProfile.clinicUser', 'doctorProfile.speciality'])
+            ->distinct();
 
         // Apply filters
         if (!empty($filters['doctor_profile_id'])) {
@@ -89,6 +92,23 @@ class DailyPeriodRepository implements DailyPeriodRepositoryInterface
         }
 
         return datatables()->of($query)
+            ->filterColumn('doctor_name', function($query, $keyword) {
+                $query->where(function($q) use ($keyword) {
+                    $q->where('doctor_profiles.name', 'like', "%{$keyword}%");
+                });
+            })
+            ->filterColumn('time', function($query, $keyword) {
+                $query->where(function($q) use ($keyword) {
+                    $q->where('daily_periods.start_time', 'like', "%{$keyword}%")
+                      ->orWhere('daily_periods.end_time', 'like', "%{$keyword}%");
+                });
+            })
+            ->filterColumn('date', function($query, $keyword) {
+                $query->where(function($q) use ($keyword) {
+                    $q->whereRaw("DATE_FORMAT(daily_periods.date, '%Y-%m-%d') LIKE ?", ["%{$keyword}%"])
+                      ->orWhereRaw("DATE_FORMAT(daily_periods.date, '%d/%m/%Y') LIKE ?", ["%{$keyword}%"]);
+                });
+            })
             ->addColumn('doctor_name', function ($item) {
                 return $item->doctorProfile->name ?? 'N/A';
             })

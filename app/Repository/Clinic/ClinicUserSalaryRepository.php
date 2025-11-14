@@ -19,12 +19,19 @@ class ClinicUserSalaryRepository implements ClinicUserSalaryRepositoryInterface
 
     public function data()
     {
-        $clinicUserSalaries = ClinicUserSalary::query();
+        $clinicUserSalaries = ClinicUserSalary::with('clinicUser')->get();
 
         return datatables()->of($clinicUserSalaries)
             ->addColumn('user', fn($item) => $item->clinicUser->name)
             ->addColumn('paid', fn($item) => $this->getPaidBadge($item))
             ->addColumn('action', fn($item) => $this->clinicUserSalaryActions($item))
+            ->filterColumn('user', function($query, $keyword) {
+                $query->where(function($q) use ($keyword) {
+                    $q->whereHas('clinicUser', function($q) use ($keyword) {
+                        $q->where('name', 'like', "%{$keyword}%");
+                    });
+                });
+            })
             ->rawColumns(['action', 'user', 'paid'])
             ->make(true);
     }

@@ -213,6 +213,7 @@ $(document).ready(function() {
 	var table = $('#patients-table').DataTable({
 		processing: true,
 		serverSide: true,
+		searchable: true,
 		ajax: "{{ route('clinic.patients.data') }}",
 		columns: [{
 				data: 'id',
@@ -254,13 +255,10 @@ $(document).ready(function() {
 		order: [
 			[0, 'desc']
 		],
-		responsive: true,
-		language: {
-			paginate: {
-				previous: "<i class='mdi mdi-chevron-left'>",
-				next: "<i class='mdi mdi-chevron-right'>"
-			}
-		},
+	dom: '<"d-flex justify-content-between align-items-center mb-3"lfB>rtip',
+	pageLength: 10,
+	responsive: true,
+	language: languages[language],
 		drawCallback: function() {
 			$('.dataTables_paginate > .pagination')
 				.addClass(

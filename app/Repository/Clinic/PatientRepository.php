@@ -23,15 +23,38 @@ class PatientRepository implements PatientRepositoryInterface
         if ($clinicUser->isDoctor()) {
             // Show only patients assigned to this doctor in this clinic
             $doctorProfile = $clinicUser->getDoctorProfile();
-            $patients = Patient::with(['user', 'doctors'])
-                ->forDoctorInClinic($doctorProfile->id, $clinicUser->clinic_id);
+            $patients = Patient::query()
+                ->forDoctorInClinic($doctorProfile->id, $clinicUser->clinic_id)
+                ->leftJoin('users', 'patients.user_id', '=', 'users.id')
+                ->select('patients.*')
+                ->with(['user', 'doctors'])
+                ->distinct();
         } else {
             // Show all patients in the clinic
-            $patients = Patient::with(['user', 'doctors'])
-                ->forClinic($clinicUser->clinic_id);
+            $patients = Patient::query()
+                ->forClinic($clinicUser->clinic_id)
+                ->leftJoin('users', 'patients.user_id', '=', 'users.id')
+                ->select('patients.*')
+                ->with(['user', 'doctors'])
+                ->distinct();
         }
 
         return datatables()->of($patients)
+            ->filterColumn('name', function($query, $keyword) {
+                $query->where(function($q) use ($keyword) {
+                    $q->where('users.name', 'like', "%{$keyword}%");
+                });
+            })
+            ->filterColumn('email', function($query, $keyword) {
+                $query->where(function($q) use ($keyword) {
+                    $q->where('users.email', 'like', "%{$keyword}%");
+                });
+            })
+            ->filterColumn('phone', function($query, $keyword) {
+                $query->where(function($q) use ($keyword) {
+                    $q->where('patients.phone', 'like', "%{$keyword}%");
+                });
+            })
             ->addColumn('name', fn($item) => $item->user ? $item->user->name : 'N/A')
             ->addColumn('phone', fn($item) => $item->phone)
             ->addColumn('email', fn($item) => $item->user ? $item->user->email : 'N/A')

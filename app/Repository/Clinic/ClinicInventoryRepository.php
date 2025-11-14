@@ -19,7 +19,7 @@ class ClinicInventoryRepository implements ClinicInventoryRepositoryInterface
 
     public function data()
     {
-        $query = ClinicInventory::query();
+        $query = ClinicInventory::forCurrentClinic();
 
         // Optional filter for low stock items
         if (request()->boolean('low_stock')) {
@@ -118,7 +118,7 @@ class ClinicInventoryRepository implements ClinicInventoryRepositoryInterface
 
             DB::commit();
 
-            
+
             if ($request->ajax()) {
                 return $this->jsonResponse('success', __('Clinic inventory ' . $action . ' successfully'));
             }
