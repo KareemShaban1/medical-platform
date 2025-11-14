@@ -258,7 +258,7 @@
                                     </li>
                                     	@if(!auth('clinic')->check() &&
                                       !auth('patient')->check() &&
-                                       !auth('supplier')->check() )     
+                                       !auth('supplier')->check() )
                                       <li>
                                           <a href="{{ route('clinic.register-clinic') }}" class="block px-3 sm:px-4 py-2 hover:bg-gray-100 text-xs sm:text-sm">{{ __('register clinic') }}</a>
                                       </li>
@@ -317,7 +317,7 @@
                                         <li>
                                             <a href="{{ url('/supplier/login') }}" class="block px-3 sm:px-4 py-2 hover:bg-gray-100 text-xs sm:text-sm">{{ __('login supplier') }}</a>
                                         </li>
-                                       @endif 
+                                       @endif
                                 @endauth
                             </ul>
                         </div>
@@ -355,7 +355,9 @@
 									class="inline w-full">
 									@csrf
 									<button type="submit"
-										class="text-left w-full block px-4 py-2 hover:bg-gray-100">Logout</button>
+                                        class="w-full block px-4 py-2 hover:bg-gray-100 {{ app()->getLocale() === 'ar' ? 'text-right' : 'text-left' }}">
+                                        {{ __('Logout') }}
+                                    </button>
 								</form>
 							</li>
 							@else

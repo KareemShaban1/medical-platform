@@ -32,9 +32,7 @@ class ClinicInventory extends Model implements HasMedia
 
     public function getMainImageAttribute()
     {
-        return $this->getMedia('main_image')->map(function ($media) {
-            return $media?->getUrl() ?? null;
-        })->toArray();
+        return $this->getMedia('main_image')->first()?->getUrl() ?? null;
     }
 
     public function getIsLowStockAttribute()
