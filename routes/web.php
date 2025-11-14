@@ -61,7 +61,7 @@ Route::group(
 
 		Route::get('/courses', [CourseController::class, 'index'])->name('courses');
 		Route::get('/courses/{id}', [CourseController::class, 'show'])->name('courses.show');
-		Route::post('/courses/filter', [CourseController::class, 'filter'])->name('courses.filter');
+        Route::post('/courses/filter', [CourseController::class, 'filter'])->name('courses.filter');
 
 		// Doctor Profile Routes
 		Route::get('/doctors', [\App\Http\Controllers\Frontend\DoctorController::class, 'index'])->name('doctors.index');
@@ -74,6 +74,19 @@ Route::group(
 		Route::post('/appointments/book', [\App\Http\Controllers\Frontend\AppointmentController::class, 'book'])->name('appointments.book');
 		Route::post('/appointments/confirm', [\App\Http\Controllers\Frontend\AppointmentController::class, 'confirm'])->name('appointments.confirm');
     });
+
+// Course enrollment (Clinic users only)
+Route::group([
+    'prefix' => Mcamara\LaravelLocalization\Facades\LaravelLocalization::setLocale(),
+    'middleware' => [
+        'auth:clinic',
+        'localeCookieRedirect',
+        'localizationRedirect',
+        'localeViewPath'
+    ]
+], function () {
+    Route::post('/courses/{id}/enroll', [CourseController::class, 'enroll'])->name('courses.enroll');
+});
 
 // Cart and Checkout Routes (requires clinic authentication)
 Route::group([
@@ -124,6 +137,7 @@ Route::group([
     Route::post('/profile/submit', [\App\Http\Controllers\Frontend\Doctor\ProfileController::class, 'submit'])->name('profile.submit');
     Route::get('/orders', [\App\Http\Controllers\Frontend\Doctor\OrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{id}/details', [\App\Http\Controllers\Frontend\Doctor\OrderController::class, 'orderDetails'])->name('orders.show');
+    Route::get('/courses', [\App\Http\Controllers\Frontend\Doctor\CourseController::class, 'index'])->name('courses.index');
 });
 
 // Doctor Registration Routes (public)

@@ -60,5 +60,11 @@ class Course extends Model implements HasMedia
     {
         return $query->where('status', true);
     }
+
+    // ------- relations -------
+    public function enrollments()
+    {
+        return $this->hasMany(CourseEnrollment::class);
+    }
     
 }

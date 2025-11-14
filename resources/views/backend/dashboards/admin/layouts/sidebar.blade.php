@@ -363,6 +363,11 @@
                             </a>
                         </li>
                         <li>
+                            <a href="{{ route('admin.course-enrollments.index') }}">
+                                <span> {{ __('Course Enrollments') }} </span>
+                            </a>
+                        </li>
+                        <li>
                             <a href="{{ route('admin.courses.trash') }}">
                                 <span> {{ __('Trash Courses') }} </span>
                             </a>

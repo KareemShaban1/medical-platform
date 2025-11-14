@@ -304,6 +304,25 @@
 	text-decoration: none;
 }
 
+.course-access-card {
+	border: 1px solid #e5e7eb;
+	position: relative;
+	overflow: hidden;
+}
+
+.course-access-card::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(135deg, rgba(7, 145, 132, 0.05), rgba(59, 130, 246, 0.05));
+	pointer-events: none;
+}
+
+.course-access-card > * {
+	position: relative;
+	z-index: 1;
+}
+
 .breadcrumb {
 	background: #f9fafb;
 	padding: 16px 0;
@@ -493,10 +512,10 @@
 
 <!-- Course Details -->
 <section class="py-12 bg-gray-50">
-	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-		<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-			<!-- Main Content -->
-			<div class="lg:col-span-2">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Main Content -->
+            <div class="lg:col-span-2">
 				<!-- Course Image -->
 				<div class="mb-8 slide-in-left">
 					@if($course->main_image)
@@ -508,11 +527,11 @@
 						<i class="fas fa-graduation-cap text-6xl text-blue-400"></i>
 					</div>
 					@endif
-				</div>
+                </div>
 
-				<!-- Course Information -->
-				<div class="course-info slide-in-right">
-					<h2 class="course-title">{{ $course->title }}</h2>
+                <!-- Course Information -->
+                <div class="course-info slide-in-right">
+                    <h2 class="course-title">{{ $course->title }}</h2>
 
 					<div class="course-meta">
 						<div class="meta-item">
@@ -550,14 +569,31 @@
 
 
 					<div class="course-actions">
-						<button class="btn-enroll" onclick="enrollCourse()">
-							<i class="fas fa-user-plus"></i>
-							{{ __('enroll now') }}
-						</button>
-						<a href="#" class="btn-secondary" onclick="shareCourse()">
+						@auth('clinic')
+							@if(isset($enrollment) && $enrollment)
+								<button class="btn-enroll" disabled>
+									<i class="fas fa-check-circle"></i>
+									{{ __('You are enrolled') }}
+									<span class="status-badge {{ 'status-' . ($enrollment->status === 'approved' ? 'ongoing' : ($enrollment->status === 'rejected' ? 'completed' : 'upcoming')) }}">
+										{{ ucfirst($enrollment->status) }}
+									</span>
+								</button>
+							@else
+								<button class="btn-enroll" data-enroll-trigger="hero">
+									<i class="fas fa-user-plus"></i>
+									{{ __('enroll now') }}
+								</button>
+							@endif
+						@else
+							<a href="{{ url('/clinic/login') }}" class="btn-enroll">
+								<i class="fas fa-sign-in-alt"></i>
+								{{ __('Login to enroll') }}
+							</a>
+						@endauth
+						<button type="button" class="btn-secondary" onclick="shareCourse()">
 							<i class="fas fa-share"></i>
 							{{ __('share course') }}
-						</a>
+						</button>
 
 					</div>
 				</div>
@@ -695,22 +731,74 @@
 								class="font-medium">{{ $course->level ?? 'N/A' }}</span>
 						</div>
 					</div>
-				</div>
+                </div>
 
-				<!-- Course URL -->
-				@if($course->url)
-				<div class="bg-white rounded-lg shadow-lg p-6 mb-6">
-					<h3 class="text-lg font-semibold mb-4">{{ __('course link') }}</h3>
-					<a href="{{ $course->url }}" target="_blank"
-						class="btn-enroll w-full text-center">
-						<i class="fas fa-external-link-alt"></i>
-						{{ __('visit course page') }}
-					</a>
-				</div>
-				@endif
-			</div>
-		</div>
-	</div>
+                <!-- Course URL / Access -->
+                @if($course->url)
+                <div class="bg-white rounded-lg shadow-lg p-6 mb-6 course-access-card">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900">{{ __('Course Access') }}</h3>
+                            <p class="text-sm text-gray-500">{{ __('Unlock premium materials once you enroll') }}</p>
+                        </div>
+                        <i class="fas fa-lock-open text-2xl text-emerald-500"></i>
+                    </div>
+
+                    @auth('clinic')
+                        @if($enrollment)
+                            <div class="p-4 rounded-xl border {{ $enrollment->status === 'approved' ? 'border-green-200 bg-green-50' : 'border-yellow-200 bg-yellow-50' }}">
+                                <div class="flex items-center justify-between mb-3">
+                                    <div>
+                                        <p class="text-sm text-gray-500">{{ __('Enrollment status') }}</p>
+                                        <p class="text-lg font-semibold text-gray-900">{{ ucfirst($enrollment->status) }}</p>
+                                    </div>
+                                    <span class="status-badge {{ $enrollment->status === 'approved' ? 'status-ongoing' : ($enrollment->status === 'rejected' ? 'status-completed' : 'status-upcoming') }}">
+                                        {{ ucfirst($enrollment->status) }}
+                                    </span>
+                                </div>
+                                @if($enrollment->status === 'approved')
+                                    <a href="{{ $course->url }}" target="_blank"
+                                        class="btn-enroll w-full text-center">
+                                        <i class="fas fa-external-link-alt"></i>
+                                        {{ __('Access course workspace') }}
+                                    </a>
+                                @elseif($enrollment->status === 'pending')
+                                    <p class="text-sm text-gray-600">
+                                        {{ __('Your enrollment is pending approval. You will receive an email once it is approved.') }}
+                                    </p>
+                                @else
+                                    <p class="text-sm text-gray-600">
+                                        {{ __('This enrollment was rejected. Please contact support if you believe this is a mistake.') }}
+                                    </p>
+                                @endif
+                            </div>
+                        @else
+                            <div class="p-4 rounded-xl border border-dashed border-gray-200 bg-gray-50 text-center">
+                                <p class="mb-4 text-gray-600">
+                                    {{ __('Enroll to unlock the private course link and resources.') }}
+                                </p>
+                                <button class="btn-enroll w-full justify-center" data-enroll-trigger="access-card">
+                                    <i class="fas fa-unlock"></i>
+                                    {{ __('Enroll to unlock access') }}
+                                </button>
+                            </div>
+                        @endif
+                    @else
+                        <div class="p-4 rounded-xl border border-dashed border-gray-200 bg-gray-50 text-center">
+                            <p class="mb-4 text-gray-600">
+                                {{ __('Login with your clinic account to enroll and unlock this course link.') }}
+                            </p>
+                            <a href="{{ url('/clinic/login') }}" class="btn-enroll w-full justify-center">
+                                <i class="fas fa-sign-in-alt"></i>
+                                {{ __('Login to continue') }}
+                            </a>
+                        </div>
+                    @endauth
+                </div>
+                @endif
+            </div>
+        </div>
+    </div>
 </section>
 
 <!-- Related Courses -->
@@ -784,31 +872,96 @@ function switchTab(tabName) {
 }
 
 // Course enrollment
-function enrollCourse() {
-	// Add your enrollment logic here
-	alert('Enrollment functionality will be implemented soon!');
+const enrollmentButtons = document.querySelectorAll('[data-enroll-trigger]');
+const enrollmentEndpoint = `{{ route('courses.enroll', $course->id) }}`;
+
+function toggleEnrollmentLoading(button, isLoading) {
+	if (!button) return;
+	if (isLoading) {
+		button.dataset.originalText = button.innerHTML;
+		button.innerHTML = `<span class="flex items-center gap-2 justify-center"><i class="fas fa-spinner fa-spin"></i>{{ __('Processing...') }}</span>`;
+		button.disabled = true;
+	} else {
+		if (button.dataset.originalText) {
+			button.innerHTML = button.dataset.originalText;
+		}
+		button.disabled = false;
+		button.dataset.originalText = '';
+	}
 }
+
+function handleCourseEnrollment(button) {
+	if (!button || button.disabled) return;
+	toggleEnrollmentLoading(button, true);
+
+	fetch(enrollmentEndpoint, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'X-CSRF-TOKEN': `{{ csrf_token() }}`
+		},
+		body: JSON.stringify({})
+	})
+		.then(res => res.json())
+    .then(data => {
+        if (data.status === 'success') {
+            if (typeof toast_success === 'function') toast_success(data.message || 'Success');
+        } else {
+            if (typeof toast_error === 'function') toast_error(data.message || 'Failed');
+        }
+        if (data.status === 'success') {
+            window.location.reload();
+        } else {
+            toggleEnrollmentLoading(button, false);
+        }
+    })
+    .catch(() => {
+        if (typeof toast_error === 'function') toast_error('Failed to enroll. Please try again.');
+        toggleEnrollmentLoading(button, false);
+    });
+}
+
+enrollmentButtons.forEach(button => {
+	button.addEventListener('click', function(event) {
+		event.preventDefault();
+		handleCourseEnrollment(button);
+	});
+});
 
 // Share course
 function shareCourse() {
-	if (navigator.share) {
-		navigator.share({
-			title: '{{ $course->title }}',
-			text: '{{ app()->getLocale() == "ar" ? $course->description_ar : $course->description_en }}',
-			url: window.location.href
-		});
-	} else {
-		// Fallback for browsers that don't support Web Share API
-		navigator.clipboard.writeText(window.location.href).then(() => {
-			alert('Course link copied to clipboard!');
-		});
-	}
+    const url = window.location.href;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url)
+            .then(() => {
+                if (typeof toast_success === 'function') toast_success('{{ __('Course link copied to clipboard!') }}');
+            })
+            .catch(() => {
+                // Fallback if clipboard API fails
+                const input = document.createElement('input');
+                input.value = url;
+                document.body.appendChild(input);
+                input.select();
+                document.execCommand('copy');
+                document.body.removeChild(input);
+                if (typeof toast_success === 'function') toast_success('{{ __('Course link copied to clipboard!') }}');
+            });
+    } else {
+        // Legacy fallback
+        const input = document.createElement('input');
+        input.value = url;
+        document.body.appendChild(input);
+        input.select();
+        document.execCommand('copy');
+        document.body.removeChild(input);
+        if (typeof toast_success === 'function') toast_success('{{ __('Course link copied to clipboard!') }}');
+    }
 }
 
 // Add to favorites
 function addToFavorites() {
-	// Add your favorites logic here
-	alert('Added to favorites!');
+    // Add your favorites logic here
+    if (typeof toast_success === 'function') toast_success('{{ __('Added to favorites!') }}');
 }
 
 // Smooth scrolling for anchor links

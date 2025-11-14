@@ -45,7 +45,7 @@
 					['icon' => 'fa-shopping-cart', 'color' => 'text-green-500', 'title' =>
 					__('My Orders'), 'desc' => __('View your orders from the website'), 'route' => route('doctor.orders.index')],
 					['icon' => 'fa-graduation-cap', 'color' => 'text-purple-500', 'title' =>
-					__('Courses'), 'desc' => __('Browse available courses'), 'route' => route('courses')],
+					__('Courses'), 'desc' => __('View your enrollments and access links'), 'route' => route('doctor.courses.index')],
 					];
 					@endphp
 
