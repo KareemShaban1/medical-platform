@@ -20,6 +20,7 @@ use App\Http\Controllers\Backend\Dashboards\Clinic\PrescriptionController;
 use App\Http\Controllers\Backend\Dashboards\Clinic\AnnouncementController as ClinicAnnouncementController;
 use App\Http\Controllers\Backend\Dashboards\Clinic\ClinicInfoController;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Backend\Dashboards\Clinic\CourseEnrollmentController as ClinicCourseEnrollmentController;
 
 Route::group(
     [
@@ -87,6 +88,9 @@ Route::group(
             Route::post('/bulk-save', [\App\Http\Controllers\Backend\Dashboards\Clinic\WorkingHourController::class, 'bulkSave'])->name('working-hours.bulk-save');
             Route::delete('/{id}', [\App\Http\Controllers\Backend\Dashboards\Clinic\WorkingHourController::class, 'destroy'])->name('working-hours.destroy');
         });
+
+        // My Course Enrollments
+        Route::get('course-enrollments', [ClinicCourseEnrollmentController::class, 'index'])->name('course-enrollments.index');
 
         // Attendance Management
         Route::group(['prefix' => 'attendance'], function () {

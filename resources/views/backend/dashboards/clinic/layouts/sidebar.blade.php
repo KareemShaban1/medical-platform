@@ -207,7 +207,7 @@
   				</div>
   			</li>
 
-  			<!-- Patients Management -->
+			<!-- Patients Management -->
   			<li class="side-nav-item">
   				<a data-bs-toggle="collapse" href="#sidebarPatients" aria-expanded="false"
   					aria-controls="sidebarPatients" class="side-nav-link">
@@ -231,6 +231,14 @@
 
 					</ul>
 				</div>
+			</li>
+
+			<!-- Course Enrollments -->
+			<li class="side-nav-item">
+				<a href="{{ route('clinic.course-enrollments.index') }}" class="side-nav-link">
+					<i class="uil-book-open"></i>
+					<span> {{ __('Course Enrollments') }} </span>
+				</a>
 			</li>
 
   			<!-- Lab Orders -->

@@ -786,7 +786,7 @@
                     @else
                         <div class="p-4 rounded-xl border border-dashed border-gray-200 bg-gray-50 text-center">
                             <p class="mb-4 text-gray-600">
-                                {{ __('Login with your clinic account to enroll and unlock this course link.') }}
+                                {{ __('Login with your clinic/doctor account to enroll and unlock this course link.') }}
                             </p>
                             <a href="{{ url('/clinic/login') }}" class="btn-enroll w-full justify-center">
                                 <i class="fas fa-sign-in-alt"></i>
