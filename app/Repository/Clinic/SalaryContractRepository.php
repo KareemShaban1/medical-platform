@@ -20,7 +20,8 @@ class SalaryContractRepository implements SalaryContractRepositoryInterface
 
     public function data()
     {
-        $salaryContracts = SalaryContract::with('clinicUser');
+        $salaryContracts = SalaryContract::forCurrentClinic()->with('clinicUser');
+
 
         return datatables()->of($salaryContracts)
             ->addColumn('user', fn($item) => $item->clinicUser->name)
