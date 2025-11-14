@@ -66,5 +66,10 @@ class Course extends Model implements HasMedia
     {
         return $this->hasMany(CourseEnrollment::class);
     }
+
+    public function links()
+    {
+        return $this->hasMany(CourseLink::class)->orderBy('sort_order');
+    }
     
 }

@@ -104,7 +104,7 @@
 							<div class="form-group">
 								<div
 									class="d-flex justify-content-between align-items-center">
-									<div class="form-check">
+									{{-- <div class="form-check">
 										<input type="checkbox"
 											class="form-check-input ml-0"
 											id="remember"
@@ -113,7 +113,7 @@
 											for="remember">
 											{{ __('Remember me') }}
 										</label>
-									</div>
+									</div> --}}
 									<a href="#"
 										class="forgot-password-link">
 										{{ __('Forgot Password?') }}

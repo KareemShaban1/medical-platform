@@ -4,6 +4,7 @@ namespace App\Repository\Admin;
 
 use App\Interfaces\Admin\CourseRepositoryInterface;
 use App\Models\Course;
+use App\Models\CourseLink;
 use App\Traits\HandlesMediaUploads;
 
 class CourseRepository implements CourseRepositoryInterface
@@ -120,6 +121,25 @@ class CourseRepository implements CourseRepositoryInterface
                 $this->processMedia($course, $request, [
                     ['field' => 'main_image', 'collection' => 'main_image', 'multiple' => false],
                 ], $action);
+            }
+
+            // Links (optional repeater)
+            $links = $request->input('links', []);
+            if (is_array($links)) {
+                // On update, clear previous set to keep it simple
+                $course->links()->delete();
+                foreach ($links as $idx => $link) {
+                    if (!isset($link['title'], $link['url']) || empty($link['title']) || empty($link['url'])) {
+                        continue;
+                    }
+                    $course->links()->create([
+                        'title' => $link['title'],
+                        'url' => $link['url'],
+                        'description' => $link['description'] ?? null,
+                        'sort_order' => (int)($link['sort_order'] ?? $idx),
+                        'is_active' => isset($link['is_active']) ? (bool)$link['is_active'] : true,
+                    ]);
+                }
             }
 
             if ($request->ajax()) {

@@ -13,7 +13,7 @@
 
             <div class="mb-4 border p-3 rounded">
                 <div class="row" style="display: flex; align-items: center;">
-                  
+
 
                     <!-- Title English -->
                     <div class="col-md-6 mb-3">
@@ -109,6 +109,17 @@
                 </div>
             </div>
 
+            <!-- Course Links Repeater -->
+            <div class="mb-4 border p-3 rounded">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <h5 class="mb-0">{{ __('Course Content') }}</h5>
+                    <button type="button" class="btn btn-sm btn-outline-primary" id="add-link-row"><i class="fa fa-plus"></i> {{ __('Add Link') }}</button>
+                </div>
+                <div id="links-container" class="row g-3">
+                    <!-- rows injected by JS -->
+                </div>
+            </div>
+
             <!-- Submit -->
             <button type="submit" class="btn btn-primary">{{ __('Submit') }}</button>
         </form>
@@ -131,5 +142,67 @@
             reader.readAsDataURL(file);
         }
     });
+</script>
+<script>
+    // Simple dynamic repeater for course links (preload existing)
+    (function(){
+        const container = document.getElementById('links-container');
+        const addBtn = document.getElementById('add-link-row');
+        let idx = 0;
+
+        // Pre-define labels to avoid Blade parsing issues
+        const labels = {
+            title: @json(__('Title')),
+            url: @json(__('URL')),
+            order: @json(__('Order')),
+            active: @json(__('Active')),
+            description: @json(__('Description'))
+        };
+
+        function addRow(data = {}){
+            const row = document.createElement('div');
+            row.className = 'col-12 border rounded p-3 position-relative';
+            row.innerHTML =
+                '<button type="button" class="btn-close position-absolute" style="right:8px;top:8px" aria-label="Close"></button>' +
+                '<div class="row g-3">' +
+                    '<div class="col-md-4">' +
+                        '<label class="form-label">' + labels.title + '</label>' +
+                        '<input type="text" name="links[' + idx + '][title]" class="form-control" value="' + (data.title || '') + '">' +
+                    '</div>' +
+                    '<div class="col-md-4">' +
+                        '<label class="form-label">' + labels.url + '</label>' +
+                        '<input type="text" name="links[' + idx + '][url]" class="form-control" value="' + (data.url || '') + '">' +
+                    '</div>' +
+                    '<div class="col-md-2">' +
+                        '<label class="form-label">' + labels.order + '</label>' +
+                        '<input type="number" name="links[' + idx + '][sort_order]" class="form-control" value="' + (data.sort_order ?? idx) + '">' +
+                    '</div>' +
+                    '<div class="col-md-2 d-flex align-items-center">' +
+                        '<div class="form-check form-switch mt-4">' +
+                            '<input class="form-check-input" type="checkbox" name="links[' + idx + '][is_active]" ' + (data.is_active === false ? '' : 'checked') + '>' +
+                            '<label class="form-check-label">' + labels.active + '</label>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="col-12">' +
+                        '<label class="form-label">' + labels.description + '</label>' +
+                        '<textarea name="links[' + idx + '][description]" class="form-control" rows="2">' + (data.description || '') + '</textarea>' +
+                    '</div>' +
+                '</div>';
+            row.querySelector('.btn-close').addEventListener('click', ()=> row.remove());
+            container.appendChild(row);
+            idx++;
+        }
+        addBtn.addEventListener('click', ()=> addRow());
+        // preload existing
+        @php
+            $courseLinks = $course->links()->orderBy('sort_order')->get(['title','url','description','sort_order','is_active'])
+        @endphp
+        const existing = @json($courseLinks);
+        if (existing.length) {
+            existing.forEach(e => addRow(e));
+        } else {
+            addRow();
+        }
+    })();
 </script>
 @endpush

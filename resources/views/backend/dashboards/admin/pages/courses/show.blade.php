@@ -67,8 +67,8 @@
                                             <th scope="row">{{ __('End Date') }}:</th>
                                             <td>{{ $course->end_date->format('Y-m-d') }}</td>
                                         </tr>
-                                       
-                                       
+
+
                                     </tbody>
                                 </table>
                             </div>
@@ -91,7 +91,31 @@
                 </div>
             </div>
 
-      
+            <!-- Course Links -->
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="mb-3">{{ __('Course Content') }}</h5>
+                    @php($links = $course->links()->orderBy('sort_order')->get())
+                    @if($links->count())
+                        <div class="list-group">
+                            @foreach($links as $link)
+                                <div class="list-group-item d-flex justify-content-between align-items-start">
+                                    <div class="ms-2 me-auto">
+                                        <div class="fw-semibold">{{ $link->title }}</div>
+                                        <div class="text-muted small">{{ $link->description }}</div>
+                                        <a href="{{ $link->url }}" target="_blank">{{ $link->url }}</a>
+                                    </div>
+                                    <span class="badge {{ $link->is_active ? 'bg-success' : 'bg-secondary' }} rounded-pill">{{ $link->is_active ? __('Active') : __('Inactive') }}</span>
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <p class="text-muted mb-0">{{ __('No Content added for this course.') }}</p>
+                    @endif
+                </div>
+            </div>
+
+
         </div>
 
         <div class="col-lg-4">
@@ -100,14 +124,14 @@
         <div class="card">
             <div class="card-body">
                <div class="col-md-6">
-               <img src="{{ $course->main_image }}" alt="Course Image" 
+               <img src="{{ $course->main_image }}" alt="Course Image"
                 class="img-fluid rounded"
                 style="width: 100%; height: 150px; object-fit: contain;">
                </div>
             </div>
         </div>
 
-        
+
 
             <div class="card">
                 <div class="card-body">

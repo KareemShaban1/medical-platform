@@ -131,7 +131,8 @@ class CourseController extends Controller
 	 */
     public function show($id)
     {
-        $course = Course::active()
+        $course = Course::with(['links' => function($q){ $q->where('is_active', true)->orderBy('sort_order'); }])
+            ->active()
             ->where('status', true)
             ->findOrFail($id);
 

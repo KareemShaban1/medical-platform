@@ -800,6 +800,45 @@
                 </div>
                 @endif
             </div>
+
+            <!-- Additional Course Links -->
+            @if(($course->links && $course->links->count()))
+                <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                    <h3 class="text-lg font-semibold mb-4">{{ __('course content') }}</h3>
+                    <div class="space-y-3">
+                        @foreach($course->links as $link)
+                            <div class="p-4 border rounded-lg hover:bg-gray-50 transition">
+                                <div class="flex items-center justify-between gap-3">
+                                    <div>
+                                        <div class="font-semibold text-gray-900">{{ $link->title }}</div>
+                                        @if($link->description)
+                                        <div class="text-sm text-gray-600">{{ $link->description }}</div>
+                                        @endif
+                                    </div>
+                                    @auth('clinic')
+                                        @if(isset($enrollment) && $enrollment && $enrollment->status === 'approved')
+                                            <a href="{{ $link->url }}" target="_blank" class="btn-enroll">
+                                                <i class="fas fa-external-link-alt"></i>
+                                                {{ __('open') }}
+                                            </a>
+                                        @else
+                                            <button class="btn-secondary" disabled>
+                                                <i class="fas fa-lock"></i>
+                                                {{ __('Enroll') }}
+                                            </button>
+                                        @endif
+                                    @else
+                                        <a href="{{ url('/clinic/login') }}" class="btn-secondary">
+                                            <i class="fas fa-sign-in-alt"></i>
+                                            {{ __('Login to access') }}
+                                        </a>
+                                    @endauth
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
         </div>
     </div>
 </section>
@@ -941,8 +980,7 @@ function shareCourse() {
 	if (navigator.clipboard && navigator.clipboard.writeText) {
 		navigator.clipboard.writeText(url)
 			.then(() => {
-				if (typeof toast_success === 'function') toast_success('{{ __('
-					Course link copied to clipboard!') }}');
+				if (typeof toast_success === 'function') toast_success('{{ __('Course link copied to clipboard!') }}');
 			})
 			.catch(() => {
 				// Fallback if clipboard API fails
@@ -952,8 +990,7 @@ function shareCourse() {
 				input.select();
 				document.execCommand('copy');
 				document.body.removeChild(input);
-				if (typeof toast_success === 'function') toast_success('{{ __('
-					Course link copied to clipboard!') }}');
+				if (typeof toast_success === 'function') toast_success('{{ __('Course link copied to clipboard!') }}');
 			});
 	} else {
 		// Legacy fallback
@@ -963,16 +1000,14 @@ function shareCourse() {
 		input.select();
 		document.execCommand('copy');
 		document.body.removeChild(input);
-		if (typeof toast_success === 'function') toast_success('{{ __('
-			Course link copied to clipboard!') }}');
+		if (typeof toast_success === 'function') toast_success('{{ __('Course link copied to clipboard!') }}');
 	}
 }
 
 // Add to favorites
 function addToFavorites() {
 	// Add your favorites logic here
-	if (typeof toast_success === 'function') toast_success('{{ __('
-		Added to favorites!') }}');
+	if (typeof toast_success === 'function') toast_success('{{ __('Added to favorites!') }}');
 }
 
 // Smooth scrolling for anchor links
