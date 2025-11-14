@@ -1,5 +1,6 @@
 @extends('frontend.layouts.app')
 
+@section('title' , __('Product Details'))
 @push('styles')
 @include('frontend.pages.products.styles.show_styles')
 @endpush

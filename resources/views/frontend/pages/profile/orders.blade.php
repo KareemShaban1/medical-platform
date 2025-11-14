@@ -1,15 +1,16 @@
 @extends('frontend.layouts.app')
 
+@section('title' , __('My Orders'))
 @section('content')
 <div class="container mx-auto px-4 py-8">
-	<h1 class="text-3xl font-bold mb-8 text-gray-900 dark:text-white">My Orders</h1>
+	<h1 class="text-3xl font-bold mb-8 text-gray-900 dark:text-white">{{ __('my orders') }}</h1>
 
 	@if($orders->isEmpty())
 	<div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 text-center">
-		<p class="text-gray-600 dark:text-gray-400">You don’t have any orders yet.</p>
-		<a href="{{ route('shop.index') }}"
+		<p class="text-gray-600 dark:text-gray-400">{{ __('you don\'t have any orders yet') }}</p>
+		<a href="{{ route('products') }}"
 			class="inline-block mt-4 px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition">
-			Start Shopping
+			{{ __('start shopping') }}
 		</a>
 	</div>
 	@else
@@ -19,13 +20,13 @@
 			<thead
 				class="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm uppercase">
 				<tr>
-					<th class="px-6 py-3">Order #</th>
-					<th class="px-6 py-3">Order Number</th>
-					<th class="px-6 py-3">Items</th>
-					<th class="px-6 py-3">Date</th>
-					<th class="px-6 py-3">Status</th>
-					<th class="px-6 py-3">Total</th>
-					<th class="px-6 py-3 text-center">Actions</th>
+					<th class="px-6 py-3">{{ __('order') }} #</th>
+					<th class="px-6 py-3">{{ __('order number') }}</th>
+					<th class="px-6 py-3">{{ __('items') }}</th>
+					<th class="px-6 py-3">{{ __('date') }}</th>
+					<th class="px-6 py-3">{{ __('status') }}</th>
+					<th class="px-6 py-3">{{ __('total') }}</th>
+					<th class="px-6 py-3 text-center">{{ __('actions') }}</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -50,7 +51,7 @@
 					<td class="px-6 py-4 text-center">
 						<button class="px-4 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 transition"
 							onclick="openModal({{ $order->id }})">
-							View Details
+							{{ __('view details') }}
 						</button>
 					</td>
 				</tr>
@@ -76,20 +77,20 @@
 				</div>
 
 				<div class="text-sm text-gray-600 dark:text-gray-300 space-y-1">
-					<p><span class="font-medium">Order Number:</span>
+					<p><span class="font-medium">{{ __('order number') }}:</span>
 						{{ $order->number }}</p>
-					<p><span class="font-medium">Items:</span>
+					<p><span class="font-medium">{{ __('items') }}:</span>
 						{{ $order->items->count() }}</p>
-					<p><span class="font-medium">Date:</span>
+					<p><span class="font-medium">{{ __('date') }}:</span>
 						{{ $order->created_at->format('M d, Y') }}</p>
-					<p><span class="font-medium">Total:</span>
-						{{ number_format($order->total, 2) }} EGP</p>
+					<p><span class="font-medium">{{ __('total') }}:</span>
+						{{ number_format($order->total, 2) }} {{ __('egp') }}</p>
 				</div>
 
 				<div class="mt-4 text-right">
 					<button class="px-4 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 transition"
 						onclick="openModal({{ $order->id }})">
-						View Details
+						{{ __('view details') }}
 					</button>
 				</div>
 			</div>
@@ -106,10 +107,11 @@
 		<button onclick="closeModal()"
 			class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-xl">✕</button>
 		<div class="p-6 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
-			<h2 class="text-2xl font-bold text-gray-900 dark:text-white">Order Details</h2>
+			<h2 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('order details') }}
+			</h2>
 		</div>
 		<div id="modalContent" class="p-6 overflow-y-auto flex-1">
-			<p class="text-center text-gray-500 dark:text-gray-400">Loading...</p>
+			<p class="text-center text-gray-500 dark:text-gray-400">{{ __('loading') }}...</p>
 		</div>
 	</div>
 </div>

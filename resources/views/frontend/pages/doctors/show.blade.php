@@ -1,642 +1,645 @@
 @extends('frontend.layouts.app')
 
+@section('title' , __('Doctor Details'))
 @push('styles')
 <style>
-	/* Modern Doctor Profile Page */
-	* {
-		box-sizing: border-box;
-	}
+/* Modern Doctor Profile Page */
+* {
+	box-sizing: border-box;
+}
 
-	.doctor-hero {
-		background: linear-gradient(135deg, #059669 0%, #10b981 100%);
-		padding: 60px 0;
-		position: relative;
-		overflow: hidden;
-	}
+.doctor-hero {
+	background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+	padding: 60px 0;
+	position: relative;
+	overflow: hidden;
+}
 
-	.doctor-hero::before {
-		content: '';
-		position: absolute;
-		top: 0;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(255,255,255,0.1)" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,154.7C960,171,1056,181,1152,165.3C1248,149,1344,107,1392,85.3L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') no-repeat bottom;
-		background-size: cover;
-		opacity: 0.3;
-	}
+.doctor-hero::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(255,255,255,0.1)" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,154.7C960,171,1056,181,1152,165.3C1248,149,1344,107,1392,85.3L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') no-repeat bottom;
+	background-size: cover;
+	opacity: 0.3;
+}
 
-	.doctor-hero-content {
-		position: relative;
-		z-index: 1;
-	}
+.doctor-hero-content {
+	position: relative;
+	z-index: 1;
+}
 
+.doctor-profile-card {
+	background: white;
+	border-radius: 20px;
+	padding: 40px;
+	box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+	display: flex;
+	gap: 40px;
+	align-items: flex-start;
+	margin-top: -80px;
+	position: relative;
+	z-index: 10;
+}
+
+.doctor-avatar-section {
+	flex-shrink: 0;
+}
+
+.doctor-avatar {
+	width: 200px;
+	height: 200px;
+	border-radius: 20px;
+	object-fit: cover;
+	border: 5px solid #f0fdf4;
+	box-shadow: 0 10px 30px rgba(5, 150, 105, 0.2);
+}
+
+.doctor-avatar-placeholder {
+	width: 200px;
+	height: 200px;
+	border-radius: 20px;
+	background: linear-gradient(135deg, #059669, #10b981);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: white;
+	font-size: 64px;
+	font-weight: 700;
+	border: 5px solid #f0fdf4;
+	box-shadow: 0 10px 30px rgba(5, 150, 105, 0.2);
+}
+
+.doctor-info-section {
+	flex: 1;
+}
+
+.doctor-name {
+	font-size: 36px;
+	font-weight: 700;
+	color: #111827;
+	margin-bottom: 8px;
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.featured-badge {
+	background: linear-gradient(135deg, #fbbf24, #f59e0b);
+	color: white;
+	padding: 6px 16px;
+	border-radius: 20px;
+	font-size: 14px;
+	font-weight: 600;
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.doctor-specialization {
+	color: #059669;
+	font-size: 20px;
+	font-weight: 600;
+	margin-bottom: 20px;
+}
+
+.doctor-stats {
+	display: flex;
+	gap: 32px;
+	margin-bottom: 24px;
+	flex-wrap: wrap;
+}
+
+.stat-item {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.stat-icon {
+	width: 48px;
+	height: 48px;
+	border-radius: 12px;
+	background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: #059669;
+	font-size: 20px;
+}
+
+.stat-details h4 {
+	font-size: 24px;
+	font-weight: 700;
+	color: #111827;
+	margin: 0;
+}
+
+.stat-details p {
+	font-size: 14px;
+	color: #6b7280;
+	margin: 0;
+}
+
+.doctor-social {
+	display: flex;
+	gap: 12px;
+	margin-top: 20px;
+}
+
+.social-link {
+	width: 40px;
+	height: 40px;
+	border-radius: 10px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: #f3f4f6;
+	color: #6b7280;
+	text-decoration: none;
+	transition: all 0.3s;
+}
+
+.social-link:hover {
+	background: #059669;
+	color: white;
+	transform: translateY(-2px);
+}
+
+.content-section {
+	background: white;
+	border-radius: 16px;
+	padding: 32px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+	margin-bottom: 24px;
+}
+
+.section-title {
+	font-size: 24px;
+	font-weight: 700;
+	color: #111827;
+	margin-bottom: 20px;
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.section-title-icon {
+	width: 40px;
+	height: 40px;
+	border-radius: 10px;
+	background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: #059669;
+}
+
+.experience-timeline {
+	position: relative;
+	padding-left: 40px;
+}
+
+.experience-timeline::before {
+	content: '';
+	position: absolute;
+	left: 15px;
+	top: 0;
+	bottom: 0;
+	width: 2px;
+	background: linear-gradient(to bottom, #10b981, #dcfce7);
+}
+
+.experience-item {
+	position: relative;
+	margin-bottom: 24px;
+}
+
+.experience-item::before {
+	content: '';
+	position: absolute;
+	left: -32px;
+	top: 8px;
+	width: 12px;
+	height: 12px;
+	border-radius: 50%;
+	background: #10b981;
+	border: 3px solid white;
+	box-shadow: 0 0 0 2px #10b981;
+}
+
+.experience-role {
+	font-size: 18px;
+	font-weight: 600;
+	color: #111827;
+	margin-bottom: 4px;
+}
+
+.experience-company {
+	color: #059669;
+	font-weight: 500;
+	margin-bottom: 4px;
+}
+
+.experience-period {
+	font-size: 14px;
+	color: #6b7280;
+	margin-bottom: 8px;
+}
+
+.education-item,
+.service-item {
+	padding: 16px;
+	background: #f9fafb;
+	border-radius: 12px;
+	margin-bottom: 12px;
+	border-left: 4px solid #10b981;
+}
+
+.specialty-tags {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px;
+}
+
+.specialty-tag {
+	background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+	color: #059669;
+	padding: 10px 20px;
+	border-radius: 20px;
+	font-weight: 600;
+	font-size: 14px;
+}
+
+/* Booking Day Cards Section */
+.booking-section {
+	background: white;
+	border-radius: 16px;
+	padding: 40px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+	margin-top: 32px;
+}
+
+.booking-header {
+	text-align: center;
+	margin-bottom: 40px;
+}
+
+.booking-header h2 {
+	font-size: 32px;
+	font-weight: 700;
+	color: #111827;
+	margin-bottom: 12px;
+}
+
+.booking-header p {
+	color: #6b7280;
+	font-size: 16px;
+}
+
+.days-slider-container {
+	position: relative;
+	padding: 0 60px;
+}
+
+.days-slider {
+	overflow-x: auto;
+	scroll-behavior: smooth;
+	-ms-overflow-style: none;
+	scrollbar-width: none;
+	padding: 20px 0;
+}
+
+.days-slider::-webkit-scrollbar {
+	display: none;
+}
+
+.days-grid {
+	display: flex;
+	gap: 20px;
+	min-width: min-content;
+}
+
+.day-card {
+	flex: 0 0 320px;
+	background: white;
+	border: 2px solid #e5e7eb;
+	border-radius: 16px;
+	padding: 24px;
+	transition: all 0.3s;
+	cursor: pointer;
+	position: relative;
+}
+
+.day-card:hover {
+	transform: translateY(-4px);
+	box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+	border-color: #10b981;
+}
+
+.day-card.available {
+	border-color: #10b981;
+	background: linear-gradient(to bottom, white, #f0fdf4);
+}
+
+.day-card.blocked {
+	background: #f9fafb;
+	border-color: #e5e7eb;
+	cursor: not-allowed;
+}
+
+.day-card.blocked:hover {
+	transform: none;
+	box-shadow: none;
+}
+
+.day-card-header {
+	text-align: center;
+	margin-bottom: 20px;
+	padding-bottom: 16px;
+	border-bottom: 2px solid #e5e7eb;
+}
+
+.day-name {
+	font-size: 18px;
+	font-weight: 700;
+	color: #111827;
+	margin-bottom: 4px;
+}
+
+.day-date {
+	font-size: 24px;
+	font-weight: 700;
+	color: #059669;
+}
+
+.availability-status {
+	text-align: center;
+	padding: 20px;
+}
+
+.status-icon {
+	width: 60px;
+	height: 60px;
+	border-radius: 50%;
+	margin: 0 auto 12px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 28px;
+}
+
+.status-icon.available {
+	background: #dcfce7;
+	color: #059669;
+}
+
+.status-icon.blocked {
+	background: #fee2e2;
+	color: #dc2626;
+}
+
+.status-text {
+	font-weight: 600;
+	font-size: 16px;
+	margin-bottom: 8px;
+}
+
+.status-text.available {
+	color: #059669;
+}
+
+.status-text.blocked {
+	color: #dc2626;
+}
+
+.slots-count {
+	color: #6b7280;
+	font-size: 14px;
+}
+
+.day-card-footer {
+	margin-top: 20px;
+	padding-top: 16px;
+	border-top: 2px solid #e5e7eb;
+}
+
+.book-btn {
+	width: 100%;
+	padding: 14px;
+	border-radius: 10px;
+	border: none;
+	font-weight: 600;
+	font-size: 16px;
+	cursor: pointer;
+	transition: all 0.3s;
+}
+
+.book-btn.available {
+	background: linear-gradient(135deg, #059669, #10b981);
+	color: white;
+}
+
+.book-btn.available:hover {
+	background: linear-gradient(135deg, #047857, #059669);
+	transform: translateY(-2px);
+	box-shadow: 0 8px 16px rgba(5, 150, 105, 0.3);
+}
+
+.book-btn.blocked {
+	background: #e5e7eb;
+	color: #9ca3af;
+	cursor: not-allowed;
+}
+
+.slider-nav {
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	width: 48px;
+	height: 48px;
+	border-radius: 50%;
+	background: white;
+	border: 2px solid #e5e7eb;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	transition: all 0.3s;
+	z-index: 10;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.slider-nav:hover {
+	background: #059669;
+	color: white;
+	border-color: #059669;
+}
+
+.slider-nav.prev {
+	left: 0;
+}
+
+.slider-nav.next {
+	right: 0;
+}
+
+.time-slots-modal {
+	display: none;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.5);
+	z-index: 1000;
+	align-items: center;
+	justify-content: center;
+	padding: 20px;
+}
+
+.time-slots-modal.active {
+	display: flex;
+}
+
+.modal-content {
+	background: white;
+	border-radius: 20px;
+	padding: 40px;
+	max-width: 800px;
+	width: 100%;
+	max-height: 90vh;
+	overflow-y: auto;
+	position: relative;
+}
+
+.modal-close {
+	position: absolute;
+	top: 20px;
+	right: 20px;
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	background: #f3f4f6;
+	border: none;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	transition: all 0.3s;
+}
+
+.modal-close:hover {
+	background: #dc2626;
+	color: white;
+}
+
+.time-slots-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+	gap: 16px;
+	margin-top: 24px;
+}
+
+.time-slot {
+	padding: 16px;
+	border: 2px solid #e5e7eb;
+	border-radius: 12px;
+	text-align: center;
+	cursor: pointer;
+	transition: all 0.3s;
+	background: white;
+}
+
+.time-slot:hover:not(.past) {
+	border-color: #10b981;
+	background: #f0fdf4;
+}
+
+.time-slot.selected {
+	background: linear-gradient(135deg, #059669, #10b981);
+	color: white;
+	border-color: #059669;
+}
+
+.time-slot.full {
+	background: #fff7ed;
+	color: #ea580c;
+	border-color: #fdba74;
+}
+
+.time-slot.past {
+	background: #f9fafb;
+	color: #9ca3af;
+	cursor: not-allowed;
+	border-color: #e5e7eb;
+	opacity: 0.6;
+}
+
+.booking-form {
+	margin-top: 32px;
+	padding-top: 32px;
+	border-top: 2px solid #e5e7eb;
+}
+
+.form-group {
+	margin-bottom: 20px;
+}
+
+.form-label {
+	display: block;
+	font-weight: 600;
+	color: #374151;
+	margin-bottom: 8px;
+}
+
+.form-control {
+	width: 100%;
+	padding: 12px 16px;
+	border: 2px solid #e5e7eb;
+	border-radius: 10px;
+	font-size: 16px;
+	transition: all 0.3s;
+}
+
+.form-control:focus {
+	outline: none;
+	border-color: #10b981;
+	box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+@media (max-width: 768px) {
 	.doctor-profile-card {
-		background: white;
-		border-radius: 20px;
-		padding: 40px;
-		box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
-		display: flex;
-		gap: 40px;
-		align-items: flex-start;
-		margin-top: -80px;
-		position: relative;
-		z-index: 10;
+		flex-direction: column;
+		padding: 24px;
 	}
 
-	.doctor-avatar-section {
-		flex-shrink: 0;
-	}
-
-	.doctor-avatar {
-		width: 200px;
-		height: 200px;
-		border-radius: 20px;
-		object-fit: cover;
-		border: 5px solid #f0fdf4;
-		box-shadow: 0 10px 30px rgba(5, 150, 105, 0.2);
-	}
-
+	.doctor-avatar,
 	.doctor-avatar-placeholder {
-		width: 200px;
-		height: 200px;
-		border-radius: 20px;
-		background: linear-gradient(135deg, #059669, #10b981);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		color: white;
-		font-size: 64px;
-		font-weight: 700;
-		border: 5px solid #f0fdf4;
-		box-shadow: 0 10px 30px rgba(5, 150, 105, 0.2);
-	}
-
-	.doctor-info-section {
-		flex: 1;
+		width: 150px;
+		height: 150px;
+		margin: 0 auto;
 	}
 
 	.doctor-name {
-		font-size: 36px;
-		font-weight: 700;
-		color: #111827;
-		margin-bottom: 8px;
-		display: flex;
-		align-items: center;
-		gap: 12px;
-	}
-
-	.featured-badge {
-		background: linear-gradient(135deg, #fbbf24, #f59e0b);
-		color: white;
-		padding: 6px 16px;
-		border-radius: 20px;
-		font-size: 14px;
-		font-weight: 600;
-		display: inline-flex;
-		align-items: center;
-		gap: 6px;
-	}
-
-	.doctor-specialization {
-		color: #059669;
-		font-size: 20px;
-		font-weight: 600;
-		margin-bottom: 20px;
-	}
-
-	.doctor-stats {
-		display: flex;
-		gap: 32px;
-		margin-bottom: 24px;
-		flex-wrap: wrap;
-	}
-
-	.stat-item {
-		display: flex;
-		align-items: center;
-		gap: 12px;
-	}
-
-	.stat-icon {
-		width: 48px;
-		height: 48px;
-		border-radius: 12px;
-		background: linear-gradient(135deg, #dcfce7, #bbf7d0);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		color: #059669;
-		font-size: 20px;
-	}
-
-	.stat-details h4 {
-		font-size: 24px;
-		font-weight: 700;
-		color: #111827;
-		margin: 0;
-	}
-
-	.stat-details p {
-		font-size: 14px;
-		color: #6b7280;
-		margin: 0;
-	}
-
-	.doctor-social {
-		display: flex;
-		gap: 12px;
-		margin-top: 20px;
-	}
-
-	.social-link {
-		width: 40px;
-		height: 40px;
-		border-radius: 10px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		background: #f3f4f6;
-		color: #6b7280;
-		text-decoration: none;
-		transition: all 0.3s;
-	}
-
-	.social-link:hover {
-		background: #059669;
-		color: white;
-		transform: translateY(-2px);
-	}
-
-	.content-section {
-		background: white;
-		border-radius: 16px;
-		padding: 32px;
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-		margin-bottom: 24px;
-	}
-
-	.section-title {
-		font-size: 24px;
-		font-weight: 700;
-		color: #111827;
-		margin-bottom: 20px;
-		display: flex;
-		align-items: center;
-		gap: 12px;
-	}
-
-	.section-title-icon {
-		width: 40px;
-		height: 40px;
-		border-radius: 10px;
-		background: linear-gradient(135deg, #dcfce7, #bbf7d0);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		color: #059669;
-	}
-
-	.experience-timeline {
-		position: relative;
-		padding-left: 40px;
-	}
-
-	.experience-timeline::before {
-		content: '';
-		position: absolute;
-		left: 15px;
-		top: 0;
-		bottom: 0;
-		width: 2px;
-		background: linear-gradient(to bottom, #10b981, #dcfce7);
-	}
-
-	.experience-item {
-		position: relative;
-		margin-bottom: 24px;
-	}
-
-	.experience-item::before {
-		content: '';
-		position: absolute;
-		left: -32px;
-		top: 8px;
-		width: 12px;
-		height: 12px;
-		border-radius: 50%;
-		background: #10b981;
-		border: 3px solid white;
-		box-shadow: 0 0 0 2px #10b981;
-	}
-
-	.experience-role {
-		font-size: 18px;
-		font-weight: 600;
-		color: #111827;
-		margin-bottom: 4px;
-	}
-
-	.experience-company {
-		color: #059669;
-		font-weight: 500;
-		margin-bottom: 4px;
-	}
-
-	.experience-period {
-		font-size: 14px;
-		color: #6b7280;
-		margin-bottom: 8px;
-	}
-
-	.education-item, .service-item {
-		padding: 16px;
-		background: #f9fafb;
-		border-radius: 12px;
-		margin-bottom: 12px;
-		border-left: 4px solid #10b981;
-	}
-
-	.specialty-tags {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 12px;
-	}
-
-	.specialty-tag {
-		background: linear-gradient(135deg, #dcfce7, #bbf7d0);
-		color: #059669;
-		padding: 10px 20px;
-		border-radius: 20px;
-		font-weight: 600;
-		font-size: 14px;
-	}
-
-	/* Booking Day Cards Section */
-	.booking-section {
-		background: white;
-		border-radius: 16px;
-		padding: 40px;
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-		margin-top: 32px;
-	}
-
-	.booking-header {
-		text-align: center;
-		margin-bottom: 40px;
-	}
-
-	.booking-header h2 {
-		font-size: 32px;
-		font-weight: 700;
-		color: #111827;
-		margin-bottom: 12px;
-	}
-
-	.booking-header p {
-		color: #6b7280;
-		font-size: 16px;
-	}
-
-	.days-slider-container {
-		position: relative;
-		padding: 0 60px;
-	}
-
-	.days-slider {
-		overflow-x: auto;
-		scroll-behavior: smooth;
-		-ms-overflow-style: none;
-		scrollbar-width: none;
-		padding: 20px 0;
-	}
-
-	.days-slider::-webkit-scrollbar {
-		display: none;
-	}
-
-	.days-grid {
-		display: flex;
-		gap: 20px;
-		min-width: min-content;
-	}
-
-	.day-card {
-		flex: 0 0 320px;
-		background: white;
-		border: 2px solid #e5e7eb;
-		border-radius: 16px;
-		padding: 24px;
-		transition: all 0.3s;
-		cursor: pointer;
-		position: relative;
-	}
-
-	.day-card:hover {
-		transform: translateY(-4px);
-		box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
-		border-color: #10b981;
-	}
-
-	.day-card.available {
-		border-color: #10b981;
-		background: linear-gradient(to bottom, white, #f0fdf4);
-	}
-
-	.day-card.blocked {
-		background: #f9fafb;
-		border-color: #e5e7eb;
-		cursor: not-allowed;
-	}
-
-	.day-card.blocked:hover {
-		transform: none;
-		box-shadow: none;
-	}
-
-	.day-card-header {
-		text-align: center;
-		margin-bottom: 20px;
-		padding-bottom: 16px;
-		border-bottom: 2px solid #e5e7eb;
-	}
-
-	.day-name {
-		font-size: 18px;
-		font-weight: 700;
-		color: #111827;
-		margin-bottom: 4px;
-	}
-
-	.day-date {
-		font-size: 24px;
-		font-weight: 700;
-		color: #059669;
-	}
-
-	.availability-status {
-		text-align: center;
-		padding: 20px;
-	}
-
-	.status-icon {
-		width: 60px;
-		height: 60px;
-		border-radius: 50%;
-		margin: 0 auto 12px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
 		font-size: 28px;
 	}
 
-	.status-icon.available {
-		background: #dcfce7;
-		color: #059669;
+	.doctor-stats {
+		gap: 20px;
 	}
 
-	.status-icon.blocked {
-		background: #fee2e2;
-		color: #dc2626;
+	.days-slider-container {
+		padding: 0 20px;
 	}
 
-	.status-text {
-		font-weight: 600;
-		font-size: 16px;
-		margin-bottom: 8px;
+	.day-card {
+		flex: 0 0 280px;
 	}
-
-	.status-text.available {
-		color: #059669;
-	}
-
-	.status-text.blocked {
-		color: #dc2626;
-	}
-
-	.slots-count {
-		color: #6b7280;
-		font-size: 14px;
-	}
-
-	.day-card-footer {
-		margin-top: 20px;
-		padding-top: 16px;
-		border-top: 2px solid #e5e7eb;
-	}
-
-	.book-btn {
-		width: 100%;
-		padding: 14px;
-		border-radius: 10px;
-		border: none;
-		font-weight: 600;
-		font-size: 16px;
-		cursor: pointer;
-		transition: all 0.3s;
-	}
-
-	.book-btn.available {
-		background: linear-gradient(135deg, #059669, #10b981);
-		color: white;
-	}
-
-	.book-btn.available:hover {
-		background: linear-gradient(135deg, #047857, #059669);
-		transform: translateY(-2px);
-		box-shadow: 0 8px 16px rgba(5, 150, 105, 0.3);
-	}
-
-	.book-btn.blocked {
-		background: #e5e7eb;
-		color: #9ca3af;
-		cursor: not-allowed;
-	}
-
-	.slider-nav {
-		position: absolute;
-		top: 50%;
-		transform: translateY(-50%);
-		width: 48px;
-		height: 48px;
-		border-radius: 50%;
-		background: white;
-		border: 2px solid #e5e7eb;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		cursor: pointer;
-		transition: all 0.3s;
-		z-index: 10;
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-	}
-
-	.slider-nav:hover {
-		background: #059669;
-		color: white;
-		border-color: #059669;
-	}
-
-	.slider-nav.prev {
-		left: 0;
-	}
-
-	.slider-nav.next {
-		right: 0;
-	}
-
-	.time-slots-modal {
-		display: none;
-		position: fixed;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		background: rgba(0, 0, 0, 0.5);
-		z-index: 1000;
-		align-items: center;
-		justify-content: center;
-		padding: 20px;
-	}
-
-	.time-slots-modal.active {
-		display: flex;
-	}
-
-	.modal-content {
-		background: white;
-		border-radius: 20px;
-		padding: 40px;
-		max-width: 800px;
-		width: 100%;
-		max-height: 90vh;
-		overflow-y: auto;
-		position: relative;
-	}
-
-	.modal-close {
-		position: absolute;
-		top: 20px;
-		right: 20px;
-		width: 40px;
-		height: 40px;
-		border-radius: 50%;
-		background: #f3f4f6;
-		border: none;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		cursor: pointer;
-		transition: all 0.3s;
-	}
-
-	.modal-close:hover {
-		background: #dc2626;
-		color: white;
-	}
-
-	.time-slots-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-		gap: 16px;
-		margin-top: 24px;
-	}
-
-	.time-slot {
-		padding: 16px;
-		border: 2px solid #e5e7eb;
-		border-radius: 12px;
-		text-align: center;
-		cursor: pointer;
-		transition: all 0.3s;
-		background: white;
-	}
-
-	.time-slot:hover:not(.past) {
-		border-color: #10b981;
-		background: #f0fdf4;
-	}
-
-	.time-slot.selected {
-		background: linear-gradient(135deg, #059669, #10b981);
-		color: white;
-		border-color: #059669;
-	}
-
-	.time-slot.full {
-		background: #fff7ed;
-		color: #ea580c;
-		border-color: #fdba74;
-	}
-
-	.time-slot.past {
-		background: #f9fafb;
-		color: #9ca3af;
-		cursor: not-allowed;
-		border-color: #e5e7eb;
-		opacity: 0.6;
-	}
-
-	.booking-form {
-		margin-top: 32px;
-		padding-top: 32px;
-		border-top: 2px solid #e5e7eb;
-	}
-
-	.form-group {
-		margin-bottom: 20px;
-	}
-
-	.form-label {
-		display: block;
-		font-weight: 600;
-		color: #374151;
-		margin-bottom: 8px;
-	}
-
-	.form-control {
-		width: 100%;
-		padding: 12px 16px;
-		border: 2px solid #e5e7eb;
-		border-radius: 10px;
-		font-size: 16px;
-		transition: all 0.3s;
-	}
-
-	.form-control:focus {
-		outline: none;
-		border-color: #10b981;
-		box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
-	}
-
-	@media (max-width: 768px) {
-		.doctor-profile-card {
-			flex-direction: column;
-			padding: 24px;
-		}
-
-		.doctor-avatar, .doctor-avatar-placeholder {
-			width: 150px;
-			height: 150px;
-			margin: 0 auto;
-		}
-
-		.doctor-name {
-			font-size: 28px;
-		}
-
-		.doctor-stats {
-			gap: 20px;
-		}
-
-		.days-slider-container {
-			padding: 0 20px;
-		}
-
-		.day-card {
-			flex: 0 0 280px;
-		}
-	}
+}
 </style>
 @endpush
 
@@ -651,11 +654,12 @@
 				<!-- Avatar -->
 				<div class="doctor-avatar-section">
 					@if($doctor->profile_photo_url)
-						<img src="{{ $doctor->profile_photo_url }}" alt="{{ $doctor->name }}" class="doctor-avatar">
+					<img src="{{ $doctor->profile_photo_url }}" alt="{{ $doctor->name }}"
+						class="doctor-avatar">
 					@else
-						<div class="doctor-avatar-placeholder">
-							{{ substr($doctor->name, 0, 1) }}
-						</div>
+					<div class="doctor-avatar-placeholder">
+						{{ substr($doctor->name, 0, 1) }}
+					</div>
 					@endif
 				</div>
 
@@ -664,13 +668,14 @@
 					<div class="doctor-name">
 						{{ $doctor->name }}
 						@if($doctor->is_featured)
-							<span class="featured-badge">
-								<i class="fas fa-star"></i> {{ __('Featured') }}
-							</span>
+						<span class="featured-badge">
+							<i class="fas fa-star"></i> {{ __('Featured') }}
+						</span>
 						@endif
 					</div>
 					<div class="doctor-specialization">
-						<i class="fas fa-user-md"></i> {{ $doctor->speciality->name ?? __('General Practice') }}
+						<i class="fas fa-user-md"></i>
+						{{ $doctor->speciality->name ?? __('General Practice') }}
 					</div>
 
 					<!-- Stats -->
@@ -681,7 +686,8 @@
 								<i class="fas fa-briefcase"></i>
 							</div>
 							<div class="stat-details">
-								<h4>{{ $doctor->years_experience }}+</h4>
+								<h4>{{ $doctor->years_experience }}+
+								</h4>
 								<p>{{ __('Years Experience') }}</p>
 							</div>
 						</div>
@@ -692,7 +698,8 @@
 								<i class="fas fa-hospital"></i>
 							</div>
 							<div class="stat-details">
-								<h4>{{ $doctor->clinicUser->clinic->name ?? __('Clinic') }}</h4>
+								<h4>{{ $doctor->clinicUser->clinic->name ?? __('Clinic') }}
+								</h4>
 								<p>{{ __('Working At') }}</p>
 							</div>
 						</div>
@@ -702,48 +709,58 @@
 								<i class="fas fa-calendar-check"></i>
 							</div>
 							<div class="stat-details">
-								<h4>{{ $doctor->appointments()->where('status', 'completed')->count() }}+</h4>
+								<h4>{{ $doctor->appointments()->where('status', 'completed')->count() }}+
+								</h4>
 								<p>{{ __('Patients Treated') }}</p>
 							</div>
 						</div>
 					</div>
 
 					<!-- Contact -->
-					<div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 20px;">
+					<div
+						style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 20px;">
 						@if($doctor->email)
-						<a href="mailto:{{ $doctor->email }}" style="color: #6b7280; text-decoration: none;">
-							<i class="fas fa-envelope"></i> {{ $doctor->email }}
+						<a href="mailto:{{ $doctor->email }}"
+							style="color: #6b7280; text-decoration: none;">
+							<i class="fas fa-envelope"></i>
+							{{ $doctor->email }}
 						</a>
 						@endif
 						@if($doctor->phone)
-						<a href="tel:{{ $doctor->phone }}" style="color: #6b7280; text-decoration: none;">
+						<a href="tel:{{ $doctor->phone }}"
+							style="color: #6b7280; text-decoration: none;">
 							<i class="fas fa-phone"></i> {{ $doctor->phone }}
 						</a>
 						@endif
 					</div>
 
 					<!-- Social Links -->
-					@if($doctor->facebook_link || $doctor->twitter_link || $doctor->linkedin_link || $doctor->instagram_link)
+					@if($doctor->facebook_link || $doctor->twitter_link ||
+					$doctor->linkedin_link || $doctor->instagram_link)
 					<div class="doctor-social">
 						@if($doctor->facebook_link)
-							<a href="{{ $doctor->facebook_link }}" target="_blank" class="social-link">
-								<i class="fab fa-facebook-f"></i>
-							</a>
+						<a href="{{ $doctor->facebook_link }}" target="_blank"
+							class="social-link">
+							<i class="fab fa-facebook-f"></i>
+						</a>
 						@endif
 						@if($doctor->twitter_link)
-							<a href="{{ $doctor->twitter_link }}" target="_blank" class="social-link">
-								<i class="fab fa-twitter"></i>
-							</a>
+						<a href="{{ $doctor->twitter_link }}" target="_blank"
+							class="social-link">
+							<i class="fab fa-twitter"></i>
+						</a>
 						@endif
 						@if($doctor->linkedin_link)
-							<a href="{{ $doctor->linkedin_link }}" target="_blank" class="social-link">
-								<i class="fab fa-linkedin-in"></i>
-							</a>
+						<a href="{{ $doctor->linkedin_link }}" target="_blank"
+							class="social-link">
+							<i class="fab fa-linkedin-in"></i>
+						</a>
 						@endif
 						@if($doctor->instagram_link)
-							<a href="{{ $doctor->instagram_link }}" target="_blank" class="social-link">
-								<i class="fab fa-instagram"></i>
-							</a>
+						<a href="{{ $doctor->instagram_link }}" target="_blank"
+							class="social-link">
+							<i class="fab fa-instagram"></i>
+						</a>
 						@endif
 					</div>
 					@endif
@@ -763,32 +780,41 @@
 				@if($doctor->bio)
 				<div class="content-section">
 					<h3 class="section-title">
-						<span class="section-title-icon"><i class="fas fa-info-circle"></i></span>
+						<span class="section-title-icon"><i
+								class="fas fa-info-circle"></i></span>
 						{{ __('About Dr.') }} {{ $doctor->name }}
 					</h3>
-					<p style="color: #6b7280; line-height: 1.8; font-size: 16px;">{{ $doctor->bio }}</p>
+					<p style="color: #6b7280; line-height: 1.8; font-size: 16px;">
+						{{ $doctor->bio }}</p>
 				</div>
 				@endif
 
 				<!-- Experience -->
-				@if($doctor->experience && is_array($doctor->experience) && count($doctor->experience) > 0)
+				@if($doctor->experience && is_array($doctor->experience) &&
+				count($doctor->experience) > 0)
 				<div class="content-section">
 					<h3 class="section-title">
-						<span class="section-title-icon"><i class="fas fa-briefcase"></i></span>
+						<span class="section-title-icon"><i
+								class="fas fa-briefcase"></i></span>
 						{{ __('Experience') }}
 					</h3>
 					<div class="experience-timeline">
 						@foreach($doctor->experience as $exp)
 						<div class="experience-item">
-							<div class="experience-role">{{ is_array($exp) ? ($exp['title'] ?? $exp['role'] ?? '') : $exp }}</div>
+							<div class="experience-role">
+								{{ is_array($exp) ? ($exp['title'] ?? $exp['role'] ?? '') : $exp }}
+							</div>
 							@if(is_array($exp) && isset($exp['organization']))
-								<div class="experience-company">{{ $exp['organization'] }}</div>
+							<div class="experience-company">
+								{{ $exp['organization'] }}</div>
 							@endif
 							@if(is_array($exp) && isset($exp['period']))
-								<div class="experience-period">{{ $exp['period'] }}</div>
+							<div class="experience-period">
+								{{ $exp['period'] }}</div>
 							@endif
 							@if(is_array($exp) && isset($exp['description']))
-								<p style="color: #6b7280; margin-top: 8px;">{{ $exp['description'] }}</p>
+							<p style="color: #6b7280; margin-top: 8px;">
+								{{ $exp['description'] }}</p>
 							@endif
 						</div>
 						@endforeach
@@ -797,21 +823,27 @@
 				@endif
 
 				<!-- Education -->
-				@if($doctor->education && is_array($doctor->education) && count($doctor->education) > 0)
+				@if($doctor->education && is_array($doctor->education) &&
+				count($doctor->education) > 0)
 				<div class="content-section">
 					<h3 class="section-title">
-						<span class="section-title-icon"><i class="fas fa-graduation-cap"></i></span>
+						<span class="section-title-icon"><i
+								class="fas fa-graduation-cap"></i></span>
 						{{ __('Education') }}
 					</h3>
 					@foreach($doctor->education as $edu)
 					<div class="education-item">
-						<i class="fas fa-graduation-cap" style="color: #059669; margin-right: 12px;"></i>
+						<i class="fas fa-graduation-cap"
+							style="color: #059669; margin-right: 12px;"></i>
 						<strong>{{ is_array($edu) ? ($edu['degree'] ?? $edu['title'] ?? '') : $edu }}</strong>
 						@if(is_array($edu) && isset($edu['institution']))
-							<div style="color: #6b7280; margin-top: 4px;">{{ $edu['institution'] }}</div>
+						<div style="color: #6b7280; margin-top: 4px;">
+							{{ $edu['institution'] }}</div>
 						@endif
 						@if(is_array($edu) && isset($edu['year']))
-							<div style="color: #9ca3af; font-size: 14px; margin-top: 2px;">{{ $edu['year'] }}</div>
+						<div
+							style="color: #9ca3af; font-size: 14px; margin-top: 2px;">
+							{{ $edu['year'] }}</div>
 						@endif
 					</div>
 					@endforeach
@@ -822,30 +854,35 @@
 			<!-- Right Column -->
 			<div>
 				<!-- Specialties -->
-				@if($doctor->specialties && is_array($doctor->specialties) && count($doctor->specialties) > 0)
+				@if($doctor->specialties && is_array($doctor->specialties) &&
+				count($doctor->specialties) > 0)
 				<div class="content-section">
 					<h3 class="section-title">
-						<span class="section-title-icon"><i class="fas fa-stethoscope"></i></span>
+						<span class="section-title-icon"><i
+								class="fas fa-stethoscope"></i></span>
 						{{ __('Specialties') }}
 					</h3>
 					<div class="specialty-tags">
 						@foreach($doctor->specialties as $specialty)
-							<span class="specialty-tag">{{ $specialty }}</span>
+						<span class="specialty-tag">{{ $specialty }}</span>
 						@endforeach
 					</div>
 				</div>
 				@endif
 
 				<!-- Services -->
-				@if($doctor->services_offered && is_array($doctor->services_offered) && count($doctor->services_offered) > 0)
+				@if($doctor->services_offered && is_array($doctor->services_offered) &&
+				count($doctor->services_offered) > 0)
 				<div class="content-section">
 					<h3 class="section-title">
-						<span class="section-title-icon"><i class="fas fa-hand-holding-medical"></i></span>
+						<span class="section-title-icon"><i
+								class="fas fa-hand-holding-medical"></i></span>
 						{{ __('Services Offered') }}
 					</h3>
 					@foreach($doctor->services_offered as $service)
 					<div class="service-item">
-						<i class="fas fa-check-circle" style="color: #10b981; margin-right: 12px;"></i>
+						<i class="fas fa-check-circle"
+							style="color: #10b981; margin-right: 12px;"></i>
 						{{ $service }}
 					</div>
 					@endforeach
@@ -853,15 +890,18 @@
 				@endif
 
 				<!-- Research Links -->
-				@if($doctor->research_links && is_array($doctor->research_links) && count($doctor->research_links) > 0)
+				@if($doctor->research_links && is_array($doctor->research_links) &&
+				count($doctor->research_links) > 0)
 				<div class="content-section">
 					<h3 class="section-title">
-						<span class="section-title-icon"><i class="fas fa-microscope"></i></span>
+						<span class="section-title-icon"><i
+								class="fas fa-microscope"></i></span>
 						{{ __('Research & Publications') }}
 					</h3>
 					@foreach($doctor->research_links as $link)
-					<a href="{{ is_array($link) ? ($link['url'] ?? '#') : $link }}" target="_blank"
-					   style="display: block; padding: 12px; background: #f9fafb; border-radius: 8px; margin-bottom: 8px; text-decoration: none; color: #059669; border-left: 3px solid #10b981;">
+					<a href="{{ is_array($link) ? ($link['url'] ?? '#') : $link }}"
+						target="_blank"
+						style="display: block; padding: 12px; background: #f9fafb; border-radius: 8px; margin-bottom: 8px; text-decoration: none; color: #059669; border-left: 3px solid #10b981;">
 						<i class="fas fa-external-link-alt"></i>
 						{{ is_array($link) ? ($link['title'] ?? __('Research Link')) : __('Research Link') }}
 					</a>
@@ -872,29 +912,30 @@
 		</div>
 
 		<!-- Booking Section -->
-        @if($doctor->clinicUser->clinic_id != null)
-            <div class="booking-section">
-                <div class="booking-header">
-                    <h2><i class="fas fa-calendar-alt" style="color: #059669;"></i> {{ __('Book Your Appointment') }}</h2>
-                    <p>{{ __('Select a date to view available time slots') }}</p>
-                </div>
+		@if($doctor->clinicUser->clinic_id != null)
+		<div class="booking-section">
+			<div class="booking-header">
+				<h2><i class="fas fa-calendar-alt" style="color: #059669;"></i>
+					{{ __('Book Your Appointment') }}</h2>
+				<p>{{ __('Select a date to view available time slots') }}</p>
+			</div>
 
-                <div class="days-slider-container">
-                    <div class="slider-nav prev" onclick="scrollDays('left')">
-                        <i class="fas fa-chevron-left"></i>
-                    </div>
-                    <div class="slider-nav next" onclick="scrollDays('right')">
-                        <i class="fas fa-chevron-right"></i>
-                    </div>
+			<div class="days-slider-container">
+				<div class="slider-nav prev" onclick="scrollDays('left')">
+					<i class="fas fa-chevron-left"></i>
+				</div>
+				<div class="slider-nav next" onclick="scrollDays('right')">
+					<i class="fas fa-chevron-right"></i>
+				</div>
 
-                    <div class="days-slider" id="daysSlider">
-                        <div class="days-grid" id="daysGrid">
-                            <!-- Days will be dynamically loaded here -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-        @endif
+				<div class="days-slider" id="daysSlider">
+					<div class="days-grid" id="daysGrid">
+						<!-- Days will be dynamically loaded here -->
+					</div>
+				</div>
+			</div>
+		</div>
+		@endif
 	</div>
 </section>
 
@@ -915,7 +956,8 @@
 		</div>
 
 		<div class="booking-form" id="bookingForm" style="display: none;">
-			<h4 style="font-size: 20px; font-weight: 700; margin-bottom: 20px;">{{ __('Your Information') }}</h4>
+			<h4 style="font-size: 20px; font-weight: 700; margin-bottom: 20px;">
+				{{ __('Your Information') }}</h4>
 			<form id="appointmentForm">
 				<input type="hidden" name="doctor_profile_id" value="{{ $doctor->id }}">
 				<input type="hidden" name="period_id" id="selectedPeriodId">
@@ -923,13 +965,14 @@
 				<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
 					<div class="form-group">
 						<label class="form-label">{{ __('Name') }} *</label>
-					<input type="text" name="name" class="form-control" required
-						value="{{ isset($patient) && $patient ? ($patient->user?->name) : '' }}">
+						<input type="text" name="name" class="form-control" required
+							value="{{ isset($patient) && $patient ? ($patient->user?->name) : '' }}">
 					</div>
 					<div class="form-group">
 						<label class="form-label">{{ __('Email') }} *</label>
-					<input type="email" name="email" class="form-control" required
-						value="{{ isset($patient) && $patient ? ($patient->user?->email) : '' }}">
+						<input type="email" name="email" class="form-control"
+							required
+							value="{{ isset($patient) && $patient ? ($patient->user?->email) : '' }}">
 					</div>
 				</div>
 
@@ -957,7 +1000,11 @@
 
 @push('scripts')
 <script>
-const doctorId = {{ $doctor->id }};
+const doctorId = {
+	{
+		$doctor - > id
+	}
+};
 let availableDaysData = {};
 let selectedDate = null;
 let selectedPeriod = null;
@@ -966,7 +1013,8 @@ let selectedPeriod = null;
 function loadDays() {
 	const today = new Date();
 	const daysGrid = document.getElementById('daysGrid');
-	daysGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px;"><i class="fas fa-spinner fa-spin" style="font-size: 32px; color: #059669;"></i></div>';
+	daysGrid.innerHTML =
+		'<div style="grid-column: 1/-1; text-align: center; padding: 40px;"><i class="fas fa-spinner fa-spin" style="font-size: 32px; color: #059669;"></i></div>';
 
 	const startDate = today.toISOString().split('T')[0];
 	const endDate = new Date(today.getTime() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
@@ -981,15 +1029,21 @@ function loadDays() {
 		})
 		.catch(error => {
 			console.error('Error:', error);
-			daysGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #dc2626;">Error loading dates</div>';
+			daysGrid.innerHTML =
+				'<div style="grid-column: 1/-1; text-align: center; color: #dc2626;">Error loading dates</div>';
 		});
 }
 
 function renderDays() {
 	const daysGrid = document.getElementById('daysGrid');
 	const today = new Date();
-	const dayNames = ['{{ __("Sunday") }}', '{{ __("Monday") }}', '{{ __("Tuesday") }}', '{{ __("Wednesday") }}', '{{ __("Thursday") }}', '{{ __("Friday") }}', '{{ __("Saturday") }}'];
-	const monthNames = ['{{ __("Jan") }}', '{{ __("Feb") }}', '{{ __("Mar") }}', '{{ __("Apr") }}', '{{ __("May") }}', '{{ __("Jun") }}', '{{ __("Jul") }}', '{{ __("Aug") }}', '{{ __("Sep") }}', '{{ __("Oct") }}', '{{ __("Nov") }}', '{{ __("Dec") }}'];
+	const dayNames = ['{{ __("Sunday") }}', '{{ __("Monday") }}', '{{ __("Tuesday") }}', '{{ __("Wednesday") }}',
+		'{{ __("Thursday") }}', '{{ __("Friday") }}', '{{ __("Saturday") }}'
+	];
+	const monthNames = ['{{ __("Jan") }}', '{{ __("Feb") }}', '{{ __("Mar") }}', '{{ __("Apr") }}',
+		'{{ __("May") }}', '{{ __("Jun") }}', '{{ __("Jul") }}', '{{ __("Aug") }}',
+		'{{ __("Sep") }}', '{{ __("Oct") }}', '{{ __("Nov") }}', '{{ __("Dec") }}'
+	];
 
 	let html = '';
 
@@ -1070,7 +1124,8 @@ function closeModal() {
 
 function loadTimeSlots(date) {
 	const timeSlotsGrid = document.getElementById('timeSlots');
-	timeSlotsGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px;"><i class="fas fa-spinner fa-spin" style="font-size: 32px; color: #059669;"></i></div>';
+	timeSlotsGrid.innerHTML =
+		'<div style="grid-column: 1/-1; text-align: center; padding: 40px;"><i class="fas fa-spinner fa-spin" style="font-size: 32px; color: #059669;"></i></div>';
 
 	fetch(`{{ route('doctors.available-periods', $doctor->id) }}?date=${date}`)
 		.then(response => response.json())
@@ -1079,10 +1134,13 @@ function loadTimeSlots(date) {
 				let html = '';
 				data.periods.forEach(period => {
 					const isPast = period.is_past || false;
-					const remaining = period.remaining_capacity || 0;
-					const confirmedBookings = period.confirmed_bookings || 0;
+					const remaining = period
+						.remaining_capacity || 0;
+					const confirmedBookings = period
+						.confirmed_bookings || 0;
 					const capacity = period.capacity || 0;
-					const atCapacity = confirmedBookings >= capacity;
+					const atCapacity = confirmedBookings >=
+						capacity;
 
 					let slotClass = '';
 					let statusText = '';
@@ -1091,16 +1149,20 @@ function loadTimeSlots(date) {
 
 					if (isPast) {
 						slotClass = 'past';
-						statusText = '{{ __("Expired") }}';
+						statusText =
+							'{{ __("Expired") }}';
 						statusColor = '#9ca3af';
 						clickable = false;
 					} else if (atCapacity) {
 						slotClass = 'full';
-						statusText = `{{ __("At capacity") }} (${confirmedBookings}/${capacity})`;
+						statusText =
+							`{{ __("At capacity") }} (${confirmedBookings}/${capacity})`;
 						statusColor = '#ea580c';
-						clickable = true; // Still allow booking
+						clickable =
+						true; // Still allow booking
 					} else {
-						statusText = `${remaining} {{ __("spots available") }}`;
+						statusText =
+							`${remaining} {{ __("spots available") }}`;
 						statusColor = '#059669';
 						clickable = true;
 					}
@@ -1119,12 +1181,14 @@ function loadTimeSlots(date) {
 				});
 				timeSlotsGrid.innerHTML = html;
 			} else {
-				timeSlotsGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #6b7280;">{{ __("No available time slots for this date.") }}</div>';
+				timeSlotsGrid.innerHTML =
+					'<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #6b7280;">{{ __("No available time slots for this date.") }}</div>';
 			}
 		})
 		.catch(error => {
 			console.error('Error:', error);
-			timeSlotsGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #dc2626;">{{ __("Error loading time slots.") }}</div>';
+			timeSlotsGrid.innerHTML =
+				'<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #dc2626;">{{ __("Error loading time slots.") }}</div>';
 		});
 }
 
@@ -1136,7 +1200,10 @@ function selectTimeSlot(periodId, timeRange) {
 	event.currentTarget.classList.add('selected');
 
 	document.getElementById('bookingForm').style.display = 'block';
-	document.getElementById('bookingForm').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+	document.getElementById('bookingForm').scrollIntoView({
+		behavior: 'smooth',
+		block: 'nearest'
+	});
 }
 
 // Form submission
@@ -1147,34 +1214,37 @@ document.getElementById('appointmentForm').addEventListener('submit', function(e
 	const data = Object.fromEntries(formData);
 
 	fetch('{{ route("appointments.book") }}', {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-			'X-CSRF-TOKEN': '{{ csrf_token() }}'
-		},
-		body: JSON.stringify(data)
-	})
-	.then(response => response.json())
-	.then(data => {
-		if (data.status === 'success') {
-			Swal.fire({
-				title: '{{ __("Booking Successful!") }}',
-				html: `{{ __("Your confirmation code is:") }}<br><strong style="font-size: 32px; color: #059669; display: block; margin: 20px 0;">${data.confirmation_code}</strong>{{ __("Please save this code for confirmation.") }}`,
-				icon: 'success',
-				confirmButtonText: '{{ __("OK") }}',
-				confirmButtonColor: '#059669'
-			}).then(() => {
-				closeModal();
-				loadDays();
-			});
-		} else {
-			Swal.fire('{{ __("Error") }}', data.message, 'error');
-		}
-	})
-	.catch(error => {
-		console.error('Error:', error);
-		Swal.fire('{{ __("Error") }}', '{{ __("An error occurred while booking") }}', 'error');
-	});
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'X-CSRF-TOKEN': '{{ csrf_token() }}'
+			},
+			body: JSON.stringify(data)
+		})
+		.then(response => response.json())
+		.then(data => {
+			if (data.status === 'success') {
+				Swal.fire({
+					title: '{{ __("Booking Successful!") }}',
+					html: `{{ __("Your confirmation code is:") }}<br><strong style="font-size: 32px; color: #059669; display: block; margin: 20px 0;">${data.confirmation_code}</strong>{{ __("Please save this code for confirmation.") }}`,
+					icon: 'success',
+					confirmButtonText: '{{ __("OK") }}',
+					confirmButtonColor: '#059669'
+				}).then(() => {
+					closeModal();
+					loadDays();
+				});
+			} else {
+				Swal.fire('{{ __("Error") }}', data.message,
+					'error');
+			}
+		})
+		.catch(error => {
+			console.error('Error:', error);
+			Swal.fire('{{ __("Error") }}',
+				'{{ __("An error occurred while booking") }}',
+				'error');
+		});
 });
 
 // Close modal on outside click

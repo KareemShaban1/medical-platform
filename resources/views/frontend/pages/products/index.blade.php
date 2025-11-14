@@ -1,5 +1,7 @@
 @extends('frontend.layouts.app')
 
+
+@section('title' , __('Products'))
 @push('styles')
 <style>
 /* Custom Animations */
