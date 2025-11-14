@@ -1,5 +1,6 @@
 @extends('frontend.layouts.app')
 
+@section('title' , __('Medical Course Details'))
 @push('styles')
 <style>
 /* Course Details Page Styles */
@@ -318,7 +319,7 @@
 	pointer-events: none;
 }
 
-.course-access-card > * {
+.course-access-card>* {
 	position: relative;
 	z-index: 1;
 }
@@ -512,10 +513,10 @@
 
 <!-- Course Details -->
 <section class="py-12 bg-gray-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <!-- Main Content -->
-            <div class="lg:col-span-2">
+	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+		<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+			<!-- Main Content -->
+			<div class="lg:col-span-2">
 				<!-- Course Image -->
 				<div class="mb-8 slide-in-left">
 					@if($course->main_image)
@@ -527,11 +528,11 @@
 						<i class="fas fa-graduation-cap text-6xl text-blue-400"></i>
 					</div>
 					@endif
-                </div>
+				</div>
 
-                <!-- Course Information -->
-                <div class="course-info slide-in-right">
-                    <h2 class="course-title">{{ $course->title }}</h2>
+				<!-- Course Information -->
+				<div class="course-info slide-in-right">
+					<h2 class="course-title">{{ $course->title }}</h2>
 
 					<div class="course-meta">
 						<div class="meta-item">
@@ -570,27 +571,29 @@
 
 					<div class="course-actions">
 						@auth('clinic')
-							@if(isset($enrollment) && $enrollment)
-								<button class="btn-enroll" disabled>
-									<i class="fas fa-check-circle"></i>
-									{{ __('You are enrolled') }}
-									<span class="status-badge {{ 'status-' . ($enrollment->status === 'approved' ? 'ongoing' : ($enrollment->status === 'rejected' ? 'completed' : 'upcoming')) }}">
-										{{ ucfirst($enrollment->status) }}
-									</span>
-								</button>
-							@else
-								<button class="btn-enroll" data-enroll-trigger="hero">
-									<i class="fas fa-user-plus"></i>
-									{{ __('enroll now') }}
-								</button>
-							@endif
+						@if(isset($enrollment) && $enrollment)
+						<button class="btn-enroll" disabled>
+							<i class="fas fa-check-circle"></i>
+							{{ __('You are enrolled') }}
+							<span
+								class="status-badge {{ 'status-' . ($enrollment->status === 'approved' ? 'ongoing' : ($enrollment->status === 'rejected' ? 'completed' : 'upcoming')) }}">
+								{{ ucfirst($enrollment->status) }}
+							</span>
+						</button>
 						@else
-							<a href="{{ url('/clinic/login') }}" class="btn-enroll">
-								<i class="fas fa-sign-in-alt"></i>
-								{{ __('Login to enroll') }}
-							</a>
+						<button class="btn-enroll" data-enroll-trigger="hero">
+							<i class="fas fa-user-plus"></i>
+							{{ __('enroll now') }}
+						</button>
+						@endif
+						@else
+						<a href="{{ url('/clinic/login') }}" class="btn-enroll">
+							<i class="fas fa-sign-in-alt"></i>
+							{{ __('Login to enroll') }}
+						</a>
 						@endauth
-						<button type="button" class="btn-secondary" onclick="shareCourse()">
+						<button type="button" class="btn-secondary"
+							onclick="shareCourse()">
 							<i class="fas fa-share"></i>
 							{{ __('share course') }}
 						</button>
@@ -879,7 +882,8 @@ function toggleEnrollmentLoading(button, isLoading) {
 	if (!button) return;
 	if (isLoading) {
 		button.dataset.originalText = button.innerHTML;
-		button.innerHTML = `<span class="flex items-center gap-2 justify-center"><i class="fas fa-spinner fa-spin"></i>{{ __('Processing...') }}</span>`;
+		button.innerHTML =
+			`<span class="flex items-center gap-2 justify-center"><i class="fas fa-spinner fa-spin"></i>{{ __('Processing...') }}</span>`;
 		button.disabled = true;
 	} else {
 		if (button.dataset.originalText) {
@@ -895,30 +899,33 @@ function handleCourseEnrollment(button) {
 	toggleEnrollmentLoading(button, true);
 
 	fetch(enrollmentEndpoint, {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-			'X-CSRF-TOKEN': `{{ csrf_token() }}`
-		},
-		body: JSON.stringify({})
-	})
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'X-CSRF-TOKEN': `{{ csrf_token() }}`
+			},
+			body: JSON.stringify({})
+		})
 		.then(res => res.json())
-    .then(data => {
-        if (data.status === 'success') {
-            if (typeof toast_success === 'function') toast_success(data.message || 'Success');
-        } else {
-            if (typeof toast_error === 'function') toast_error(data.message || 'Failed');
-        }
-        if (data.status === 'success') {
-            window.location.reload();
-        } else {
-            toggleEnrollmentLoading(button, false);
-        }
-    })
-    .catch(() => {
-        if (typeof toast_error === 'function') toast_error('Failed to enroll. Please try again.');
-        toggleEnrollmentLoading(button, false);
-    });
+		.then(data => {
+			if (data.status === 'success') {
+				if (typeof toast_success === 'function') toast_success(data.message ||
+					'Success');
+			} else {
+				if (typeof toast_error === 'function') toast_error(data.message ||
+					'Failed');
+			}
+			if (data.status === 'success') {
+				window.location.reload();
+			} else {
+				toggleEnrollmentLoading(button, false);
+			}
+		})
+		.catch(() => {
+			if (typeof toast_error === 'function') toast_error(
+				'Failed to enroll. Please try again.');
+			toggleEnrollmentLoading(button, false);
+		});
 }
 
 enrollmentButtons.forEach(button => {
@@ -930,38 +937,42 @@ enrollmentButtons.forEach(button => {
 
 // Share course
 function shareCourse() {
-    const url = window.location.href;
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(url)
-            .then(() => {
-                if (typeof toast_success === 'function') toast_success('{{ __('Course link copied to clipboard!') }}');
-            })
-            .catch(() => {
-                // Fallback if clipboard API fails
-                const input = document.createElement('input');
-                input.value = url;
-                document.body.appendChild(input);
-                input.select();
-                document.execCommand('copy');
-                document.body.removeChild(input);
-                if (typeof toast_success === 'function') toast_success('{{ __('Course link copied to clipboard!') }}');
-            });
-    } else {
-        // Legacy fallback
-        const input = document.createElement('input');
-        input.value = url;
-        document.body.appendChild(input);
-        input.select();
-        document.execCommand('copy');
-        document.body.removeChild(input);
-        if (typeof toast_success === 'function') toast_success('{{ __('Course link copied to clipboard!') }}');
-    }
+	const url = window.location.href;
+	if (navigator.clipboard && navigator.clipboard.writeText) {
+		navigator.clipboard.writeText(url)
+			.then(() => {
+				if (typeof toast_success === 'function') toast_success('{{ __('
+					Course link copied to clipboard!') }}');
+			})
+			.catch(() => {
+				// Fallback if clipboard API fails
+				const input = document.createElement('input');
+				input.value = url;
+				document.body.appendChild(input);
+				input.select();
+				document.execCommand('copy');
+				document.body.removeChild(input);
+				if (typeof toast_success === 'function') toast_success('{{ __('
+					Course link copied to clipboard!') }}');
+			});
+	} else {
+		// Legacy fallback
+		const input = document.createElement('input');
+		input.value = url;
+		document.body.appendChild(input);
+		input.select();
+		document.execCommand('copy');
+		document.body.removeChild(input);
+		if (typeof toast_success === 'function') toast_success('{{ __('
+			Course link copied to clipboard!') }}');
+	}
 }
 
 // Add to favorites
 function addToFavorites() {
-    // Add your favorites logic here
-    if (typeof toast_success === 'function') toast_success('{{ __('Added to favorites!') }}');
+	// Add your favorites logic here
+	if (typeof toast_success === 'function') toast_success('{{ __('
+		Added to favorites!') }}');
 }
 
 // Smooth scrolling for anchor links

@@ -4,7 +4,8 @@
 			<!-- <span
 			class="navbar-brand text-lg sm:text-xl lg:text-2xl font-semibold whitespace-nowrap">{{ __('Teb Plus') }}</span> -->
 
-			<img src="{{asset('frontend/images/logo-teb-plus.png')}}" style=" height: 70px; width: 180px;">
+			<img src="{{asset('frontend/images/logo-teb-plus.png')}}"
+				style=" height: 70px; width: 180px;">
 		</a>
 		<div class=" flex items-center md:order-2 space-x-1 md:space-x-0 rtl:space-x-reverse">
 			<button type="button" data-dropdown-toggle="language-dropdown-menu"
@@ -186,8 +187,7 @@
 						@endif>{{ __('products') }}</a>
 				</li>
 				<li>
-					<a href="{{ route('rental-spaces') }}"
-					    @if (Route::is('rental-spaces'))
+					<a href="{{ route('rental-spaces') }}" @if(Route::is('rental-spaces'))
 						class="block mx-2 rtl:mx-2 py-2 px-3 rounded-sm md:bg-transparent md:text-[var(--primary-color)] md:p-0 text-sm sm:text-base"
 						@else
 						class="block mx-2 rtl:mx-2 py-2 px-3 rounded-sm md:bg-transparent md:text-gray-700 md:p-0 text-sm sm:text-base"
@@ -256,12 +256,16 @@
                                     <li>
                                         <a href="{{ route('clinics') }}" class="block px-3 sm:px-4 py-2 hover:bg-gray-100 text-xs sm:text-sm">{{ __('view clinics') }}</a>
                                     </li>
-                                    <li>
-                                        <a href="{{ route('clinic.register-clinic') }}" class="block px-3 sm:px-4 py-2 hover:bg-gray-100 text-xs sm:text-sm">{{ __('register clinic') }}</a>
-                                    </li>
-                                    <li>
-                                        <a href="{{ url('/clinic/login') }}" class="block px-3 sm:px-4 py-2 hover:bg-gray-100  text-xs sm:text-sm">{{ __('login clinic') }}</a>
-                                    </li>
+                                    	@if(!auth('clinic')->check() &&
+                                      !auth('patient')->check() &&
+                                       !auth('supplier')->check() )     
+                                      <li>
+                                          <a href="{{ route('clinic.register-clinic') }}" class="block px-3 sm:px-4 py-2 hover:bg-gray-100 text-xs sm:text-sm">{{ __('register clinic') }}</a>
+                                      </li>
+                                      <li>
+                                          <a href="{{ url('/clinic/login') }}" class="block px-3 sm:px-4 py-2 hover:bg-gray-100  text-xs sm:text-sm">{{ __('login clinic') }}</a>
+                                      </li>
+                                    @endif
                                 @endif
                             </ul>
                         </div>
@@ -304,12 +308,16 @@
                                     <li>
                                         <a href="{{ route('suppliers') }}" class="block px-3 sm:px-4 py-2 hover:bg-gray-100 text-xs sm:text-sm">{{ __('view suppliers') }}</a>
                                     </li>
-                                    <li>
-                                        <a href="{{ route('supplier.register-supplier') }}" class="block px-3 sm:px-4 py-2 hover:bg-gray-100 text-xs sm:text-sm">{{ __('register supplier') }}</a>
-                                    </li>
-                                    <li>
-                                        <a href="{{ url('/supplier/login') }}" class="block px-3 sm:px-4 py-2 hover:bg-gray-100 text-xs sm:text-sm">{{ __('login supplier') }}</a>
-                                    </li>
+                                    	@if(!auth('clinic')->check() &&
+                                        !auth('patient')->check() &&
+                                        !auth('supplier')->check() )
+                                        <li>
+                                            <a href="{{ route('supplier.register-supplier') }}" class="block px-3 sm:px-4 py-2 hover:bg-gray-100 text-xs sm:text-sm">{{ __('register supplier') }}</a>
+                                        </li>
+                                        <li>
+                                            <a href="{{ url('/supplier/login') }}" class="block px-3 sm:px-4 py-2 hover:bg-gray-100 text-xs sm:text-sm">{{ __('login supplier') }}</a>
+                                        </li>
+                                       @endif 
                                 @endauth
                             </ul>
                         </div>
@@ -351,6 +359,9 @@
 								</form>
 							</li>
 							@else
+							@if(!auth('clinic')->check() &&
+							!auth('patient')->check() &&
+							!auth('supplier')->check() )
 							<li>
 								<a href="{{ url('/patient/register') }}"
 									class="block px-4 py-2 hover:bg-gray-100">{{ __('patient register') }}</a>
@@ -359,6 +370,7 @@
 								<a href="{{ url('/patient/login') }}"
 									class="block px-4 py-2 hover:bg-gray-100">{{ __('patient login') }}</a>
 							</li>
+							@endif
 							@endauth
 						</ul>
 					</div>
@@ -366,27 +378,37 @@
 
 				<!-- Doctor Authentication -->
 				@php
-				    $isDoctor = auth('clinic')->check() && optional(auth('clinic')->user())->clinic_id === null;
+				$isDoctor = auth('clinic')->check() &&
+				optional(auth('clinic')->user())->clinic_id === null;
 				@endphp
 				@if(!$isDoctor && !auth('clinic')->check())
 				<li>
 					<button id="doctorLink" data-dropdown-toggle="doctorDropdown"
 						class="flex items-center justify-between w-full mx-2 rtl:mx-2 py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:w-auto">
 						{{ __('doctor') }}
-						<svg class="w-2.5 h-2.5 ms-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-							<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4" />
+						<svg class="w-2.5 h-2.5 ms-2.5" aria-hidden="true"
+							xmlns="http://www.w3.org/2000/svg" fill="none"
+							viewBox="0 0 10 6">
+							<path stroke="currentColor" stroke-linecap="round"
+								stroke-linejoin="round" stroke-width="2"
+								d="m1 1 4 4 4-4" />
 						</svg>
 					</button>
-					<div id="doctorDropdown" class="hidden z-[9999] absolute font-normal bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44">
-						<ul class="py-2 text-sm text-gray-700" aria-labelledby="doctorLink">
+					<div id="doctorDropdown"
+						class="hidden z-[9999] absolute font-normal bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44">
+						<ul class="py-2 text-sm text-gray-700"
+							aria-labelledby="doctorLink">
 							<li>
-								<a href="{{ route('doctors.index') }}" class="block px-4 py-2 hover:bg-gray-100">{{ __('view doctors') }}</a>
+								<a href="{{ route('doctors.index') }}"
+									class="block px-4 py-2 hover:bg-gray-100">{{ __('view doctors') }}</a>
 							</li>
 							<li>
-								<a href="{{ route('doctor.register.show') }}" class="block px-4 py-2 hover:bg-gray-100">{{ __('doctor register') }}</a>
+								<a href="{{ route('doctor.register.show') }}"
+									class="block px-4 py-2 hover:bg-gray-100">{{ __('doctor register') }}</a>
 							</li>
 							<li>
-								<a href="{{ url('/clinic/login')}}" class="block px-4 py-2 hover:bg-gray-100">{{ __('doctor login') }}</a>
+								<a href="{{ url('/clinic/login')}}"
+									class="block px-4 py-2 hover:bg-gray-100">{{ __('doctor login') }}</a>
 							</li>
 						</ul>
 					</div>
@@ -396,22 +418,33 @@
 					<button id="doctorLink" data-dropdown-toggle="doctorDropdown"
 						class="flex items-center justify-between w-full mx-2 rtl:mx-2 py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:w-auto">
 						{{ __('doctor') }}
-						<svg class="w-2.5 h-2.5 ms-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-							<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4" />
+						<svg class="w-2.5 h-2.5 ms-2.5" aria-hidden="true"
+							xmlns="http://www.w3.org/2000/svg" fill="none"
+							viewBox="0 0 10 6">
+							<path stroke="currentColor" stroke-linecap="round"
+								stroke-linejoin="round" stroke-width="2"
+								d="m1 1 4 4 4-4" />
 						</svg>
 					</button>
-					<div id="doctorDropdown" class="hidden z-[9999] absolute font-normal bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44">
-						<ul class="py-2 text-sm text-gray-700" aria-labelledby="doctorLink">
+					<div id="doctorDropdown"
+						class="hidden z-[9999] absolute font-normal bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44">
+						<ul class="py-2 text-sm text-gray-700"
+							aria-labelledby="doctorLink">
 							<li>
-								<a href="{{ route('doctor.dashboard') }}" class="block px-4 py-2 hover:bg-gray-100">{{ __('dashboard') }}</a>
+								<a href="{{ route('doctor.dashboard') }}"
+									class="block px-4 py-2 hover:bg-gray-100">{{ __('dashboard') }}</a>
 							</li>
 							<li>
-								<a href="{{ route('doctors.index') }}" class="block px-4 py-2 hover:bg-gray-100">{{ __('view doctors') }}</a>
+								<a href="{{ route('doctors.index') }}"
+									class="block px-4 py-2 hover:bg-gray-100">{{ __('view doctors') }}</a>
 							</li>
 							<li>
-								<form method="POST" action="{{ route('clinic.logout') }}" class="inline w-full">
+								<form method="POST"
+									action="{{ route('clinic.logout') }}"
+									class="inline w-full">
 									@csrf
-									<button type="submit" class="block px-4 py-2 hover:bg-gray-100">{{ __('logout') }}</button>
+									<button type="submit"
+										class="block px-4 py-2 hover:bg-gray-100">{{ __('logout') }}</button>
 								</form>
 							</li>
 						</ul>

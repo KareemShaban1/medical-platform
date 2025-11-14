@@ -1,5 +1,6 @@
 @extends('frontend.layouts.app')
 
+@section('title' , __('Medical Supplier Details'))
 @push('styles')
 <style>
 /* Supplier Details Page Styles */

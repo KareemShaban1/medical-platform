@@ -1,394 +1,395 @@
 @extends('frontend.layouts.app')
 
+@section('title' , __('Clinics'))
 @push('styles')
 <style>
-	/* Custom Animations */
-	@keyframes fadeInUp {
-		from {
-			opacity: 0;
-			transform: translateY(30px);
-		}
-
-		to {
-			opacity: 1;
-			transform: translateY(0);
-		}
-	}
-
-	@keyframes slideInLeft {
-		from {
-			opacity: 0;
-			transform: translateX(-50px);
-		}
-
-		to {
-			opacity: 1;
-			transform: translateX(0);
-		}
-	}
-
-	@keyframes slideInRight {
-		from {
-			opacity: 0;
-			transform: translateX(50px);
-		}
-
-		to {
-			opacity: 1;
-			transform: translateX(0);
-		}
-	}
-
-	@keyframes float {
-
-		0%,
-		100% {
-			transform: translateY(0px);
-		}
-
-		50% {
-			transform: translateY(-10px);
-		}
-	}
-
-	@keyframes pulse {
-
-		0%,
-		100% {
-			transform: scale(1);
-		}
-
-		50% {
-			transform: scale(1.05);
-		}
-	}
-
-	@keyframes rotate {
-		from {
-			transform: rotate(0deg);
-		}
-
-		to {
-			transform: rotate(360deg);
-		}
-	}
-
-	@keyframes bounce {
-
-		0%,
-		20%,
-		53%,
-		80%,
-		100% {
-			transform: translate3d(0, 0, 0);
-		}
-
-		40%,
-		43% {
-			transform: translate3d(0, -8px, 0);
-		}
-
-		70% {
-			transform: translate3d(0, -4px, 0);
-		}
-
-		90% {
-			transform: translate3d(0, -2px, 0);
-		}
-	}
-
-	.animate-fade-in-up {
-		animation: fadeInUp 0.8s ease-out forwards;
+/* Custom Animations */
+@keyframes fadeInUp {
+	from {
 		opacity: 0;
+		transform: translateY(30px);
 	}
 
-	.animate-slide-in-left {
-		animation: slideInLeft 0.8s ease-out forwards;
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@keyframes slideInLeft {
+	from {
 		opacity: 0;
+		transform: translateX(-50px);
 	}
 
-	.animate-slide-in-right {
-		animation: slideInRight 0.8s ease-out forwards;
+	to {
+		opacity: 1;
+		transform: translateX(0);
+	}
+}
+
+@keyframes slideInRight {
+	from {
 		opacity: 0;
+		transform: translateX(50px);
 	}
 
-	.animate-float {
-		animation: float 3s ease-in-out infinite;
+	to {
+		opacity: 1;
+		transform: translateX(0);
+	}
+}
+
+@keyframes float {
+
+	0%,
+	100% {
+		transform: translateY(0px);
 	}
 
-	.animate-pulse-custom {
-		animation: pulse 2s ease-in-out infinite;
+	50% {
+		transform: translateY(-10px);
+	}
+}
+
+@keyframes pulse {
+
+	0%,
+	100% {
+		transform: scale(1);
 	}
 
-	.animate-rotate {
-		animation: rotate 2s linear infinite;
+	50% {
+		transform: scale(1.05);
+	}
+}
+
+@keyframes rotate {
+	from {
+		transform: rotate(0deg);
 	}
 
-	.animate-bounce-custom {
-		animation: bounce 2s ease-in-out infinite;
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+@keyframes bounce {
+
+	0%,
+	20%,
+	53%,
+	80%,
+	100% {
+		transform: translate3d(0, 0, 0);
 	}
 
-	.animation-delay-200 {
-		animation-delay: 0.2s;
+	40%,
+	43% {
+		transform: translate3d(0, -8px, 0);
 	}
 
-	.animation-delay-400 {
-		animation-delay: 0.4s;
+	70% {
+		transform: translate3d(0, -4px, 0);
 	}
 
-	.animation-delay-600 {
-		animation-delay: 0.6s;
+	90% {
+		transform: translate3d(0, -2px, 0);
 	}
+}
 
-	/* Clinic Card Hover Effects */
-	.clinic-card {
-		transition: all 0.3s ease;
-		position: relative;
-		overflow: hidden;
-	}
+.animate-fade-in-up {
+	animation: fadeInUp 0.8s ease-out forwards;
+	opacity: 0;
+}
 
-	.clinic-card::before {
-		content: '';
-		position: absolute;
-		top: 0;
-		left: -100%;
-		width: 100%;
-		height: 100%;
-		background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-		transition: left 0.5s ease;
-	}
+.animate-slide-in-left {
+	animation: slideInLeft 0.8s ease-out forwards;
+	opacity: 0;
+}
 
-	.clinic-card:hover::before {
-		left: 100%;
-	}
+.animate-slide-in-right {
+	animation: slideInRight 0.8s ease-out forwards;
+	opacity: 0;
+}
 
-	.clinic-card:hover {
-		transform: translateY(-8px) scale(1.02);
-		box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-	}
+.animate-float {
+	animation: float 3s ease-in-out infinite;
+}
 
-	#heroSearch::placeholder {
+.animate-pulse-custom {
+	animation: pulse 2s ease-in-out infinite;
+}
+
+.animate-rotate {
+	animation: rotate 2s linear infinite;
+}
+
+.animate-bounce-custom {
+	animation: bounce 2s ease-in-out infinite;
+}
+
+.animation-delay-200 {
+	animation-delay: 0.2s;
+}
+
+.animation-delay-400 {
+	animation-delay: 0.4s;
+}
+
+.animation-delay-600 {
+	animation-delay: 0.6s;
+}
+
+/* Clinic Card Hover Effects */
+.clinic-card {
+	transition: all 0.3s ease;
+	position: relative;
+	overflow: hidden;
+}
+
+.clinic-card::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: -100%;
+	width: 100%;
+	height: 100%;
+	background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+	transition: left 0.5s ease;
+}
+
+.clinic-card:hover::before {
+	left: 100%;
+}
+
+.clinic-card:hover {
+	transform: translateY(-8px) scale(1.02);
+	box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+#heroSearch::placeholder {
 	color: white;
 	opacity: 1;
 	/* Ensures full visibility */
 }
 
-	/* Filter Panel Animation */
-	.filter-panel {
-		transition: all 0.3s ease;
+/* Filter Panel Animation */
+.filter-panel {
+	transition: all 0.3s ease;
+}
+
+.filter-panel:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Loading Spinner */
+.spinner {
+	width: 40px;
+	height: 40px;
+	border: 4px solid rgba(7, 145, 132, 0.3);
+	border-top: 4px solid #079184;
+	border-radius: 50%;
+	animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+	0% {
+		transform: rotate(0deg);
 	}
 
-	.filter-panel:hover {
-		transform: translateY(-2px);
-		box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+	100% {
+		transform: rotate(360deg);
+	}
+}
+
+/* Gradient Text */
+.text-gradient {
+	background: linear-gradient(135deg, #079184, #0aa896);
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+	background-clip: text;
+}
+
+/* Interactive Elements */
+.interactive-element {
+	transition: all 0.3s ease;
+	cursor: pointer;
+}
+
+.interactive-element:hover {
+	transform: scale(1.05);
+}
+
+/* Staggered Animation */
+.stagger-animation>* {
+	opacity: 0;
+	transform: translateY(30px);
+	animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.stagger-animation>*:nth-child(1) {
+	animation-delay: 0.1s;
+}
+
+.stagger-animation>*:nth-child(2) {
+	animation-delay: 0.2s;
+}
+
+.stagger-animation>*:nth-child(3) {
+	animation-delay: 0.3s;
+}
+
+.stagger-animation>*:nth-child(4) {
+	animation-delay: 0.4s;
+}
+
+.stagger-animation>*:nth-child(5) {
+	animation-delay: 0.5s;
+}
+
+.stagger-animation>*:nth-child(6) {
+	animation-delay: 0.6s;
+}
+
+/* Rating Stars */
+.rating-stars {
+	display: flex;
+	gap: 2px;
+}
+
+.rating-star {
+	color: #fbbf24;
+	transition: all 0.3s ease;
+}
+
+.rating-star:hover {
+	transform: scale(1.2);
+	color: #f59e0b;
+}
+
+/* Status Badge */
+.status-badge {
+	transition: all 0.3s ease;
+	position: relative;
+	overflow: hidden;
+}
+
+.status-badge::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: -100%;
+	width: 100%;
+	height: 100%;
+	background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+	transition: left 0.3s ease;
+}
+
+.status-badge:hover::before {
+	left: 100%;
+}
+
+.status-badge:hover {
+	transform: scale(1.1);
+	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Specialization Tag */
+.specialization-tag {
+	background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+	color: white;
+	padding: 0.25rem 0.75rem;
+	border-radius: 9999px;
+	font-size: 0.75rem;
+	font-weight: 600;
+	animation: pulse 2s ease-in-out infinite;
+}
+
+/* Clinic Logo Animation */
+.clinic-logo {
+	transition: all 0.3s ease;
+}
+
+.clinic-logo:hover {
+	transform: scale(1.1) rotate(5deg);
+}
+
+/* Enhanced Form Inputs */
+.form-input {
+	transition: all 0.3s ease;
+	border: 2px solid #e5e7eb;
+}
+
+.form-input:focus {
+	border-color: #079184;
+	box-shadow: 0 0 0 3px rgba(7, 145, 132, 0.1);
+	transform: scale(1.02);
+}
+
+/* Sticky Filters */
+.sticky {
+	position: sticky;
+	top: 0;
+	z-index: 40;
+}
+
+/* Filter Panel Animation */
+#filtersPanel {
+	transition: all 0.3s ease;
+}
+
+/* Active Filter Chips */
+#activeFilters .bg-primary {
+	background: linear-gradient(135deg, #079184, #0aa896);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+	width: 8px;
+}
+
+::-webkit-scrollbar-track {
+	background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+	background: linear-gradient(135deg, #079184, #0aa896);
+	border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background: linear-gradient(135deg, #056b5f, #079184);
+}
+
+/* Smooth scrolling */
+html {
+	scroll-behavior: smooth;
+}
+
+/* Loading states */
+.loading {
+	opacity: 0.6;
+	pointer-events: none;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+	.animate-fade-in-up {
+		animation-delay: 0s;
 	}
 
-	/* Loading Spinner */
-	.spinner {
-		width: 40px;
-		height: 40px;
-		border: 4px solid rgba(7, 145, 132, 0.3);
-		border-top: 4px solid #079184;
-		border-radius: 50%;
-		animation: spin 1s linear infinite;
-	}
-
-	@keyframes spin {
-		0% {
-			transform: rotate(0deg);
-		}
-
-		100% {
-			transform: rotate(360deg);
-		}
-	}
-
-	/* Gradient Text */
-	.text-gradient {
-		background: linear-gradient(135deg, #079184, #0aa896);
-		-webkit-background-clip: text;
-		-webkit-text-fill-color: transparent;
-		background-clip: text;
-	}
-
-	/* Interactive Elements */
-	.interactive-element {
-		transition: all 0.3s ease;
-		cursor: pointer;
-	}
-
-	.interactive-element:hover {
-		transform: scale(1.05);
-	}
-
-	/* Staggered Animation */
-	.stagger-animation>* {
-		opacity: 0;
-		transform: translateY(30px);
-		animation: fadeInUp 0.6s ease-out forwards;
-	}
-
-	.stagger-animation>*:nth-child(1) {
-		animation-delay: 0.1s;
-	}
-
-	.stagger-animation>*:nth-child(2) {
-		animation-delay: 0.2s;
-	}
-
-	.stagger-animation>*:nth-child(3) {
-		animation-delay: 0.3s;
-	}
-
-	.stagger-animation>*:nth-child(4) {
-		animation-delay: 0.4s;
-	}
-
-	.stagger-animation>*:nth-child(5) {
-		animation-delay: 0.5s;
-	}
-
-	.stagger-animation>*:nth-child(6) {
-		animation-delay: 0.6s;
-	}
-
-	/* Rating Stars */
-	.rating-stars {
-		display: flex;
-		gap: 2px;
-	}
-
-	.rating-star {
-		color: #fbbf24;
-		transition: all 0.3s ease;
-	}
-
-	.rating-star:hover {
-		transform: scale(1.2);
-		color: #f59e0b;
-	}
-
-	/* Status Badge */
-	.status-badge {
-		transition: all 0.3s ease;
-		position: relative;
-		overflow: hidden;
-	}
-
-	.status-badge::before {
-		content: '';
-		position: absolute;
-		top: 0;
-		left: -100%;
-		width: 100%;
-		height: 100%;
-		background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-		transition: left 0.3s ease;
-	}
-
-	.status-badge:hover::before {
-		left: 100%;
-	}
-
-	.status-badge:hover {
-		transform: scale(1.1);
-		box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-	}
-
-	/* Specialization Tag */
-	.specialization-tag {
-		background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-		color: white;
-		padding: 0.25rem 0.75rem;
-		border-radius: 9999px;
-		font-size: 0.75rem;
-		font-weight: 600;
-		animation: pulse 2s ease-in-out infinite;
-	}
-
-	/* Clinic Logo Animation */
-	.clinic-logo {
-		transition: all 0.3s ease;
-	}
-
-	.clinic-logo:hover {
-		transform: scale(1.1) rotate(5deg);
-	}
-
-	/* Enhanced Form Inputs */
-	.form-input {
-		transition: all 0.3s ease;
-		border: 2px solid #e5e7eb;
-	}
-
-	.form-input:focus {
-		border-color: #079184;
-		box-shadow: 0 0 0 3px rgba(7, 145, 132, 0.1);
-		transform: scale(1.02);
-	}
-
-	/* Sticky Filters */
-	.sticky {
-		position: sticky;
-		top: 0;
-		z-index: 40;
-	}
-
-	/* Filter Panel Animation */
 	#filtersPanel {
-		transition: all 0.3s ease;
+		margin: 0 -1rem;
+		border-radius: 0;
 	}
 
-	/* Active Filter Chips */
-	#activeFilters .bg-primary {
-		background: linear-gradient(135deg, #079184, #0aa896);
+	.grid.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-4 {
+		grid-template-columns: 1fr;
+		gap: 1rem;
 	}
-
-	/* Custom Scrollbar */
-	::-webkit-scrollbar {
-		width: 8px;
-	}
-
-	::-webkit-scrollbar-track {
-		background: #f1f1f1;
-	}
-
-	::-webkit-scrollbar-thumb {
-		background: linear-gradient(135deg, #079184, #0aa896);
-		border-radius: 4px;
-	}
-
-	::-webkit-scrollbar-thumb:hover {
-		background: linear-gradient(135deg, #056b5f, #079184);
-	}
-
-	/* Smooth scrolling */
-	html {
-		scroll-behavior: smooth;
-	}
-
-	/* Loading states */
-	.loading {
-		opacity: 0.6;
-		pointer-events: none;
-	}
-
-	/* Mobile responsive adjustments */
-	@media (max-width: 768px) {
-		.animate-fade-in-up {
-			animation-delay: 0s;
-		}
-
-		#filtersPanel {
-			margin: 0 -1rem;
-			border-radius: 0;
-		}
-
-		.grid.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-4 {
-			grid-template-columns: 1fr;
-			gap: 1rem;
-		}
-	}
+}
 </style>
 @endpush
 
@@ -423,10 +424,12 @@
 		<!-- Interactive Search Bar -->
 		<div class="max-w-2xl mx-auto animate-fade-in-up animation-delay-400">
 			<div class="relative group">
-				<input type="text" id="heroSearch" placeholder="{{ __('search for clinics...') }}"
+				<input type="text" id="heroSearch"
+					placeholder="{{ __('search for clinics...') }}"
 					class="w-full px-6 py-4 pl-14 pr-6 text-gray-900 rounded-full shadow-2xl focus:outline-none focus:ring-4 focus:ring-white/30 transition-all duration-300 group-hover:scale-105">
-				<i class="fas fa-search absolute left-5 top-1/2 transform -translate-y-1/4 text-white text-lg"></i>
-				
+				<i
+					class="fas fa-search absolute left-5 top-1/2 transform -translate-y-1/4 text-white text-lg"></i>
+
 			</div>
 		</div>
 	</div>
@@ -456,7 +459,8 @@
 			<!-- Results Count -->
 			<div class="flex items-center space-x-4">
 				<div class="bg-gray-100 rounded-xl px-4 py-2">
-					<span class="text-gray-600">{{ __('showing') }} <span id="resultsCount"
+					<span class="text-gray-600">{{ __('showing') }} <span
+							id="resultsCount"
 							class="font-bold text-primary">{{ $clinics->total() }}</span>
 						{{ __('clinics') }}</span>
 				</div>
@@ -481,35 +485,47 @@
 			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 				<!-- Search Filter -->
 				<div class="group">
-					<label class="block text-sm font-semibold text-gray-700 mb-3">{{ __('search clinics') }}</label>
+					<label
+						class="block text-sm font-semibold text-gray-700 mb-3">{{ __('search clinics') }}</label>
 					<div class="relative">
-						<input type="text" id="search" placeholder="{{ __('search clinics...') }}"
+						<input type="text" id="search"
+							placeholder="{{ __('search clinics...') }}"
 							class="form-input w-full pl-10 pr-4 py-3 group-hover:scale-105 transition-transform duration-300">
-						<i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/4 text-white"></i>
+						<i
+							class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/4 text-white"></i>
 					</div>
 				</div>
 
 				<!-- Sort Filter -->
 				<div class="group">
-					<label class="block text-sm font-semibold text-gray-700 mb-3">{{ __('sort by') }}</label>
+					<label
+						class="block text-sm font-semibold text-gray-700 mb-3">{{ __('sort by') }}</label>
 					<div class="relative">
-						<select id="sort" class="form-input w-full px-3 py-3 group-hover:scale-105 transition-transform duration-300">
-							<option value="name" {{ request('sort') == 'name' ? 'selected' : '' }}>{{ __('name a-z') }}</option>
-							<option value="newest" {{ request('sort') == 'newest' ? 'selected' : '' }}>{{ __('newest first') }}</option>
-							<option value="oldest" {{ request('sort') == 'oldest' ? 'selected' : '' }}>{{ __('oldest first') }}</option>
+						<select id="sort"
+							class="form-input w-full px-3 py-3 group-hover:scale-105 transition-transform duration-300">
+							<option value="name"
+								{{ request('sort') == 'name' ? 'selected' : '' }}>
+								{{ __('name a-z') }}</option>
+							<option value="newest"
+								{{ request('sort') == 'newest' ? 'selected' : '' }}>
+								{{ __('newest first') }}</option>
+							<option value="oldest"
+								{{ request('sort') == 'oldest' ? 'selected' : '' }}>
+								{{ __('oldest first') }}</option>
 						</select>
 					</div>
 				</div>
 
 				<div class="group flex items-center space-x-4">
 					<button id="clearFilters" class="btn-secondary group">
-						<i class="fas fa-refresh mr-2 group-hover:rotate-180 transition-transform duration-500"></i>
+						<i
+							class="fas fa-refresh mr-2 group-hover:rotate-180 transition-transform duration-500"></i>
 						{{ __('clear all filters') }}
 					</button>
 				</div>
 			</div>
 
-			
+
 		</div>
 	</div>
 </section>
@@ -526,13 +542,14 @@
 		</div>
 
 		<!-- Clinics Grid with Advanced Animations -->
-		<div id="clinicsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 stagger-animation">
+		<div id="clinicsGrid"
+			class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 stagger-animation">
 			@include('frontend.pages.clinics.partials.clinics-grid', ['clinics' => $clinics])
 		</div>
 
-			<!-- Enhanced Pagination -->
-		<x-frontend.pagination :paginator="$clinics" container-class="mt-12" :show-info="true" :max-pages="7"
-			:show-first-last="false" />
+		<!-- Enhanced Pagination -->
+		<x-frontend.pagination :paginator="$clinics" container-class="mt-12" :show-info="true"
+			:max-pages="7" :show-first-last="false" />
 	</div>
 </section>
 

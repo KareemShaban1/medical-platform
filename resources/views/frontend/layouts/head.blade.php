@@ -2,6 +2,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name="csrf-token" content="{{ csrf_token() }}">
+	<title>@yield('title')</title>
 	<!-- tailwind -->
 	<script src="https://cdn.tailwindcss.com"></script>
 	<!-- Swiper CSS -->
@@ -29,7 +30,7 @@
 	<script src="//unpkg.com/alpinejs" defer></script>
 
 
-	<title>Medical Platform - Home</title>
+
 
 	@if (app()->getLocale() == 'ar')
 	<link rel="stylesheet" href="{{ asset('frontend/css/rtl.css') }}">

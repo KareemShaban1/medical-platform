@@ -19,7 +19,7 @@ class ExpenseCategoryRepository implements ExpenseCategoryRepositoryInterface
 
     public function data()
     {
-        $expenseCategories = ExpenseCategory::query();
+        $expenseCategories = ExpenseCategory::forCurrentClinic();
 
         return datatables()->of($expenseCategories)
             ->addColumn('action', fn($item) => $this->expenseCategoryActions($item))

@@ -26,6 +26,11 @@ class Expense extends Model implements HasMedia
     protected $appends = ['images'];
 
 
+    // scopes
+    public function scopeForCurrentClinic($query)
+    {
+        return $query->where('clinic_id', auth('clinic')->user()->clinic_id);
+    }
 
     public function clinic()
     {

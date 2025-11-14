@@ -1,8 +1,9 @@
 @extends('frontend.layouts.app')
 
+@section('title' , __('Shopping Cart'))
 @section('content')
 <div class="container mx-auto px-4 py-8">
-	<h1 class="text-3xl font-bold mb-6 text-gray-900">Shopping Cart</h1>
+	<h1 class="text-3xl font-bold mb-6 text-gray-900">{{ __('shopping cart') }}</h1>
 
 	@if($cart && $cart->items->count() > 0)
 	<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -93,33 +94,33 @@
 		<!-- Cart Summary -->
 		<div class="lg:col-span-1">
 			<div class="bg-white rounded-lg shadow-md p-6 sticky top-4">
-				<h2 class="text-xl font-bold mb-4 text-gray-900">Order Summary
+				<h2 class="text-xl font-bold mb-4 text-gray-900">{{ __('order summary') }}
 				</h2>
 
 				<div class="space-y-3 mb-4">
 					<div class="flex justify-between text-gray-700">
-						<span>Subtotal:</span>
+						<span>{{ __('subtotal') }}:</span>
 						<span
 							id="cart-subtotal">${{ number_format($cart->subtotal, 2) }}</span>
 					</div>
 					<div class="flex justify-between text-gray-700">
-						<span>Shipping:</span>
+						<span>{{ __('shipping') }}:</span>
 						<span
 							id="cart-shipping">${{ number_format($cart->shipping, 2) }}</span>
 					</div>
 					<div class="flex justify-between text-gray-700">
-						<span>Tax (14%):</span>
+						<span>{{ __('tax') }}:</span>
 						<span
 							id="cart-tax">${{ number_format($cart->tax, 2) }}</span>
 					</div>
 					<div class="flex justify-between text-gray-700">
-						<span>Discount:</span>
+						<span>{{ __('discount') }}:</span>
 						<span
 							id="cart-discount">-${{ number_format($cart->discount, 2) }}</span>
 					</div>
 					<div
 						class="border-t border-gray-300 pt-3 flex justify-between text-xl font-bold text-gray-900">
-						<span>Total:</span>
+						<span>{{ __('total') }}:</span>
 						<span
 							id="cart-total">${{ number_format($cart->total, 2) }}</span>
 					</div>
@@ -127,12 +128,12 @@
 
 				<a href="{{ route('checkout.index') }}"
 					class="block w-full text-center px-6 py-3 bg-blue-700 text-white font-semibold rounded-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-300">
-					Proceed to Checkout
+					{{ __('proceed to checkout') }}
 				</a>
 
 				<button type="button" id="clear-cart"
 					class="block w-full text-center px-6 py-3 mt-3 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 focus:ring-4 focus:ring-red-300">
-					Clear Cart
+					{{ __('clear cart') }}
 				</button>
 			</div>
 		</div>
@@ -145,11 +146,11 @@
 				d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z">
 			</path>
 		</svg>
-		<h2 class="text-2xl font-bold text-gray-900 mb-2">Your cart is empty</h2>
-		<p class="text-gray-600 mb-6">Add some products to get started</p>
+		<h2 class="text-2xl font-bold text-gray-900 mb-2">{{ __('your cart is empty') }}</h2>
+		<p class="text-gray-600 mb-6">{{ __('add some products to get started') }}</p>
 		<a href="{{ route('products') }}"
 			class="inline-block px-6 py-3 bg-blue-700 text-white font-semibold rounded-lg hover:bg-blue-800">
-			Browse Products
+			{{ __('browse products') }}
 		</a>
 	</div>
 	@endif

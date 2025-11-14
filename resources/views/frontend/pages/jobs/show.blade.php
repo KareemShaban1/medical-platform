@@ -1,5 +1,6 @@
 @extends('frontend.layouts.app')
 
+@section('title' , __('Job Details'))
 @push('styles')
 <style>
 /* Job Details Page Styles */

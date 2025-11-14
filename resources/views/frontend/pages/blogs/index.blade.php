@@ -1,6 +1,6 @@
 @extends('frontend.layouts.app')
 
-
+@section('title' , __('Medical Blogs'))
 @push('styles')
 <style>
 /* Custom Animations */
