@@ -55,7 +55,7 @@
 							</div>
 
 							<div class="row">
-								<div class="col-md-6">
+								<div class="col-md-12">
 									<div class="form-group">
 										<label class="form-label required">{{ __('User Name') }}</label>
 										<input type="text"
@@ -74,6 +74,9 @@
 										@enderror
 									</div>
 								</div>
+							</div>
+
+							<div class="row">
 								<div class="col-md-6">
 									<div class="form-group">
 										<label class="form-label required">{{ __('User Email') }}</label>
@@ -93,19 +96,42 @@
 										@enderror
 									</div>
 								</div>
+								<div class="col-md-6">
+									<div class="form-group">
+										<label class="form-label required">{{ __('Phone') }}</label>
+										<input type="text"
+											name="phone"
+											id="phone"
+											class="form-control @error('phone') is-invalid @enderror"
+											value="{{ old('phone') }}"
+											required>
+										<div class="validation-feedback" id="phone_feedback"></div>
+										@error('phone')
+										<div class="validation-feedback invalid">
+											<i class="fa fa-exclamation-circle"></i>
+											{{ $message }}
+										</div>
+										@enderror
+									</div>
+								</div>
 							</div>
 
 							<div class="row">
 								<div class="col-md-6">
 									<div class="form-group">
 										<label class="form-label required">{{ __('Password') }}</label>
-										<input type="password"
-											name="password"
-											id="password"
-											class="form-control @error('password') is-invalid @enderror"
-											required>
-										<div class="validation-feedback" id="password_feedback">
+										<div class="input-group position-relative">
+											<input type="password"
+												name="password"
+												id="password"
+												class="form-control @error('password') is-invalid @enderror"
+												style="padding-right: 45px; border-radius: 0.375rem;"
+												required>
+											<button type="button" id="passwordToggle" style="position: absolute; top: 50%; right: 12px; transform: translateY(-50%); border: none; background: transparent; color: #6c757d; z-index: 1000; padding: 4px; display: flex; align-items: center; justify-content: center; width: 24px; height: 24px;">
+												<i class="fa fa-eye" style="font-size: 14px;"></i>
+											</button>
 										</div>
+										<div class="validation-feedback" id="password_feedback"></div>
 										@error('password')
 										<div class="validation-feedback invalid">
 											<i class="fa fa-exclamation-circle"></i>
@@ -117,13 +143,18 @@
 								<div class="col-md-6">
 									<div class="form-group">
 										<label class="form-label required">{{ __('Confirm Password') }}</label>
-										<input type="password"
-											name="password_confirmation"
-											id="password_confirmation"
-											class="form-control @error('password_confirmation') is-invalid @enderror"
-											required>
-										<div class="validation-feedback" id="password_confirmation_feedback">
+										<div class="input-group position-relative">
+											<input type="password"
+												name="password_confirmation"
+												id="password_confirmation"
+												class="form-control @error('password_confirmation') is-invalid @enderror"
+												style="padding-right: 45px; border-radius: 0.375rem;"
+												required>
+											<button type="button" id="passwordConfirmToggle" style="position: absolute; top: 50%; right: 12px; transform: translateY(-50%); border: none; background: transparent; color: #6c757d; z-index: 1000; padding: 4px; display: flex; align-items: center; justify-content: center; width: 24px; height: 24px;">
+												<i class="fa fa-eye" style="font-size: 14px;"></i>
+											</button>
 										</div>
+										<div class="validation-feedback" id="password_confirmation_feedback"></div>
 										@error('password_confirmation')
 										<div class="validation-feedback invalid">
 											<i class="fa fa-exclamation-circle"></i>
@@ -134,9 +165,9 @@
 								</div>
 							</div>
 
-							<div class="d-flex justify-content-end">
+							<div class="form-group">
 								<button type="submit"
-									class="btn btn-success"
+									class="btn btn-primary btn-block"
 									id="submitBtn">
 									{{ __('Register') }}
 									<i class="fa fa-check"></i>
@@ -149,12 +180,12 @@
 									<a href="{{ url('/clinic/login') }}">{{ __('Login here') }}</a>
 								</p>
 							</div>
-                            <div class="back-to-home text-center">
-                                <a href="{{ route('home') }}" class="btn btn-link">
-                                    <i class="fa fa-arrow-left"></i>
-                                    {{ __('Back to Home') }}
-                                </a>
-                            </div>
+							<div class="back-to-home text-center">
+								<a href="{{ route('home') }}" class="btn btn-link">
+									<i class="fa fa-arrow-left"></i>
+									{{ __('Back to Home') }}
+								</a>
+							</div>
 						</form>
 					</div>
 				</div>
@@ -214,6 +245,14 @@
 						isValid = false;
 						message = 'Passwords do not match';
 					}
+				} else if (fieldName === 'phone') {
+					if (!value || value.trim() === '') {
+						isValid = false;
+						message = 'Phone number is required';
+					} else if (!/^\+?[0-9\-\s]{10,}$/.test(value)) {
+						isValid = false;
+						message = 'Please enter a valid phone number';
+					}
 				} else if (fieldName === 'user_name') {
 					if (!value || value.trim() === '') {
 						isValid = false;
@@ -243,6 +282,20 @@
 				}
 			}
 
+			// Toggle show/hide password
+			$('#passwordToggle, #passwordConfirmToggle').on('click', function() {
+				const isPasswordField = this.id === 'passwordToggle';
+				const passwordField = isPasswordField ? $('#password') : $('#password_confirmation');
+				const icon = $(this).find('i');
+				if (passwordField.attr('type') === 'password') {
+					passwordField.attr('type', 'text');
+					icon.removeClass('fa-eye').addClass('fa-eye-slash');
+				} else {
+					passwordField.attr('type', 'password');
+					icon.removeClass('fa-eye-slash').addClass('fa-eye');
+				}
+			});
+
 			// Real-time validation on input
 			$('input').on('input blur', function() {
 				const fieldName = $(this).attr('id');
@@ -257,21 +310,24 @@
 
 				const user_name = $('#user_name').val();
 				const user_email = $('#user_email').val();
+				const phone = $('#phone').val();
 				const password = $('#password').val();
 				const password_confirmation = $('#password_confirmation').val();
 
 				// Validate all fields
 				const nameValidation = validateField('user_name', user_name);
 				const emailValidation = validateField('user_email', user_email);
+				const phoneValidation = validateField('phone', phone);
 				const passwordValidation = validateField('password', password);
 				const passwordConfirmationValidation = validateField('password_confirmation', password_confirmation);
 
 				updateFieldValidation('user_name', nameValidation.valid, nameValidation.message);
 				updateFieldValidation('user_email', emailValidation.valid, emailValidation.message);
+				updateFieldValidation('phone', phoneValidation.valid, phoneValidation.message);
 				updateFieldValidation('password', passwordValidation.valid, passwordValidation.message);
 				updateFieldValidation('password_confirmation', passwordConfirmationValidation.valid, passwordConfirmationValidation.message);
 
-				if (!nameValidation.valid || !emailValidation.valid || !passwordValidation.valid || !passwordConfirmationValidation.valid) {
+				if (!nameValidation.valid || !emailValidation.valid || !phoneValidation.valid || !passwordValidation.valid || !passwordConfirmationValidation.valid) {
 					toastr.error('Please fill in all required fields correctly.');
 					return;
 				}
@@ -287,6 +343,7 @@
 					data: {
 						user_name: user_name,
 						user_email: user_email,
+						phone: phone,
 						password: password,
 						password_confirmation: password_confirmation,
 						_token: $('meta[name="csrf-token"]').attr('content')
@@ -334,4 +391,3 @@
 </body>
 
 </html>
-

@@ -33,7 +33,7 @@ $(document).ready(function() {
 	loadGovernorates();
 
 
-	
+
 	// Restore old values if form validation failed
 	@if(old('governorate_id'))
 	setTimeout(function() {
@@ -72,9 +72,9 @@ $(document).ready(function() {
 	@endif
 
 		// Load governorates function
-	function loadGovernorates() {
-		$.ajax({
-			url: '{{ route("clinic.governorates") }}',
+    function loadGovernorates() {
+        $.ajax({
+            url: '{{ route("clinic.governorates") }}',
 			type: 'GET',
 			success: function(response) {
 				const select = $(
@@ -82,7 +82,7 @@ $(document).ready(function() {
 				select.empty();
 				select.append("<option value=''>{{ __('Select Governorate ') }}</option>");
 				response.forEach(function(
-					governorate) {	
+					governorate) {
 					select.append(
 						`<option value="${governorate.id}">${governorate.name}</option>`);
 				});
@@ -96,7 +96,7 @@ $(document).ready(function() {
 
 
 		// Load cities function
-	function loadCities(governorateId) {
+    function loadCities(governorateId) {
 		if (!governorateId) {
 			$('#city_id').empty().append("<option value=''>{{ __('Select City ') }}</option>").prop('disabled',
 				true);
@@ -105,7 +105,7 @@ $(document).ready(function() {
 			return;
 		}
 
-		$.ajax({
+        $.ajax({
 			url: '{{ route("clinic.cities") }}',
 			type: 'GET',
 			data: {
@@ -138,14 +138,14 @@ $(document).ready(function() {
 	}
 
 	// Load areas function
-	function loadAreas(cityId) {
+    function loadAreas(cityId) {
 		if (!cityId) {
 			$('#area_id').empty().append("<option value=''>{{ __('Select Area ') }}</option>").prop('disabled',
 				true);
 			return;
 		}
 
-		$.ajax({
+        $.ajax({
 			url: '{{ route("clinic.areas") }}',
 			type: 'GET',
 			data: {

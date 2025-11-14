@@ -59,7 +59,7 @@
                                             <td>{{ $enrollment->created_at?->format('M d, Y') ?? '—' }}</td>
                                             <td>
                                                 @if($enrollment->status === 'approved' && $enrollment->course?->url)
-                                                    <a href="{{ $enrollment->course->url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                    <a href="{{ url('/courses/'.$enrollment->course->id) }}" target="_blank" class="btn btn-sm btn-outline-primary">
                                                         <i class="mdi mdi-open-in-new"></i> {{ __('Open') }}
                                                     </a>
                                                 @else
