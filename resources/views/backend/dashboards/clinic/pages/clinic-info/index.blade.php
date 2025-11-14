@@ -25,7 +25,7 @@
 		<div class="col-12">
 			<div class="card">
 				<div class="card-body">
-					<form id="clinic-info-form">
+                    <form id="clinic-info-form" enctype="multipart/form-data">
 						@csrf
 						@method('PUT')
 						<div class="mb-3">
@@ -138,15 +138,34 @@
 								</div>
 							</div>
 						</div>
-						<div class="mb-3">
-							<label for="address"
-								class="form-label">{{ __('Address') }}
-								<span
-									class="text-danger">*</span></label>
-							<textarea id="address" name="address" rows="3"
-								class="form-control"
-								required>{{ old('address', $clinic->address) }}</textarea>
-						</div>
+                    <div class="mb-3">
+                        <label for="address"
+                            class="form-label">{{ __('Address') }}
+                            <span
+                                class="text-danger">*</span></label>
+                        <textarea id="address" name="address" rows="3"
+                            class="form-control"
+                            required>{{ old('address', $clinic->address) }}</textarea>
+                    </div>
+                    <!-- Images management -->
+                    <div class="mb-4">
+                        <label class="form-label d-block">{{ __('Images') }}</label>
+                        <div class="row g-2 mb-2" id="current-images">
+                            @foreach($clinic->getMedia('clinic_images') as $media)
+                                <div class="col-md-3 col-6 position-relative">
+                                    <img src="{{ $media->getUrl() }}" class="img-fluid rounded border" style="height:130px;object-fit:cover;width:100%">
+                                    <div class="form-check mt-1">
+                                        <input class="form-check-input remove-media-checkbox" type="checkbox" value="{{ $media->id }}" id="remove-media-{{ $media->id }}">
+                                        <label class="form-check-label small" for="remove-media-{{ $media->id }}">
+                                            {{ __('Remove') }}
+                                        </label>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                        <input type="file" name="images[]" id="images" class="form-control" accept="image/*" multiple>
+                        <div class="form-text">{{ __('Upload new images. At least one image must exist.') }}</div>
+                    </div>
 						
 						<div class="text-end">
 							<button type="submit"
@@ -165,29 +184,26 @@
 	$(function() {
 		$('#clinic-info-form').on('submit', function(e) {
 			e.preventDefault();
-			var $form = $(this);
-			$.ajax({
-				url: "{{ route('clinic.settings.clinic-info.update') }}",
-				type: 'POST',
-				data: $form.serialize(),
-				success: function(res) {
-					if (res
-						.success
-					) {
-						Swal.fire('{{ __("Success!") }}',
-							res
-							.message,
-							'success'
-						);
-					} else {
-						Swal.fire('{{ __("Error!") }}',
-							res
-							.message ||
-							'{{ __("Something went wrong") }}',
-							'error'
-						);
-					}
-				},
+            var form = document.getElementById('clinic-info-form');
+            var formData = new FormData(form);
+            $('.remove-media-checkbox:checked').each(function(){
+                formData.append('remove_media_ids[]', $(this).val());
+            });
+            $.ajax({
+                url: "{{ route('clinic.settings.clinic-info.update') }}",
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(res) {
+                    if (res && res.success) {
+                        Swal.fire('{{ __("Success!") }}', res.message, 'success').then(function(){
+                            window.location.reload();
+                        });
+                    } else {
+                        Swal.fire('{{ __("Error!") }}', (res && res.message) || '{{ __("Something went wrong") }}', 'error');
+                    }
+                },
 				error: function(xhr) {
 					let errors =
 						xhr

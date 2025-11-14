@@ -1,5 +1,28 @@
 @extends('frontend.layouts.app')
 
+@section('title', $course->title)
+
+@push('meta')
+    <meta name="description" content="{{ \Illuminate\Support\Str::limit(strip_tags($course->description ?? ''), 160) }}">
+    <link rel="canonical" href="{{ url()->current() }}">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="{{ $course->title }}">
+    <meta property="og:description" content="{{ \Illuminate\Support\Str::limit(strip_tags($course->description ?? ''), 200) }}">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:site_name" content="{{ config('app.name') }}">
+    <meta property="og:image" content="{{ $course->main_image ? url($course->main_image) : asset('frontend/images/logo.png') }}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ $course->title }}">
+    <meta name="twitter:description" content="{{ \Illuminate\Support\Str::limit(strip_tags($course->description ?? ''), 200) }}">
+    <meta name="twitter:image" content="{{ $course->main_image ? url($course->main_image) : asset('frontend/images/logo.png') }}">
+@endpush
+
 @section('title' , __('Medical Course Details'))
 @push('styles')
 <style>

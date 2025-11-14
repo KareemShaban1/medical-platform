@@ -23,6 +23,7 @@ class DoctorAuthController extends Controller
         $validationRules = [
             'user_name' => 'required|string|min:2',
             'user_email' => 'required|email|unique:clinic_users,email',
+            'phone' => 'required|string|max:255|unique:clinic_users,phone',
             'password' => 'required|string|min:8|confirmed',
         ];
 
@@ -32,6 +33,8 @@ class DoctorAuthController extends Controller
             'user_email.required' => 'Email is required.',
             'user_email.email' => 'Please enter a valid email address.',
             'user_email.unique' => 'This email is already registered.',
+            'phone.required' => 'Phone number is required.',
+            'phone.unique' => 'This phone number is already registered.',
             'password.required' => 'Password is required.',
             'password.min' => 'Password must be at least 8 characters.',
             'password.confirmed' => 'Password confirmation does not match.',
@@ -52,6 +55,7 @@ class DoctorAuthController extends Controller
             $user = ClinicUser::create([
                 'name' => $request->user_name,
                 'email' => $request->user_email,
+                'phone' => $request->phone,
                 'password' => Hash::make($request->password),
                 'clinic_id' => null,
                 'has_clinic' => false,
