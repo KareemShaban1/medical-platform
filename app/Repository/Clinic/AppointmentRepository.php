@@ -25,13 +25,13 @@ class AppointmentRepository implements AppointmentRepositoryInterface
         if (method_exists($clinicUser, 'isDoctor') && $clinicUser->isDoctor()) {
             $doctorProfileId = optional($clinicUser->getDoctorProfile())->id;
             if ($doctorProfileId) {
-                $query->where('doctor_profile_id', $doctorProfileId);
+                $query->where('appointments.doctor_profile_id', $doctorProfileId);
             }
         }
 
         // Apply filters
         if (!empty($filters['doctor_profile_id'])) {
-            $query->where('doctor_profile_id', $filters['doctor_profile_id']);
+            $query->where('appointments.doctor_profile_id', $filters['doctor_profile_id']);
         }
 
         if (!empty($filters['patient_id'])) {
@@ -78,21 +78,21 @@ class AppointmentRepository implements AppointmentRepositoryInterface
         if (method_exists($clinicUser, 'isDoctor') && $clinicUser->isDoctor()) {
             $doctorProfileId = optional($clinicUser->getDoctorProfile())->id;
             if ($doctorProfileId) {
-                $query->where('doctor_profile_id', $doctorProfileId);
+                $query->where('appointments.doctor_profile_id', $doctorProfileId);
             }
         }
 
         // Apply filters
         if (!empty($filters['doctor_profile_id'])) {
-            $query->where('doctor_profile_id', $filters['doctor_profile_id']);
+            $query->where('appointments.doctor_profile_id', $filters['doctor_profile_id']);
         }
 
         if (!empty($filters['patient_id'])) {
-            $query->where('patient_id', $filters['patient_id']);
+            $query->where('appointments.patient_id', $filters['patient_id']);
         }
 
         if (!empty($filters['status'])) {
-            $query->where('status', $filters['status']);
+            $query->where('appointments.status', $filters['status']);
         }
 
         // Date filter (defaults to today if not provided)

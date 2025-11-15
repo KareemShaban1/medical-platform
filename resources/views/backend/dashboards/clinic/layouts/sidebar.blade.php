@@ -115,13 +115,19 @@
   							</a>
   						</li>
 
-  						<a href="{{ route('clinic.working-hours.index') }}"
-  							class="side-nav-link">
-  							<i class="uil-schedule"></i>
-  							<span> {{ __('Working Hours') }} </span>
-  						</a>
-
-
+  						<li>
+  							<a href="{{ route('clinic.working-hours.index') }}">
+                                <span> {{ __('Working Hours') }}
+                                </span>
+  							</a>
+                        </li>
+                        <!-- attendance -->
+                        <li>
+  							<a href="{{ route('clinic.attendance.index') }}">
+  								<span> {{__('Attendance')}}
+  								</span>
+  							</a>
+  						</li>
   					</ul>
   				</div>
   			</li>
@@ -268,7 +274,7 @@
   					<span> {{ __('Medical Records') }} </span>
   				</a>
   			</li>
-        
+
           <!-- Invoices -->
             <li class="side-nav-item">
                 <a href="{{ route('clinic.invoices.index') }}" class="side-nav-link">

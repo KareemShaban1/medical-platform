@@ -44,24 +44,14 @@
 								@enderror
 							</div>
 							<!-- Type -->
-							<div class="col-md-4 mb-3">
-								<label for="quantity"
-									class="form-label">{{ __('Type') }}</label>
-								<select name="type" id="type"
-									class="form-control">
-									<option value="in"
-										{{ $clinicInventoryMovement->type == 'in' ? 'selected' : '' }}>
-										{{ __('In') }}
-									</option>
-									<option value="out"
-										{{ $clinicInventoryMovement->type == 'out' ? 'selected' : '' }}>
-										{{ __('Out') }}
-									</option>
-								</select>
-								@error('type') <span
-									class="text-danger">{{ $message }}</span>
-								@enderror
-							</div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">{{ __('Type') }}</label>
+                                <select class="form-control" disabled>
+                                    <option value="in" {{ $clinicInventoryMovement->type == 'in' ? 'selected' : '' }}>{{ __('In') }}</option>
+                                    <option value="out" {{ $clinicInventoryMovement->type == 'out' ? 'selected' : '' }}>{{ __('Out') }}</option>
+                                </select>
+                                <input type="hidden" name="type" value="{{ $clinicInventoryMovement->type }}">
+                            </div>
 
 							<!-- Unit -->
 							<div class="col-md-4 mb-3">

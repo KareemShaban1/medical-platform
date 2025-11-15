@@ -45,10 +45,28 @@ class ClinicInventoryMovementRepository implements ClinicInventoryMovementReposi
 
     public function destroy($id)
     {
-        $clinicInventoryMovement = ClinicInventoryMovement::findOrFail($id);
-        $clinicInventoryMovement->delete();
+        try {
+            DB::beginTransaction();
+            $movement = ClinicInventoryMovement::findOrFail($id);
+            $inventory = $movement->clinicInventory()->lockForUpdate()->first();
 
-        return $this->jsonResponse('success', __('Clinic inventory deleted successfully'));
+            if ($movement->type === 'in') {
+                $newQty = (int) $inventory->quantity - (int) $movement->quantity;
+                if ($newQty < 0) { $newQty = 0; }
+                $inventory->quantity = $newQty;
+            } else { // out
+                $inventory->quantity = (int) $inventory->quantity + (int) $movement->quantity;
+            }
+
+            $inventory->save();
+            $movement->delete();
+            DB::commit();
+
+            return $this->jsonResponse('success', __('Clinic inventory movement deleted and stock updated'));
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->jsonResponse('error', $e->getMessage());
+        }
     }
 
     public function trash()
@@ -91,34 +109,56 @@ class ClinicInventoryMovementRepository implements ClinicInventoryMovementReposi
     {
         try {
             DB::beginTransaction();
-            // Prevent OUT movements beyond available stock
-            if ($request->type === 'out') {
-                $inventory = ClinicInventory::findOrFail($request->clinic_inventory_id);
-                if ((int) $request->quantity > (int) $inventory->quantity) {
-                    throw new \Exception(__('The out quantity exceeds current stock.'));
-                }
+
+            // Lock inventory row for safe concurrent updates
+            $inventory = $clinicInventoryMovement->exists
+                ? $clinicInventoryMovement->clinicInventory()->lockForUpdate()->first()
+                : ClinicInventory::lockForUpdate()->findOrFail($request->clinic_inventory_id);
+
+            // Previous state if updating
+            $previousQty = 0;
+            $previousType = null;
+            if ($clinicInventoryMovement->exists) {
+                $previousQty = (int) $clinicInventoryMovement->quantity;
+                $previousType = $clinicInventoryMovement->type;
             }
-            $clinicInventoryMovement->fill($request->validated())->save();
+
+            // Do not allow changing type on update
+            $newType = $previousType ?? $request->type;
+            $newQty = (int) $request->quantity;
+
+            // Reverse previous impact
+            if ($previousType === 'in') {
+                $inventory->quantity = (int) $inventory->quantity - $previousQty;
+            } elseif ($previousType === 'out') {
+                $inventory->quantity = (int) $inventory->quantity + $previousQty;
+            }
+
+            // Validate and apply new impact
+            if ($newType === 'out' && $newQty > (int) $inventory->quantity) {
+                throw new \Exception(__('The out quantity exceeds current stock.'));
+            }
+
+            if ($newType === 'in') {
+                $inventory->quantity = (int) $inventory->quantity + $newQty;
+            } else { // out
+                $inventory->quantity = (int) $inventory->quantity - $newQty;
+            }
+
+            // Save movement and inventory
+            $payload = $request->validated();
+            $payload['type'] = $newType;
+            $clinicInventoryMovement->fill($payload)->save();
+            $inventory->save();
 
             DB::commit();
-
-            if ($request->type == 'in') {
-                $clinicInventoryMovement->clinicInventory->update([
-                    'quantity' => $clinicInventoryMovement->clinicInventory->quantity + $request->quantity
-                ]);
-            } else {
-                $newQty = $clinicInventoryMovement->clinicInventory->quantity - $request->quantity;
-                if ($newQty < 0) {
-                    throw new \Exception(__('Invalid movement: resulting stock would be negative.'));
-                }
-                $clinicInventoryMovement->clinicInventory->update(['quantity' => $newQty]);
-            }
 
             if ($request->ajax()) {
                 return $this->jsonResponse('success', __('Clinic inventory ' . $action . ' successfully'));
             }
 
-            return redirect()->route('clinic.clinic-inventory-movements.index', $clinicInventoryMovement->clinicInventory->id)->with('success', __('Clinic inventory ' . $action . ' successfully'));
+            return redirect()->route('clinic.clinic-inventory-movements.index', $clinicInventoryMovement->clinicInventory->id)
+                ->with('success', __('Clinic inventory ' . $action . ' successfully'));
         } catch (\Exception $e) {
             DB::rollBack();
             return $this->jsonResponse('error', $e->getMessage());
