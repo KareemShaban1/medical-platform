@@ -463,6 +463,50 @@ html {
 					</div>
 				</div>
 
+				<!-- governorate filter -->
+				<div class="group">
+					<label
+						class="block text-sm font-semibold text-gray-700 mb-3">{{ __('governorate') }}</label>
+					<div class="relative">
+						<select id="governorate_id"
+							class="form-input w-full px-3 py-3 group-hover:scale-105 transition-transform duration-300">
+							<option value="all">{{ __('all governorates') }}
+							</option>
+							@foreach (\App\Models\Governorate::all() as $governorate)
+							<option value="{{ $governorate->id }}">
+								{{ $governorate->name }}</option>
+							@endforeach
+						</select>
+					</div>
+				</div>
+				<!-- city filter -->
+				<div class="group">
+					<label
+						class="block text-sm font-semibold text-gray-700 mb-3">{{ __('city') }}</label>
+					<div class="relative">
+						<select id="city_id"
+							class="form-input w-full px-3 py-3 group-hover:scale-105 transition-transform duration-300">
+							<option value="all">{{ __('all cities') }}
+							</option>
+							
+						</select>
+					</div>
+				</div>
+
+				<!-- area -->
+				<div class="group">
+					<label
+						class="block text-sm font-semibold text-gray-700 mb-3">{{ __('area') }}</label>
+					<div class="relative">
+						<select id="area_id"
+							class="form-input w-full px-3 py-3 group-hover:scale-105 transition-transform duration-300">
+							<option value="all">{{ __('all areas') }}
+							</option>
+							
+						</select>
+					</div>
+				</div>
+
 				<div class="group flex items-center space-x-4">
 					<button id="clearFilters" class="btn-secondary group">
 						<i

@@ -17,5 +17,7 @@ interface JobRepositoryInterface
     public function forceDelete($id);
 	public function getApplicants($jobId);
 	public function updateApplicationStatus($request);
+	public function getApplicationDetails($applicationId);
+	public function updateApplicationData($request, $applicationId);
 
 }

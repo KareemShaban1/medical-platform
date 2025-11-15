@@ -196,6 +196,15 @@ Route::group([
     Route::put('profile/password', [\App\Http\Controllers\Frontend\Patient\ProfileController::class, 'updatePassword'])->name('profile.password.update');
 });
 
+    // Location dropdowns endpoints
+    Route::get('/governorates', [HomeController::class, 'getGovernorates'])
+    ->name('getGovernorates');
+Route::get('/cities', [HomeController::class, 'getCities'])
+    ->name('getCities');
+Route::get('/areas', [HomeController::class, 'getAreas'])
+    ->name('getAreas');
+
+
 // Patient Logout Route
 Route::post('/user/logout', function (\Illuminate\Http\Request $request) {
     \Illuminate\Support\Facades\Auth::guard('patient')->logout();

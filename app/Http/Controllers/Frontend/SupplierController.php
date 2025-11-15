@@ -73,23 +73,16 @@ class SupplierController extends Controller
 			$query->where('rating', '>=', $minRating);
 		}
 
-		// Certification filters
-		// if ($request->filled('certified')) {
-		// 	$query->where('is_certified', true);
-		// }
 
-		// if ($request->filled('iso')) {
-		// 	$query->where('iso_certified', true);
-		// }
-
-		// if ($request->filled('fda')) {
-		// 	$query->where('fda_approved', true);
-		// }
-
-		// Experience filter
-		if ($request->filled('experience')) {
-			$minExperience = (int) $request->experience;
-			$query->where('years_experience', '>=', $minExperience);
+		// Location filters
+		if ($request->filled('governorate_id')) {
+			$query->where('governorate_id', $request->governorate_id);
+		}
+		if ($request->filled('city_id')) {
+			$query->where('city_id', $request->city_id);
+		}
+		if ($request->filled('area_id')) {
+			$query->where('area_id', $request->area_id);
 		}
 
 		// Sort options

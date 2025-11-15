@@ -1,61 +1,137 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# TEBBPLUS Medical Platform
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## 📋 Project Summary / وصف المشروع
 
-## About Laravel
+### English
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+**TEBBPLUS Medical Platform** is a comprehensive, multi-role healthcare management system built with Laravel. The platform serves as an integrated digital ecosystem connecting clinics, doctors, patients, suppliers, and medical professionals across Egypt.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+#### Key Features:
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **🏥 Clinic Management**: Complete clinic administration dashboard with patient management, appointment scheduling, medical records, prescriptions, lab orders, inventory management, staff management, and financial tracking.
 
-## Learning Laravel
+- **👨‍⚕️ Doctor Profiles**: Public doctor profiles with specialties, experience, education, and services. Profile approval workflow with admin review system.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- **👥 Patient Portal**: Patient registration, appointment booking, medical history access, prescription viewing, and lab results tracking.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+- **🛒 Medical Supplies Marketplace**: E-commerce platform for medical equipment and supplies with supplier management, product catalog, shopping cart, and checkout system.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- **🏢 Rental Spaces**: Medical space rental service connecting doctors with clinic owners for flexible practice locations.
 
-## Laravel Sponsors
+- **📚 Training & Development**: Medical courses and training programs with enrollment system.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+- **📰 Medical Blog**: Content management system for medical articles and news.
 
-### Premium Partners
+- **💼 Job Board**: Medical job listings and application system.
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+- **💰 Financial Management**: Salary contracts, payslips, expense tracking, and financial reporting for clinics.
 
-## Contributing
+- **📊 Analytics & Reporting**: Comprehensive dashboards with analytics for appointments, revenue, and clinic performance.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+#### Technical Stack:
+- **Backend**: Laravel 10+ (PHP 8.1+)
+- **Frontend**: Blade Templates, Bootstrap, jQuery, DataTables
+- **Database**: MySQL with comprehensive migrations and seeders
+- **Authentication**: Multi-guard system (Admin, Clinic, Supplier, Patient)
+- **Authorization**: Role-based permissions using Spatie Laravel Permission
+- **Payment Gateways**: Multiple payment gateway integration
+- **Media Management**: Spatie Media Library for file handling
+- **Localization**: Arabic and English language support
 
-## Code of Conduct
+---
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### العربية
 
-## Security Vulnerabilities
+**منصة TEBBPLUS الطبية** هي نظام شامل متعدد الأدوار لإدارة الرعاية الصحية مبني على Laravel. تعمل المنصة كنظام رقمي متكامل يربط بين العيادات والأطباء والمرضى والموردين والمهنيين الطبيين في جميع أنحاء مصر.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+#### المميزات الرئيسية:
 
-## License
+- **🏥 إدارة العيادات**: لوحة تحكم كاملة لإدارة العيادات تشمل إدارة المرضى، جدولة المواعيد، السجلات الطبية، الوصفات الطبية، طلبات المختبرات، إدارة المخزون، إدارة الموظفين، وتتبع المالية.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+- **👨‍⚕️ ملفات الأطباء**: ملفات عامة للأطباء مع التخصصات والخبرة والتعليم والخدمات. نظام موافقة على الملفات مع مراجعة من قبل الإدارة.
+
+- **👥 بوابة المرضى**: تسجيل المرضى، حجز المواعيد، الوصول إلى التاريخ الطبي، عرض الوصفات الطبية، وتتبع نتائج المختبرات.
+
+- **🛒 سوق المستلزمات الطبية**: منصة تجارة إلكترونية للمعدات والمستلزمات الطبية مع إدارة الموردين، كتالوج المنتجات، سلة التسوق، ونظام الدفع.
+
+- **🏢 مساحات الإيجار**: خدمة إيجار المساحات الطبية التي تربط الأطباء بأصحاب العيادات لمواقع ممارسة مرنة.
+
+- **📚 التدريب والتطوير**: دورات طبية وبرامج تدريبية مع نظام التسجيل.
+
+- **📰 المدونة الطبية**: نظام إدارة المحتوى للمقالات والأخبار الطبية.
+
+- **💼 لوحة الوظائف**: قوائم الوظائف الطبية ونظام التقديم.
+
+- **💰 الإدارة المالية**: عقود الرواتب، كشوف المرتبات، تتبع المصروفات، والتقارير المالية للعيادات.
+
+- **📊 التحليلات والتقارير**: لوحات تحكم شاملة مع تحليلات للمواعيد والإيرادات وأداء العيادات.
+
+#### التقنيات المستخدمة:
+- **الخلفية**: Laravel 10+ (PHP 8.1+)
+- **الواجهة الأمامية**: Blade Templates، Bootstrap، jQuery، DataTables
+- **قاعدة البيانات**: MySQL مع migrations و seeders شاملة
+- **المصادقة**: نظام multi-guard (Admin، Clinic، Supplier، Patient)
+- **الصلاحيات**: صلاحيات قائمة على الأدوار باستخدام Spatie Laravel Permission
+- **بوابات الدفع**: تكامل بوابات دفع متعددة
+- **إدارة الوسائط**: Spatie Media Library للتعامل مع الملفات
+- **الترجمة**: دعم اللغة العربية والإنجليزية
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+- PHP >= 8.1
+- Composer
+- MySQL >= 5.7
+- Node.js & NPM
+
+### Installation
+
+1. Clone the repository
+```bash
+git clone <repository-url>
+cd medical-platform
+```
+
+2. Install dependencies
+```bash
+composer install
+npm install
+```
+
+3. Configure environment
+```bash
+cp .env.example .env
+php artisan key:generate
+```
+
+4. Run migrations and seeders
+```bash
+php artisan migrate --seed
+```
+
+5. Start development server
+```bash
+php artisan serve
+npm run dev
+```
+
+## 📖 Documentation
+
+- [Database Seeders Guide](database/seeders/README.md)
+- [Cart & Checkout Guide](guides/CART_CHECKOUT_GUIDE.md)
+- [Payment Gateways](guides/payment/)
+- [Deployment Guide](DEPLOYMENT.md)
+
+## 🔐 Default Credentials
+
+See [Credentials.md](Credentials.md) for default login credentials.
+
+## 📝 License
+
+This project is proprietary software. All rights reserved.
+
+---
+
+<p align="center">© 2024 TEBBPLUS Medical Platform. All rights reserved.</p>

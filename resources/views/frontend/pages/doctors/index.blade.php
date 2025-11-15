@@ -48,6 +48,13 @@
 	box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
 }
 
+
+#heroSearch::placeholder {
+	color: white;
+	opacity: 1;
+	/* Ensures full visibility */
+}
+
 /* Featured Badge - Like Verified Badge */
 .featured-badge {
 	position: absolute;
@@ -199,7 +206,7 @@
 			<div class="relative group">
 				<input type="text" id="heroSearch"
 					placeholder="{{ __('search for doctors...') }}"
-					class="w-full px-6 py-4 pl-14 pr-6 text-gray-900 rounded-full shadow-2xl focus:outline-none focus:ring-4 focus:ring-white/30 transition-all duration-300 group-hover:scale-105">
+					class="w-full px-6 py-4 pl-14 pr-6 text-white rounded-full shadow-2xl focus:outline-none focus:ring-4 focus:ring-white/30 transition-all duration-300 group-hover:scale-105">
 				<i
 					class="fas fa-search absolute left-5 top-1/2 transform -translate-y-1/4 text-white text-lg"></i>
 			</div>
@@ -345,15 +352,60 @@
 						</select>
 					</div>
 				</div>
-			</div>
 
-			<div class="mt-6 flex items-center space-x-4">
+					<!-- governorate filter -->
+				<div class="group">
+					<label
+						class="block text-sm font-semibold text-gray-700 mb-3">{{ __('governorate') }}</label>
+					<div class="relative">
+						<select id="governorate_id"
+							class="form-input w-full px-3 py-3 group-hover:scale-105 transition-transform duration-300">
+							<option value="all">{{ __('all governorates') }}
+							</option>
+							@foreach (\App\Models\Governorate::all() as $governorate)
+							<option value="{{ $governorate->id }}">
+								{{ $governorate->name }}</option>
+							@endforeach
+						</select>
+					</div>
+				</div>
+				<!-- city filter -->
+				<div class="group">
+					<label
+						class="block text-sm font-semibold text-gray-700 mb-3">{{ __('city') }}</label>
+					<div class="relative">
+						<select id="city_id"
+							class="form-input w-full px-3 py-3 group-hover:scale-105 transition-transform duration-300">
+							<option value="all">{{ __('all cities') }}
+							</option>
+							
+						</select>
+					</div>
+				</div>
+
+				<!-- area -->
+				<div class="group">
+					<label
+						class="block text-sm font-semibold text-gray-700 mb-3">{{ __('area') }}</label>
+					<div class="relative">
+						<select id="area_id"
+							class="form-input w-full px-3 py-3 group-hover:scale-105 transition-transform duration-300">
+							<option value="all">{{ __('all areas') }}
+							</option>
+							
+						</select>
+					</div>
+				</div>
+				<div class="mt-6 flex items-center space-x-4">
 				<button id="clearFilters" class="btn-secondary group">
 					<i
 						class="fas fa-refresh mr-2 group-hover:rotate-180 transition-transform duration-500"></i>
 					{{ __('clear all filters') }}
 				</button>
 			</div>
+			</div>
+
+			
 		</div>
 	</div>
 </section>
