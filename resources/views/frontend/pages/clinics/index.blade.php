@@ -482,7 +482,7 @@ html {
 
 		<!-- Collapsible Filters Panel -->
 		<div id="filtersPanel" class="hidden bg-gray-50 rounded-2xl p-6 shadow-lg border border-gray-200">
-			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
 				<!-- Search Filter -->
 				<div class="group">
 					<label
@@ -512,6 +512,50 @@ html {
 							<option value="oldest"
 								{{ request('sort') == 'oldest' ? 'selected' : '' }}>
 								{{ __('oldest first') }}</option>
+						</select>
+					</div>
+				</div>
+
+				<!-- governorate filter -->
+				<div class="group">
+					<label
+						class="block text-sm font-semibold text-gray-700 mb-3">{{ __('governorate') }}</label>
+					<div class="relative">
+						<select id="governorate_id"
+							class="form-input w-full px-3 py-3 group-hover:scale-105 transition-transform duration-300">
+							<option value="all">{{ __('all governorates') }}
+							</option>
+							@foreach (\App\Models\Governorate::all() as $governorate)
+							<option value="{{ $governorate->id }}">
+								{{ $governorate->name }}</option>
+							@endforeach
+						</select>
+					</div>
+				</div>
+				<!-- city filter -->
+				<div class="group">
+					<label
+						class="block text-sm font-semibold text-gray-700 mb-3">{{ __('city') }}</label>
+					<div class="relative">
+						<select id="city_id"
+							class="form-input w-full px-3 py-3 group-hover:scale-105 transition-transform duration-300">
+							<option value="all">{{ __('all cities') }}
+							</option>
+							
+						</select>
+					</div>
+				</div>
+
+				<!-- area -->
+				<div class="group">
+					<label
+						class="block text-sm font-semibold text-gray-700 mb-3">{{ __('area') }}</label>
+					<div class="relative">
+						<select id="area_id"
+							class="form-input w-full px-3 py-3 group-hover:scale-105 transition-transform duration-300">
+							<option value="all">{{ __('all areas') }}
+							</option>
+							
 						</select>
 					</div>
 				</div>

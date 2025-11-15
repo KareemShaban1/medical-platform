@@ -68,6 +68,23 @@ class DoctorController extends Controller
             }
         }
 
+        // Location filters
+        if ($request->filled('governorate_id')) {
+            $query->whereHas('clinicUser.clinic', function($q) use ($request) {
+                $q->where('governorate_id', $request->governorate_id);
+            });
+        }
+        if ($request->filled('city_id')) {
+            $query->whereHas('clinicUser.clinic', function($q) use ($request) {
+                $q->where('city_id', $request->city_id);
+            });
+        }
+        if ($request->filled('area_id')) {
+            $query->whereHas('clinicUser.clinic', function($q) use ($request) {
+                $q->where('area_id', $request->area_id);
+            });
+        }
+
         // Join with clinic_users for ordering
         $query->leftJoin('clinic_users', 'doctor_profiles.clinic_user_id', '=', 'clinic_users.id')
             ->select('doctor_profiles.*');

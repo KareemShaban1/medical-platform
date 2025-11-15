@@ -128,4 +128,34 @@ class JobController extends Controller
 	{
 		return $this->jobRepo->updateApplicationStatus($request);
 	}
+
+	/**
+	 * Get application details for modal.
+	 */
+	public function getApplicationDetails($applicationId)
+	{
+		$application = $this->jobRepo->getApplicationDetails($applicationId);
+
+		if (!$application) {
+			return response()->json([
+				'status' => 'error',
+				'message' => __('Application not found'),
+			], 404);
+		}
+
+		$html = view('backend.dashboards.clinic.pages.jobs.partials.application-details', compact('application'))->render();
+
+		return response()->json([
+			'status' => 'success',
+			'html' => $html,
+		]);
+	}
+
+	/**
+	 * Update application notes and data.
+	 */
+	public function updateApplicationData(Request $request, $applicationId)
+	{
+		return $this->jobRepo->updateApplicationData($request, $applicationId);
+	}
 }

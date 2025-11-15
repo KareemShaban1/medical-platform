@@ -222,6 +222,52 @@ class JobRepository implements JobRepositoryInterface
         ]);
     }
 
+    public function getApplicationDetails($applicationId)
+    {
+        return JobApplication::with('job')->find($applicationId);
+    }
+
+    public function updateApplicationData($request, $applicationId)
+    {
+        try {
+            $application = JobApplication::findOrFail($applicationId);
+            $applicantData = $application->applicant_data ?? [];
+
+            // Update notes if provided
+            if ($request->has('notes')) {
+                $application->notes = $request->notes;
+            }
+
+            // Update applicant data fields if provided
+            if ($request->has('applicant_data')) {
+                $newData = $request->applicant_data;
+                
+                // Merge with existing data, but don't allow editing of name, email, phone, cv
+                $protectedFields = ['name', 'email', 'phone', 'cv'];
+                foreach ($newData as $key => $value) {
+                    if (!in_array($key, $protectedFields)) {
+                        $applicantData[$key] = $value;
+                    }
+                }
+                
+                $application->applicant_data = $applicantData;
+            }
+
+            $application->save();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => __('Application data updated successfully'),
+                'application' => $application->fresh(['job']),
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
     private function jsonResponse(string $status, string $message)
     {
         if (request()->ajax()) {

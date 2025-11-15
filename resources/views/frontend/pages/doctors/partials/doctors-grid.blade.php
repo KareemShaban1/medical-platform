@@ -43,7 +43,7 @@
 		@if($doctor->speciality)
 		<div class="mb-3">
 			<span class="specialization-tag">
-				<i class="fas fa-stethoscope mr-1"></i>
+				<i class="fas fa-stethoscope mx-1"></i>
 				{{ $doctor->speciality->name_en }}
 			</span>
 		</div>
@@ -52,14 +52,14 @@
 		<!-- Clinic Information -->
 		@if($doctor->clinicUser && $doctor->clinicUser->clinic)
 		<div class="mb-3 flex items-center text-sm text-gray-600">
-			<i class="fas fa-hospital text-green-600 mr-2"></i>
+			<i class="fas fa-hospital text-green-600 mx-2"></i>
 			<span class="clinic-badge">
 				{{ $doctor->clinicUser->clinic->name }}
 			</span>
 		</div>
 		@else
 		<div class="mb-3 flex items-center text-sm text-gray-500">
-			<i class="fas fa-user-md text-blue-500 mr-2"></i>
+			<i class="fas fa-user-md text-blue-500 mx-2"></i>
 			<span>{{ __('Independent Doctor') }}</span>
 		</div>
 		@endif
@@ -67,7 +67,7 @@
 		<!-- Experience -->
 		@if($doctor->years_experience)
 		<div class="mb-3 flex items-center text-sm text-gray-600">
-			<i class="fas fa-briefcase text-indigo-500 mr-2"></i>
+			<i class="fas fa-briefcase text-indigo-500 mx-2"></i>
 			<span>{{ $doctor->years_experience }} {{ __('years experience') }}</span>
 		</div>
 		@endif
@@ -97,7 +97,7 @@
 
 		<!-- View Profile Button -->
 		<a href="{{ route('doctors.show', $doctor->id) }}" class="btn-primary w-full text-center block">
-			<i class="fas fa-user-md mr-2"></i>
+			<i class="fas fa-user-md mx-2"></i>
 			{{ __('view profile') }}
 		</a>
 	</div>

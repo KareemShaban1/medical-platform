@@ -50,6 +50,16 @@ class ClinicController extends Controller
 			default:
 				$query->orderBy('name', 'asc');
 		}
+        // Location filters
+        if ($request->filled('governorate_id')) {
+            $query->where('governorate_id', $request->governorate_id);
+        }
+        if ($request->filled('city_id')) {
+            $query->where('city_id', $request->city_id);
+        }
+        if ($request->filled('area_id')) {
+            $query->where('area_id', $request->area_id);
+        }
 
 		$clinics = $query->paginate(12);
 
