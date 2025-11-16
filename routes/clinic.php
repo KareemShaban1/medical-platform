@@ -138,6 +138,11 @@ Route::group(
 
         // Doctor Profiles Management
         Route::group(['prefix' => 'doctor-profiles'], function () {
+            Route::get('/trash', [\App\Http\Controllers\Backend\Dashboards\Clinic\DoctorProfileController::class, 'trash'])->name('doctor-profiles.trash');
+            Route::get('/trash/data', [\App\Http\Controllers\Backend\Dashboards\Clinic\DoctorProfileController::class, 'trashData'])->name('doctor-profiles.trash.data');
+            Route::post('/{id}/restore', [\App\Http\Controllers\Backend\Dashboards\Clinic\DoctorProfileController::class, 'restore'])->name('doctor-profiles.restore');
+            Route::delete('/{id}/force-delete', [\App\Http\Controllers\Backend\Dashboards\Clinic\DoctorProfileController::class, 'forceDelete'])->name('doctor-profiles.force-delete');
+
             Route::get('/data', [\App\Http\Controllers\Backend\Dashboards\Clinic\DoctorProfileController::class, 'data'])->name('doctor-profiles.data');
             Route::post('/submit/{id}', [\App\Http\Controllers\Backend\Dashboards\Clinic\DoctorProfileController::class, 'submit'])->name('doctor-profiles.submit');
             Route::get('/', [\App\Http\Controllers\Backend\Dashboards\Clinic\DoctorProfileController::class, 'index'])->name('doctor-profiles.index');

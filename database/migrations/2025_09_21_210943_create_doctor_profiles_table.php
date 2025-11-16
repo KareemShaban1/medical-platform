@@ -41,7 +41,9 @@ return new class extends Migration
             $table->boolean('locked_for_edit')->default(false);
 
             $table->timestamps();
+            $table->softDeletes();
             $table->index(['clinic_user_id', 'status']);
+
         });
     }
 

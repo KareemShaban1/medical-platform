@@ -97,7 +97,14 @@
   						<li>
   							<a
   								href="{{ route('clinic.doctor-profiles.index') }}">
-  								<span> {{__('Doctor Profiles')}}
+  								<span> {{__('Doc Profile Management')}}
+  								</span>
+  							</a>
+  						</li>
+  						<li>
+  							<a
+  								href="{{ route('clinic.doctor-profiles.trash') }}">
+  								<span> {{__('Trash Doctor Profiles')}}
   								</span>
   							</a>
   						</li>
