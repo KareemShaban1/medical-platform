@@ -12,4 +12,7 @@ interface DoctorProfileRepositoryInterface
     public function destroy($id);
     public function getUserProfile($clinicUserId);
     public function submitForReview($id);
+    public function trashData();
+    public function restore($id);
+    public function forceDelete($id);
 }
