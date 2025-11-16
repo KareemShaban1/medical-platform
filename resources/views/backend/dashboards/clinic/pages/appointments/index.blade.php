@@ -5,13 +5,16 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-12">
-            <div class="page-title-box">
+                        <div class="page-title-box">
                 <div class="page-title-right">
+                    <a href="{{ route('clinic.appointments.trash') }}" class="btn btn-secondary me-2">
+                        <i class="fas fa-trash"></i> {{ __('Trash') }}
+                    </a>
                     <a href="{{ route('clinic.appointments.analytics', $doctors->first()?->id ?? 0) }}" class="btn btn-info me-2">
-                        <i class="mdi mdi-chart-line"></i> {{ __('Analytics Dashboard') }}
+                        <i class="fas fa-chart-bar"></i> {{ __('Analytics') }}
                     </a>
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createAppointmentModal">
-                        <i class="mdi mdi-plus"></i> {{ __('Book Appointment') }}
+                        <i class="fas fa-plus"></i> {{ __('Book Appointment') }}
                     </button>
                 </div>
                 <h4 class="page-title">{{ __('Appointments') }}</h4>
@@ -438,6 +441,39 @@ $('#editAppointmentForm').on('submit', function(e) {
 // ============================================
 function viewAppointment(id) {
     window.location.href = '{{ route("clinic.appointments.show", ":id") }}'.replace(':id', id);
+}
+
+// ============================================
+// DELETE APPOINTMENT (SOFT DELETE)
+// ============================================
+function deleteAppointment(id) {
+    Swal.fire({
+        title: '{{ __("Are you sure?") }}',
+        text: '{{ __("This will move the appointment to trash. You can restore it later.") }}',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: '{{ __("Yes, delete it!") }}',
+        cancelButtonText: '{{ __("Cancel") }}'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: '{{ route("clinic.appointments.destroy", ":id") }}'.replace(':id', id),
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    table.ajax.reload();
+                    Swal.fire('{{ __("Deleted!") }}', response.message, 'success');
+                },
+                error: function(xhr) {
+                    Swal.fire('{{ __("Error") }}', xhr.responseJSON?.message || '{{ __("Failed to delete appointment") }}', 'error');
+                }
+            });
+        }
+    });
 }
 
 // ============================================

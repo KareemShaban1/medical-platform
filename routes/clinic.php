@@ -285,6 +285,10 @@ Route::group(
 
         // Appointments Management
         Route::get('appointments/data', [\App\Http\Controllers\Backend\Dashboards\Clinic\AppointmentController::class, 'data'])->name('appointments.data');
+        Route::get('appointments/trash', [\App\Http\Controllers\Backend\Dashboards\Clinic\AppointmentController::class, 'trash'])->name('appointments.trash');
+        Route::get('appointments/trash/data', [\App\Http\Controllers\Backend\Dashboards\Clinic\AppointmentController::class, 'trashData'])->name('appointments.trash.data');
+        Route::post('appointments/{id}/restore', [\App\Http\Controllers\Backend\Dashboards\Clinic\AppointmentController::class, 'restore'])->name('appointments.restore');
+        Route::delete('appointments/{id}/force-delete', [\App\Http\Controllers\Backend\Dashboards\Clinic\AppointmentController::class, 'forceDelete'])->name('appointments.force-delete');
         Route::get('appointments/{doctorId}/analytics', [\App\Http\Controllers\Backend\Dashboards\Clinic\AppointmentController::class, 'analytics'])->name('appointments.analytics');
         Route::get('appointments/available-periods', [\App\Http\Controllers\Backend\Dashboards\Clinic\AppointmentController::class, 'getAvailablePeriods'])->name('appointments.available-periods');
         Route::post('appointments/{id}/confirm', [\App\Http\Controllers\Backend\Dashboards\Clinic\AppointmentController::class, 'confirm'])->name('appointments.confirm');

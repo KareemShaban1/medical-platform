@@ -56,6 +56,83 @@ class AppointmentController extends Controller
         return $this->repo->data($request->all());
     }
 
+    public function trash()
+    {
+        $clinicId = auth('clinic')->user()->clinic_id;
+        $clinicUser = auth('clinic')->user();
+
+        $doctorsQuery = DoctorProfile::whereHas('clinicUser', function ($q) use ($clinicId) {
+            $q->where('clinic_id', $clinicId);
+        })->where('status', DoctorProfile::STATUS_APPROVED);
+
+        // If clinic user is a doctor, limit list to their profile
+        if (method_exists($clinicUser, 'isDoctor') && $clinicUser->isDoctor()) {
+            $doctorProfileId = optional($clinicUser->getDoctorProfile())->id;
+            if ($doctorProfileId) {
+                $doctorsQuery->where('id', $doctorProfileId);
+            }
+        }
+
+        $doctors = $doctorsQuery->get();
+        $patients = Patient::forClinic($clinicId)->get();
+        $visitTypes = Appointment::getVisitTypeOptions();
+
+        return view('backend.dashboards.clinic.pages.appointments.trash', compact('doctors', 'patients', 'visitTypes'));
+    }
+
+    public function trashData(Request $request)
+    {
+        return $this->repo->trashData($request->all());
+    }
+
+    public function restore($id)
+    {
+        try {
+            $this->repo->restore($id);
+            return response()->json([
+                'success' => true,
+                'message' => __('Appointment restored successfully')
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 403);
+        }
+    }
+
+    public function forceDelete($id)
+    {
+        try {
+            $this->repo->forceDelete($id);
+            return response()->json([
+                'success' => true,
+                'message' => __('Appointment permanently deleted')
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 403);
+        }
+    }
+
+    public function destroy($id)
+    {
+        try {
+            $this->repo->delete($id);
+            return response()->json([
+                'success' => true,
+                'message' => __('Appointment moved to trash')
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 403);
+        }
+    }
+
     public function store(StoreAppointmentRequest $request)
     {
         return $this->repo->store($request->validated());

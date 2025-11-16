@@ -208,6 +208,12 @@
   								<span> {{__('Daily Periods')}} </span>
   							</a>
   						</li>
+                        {{-- Trash section --}}
+                        <li>
+  							<a href="{{ route('clinic.appointments.trash') }}">
+                                    <span> {{__('Trash Appointments')}} </span>
+                            </a>
+                        </li>
 
   					</ul>
   				</div>
