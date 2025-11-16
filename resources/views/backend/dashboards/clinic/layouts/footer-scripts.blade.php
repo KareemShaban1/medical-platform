@@ -21,6 +21,8 @@
  <script src="{{asset('backend/assets/js/vendor/buttons.flash.min.js')}}"></script>
  <script src="{{asset('backend/assets/js/vendor/buttons.print.min.js')}}"></script>
  <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.colVis.min.js"></script>
+ <!-- Charts -->
+ <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
 
  <!-- Datatable Init js -->

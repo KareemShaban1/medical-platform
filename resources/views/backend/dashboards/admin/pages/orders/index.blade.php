@@ -8,10 +8,15 @@
             <div class="col-12">
                 <div class="page-title-box">
                     <div class="page-title-right">
-                        <ol class="breadcrumb m-0">
-                            <li class="breadcrumb-item"><a href="javascript: void(0);">{{ __('Dashboard') }}</a></li>
-                            <li class="breadcrumb-item active">{{ __('All Orders') }}</li>
-                        </ol>
+                        <div class="d-flex align-items-center gap-2">
+                            <a href="{{ route('admin.orders.analytics') }}" class="btn btn-info">
+                                <i class="mdi mdi-chart-box"></i> {{ __('Analytics Dashboard') }}
+                            </a>
+                            <ol class="breadcrumb m-0">
+                                <li class="breadcrumb-item"><a href="javascript: void(0);">{{ __('Dashboard') }}</a></li>
+                                <li class="breadcrumb-item active">{{ __('All Orders') }}</li>
+                            </ol>
+                        </div>
                     </div>
                     <h4 class="page-title">{{ __('All Orders') }}</h4>
                 </div>
@@ -45,12 +50,40 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="updatePaymentStatusModal" tabindex="-1"
+         aria-labelledby="updatePaymentStatusModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="updatePaymentStatusModalLabel">{{ __('Update Payment Status') }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="updatePaymentStatusForm">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="payment_status" class="form-label">{{ __('Payment Status') }}</label>
+                            <select class="form-select" id="payment_status" name="payment_status" required>
+                                <option value="pending">{{ __('Pending') }}</option>
+                                <option value="paid">{{ __('Paid') }}</option>
+                                <option value="failed">{{ __('Failed') }}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('Close') }}</button>
+                        <button type="submit" class="btn btn-primary">{{ __('Update') }}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('scripts')
     <script>
         $(document).ready(function() {
-            $('#orders-table').DataTable({
+            let ordersTable = $('#orders-table').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: '{{ route('admin.orders.data') }}',
@@ -97,6 +130,41 @@
                         searchable: false
                     }
                 ]
+            });
+
+            let currentOrderId = null;
+
+            window.updatePaymentStatus = function(orderId) {
+                currentOrderId = orderId;
+                $('#updatePaymentStatusModal').modal('show');
+            };
+
+            $('#updatePaymentStatusForm').submit(function(e) {
+                e.preventDefault();
+
+                $.ajax({
+                    url: `{{ url('admin/orders') }}/${currentOrderId}/update-payment-status`,
+                    method: 'POST',
+                    data: $(this).serialize(),
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        $('#updatePaymentStatusModal').modal('hide');
+                        ordersTable.ajax.reload();
+                        if (window.toastr) {
+                            toastr.success(response.message);
+                        }
+                    },
+                    error: function(xhr) {
+                        const message = xhr.responseJSON && xhr.responseJSON.message
+                            ? xhr.responseJSON.message
+                            : '{{ __('An error occurred') }}';
+                        if (window.toastr) {
+                            toastr.error(message);
+                        }
+                    }
+                });
             });
         });
     </script>
