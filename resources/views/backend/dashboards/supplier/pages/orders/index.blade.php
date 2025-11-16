@@ -8,10 +8,15 @@
             <div class="col-12">
                 <div class="page-title-box">
                     <div class="page-title-right">
-                        <ol class="breadcrumb m-0">
-                            <li class="breadcrumb-item"><a href="javascript: void(0);">{{ __('Dashboard') }}</a></li>
-                            <li class="breadcrumb-item active">{{ __('My Orders') }}</li>
-                        </ol>
+                        <div class="d-flex align-items-center gap-2">
+                            <a href="{{ route('supplier.orders.analytics') }}" class="btn btn-info">
+                                <i class="mdi mdi-chart-line"></i> {{ __('Analytics') }}
+                            </a>
+                            <ol class="breadcrumb m-0">
+                                <li class="breadcrumb-item"><a href="javascript: void(0);">{{ __('Dashboard') }}</a></li>
+                                <li class="breadcrumb-item active">{{ __('My Orders') }}</li>
+                            </ol>
+                        </div>
                     </div>
                     <h4 class="page-title">{{ __('My Orders') }}</h4>
                 </div>
@@ -30,8 +35,9 @@
                                         <th>{{ __('Clinic') }}</th>
                                         <th>{{ __('Clinic User') }}</th>
                                         <th>{{ __('Items Count') }}</th>
+                                        <th>{{ __('My Items Status') }}</th>
                                         <th>{{ __('My Total') }}</th>
-                                        <th>{{ __('Status') }}</th>
+                                        <th>{{ __('Order Status') }}</th>
                                         <th>{{ __('Payment Status') }}</th>
                                         <th>{{ __('Date') }}</th>
                                         <th>{{ __('Actions') }}</th>
@@ -182,6 +188,10 @@
                     {
                         data: 'items_count',
                         name: 'items_count'
+                    },
+                    {
+                        data: 'items_status',
+                        name: 'items_status'
                     },
                     {
                         data: 'supplier_total',

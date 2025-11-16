@@ -144,14 +144,14 @@
   					<span class=" menu-arrow"></span>
   				</a>
   				<div class="collapse" id="sidebarClinicInventory">
-  					<ul class="side-nav-second-level">
-  						<li>
-  							<a
-  								href="{{ route('clinic.clinic-inventories.index') }}">
-  								<span> {{__('Clinic Inventory')}}
-  								</span>
-  							</a>
-  						</li>
+ 					<ul class="side-nav-second-level">
+ 						<li>
+ 							<a
+ 								href="{{ route('clinic.clinic-inventories.index') }}">
+ 								<span> {{__('Clinic Inventory')}}
+ 								</span>
+ 							</a>
+ 						</li>
 
   						<li>
   							<a
@@ -172,6 +172,11 @@
   								<span> {{__('My Requests')}} </span>
   							</a>
   						</li>
+                        <li>
+                            <a href="{{ route('clinic.orders.index') }}">
+                                <span> {{ __('My Orders') }} </span>
+                            </a>
+                        </li>
   					</ul>
   				</div>
   			</li>

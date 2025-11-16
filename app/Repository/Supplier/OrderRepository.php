@@ -30,11 +30,12 @@ class OrderRepository implements OrderRepositoryInterface
             ->addColumn('clinic_user', fn($item) => $item->clinicUser->name ?? 'N/A')
             ->addColumn('items_count', fn($item) => $item->items->count())
             ->addColumn('supplier_total', fn($item) => $this->getSupplierTotal($item))
+            ->addColumn('items_status', fn($item) => $this->itemsStatus($item))
             ->editColumn('status', fn($item) => $this->orderStatus($item))
             ->editColumn('payment_status', fn($item) => $this->paymentStatus($item))
             ->editColumn('created_at', fn($item) => $item->created_at->format('Y-m-d H:i'))
             ->addColumn('action', fn($item) => $this->orderActions($item))
-            ->rawColumns(['status', 'payment_status', 'action'])
+            ->rawColumns(['status', 'payment_status', 'items_status', 'action'])
             ->make(true);
     }
 
@@ -73,10 +74,19 @@ class OrderRepository implements OrderRepositoryInterface
 
             // Update individual items status if provided
             if (isset($request['item_statuses'])) {
-                foreach ($request['item_statuses'] as $itemId => $status) {
-                    OrderItem::where('id', $itemId)
-                        ->where('supplier_id', $supplierId)
-                        ->update(['status' => $status]);
+                $itemIds = array_keys($request['item_statuses']);
+
+                $items = OrderItem::where('order_id', $order->id)
+                    ->where('supplier_id', $supplierId)
+                    ->whereIn('id', $itemIds)
+                    ->get();
+
+                foreach ($items as $item) {
+                    $newStatus = $request['item_statuses'][$item->id] ?? null;
+                    if ($newStatus && $item->status !== $newStatus) {
+                        $item->status = $newStatus;
+                        $item->save(); 
+                    }
                 }
             }
 
@@ -166,18 +176,17 @@ class OrderRepository implements OrderRepositoryInterface
         return '$' . number_format($total, 2);
     }
 
-    private function orderStatus($item): string
+    private function orderStatus($order): string
     {
-        $supplierId = auth('supplier')->user()->supplier_id;
-        $orderSupplier = $item->suppliers()->where('supplier_id', $supplierId)->first();
-        $status = $orderSupplier ? $orderSupplier->status : 'pending';
+        $status = $order->status ?? 'pending';
 
         $badges = [
             'pending' => 'warning',
             'processing' => 'info',
             'delivering' => 'primary',
             'completed' => 'success',
-            'cancelled' => 'danger'
+            'cancelled' => 'danger',
+            'refunded' => 'secondary',
         ];
 
         $class = $badges[$status] ?? 'secondary';
@@ -194,6 +203,33 @@ class OrderRepository implements OrderRepositoryInterface
 
         $class = $badges[$item->payment_status] ?? 'secondary';
         return '<span class="badge bg-' . $class . '">' . ucfirst($item->payment_status) . '</span>';
+    }
+
+    private function itemsStatus($order): string
+    {
+        $items = $order->items;
+        if ($items->isEmpty()) {
+            return '<span class="badge bg-secondary">-</span>';
+        }
+
+        $groups = $items->groupBy('status');
+        $badgesMap = [
+            'pending' => 'warning',
+            'processing' => 'info',
+            'delivering' => 'primary',
+            'completed' => 'success',
+            'cancelled' => 'danger',
+        ];
+
+        $parts = [];
+        foreach ($groups as $status => $group) {
+            $class = $badgesMap[$status] ?? 'secondary';
+            $count = $group->count();
+            $label = ucfirst($status);
+            $parts[] = '<span class="badge bg-' . $class . ' me-1">' . $label . ' (' . $count . ')</span>';
+        }
+
+        return implode(' ', $parts);
     }
 
     private function orderActions($item): string

@@ -21,6 +21,7 @@ use App\Http\Controllers\Backend\Dashboards\Clinic\AnnouncementController as Cli
 use App\Http\Controllers\Backend\Dashboards\Clinic\ClinicInfoController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Backend\Dashboards\Clinic\CourseEnrollmentController as ClinicCourseEnrollmentController;
+use App\Http\Controllers\Backend\Dashboards\Clinic\OrderController as ClinicOrderController;
 
 Route::group(
     [
@@ -64,6 +65,10 @@ Route::group(
         Route::delete('rental-spaces/{id}/force-delete', [RentalSpaceController::class, 'forceDelete'])->name('rental-spaces.force-delete');
         Route::put('rental-spaces/{id}/update-status', [RentalSpaceController::class, 'updateStatus'])->name('rental-spaces.update-status');
         Route::resource('rental-spaces', RentalSpaceController::class);
+
+        // Clinic Orders (website orders made by clinic users)
+        Route::get('orders', [ClinicOrderController::class, 'index'])->name('orders.index');
+        Route::get('orders/{id}', [ClinicOrderController::class, 'show'])->name('orders.show');
 
         // Users Management
         Route::group(['prefix' => 'users'], function () {
