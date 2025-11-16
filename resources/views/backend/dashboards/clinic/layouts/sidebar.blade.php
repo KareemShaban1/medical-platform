@@ -94,10 +94,17 @@
   								<span> {{__('Employees')}} </span>
   							</a>
   						</li>
+  						@if(auth('clinic')->user()->isDoctor())
   						<li>
-  							<a
-  								href="{{ route('clinic.doctor-profiles.index') }}">
-  								<span> {{__('Doc Profile Management')}}
+  							<a href="{{ route('clinic.doctor-profiles.my-profile') }}">
+  								<span> {{__('My Doctor Profile')}}
+  								</span>
+  							</a>
+  						</li>
+  						@endif
+  						<li>
+  							<a href="{{ route('clinic.doctor-profiles.index') }}">
+  								<span> {{__('Doctor Profile Management')}}
   								</span>
   							</a>
   						</li>

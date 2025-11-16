@@ -19,7 +19,7 @@ class DoctorProfileRepository implements DoctorProfileRepositoryInterface
     public function data()
     {
         $clinicId = auth('clinic')->user()->clinic_id;
-
+        
         $profiles = DoctorProfile::with(['clinicUser','speciality'])
             ->whereHas('clinicUser', function($query) use ($clinicId) {
                 $query->where('clinic_id', $clinicId);
@@ -36,9 +36,7 @@ class DoctorProfileRepository implements DoctorProfileRepositoryInterface
             ->addColumn('action', fn($item) => $this->profileActions($item))
             ->rawColumns(['profile_photo', 'status', 'action'])
             ->make(true);
-    }
-
-    public function getUserProfile($clinicUserId)
+    }    public function getUserProfile($clinicUserId)
     {
         return DoctorProfile::forClinicUser($clinicUserId)->first();
     }

@@ -20,7 +20,16 @@ class DoctorProfileController extends Controller
 
     public function index()
     {
+        // Show all clinic profiles in DataTable (for admins)
         return view('backend.dashboards.clinic.pages.doctor-profiles.index');
+    }
+
+    public function myProfile()
+    {
+        // Show only current user's profile
+        $user = auth('clinic')->user();
+        $userProfile = $this->profileRepo->getUserProfile($user->id);
+        return view('backend.dashboards.clinic.pages.doctor-profiles.index-old', compact('userProfile'));
     }
 
     public function data()
