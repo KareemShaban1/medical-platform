@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\VisitType;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 use App\Models\DoctorPatient;
 use Illuminate\Database\Eloquent\Model;
@@ -10,7 +11,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Appointment extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'doctor_profile_id',
@@ -344,5 +345,11 @@ class Appointment extends Model
     public function prescription()
     {
         return $this->hasOne(Prescription::class);
+    }
+
+    public static function getVisitTypeName($type)
+    {
+        dd($type);
+        return VisitType::tryFrom($type)?->label() ?? 'Unknown';
     }
 }

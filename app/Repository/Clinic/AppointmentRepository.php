@@ -2,6 +2,7 @@
 
 namespace App\Repository\Clinic;
 
+use App\Enums\VisitType;
 use App\Interfaces\Clinic\AppointmentRepositoryInterface;
 use App\Models\Appointment;
 use App\Models\DailyPeriod;
@@ -355,6 +356,102 @@ class AppointmentRepository implements AppointmentRepositoryInterface
         return Appointment::where('confirmation_code', $code)->first();
     }
 
+    public function trashData($filters = [])
+    {
+        $clinicId = auth('clinic')->user()->clinic_id;
+
+        $query = Appointment::onlyTrashed()
+            ->whereHas('doctorProfile.clinicUser', function ($q) use ($clinicId) {
+                $q->where('clinic_id', $clinicId);
+            })
+            ->leftJoin('doctor_profiles', 'appointments.doctor_profile_id', '=', 'doctor_profiles.id')
+            ->leftJoin('patients', 'appointments.patient_id', '=', 'patients.id')
+            ->leftJoin('users', 'patients.user_id', '=', 'users.id')
+            ->leftJoin('daily_periods', 'appointments.period_id', '=', 'daily_periods.id')
+            ->select('appointments.*')
+            ->with(['doctorProfile.clinicUser', 'doctorProfile.speciality', 'patient.user', 'period'])
+            ->distinct();
+
+        // If the authenticated clinic user is a doctor, only show their appointments
+        $clinicUser = auth('clinic')->user();
+        if (method_exists($clinicUser, 'isDoctor') && $clinicUser->isDoctor()) {
+            $doctorProfileId = optional($clinicUser->getDoctorProfile())->id;
+            if ($doctorProfileId) {
+                $query->where('appointments.doctor_profile_id', $doctorProfileId);
+            }
+        }
+
+        // Apply filters
+        if (!empty($filters['doctor_profile_id'])) {
+            $query->where('appointments.doctor_profile_id', $filters['doctor_profile_id']);
+        }
+
+        if (!empty($filters['start_date']) && !empty($filters['end_date'])) {
+            $query->whereBetween('daily_periods.date', [$filters['start_date'], $filters['end_date']]);
+        }
+
+        return datatables()->of($query)
+            ->addColumn('doctor_name', function ($item) {
+                return $item->doctorProfile->name ?? 'N/A';
+            })
+            ->addColumn('patient_name', function ($item) {
+                return $item->patient->user->name ?? 'N/A';
+            })
+            ->addColumn('appointment_date', function ($item) {
+                return $item->period ? $item->period->date : 'N/A';
+            })
+            ->addColumn('appointment_time', function ($item) {
+                return $item->period ? $item->period->start_time . ' - ' . $item->period->end_time : 'N/A';
+            })
+            ->addColumn('visit_type', function ($item) {
+                return $item->visit_type_label;
+            })
+            ->addColumn('status', function ($item) {
+                $statusLabels = [
+                    'pending' => '<span class="badge bg-warning">Pending</span>',
+                    'confirmed' => '<span class="badge bg-primary">Confirmed</span>',
+                    'waiting' => '<span class="badge bg-info">Waiting</span>',
+                    'in_progress' => '<span class="badge bg-secondary">In Progress</span>',
+                    'completed' => '<span class="badge bg-success">Completed</span>',
+                    'cancelled' => '<span class="badge bg-danger">Cancelled</span>',
+                    'no_show' => '<span class="badge bg-dark">No Show</span>',
+                ];
+                return $statusLabels[$item->status] ?? $item->status;
+            })
+            ->addColumn('deleted_at', function ($item) {
+                return $item->deleted_at ? $item->deleted_at->format('Y-m-d H:i') : 'N/A';
+            })
+            ->addColumn('action', function ($item) {
+                return $this->trashActionButtons($item);
+            })
+            ->rawColumns(['status', 'action'])
+            ->make(true);
+    }
+
+    public function restore($id)
+    {
+        $appointment = Appointment::onlyTrashed()->findOrFail($id);
+        $this->assertAppointmentBelongsToClinic($appointment);
+
+        return $appointment->restore();
+    }
+
+    public function forceDelete($id)
+    {
+        $appointment = Appointment::onlyTrashed()->findOrFail($id);
+        $this->assertAppointmentBelongsToClinic($appointment);
+
+        return $appointment->forceDelete();
+    }
+
+    public function delete($id)
+    {
+        $appointment = Appointment::findOrFail($id);
+        $this->assertAppointmentBelongsToClinic($appointment);
+
+        return $appointment->delete();
+    }
+
     private function assertDoctorBelongsToClinic($doctorProfileId): void
     {
         $clinicId = auth('clinic')->user()->clinic_id;
@@ -402,6 +499,21 @@ class AppointmentRepository implements AppointmentRepositoryInterface
         <div class="d-flex gap-2">
             <button onclick="editAppointment({$item->id})" class="btn btn-sm btn-warning text-white" title="Edit"><i class="fa fa-edit"></i></button>
             <button onclick="viewAppointment({$item->id})" class="btn btn-sm btn-info text-white" title="View"><i class="fa fa-eye"></i></button>
+            <button onclick="deleteAppointment({$item->id})" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>
+        </div>
+        HTML;
+    }
+
+    private function trashActionButtons($item): string
+    {
+        return <<<HTML
+        <div class="d-flex gap-2">
+            <button onclick="restoreAppointment({$item->id})" class="btn btn-sm btn-success" title="Restore">
+                <i class="fa fa-undo"></i> Restore
+            </button>
+            <button onclick="forceDeleteAppointment({$item->id})" class="btn btn-sm btn-danger" title="Delete Forever">
+                <i class="fa fa-trash"></i> Delete Forever
+            </button>
         </div>
         HTML;
     }

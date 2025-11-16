@@ -27,5 +27,13 @@ interface AppointmentRepositoryInterface
     public function cancel($id, $reason = null, $cancelledBy = null);
 
     public function findByConfirmationCode($code);
+
+    public function trashData($filters = []);
+
+    public function restore($id);
+
+    public function forceDelete($id);
+
+    public function delete($id);
 }
 
