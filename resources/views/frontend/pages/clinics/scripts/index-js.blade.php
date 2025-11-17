@@ -19,34 +19,38 @@ document.addEventListener('DOMContentLoaded', function() {
 	const loadingSpinner = document.getElementById('loadingSpinner');
 
 	let filterTimeout;
+	let currentPage = 1;
 
-	function filterClinics() {
+	function filterClinics(page = 1) {
 		// Clear existing timeout
 		clearTimeout(filterTimeout);
+		currentPage = page;
 
-		clinicsGrid.innerHTML =
-			'<div class="col-span-full flex justify-center items-center py-8"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div></div>';
+		// Show loading spinner
+		if (loadingSpinner) loadingSpinner.classList.remove('hidden');
+		clinicsGrid.style.opacity = '0.5';
+		clinicsGrid.style.pointerEvents = 'none';
 
 		// Set timeout for search input to avoid too many requests
 		filterTimeout = setTimeout(() => {
 			const formData = new FormData();
 
 			// Get filter values
-			if (searchInput.value) formData.append('search',
-				searchInput.value);
-			if (heroSearch.value) formData.append('search',
-				heroSearch.value);
+			if (searchInput.value) formData.append('search', searchInput.value);
+			if (heroSearch.value) formData.append('search', heroSearch.value);
+			if (sortSelect.value) formData.append('sort', sortSelect.value);
+			if (governorateSelect.value && governorateSelect.value !== 'all') {
+				formData.append('governorate_id', governorateSelect.value);
+			}
+			if (citySelect.value && citySelect.value !== 'all') {
+				formData.append('city_id', citySelect.value);
+			}
+			if (areaSelect.value && areaSelect.value !== 'all') {
+				formData.append('area_id', areaSelect.value);
+			}
 
-			if (sortSelect.value) formData.append('sort',
-				sortSelect.value);
-
-			if (governorateSelect.value) formData.append(
-				'governorate_id',
-				governorateSelect.value);
-			if (citySelect.value) formData.append('city_id',
-				citySelect.value);
-			if (areaSelect.value) formData.append('area_id',
-				areaSelect.value);
+			// Add page number
+			formData.append('page', page);
 
 			// Make AJAX request
 			fetch('{{ route("clinics.filter") }}', {
@@ -65,36 +69,28 @@ document.addEventListener('DOMContentLoaded', function() {
 				})
 				.then(response => response.json())
 				.then(data => {
-					if (data && data
-						.success &&
-						data
-						.html !==
-						'') {
-						clinicsGrid
-							.innerHTML =
-							data
-							.html;
-						if (
-							paginationContainer
-						) {
-							paginationContainer
-								.innerHTML =
-								data
-								.pagination ||
-								'';
+					if (loadingSpinner) loadingSpinner.classList.add('hidden');
+					clinicsGrid.style.opacity = '1';
+					clinicsGrid.style.pointerEvents = 'auto';
+
+					if (data && data.success && data.html !== '') {
+						clinicsGrid.innerHTML = data.html;
+						
+						// Update pagination
+						if (paginationContainer) {
+							paginationContainer.innerHTML = data.pagination || '';
+							// Re-attach pagination click handlers
+							attachPaginationHandlers();
 						}
-						if (
-							resultsCount
-						) {
-							resultsCount
-								.textContent =
-								data
-								.count ??
-								0;
+						
+						if (resultsCount) {
+							resultsCount.textContent = data.count ?? 0;
 						}
+						
+						// Scroll to top of clinics section
+						clinicsGrid.scrollIntoView({ behavior: 'smooth', block: 'start' });
 					} else {
-						clinicsGrid
-							.innerHTML = `
+						clinicsGrid.innerHTML = `
                           <div class="col-span-full text-center py-12">
                             <div class="text-gray-500">
                               <i class="fas fa-search text-4xl mb-4"></i>
@@ -102,29 +98,16 @@ document.addEventListener('DOMContentLoaded', function() {
                               <p>{{ __('try adjusting your search criteria or filters') }}</p>
                             </div>
                           </div>`;
-						if (
-							paginationContainer
-						) {
-							paginationContainer
-								.innerHTML =
-								'';
-						}
-						if (
-							resultsCount
-						) {
-							resultsCount
-								.textContent =
-								'0';
-						}
+						if (paginationContainer) paginationContainer.innerHTML = '';
+						if (resultsCount) resultsCount.textContent = '0';
 					}
 				})
 				.catch(error => {
-					console.error('Error:',
-						error
-					);
-					// Graceful fallback (same empty state UI)
-					clinicsGrid
-						.innerHTML = `
+					console.error('Error:', error);
+					if (loadingSpinner) loadingSpinner.classList.add('hidden');
+					clinicsGrid.style.opacity = '1';
+					clinicsGrid.style.pointerEvents = 'auto';
+					clinicsGrid.innerHTML = `
                       <div class="col-span-full text-center py-12">
                         <div class="text-gray-500">
                           <i class="fas fa-search text-4xl mb-4"></i>
@@ -132,38 +115,65 @@ document.addEventListener('DOMContentLoaded', function() {
                           <p>{{ __('try adjusting your search criteria or filters') }}</p>
                         </div>
                       </div>`;
-					if (
-						paginationContainer
-					) {
-						paginationContainer
-							.innerHTML =
-							'';
-					}
-					if (resultsCount) {
-						resultsCount
-							.textContent =
-							'0';
-					}
+					if (paginationContainer) paginationContainer.innerHTML = '';
+					if (resultsCount) resultsCount.textContent = '0';
 				});
 		}, searchInput === document.activeElement ? 500 : 0);
 	}
 
+	// Attach click handlers to pagination links
+	function attachPaginationHandlers() {
+		if (!paginationContainer) return;
+		
+		const paginationLinks = paginationContainer.querySelectorAll('a[href]');
+		paginationLinks.forEach(link => {
+			// Remove existing listeners to avoid duplicates
+			const newLink = link.cloneNode(true);
+			link.parentNode.replaceChild(newLink, link);
+			
+			newLink.addEventListener('click', function(e) {
+				e.preventDefault();
+				const href = this.getAttribute('href');
+				if (!href) return;
+				
+				// Extract page number from URL
+				let page = 1;
+				try {
+					const url = new URL(href, window.location.origin);
+					page = parseInt(url.searchParams.get('page')) || 1;
+				} catch (e) {
+					// Fallback: try to extract page from href string
+					const match = href.match(/[?&]page=(\d+)/);
+					if (match) {
+						page = parseInt(match[1]);
+					}
+				}
+				filterClinics(page);
+			});
+		});
+	}
+
+	// Initial attachment of pagination handlers
+	if (paginationContainer) {
+		attachPaginationHandlers();
+	}
+
 	// Event listeners
-	searchInput.addEventListener('input', filterClinics);
-	heroSearch.addEventListener('input', filterClinics);
-	sortSelect.addEventListener('change', filterClinics);
-	governorateSelect.addEventListener('change',filterClinics);
-	citySelect.addEventListener('change', filterClinics);
-	areaSelect.addEventListener('change', filterClinics);
+	searchInput.addEventListener('input', () => filterClinics(1));
+	heroSearch.addEventListener('input', () => filterClinics(1));
+	sortSelect.addEventListener('change', () => filterClinics(1));
+	governorateSelect.addEventListener('change', () => filterClinics(1));
+	citySelect.addEventListener('change', () => filterClinics(1));
+	areaSelect.addEventListener('change', () => filterClinics(1));
 
 	clearFiltersBtn.addEventListener('click', function() {
 		searchInput.value = '';
 		heroSearch.value = '';
 		sortSelect.value = 'name';
-		governorateSelect.value = '';
-		citySelect.value = '';
-		areaSelect.value = '';
-		filterClinics();
+		governorateSelect.value = 'all';
+		citySelect.value = 'all';
+		areaSelect.value = 'all';
+		filterClinics(1);
 	});
 
 	// View toggle

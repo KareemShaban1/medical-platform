@@ -14,10 +14,18 @@ document.addEventListener('DOMContentLoaded', function() {
   const listViewBtn = document.getElementById('listView');
 
   let filterTimeout;
+  let currentPage = 1;
 
-  function filterSpaces() {
+  function filterSpaces(page = 1) {
     clearTimeout(filterTimeout);
-    grid.innerHTML = '<div class="col-span-full flex justify-center items-center py-8"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div></div>';
+    currentPage = page;
+    
+    // Show loading spinner
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    if (loadingSpinner) loadingSpinner.classList.remove('hidden');
+    grid.style.opacity = '0.5';
+    grid.style.pointerEvents = 'none';
+    
     filterTimeout = setTimeout(() => {
       const formData = new FormData();
       if (searchInput && searchInput.value) formData.append('search', searchInput.value);
@@ -25,6 +33,9 @@ document.addEventListener('DOMContentLoaded', function() {
       if (priceSelect && priceSelect.value) formData.append('price', priceSelect.value);
       if (availabilitySelect && availabilitySelect.value) formData.append('availability', availabilitySelect.value);
       if (sortSelect && sortSelect.value) formData.append('sort', sortSelect.value);
+      
+      // Add page number
+      formData.append('page', page);
 
       fetch('{{ route("rental-spaces.filter") }}', {
         method: 'POST',
@@ -36,26 +47,77 @@ document.addEventListener('DOMContentLoaded', function() {
       })
       .then(r => r.json())
       .then(data => {
+        if (loadingSpinner) loadingSpinner.classList.add('hidden');
+        grid.style.opacity = '1';
+        grid.style.pointerEvents = 'auto';
+        
         if (data.success) {
           grid.innerHTML = data.html || '<div class="col-span-full text-center py-8 text-gray-500">{{ __('No rental spaces found') }}</div>';
-          if (paginationContainer) paginationContainer.innerHTML = data.pagination || '';
+          if (paginationContainer) {
+            paginationContainer.innerHTML = data.pagination || '';
+            // Re-attach pagination click handlers
+            attachPaginationHandlers();
+          }
           if (resultsCount) resultsCount.textContent = data.count ?? 0;
+          
+          // Scroll to top of grid section
+          grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
         } else {
           grid.innerHTML = '<div class="col-span-full text-center py-8 text-red-500">{{ __('Error loading rental spaces') }}</div>';
         }
       })
       .catch(() => {
+        if (loadingSpinner) loadingSpinner.classList.add('hidden');
+        grid.style.opacity = '1';
+        grid.style.pointerEvents = 'auto';
         grid.innerHTML = '<div class="col-span-full text-center py-8 text-red-500">{{ __('Error loading rental spaces') }}</div>';
       });
     }, (searchInput && searchInput === document.activeElement) ? 500 : 0);
   }
 
+  // Attach click handlers to pagination links
+  function attachPaginationHandlers() {
+    if (!paginationContainer) return;
+    
+    const paginationLinks = paginationContainer.querySelectorAll('a[href]');
+    paginationLinks.forEach(link => {
+      // Remove existing listeners to avoid duplicates
+      const newLink = link.cloneNode(true);
+      link.parentNode.replaceChild(newLink, link);
+      
+      newLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        const href = this.getAttribute('href');
+        if (!href) return;
+        
+        // Extract page number from URL
+        let page = 1;
+        try {
+          const url = new URL(href, window.location.origin);
+          page = parseInt(url.searchParams.get('page')) || 1;
+        } catch (e) {
+          // Fallback: try to extract page from href string
+          const match = href.match(/[?&]page=(\d+)/);
+          if (match) {
+            page = parseInt(match[1]);
+          }
+        }
+        filterSpaces(page);
+      });
+    });
+  }
+
+  // Initial attachment of pagination handlers
+  if (paginationContainer) {
+    attachPaginationHandlers();
+  }
+
   // listeners
-  if (searchInput) searchInput.addEventListener('input', filterSpaces);
-  if (heroSearch) heroSearch.addEventListener('input', filterSpaces);
-  if (priceSelect) priceSelect.addEventListener('change', filterSpaces);
-  if (availabilitySelect) availabilitySelect.addEventListener('change', filterSpaces);
-  if (sortSelect) sortSelect.addEventListener('change', filterSpaces);
+  if (searchInput) searchInput.addEventListener('input', () => filterSpaces(1));
+  if (heroSearch) heroSearch.addEventListener('input', () => filterSpaces(1));
+  if (priceSelect) priceSelect.addEventListener('change', () => filterSpaces(1));
+  if (availabilitySelect) availabilitySelect.addEventListener('change', () => filterSpaces(1));
+  if (sortSelect) sortSelect.addEventListener('change', () => filterSpaces(1));
 
   if (clearFiltersBtn) clearFiltersBtn.addEventListener('click', function() {
     if (searchInput) searchInput.value = '';
@@ -63,7 +125,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (priceSelect) priceSelect.value = '';
     if (availabilitySelect) availabilitySelect.value = '';
     if (sortSelect) sortSelect.value = 'name';
-    filterSpaces();
+    filterSpaces(1);
   });
 
   // View toggle

@@ -17,30 +17,35 @@ document.addEventListener('DOMContentLoaded', function() {
 	const loadingSpinner = document.getElementById('loadingSpinner');
 
 	let filterTimeout;
+	let currentPage = 1;
 
-	function filterBlogs() {
+	function filterBlogs(page = 1) {
 		// Clear existing timeout
 		clearTimeout(filterTimeout);
+		currentPage = page;
 
-		blogGrid.innerHTML =
-			'<div class="col-span-full flex justify-center items-center py-8"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div></div>';
+		// Show loading spinner
+		if (loadingSpinner) loadingSpinner.classList.remove('hidden');
+		blogGrid.style.opacity = '0.5';
+		blogGrid.style.pointerEvents = 'none';
 
 		// Set timeout for search input to avoid too many requests
 		filterTimeout = setTimeout(() => {
 			const formData = new FormData();
 
 			// Get filter values
-			if (searchInput.value) formData.append('search',
-				searchInput.value);
-			if (heroSearch.value) formData.append('search',
-				heroSearch.value);
+			const searchValue = searchInput.value ||
+				heroSearch.value;
+			if (searchValue) formData.append('search',
+				searchValue);
 			if (categorySelect.value) formData.append(
 				'category', categorySelect
 				.value);
-			
-
 			if (sortSelect.value) formData.append('sort',
 				sortSelect.value);
+
+			// Add page number
+			formData.append('page', page);
 
 			// Make AJAX request
 			fetch('{{ route("blogs.filter") }}', {
@@ -51,33 +56,68 @@ document.addEventListener('DOMContentLoaded', function() {
 						'X-CSRF-TOKEN': document
 							.querySelector(
 								'meta[name="csrf-token"]'
-								)
+							)
 							.getAttribute(
 								'content'
-								)
+							)
 					}
 				})
 				.then(response => response.json())
 				.then(data => {
-					if (data.html !==
+					if (loadingSpinner)
+						loadingSpinner
+						.classList
+						.add(
+							'hidden'
+						);
+					blogGrid.style
+						.opacity =
+						'1';
+					blogGrid.style
+						.pointerEvents =
+						'auto';
+
+					if (data.success &&
+						data
+						.html !==
 						'') {
-						blogGrid
-							.innerHTML =
+						blogGrid.innerHTML =
 							data
 							.html;
-						paginationContainer
-							.innerHTML =
+
+						console.log(
 							data
-							.pagination;
+						);
+						// Update pagination
+						if (
+							paginationContainer) {
+							paginationContainer
+								.innerHTML =
+								data
+								.pagination ||
+								'';
+							// Re-attach pagination click handlers
+							attachPaginationHandlers
+								();
+						}
+
 						resultsCount
 							.textContent =
 							data
 							.count;
+
+						// Scroll to top of blog section
+						blogGrid.scrollIntoView({
+							behavior: 'smooth',
+							block: 'start'
+						});
 					} else {
-						blogGrid
-							.innerHTML =
+						blogGrid.innerHTML =
 							'<div class="col-span-full text-center py-8 text-gray-500">No articles found</div>';
-						paginationContainer
+						if (
+							paginationContainer
+						)
+							paginationContainer
 							.innerHTML =
 							'';
 						resultsCount
@@ -88,26 +128,97 @@ document.addEventListener('DOMContentLoaded', function() {
 				.catch(error => {
 					console.error('Error:',
 						error
+					);
+					if (loadingSpinner)
+						loadingSpinner
+						.classList
+						.add(
+							'hidden'
 						);
+					blogGrid.style
+						.opacity =
+						'1';
+					blogGrid.style
+						.pointerEvents =
+						'auto';
 					blogGrid.innerHTML =
 						'<div class="col-span-full text-center py-8 text-red-500">Error loading articles</div>';
 				});
 		}, searchInput === document.activeElement ? 500 : 0);
 	}
 
-	// Event listeners
-	searchInput.addEventListener('input', filterBlogs);
-	heroSearch.addEventListener('input', filterBlogs);
-	categorySelect.addEventListener('change', filterBlogs);
-	sortSelect.addEventListener('change', filterBlogs);
+	// Attach click handlers to pagination links
+	function attachPaginationHandlers() {
+		if (!paginationContainer) return;
 
+		const paginationLinks = paginationContainer.querySelectorAll('a[href]');
+		paginationLinks.forEach(link => {
+			// Remove existing listeners to avoid duplicates
+			const newLink = link.cloneNode(true);
+			link.parentNode.replaceChild(newLink, link);
+
+			newLink.addEventListener('click', function(e) {
+				e.preventDefault();
+				const href = this
+					.getAttribute(
+						'href'
+					);
+				if (!href) return;
+
+				// Extract page number from URL
+				let page = 1;
+				try {
+					const url =
+						new URL(href,
+							window
+							.location
+							.origin
+						);
+					page = parseInt(url.searchParams
+							.get(
+								'page'
+							)
+						) ||
+						1;
+				} catch (e) {
+					// Fallback: try to extract page from href string
+					const match =
+						href
+						.match(
+							/[?&]page=(\d+)/
+						);
+					if (
+						match
+					) {
+						page = parseInt(match[
+							1
+						]);
+					}
+				}
+				filterBlogs(page);
+			});
+		});
+	}
+
+	// Initial attachment of pagination handlers
+	if (paginationContainer) {
+		attachPaginationHandlers();
+	}
+
+	// Event listeners
+	searchInput.addEventListener('input', () => filterBlogs(1));
+	heroSearch.addEventListener('input',
+		() => filterBlogs(1));
+	categorySelect.addEventListener('change', () => filterBlogs(1));
+	sortSelect
+		.addEventListener('change', () => filterBlogs(1));
 
 	clearFiltersBtn.addEventListener('click', function() {
 		searchInput.value = '';
 		heroSearch.value = '';
 		categorySelect.value = '';
 		sortSelect.value = 'newest';
-		filterBlogs();
+		filterBlogs(1);
 	});
 
 	// View toggle
@@ -133,7 +244,8 @@ document.addEventListener('DOMContentLoaded', function() {
 	}
 
 	gridViewBtn.addEventListener('click', setGridView);
-	listViewBtn.addEventListener('click', setListView);
+	listViewBtn.addEventListener('click',
+		setListView);
 	// gridViewMobileBtn.addEventListener('click', setGridView);
 	// listViewMobileBtn.addEventListener('click', setListView);
 
@@ -197,8 +309,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
 	// Add updateActiveFilters to all filter change events
 	searchInput.addEventListener('input', updateActiveFilters);
-	categorySelect.addEventListener('change', updateActiveFilters);
-	sortSelect.addEventListener('change', updateActiveFilters);
+	categorySelect.addEventListener(
+		'change', updateActiveFilters);
+	sortSelect.addEventListener('change',
+		updateActiveFilters);
 });
 </script>
 @endpush

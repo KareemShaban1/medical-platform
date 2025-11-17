@@ -17,14 +17,17 @@ document.addEventListener('DOMContentLoaded', function() {
 	const loadingSpinner = document.getElementById('loadingSpinner');
 
 	let filterTimeout;
+	let currentPage = 1;
 
-	function filterCourses() {
+	function filterCourses(page = 1) {
 		// Clear existing timeout
 		clearTimeout(filterTimeout);
+		currentPage = page;
 
-		coursesGrid.innerHTML =
-			'<div class="col-span-full flex justify-center items-center py-8"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div></div>';
-
+		// Show loading spinner
+		if (loadingSpinner) loadingSpinner.classList.remove('hidden');
+		coursesGrid.style.opacity = '0.5';
+		coursesGrid.style.pointerEvents = 'none';
 
 		// Set timeout for search input to avoid too many requests
 		filterTimeout = setTimeout(() => {
@@ -39,6 +42,9 @@ document.addEventListener('DOMContentLoaded', function() {
 				levelSelect.value);
 			if (sortSelect.value) formData.append('sort',
 				sortSelect.value);
+
+			// Add page number
+			formData.append('page', page);
 
 			// Make AJAX request
 			fetch('{{ route("courses.filter") }}', {
@@ -57,25 +63,61 @@ document.addEventListener('DOMContentLoaded', function() {
 				})
 				.then(response => response.json())
 				.then(data => {
-					if (data.html !==
+					if (loadingSpinner)
+						loadingSpinner
+						.classList
+						.add(
+							'hidden'
+						);
+					coursesGrid.style
+						.opacity =
+						'1';
+					coursesGrid.style
+						.pointerEvents =
+						'auto';
+
+					if (data.success &&
+						data
+						.html !==
 						'') {
 						coursesGrid
 							.innerHTML =
 							data
 							.html;
-						paginationContainer
-							.innerHTML =
-							data
-							.pagination;
+
+						// Update pagination
+						if (
+							paginationContainer
+							) {
+							paginationContainer
+								.innerHTML =
+								data
+								.pagination ||
+								'';
+							// Re-attach pagination click handlers
+							attachPaginationHandler
+								();
+						}
+
 						resultsCount
 							.textContent =
 							data
 							.count;
+
+						// Scroll to top of courses section
+						coursesGrid
+							.scrollIntoView({
+								behavior: 'smooth',
+								block: 'start'
+							});
 					} else {
 						coursesGrid
 							.innerHTML =
 							'<div class="col-span-full text-center py-8 text-gray-500">No courses found</div>';
-						paginationContainer
+						if (
+							paginationContainer
+						)
+							paginationContainer
 							.innerHTML =
 							'';
 						resultsCount
@@ -87,6 +129,18 @@ document.addEventListener('DOMContentLoaded', function() {
 					console.error('Error:',
 						error
 					);
+					if (loadingSpinner)
+						loadingSpinner
+						.classList
+						.add(
+							'hidden'
+						);
+					coursesGrid.style
+						.opacity =
+						'1';
+					coursesGrid.style
+						.pointerEvents =
+						'auto';
 					coursesGrid
 						.innerHTML =
 						'<div class="col-span-full text-center py-8 text-red-500">Error loading courses</div>';
@@ -94,18 +148,66 @@ document.addEventListener('DOMContentLoaded', function() {
 		}, searchInput === document.activeElement ? 500 : 0);
 	}
 
+	// Pagination click handler using event delegation (attached once, works for all pagination links)
+	let paginationHandlerAttached = false;
+
+	function handlePaginationClick(e) {
+		const link = e.target.closest('a[href]');
+		if (!link) return;
+
+		// Check if the link is within the pagination container
+		const container = document.getElementById('paginationContainer');
+		if (!container || !container.contains(link)) return;
+
+		e.preventDefault();
+		const href = link.getAttribute('href');
+		if (!href) return;
+
+		// Extract page number from URL
+		let page = 1;
+		try {
+			const url = new URL(href, window.location.origin);
+			page = parseInt(url.searchParams.get('page')) || 1;
+		} catch (e) {
+			// Fallback: try to extract page from href string
+			const match = href.match(/[?&]page=(\d+)/);
+			if (match) {
+				page = parseInt(match[1]);
+			}
+		}
+		filterCourses(page);
+	}
+
+	// Attach pagination handler once using event delegation
+	// This will work for all pagination links, even dynamically added ones
+	function attachPaginationHandler() {
+		if (paginationHandlerAttached) return;
+
+		const container = document.getElementById('paginationContainer');
+		if (container) {
+			container.addEventListener('click', handlePaginationClick);
+			paginationHandlerAttached = true;
+		}
+	}
+
+	// Try to attach handler immediately
+	attachPaginationHandler();
+
+	// Also try after a short delay in case the container isn't ready yet
+	setTimeout(attachPaginationHandler, 100);
+
 	// Event listeners
-	searchInput.addEventListener('input', filterCourses);
-	heroSearch.addEventListener('input', filterCourses);
-	levelSelect.addEventListener('change', filterCourses);
-	sortSelect.addEventListener('change', filterCourses);
+	searchInput.addEventListener('input', () => filterCourses(1));
+	heroSearch.addEventListener('input', () => filterCourses(1));
+	levelSelect.addEventListener('change', () => filterCourses(1));
+	sortSelect.addEventListener('change', () => filterCourses(1));
 
 	clearFiltersBtn.addEventListener('click', function() {
 		searchInput.value = '';
 		heroSearch.value = '';
 		levelSelect.value = '';
 		sortSelect.value = 'newest';
-		filterCourses();
+		filterCourses(1);
 	});
 
 	// View toggle

@@ -79,7 +79,28 @@ class CourseController extends Controller
 				$query->orderBy('created_at', 'desc');
 		}
 
-		$courses = $query->paginate(12);
+		// Get current page from request
+		$perPage = 12;
+		$currentPage = max(1, (int) $request->get('page', 1));
+
+		// Clone query to get total count without affecting the main query
+		$totalCount = (clone $query)->count();
+		$lastPage = max(1, (int) ceil($totalCount / $perPage));
+		
+		// Ensure current page doesn't exceed available pages
+		// If filters were applied and page is invalid, reset to page 1
+		if ($currentPage > $lastPage) {
+			$currentPage = 1; // Always reset to page 1 when page is invalid after filtering
+		}
+
+		// Now paginate with validated page number
+		$courses = $query->paginate($perPage, ['*'], 'page', $currentPage);
+
+		// Set paginator path to courses index route (for proper URL generation)
+		$courses->setPath(route('courses'));
+
+		// Append filter parameters to pagination URLs
+		$courses->appends($request->except('page'));
 
 		if ($request->ajax()) {
 			return response()->json([

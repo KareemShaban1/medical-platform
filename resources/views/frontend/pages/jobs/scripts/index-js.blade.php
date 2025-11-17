@@ -17,32 +17,30 @@ document.addEventListener('DOMContentLoaded', function() {
 	const loadingSpinner = document.getElementById('loadingSpinner');
 
 	let filterTimeout;
+	let currentPage = 1;
 
-	function filterJobs() {
+	function filterJobs(page = 1) {
 		// Clear existing timeout
 		clearTimeout(filterTimeout);
+		currentPage = page;
 
-		jobsGrid.innerHTML =
-			'<div class="col-span-full flex justify-center items-center py-8"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div></div>';
+		// Show loading spinner
+		if (loadingSpinner) loadingSpinner.classList.remove('hidden');
+		jobsGrid.style.opacity = '0.5';
+		jobsGrid.style.pointerEvents = 'none';
 
 		// Set timeout for search input to avoid too many requests
 		filterTimeout = setTimeout(() => {
 			const formData = new FormData();
 
 			// Get filter values
-			if (searchInput.value) formData.append('search',
-				searchInput.value);
-			if (heroSearch.value) formData.append('search',
-				heroSearch.value);
-			if (jobTypeSelect.value) formData.append(
-				'type', jobTypeSelect
-				.value);
+			if (searchInput.value) formData.append('search', searchInput.value);
+			if (heroSearch.value) formData.append('search', heroSearch.value);
+			if (jobTypeSelect.value) formData.append('type', jobTypeSelect.value);
+			if (sortSelect.value) formData.append('sort', sortSelect.value);
 
-
-
-
-			if (sortSelect.value) formData.append('sort',
-				sortSelect.value);
+			// Add page number
+			formData.append('page', page);
 
 			// Make AJAX request
 			fetch('{{ route("jobs.filter") }}', {
@@ -61,54 +59,91 @@ document.addEventListener('DOMContentLoaded', function() {
 				})
 				.then(response => response.json())
 				.then(data => {
-					if (data.html !==
-						'') {
-						jobsGrid
-							.innerHTML =
-							data
-							.html;
-						// paginationContainer
-						// 	.innerHTML =
-						// 	data
-						// 	.pagination;
-						resultsCount
-							.textContent =
-							data
-							.count;
+					if (loadingSpinner) loadingSpinner.classList.add('hidden');
+					jobsGrid.style.opacity = '1';
+					jobsGrid.style.pointerEvents = 'auto';
+
+					if (data.html !== '') {
+						jobsGrid.innerHTML = data.html;
+						
+						// Update pagination
+						if (data.pagination && paginationContainer) {
+							paginationContainer.innerHTML = data.pagination;
+							// Re-attach pagination click handlers
+							attachPaginationHandlers();
+						}
+						
+						resultsCount.textContent = data.count;
+						
+						// Scroll to top of jobs section
+						jobsGrid.scrollIntoView({ behavior: 'smooth', block: 'start' });
 					} else {
-						jobsGrid
-							.innerHTML =
+						jobsGrid.innerHTML =
 							'<div class="col-span-full text-center py-8 text-gray-500">No jobs found</div>';
-						paginationContainer
-							.innerHTML =
-							'';
-						resultsCount
-							.textContent =
-							'0';
+						if (paginationContainer) paginationContainer.innerHTML = '';
+						resultsCount.textContent = '0';
 					}
 				})
 				.catch(error => {
-					console.error('Error:',
-						error
-					);
+					console.error('Error:', error);
+					if (loadingSpinner) loadingSpinner.classList.add('hidden');
+					jobsGrid.style.opacity = '1';
+					jobsGrid.style.pointerEvents = 'auto';
 					jobsGrid.innerHTML =
 						'<div class="col-span-full text-center py-8 text-red-500">Error loading jobs</div>';
 				});
 		}, searchInput === document.activeElement ? 500 : 0);
 	}
 
+	// Attach click handlers to pagination links
+	function attachPaginationHandlers() {
+		if (!paginationContainer) return;
+		
+		const paginationLinks = paginationContainer.querySelectorAll('a[href]');
+		paginationLinks.forEach(link => {
+			// Remove existing listeners to avoid duplicates
+			const newLink = link.cloneNode(true);
+			link.parentNode.replaceChild(newLink, link);
+			
+			newLink.addEventListener('click', function(e) {
+				e.preventDefault();
+				const href = this.getAttribute('href');
+				if (!href) return;
+				
+				// Extract page number from URL
+				let page = 1;
+				try {
+					const url = new URL(href, window.location.origin);
+					page = parseInt(url.searchParams.get('page')) || 1;
+				} catch (e) {
+					// Fallback: try to extract page from href string
+					const match = href.match(/[?&]page=(\d+)/);
+					if (match) {
+						page = parseInt(match[1]);
+					}
+				}
+				filterJobs(page);
+			});
+		});
+	}
+
+	// Initial attachment of pagination handlers
+	if (paginationContainer) {
+		attachPaginationHandlers();
+	}
+
 	// Event listeners
-	searchInput.addEventListener('input', filterJobs);
-	heroSearch.addEventListener('input', filterJobs);
-	jobTypeSelect.addEventListener('change', filterJobs);
-	sortSelect.addEventListener('change', filterJobs);
+	searchInput.addEventListener('input', () => filterJobs(1));
+	heroSearch.addEventListener('input', () => filterJobs(1));
+	jobTypeSelect.addEventListener('change', () => filterJobs(1));
+	sortSelect.addEventListener('change', () => filterJobs(1));
 
 	clearFiltersBtn.addEventListener('click', function() {
 		searchInput.value = '';
 		heroSearch.value = '';
 		jobTypeSelect.value = '';
 		sortSelect.value = 'newest';
-		filterJobs();
+		filterJobs(1);
 	});
 
 	// View toggle

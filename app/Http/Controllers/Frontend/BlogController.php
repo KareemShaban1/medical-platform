@@ -18,7 +18,7 @@ class BlogController extends Controller
 
         // Get filter options for the form
         $categories = BlogCategory::active()->select('id', 'name_ar', 'name_en')->get();
-       
+
 
         return view('frontend.pages.blogs.index', compact(
             'blogPosts',
@@ -48,7 +48,7 @@ class BlogController extends Controller
                 $query->where('blog_category_id', $categoryId);
             }
 
-           
+
 
             // Sort by
             $sortBy = $request->get('sort', 'newest');
@@ -68,8 +68,30 @@ class BlogController extends Controller
                     break;
             }
 
-            // Pagination
-            $blogPosts = $query->paginate(12);
+            $perPage = (int) ($request->get('per_page', 12));
+            $perPage = $perPage > 0 ? min($perPage, 100) : 12;
+
+            // Get current page from request
+            $currentPage = max(1, (int) $request->get('page', 1));
+
+            // Clone query to get total count without affecting the main query
+            $totalCount = (clone $query)->count();
+            $lastPage = max(1, (int) ceil($totalCount / $perPage));
+
+            // Ensure current page doesn't exceed available pages
+            // If filters were applied and page is invalid, reset to page 1
+            if ($currentPage > $lastPage) {
+                $currentPage = 1; // Always reset to page 1 when page is invalid after filtering
+            }
+
+            // Now paginate with validated page number
+            $blogPosts = $query->paginate($perPage, ['*'], 'page', $currentPage);
+
+            // Set paginator path to blogs index route (for proper URL generation)
+            $blogPosts->setPath(route('blogs'));
+
+            // Append filter parameters to pagination URLs
+            $blogPosts->appends($request->except('page'));
 
             // Add additional data for response
             $additionalData = [
@@ -84,7 +106,7 @@ class BlogController extends Controller
                     'html' => view('frontend.pages.blogs.partials.blog-grid', compact('blogPosts'))->render(),
                     'pagination' => view('frontend.pages.blogs.partials.pagination', compact('blogPosts'))->render(),
                     'count' => $blogPosts->total(),
-                    'data' => $additionalData
+                    // 'data' => $additionalData
                 ]);
             }
 
@@ -119,7 +141,7 @@ class BlogController extends Controller
             }
         }
 
-       
+
 
         if ($request->filled('sort')) {
             $sortLabels = [

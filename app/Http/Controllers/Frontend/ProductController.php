@@ -79,41 +79,64 @@ class ProductController extends Controller
             }
 
             // Sort filter with proper column mapping
+            // If priceRange is set and sort is not explicitly set to price, use priceRange
             $sortBy = $request->get('sort', 'name');
-            switch ($sortBy) {
-                case 'name':
-                    $query->orderBy('name_en', 'asc');
-                    break;
-                case 'name-desc':
-                    $query->orderBy('name_en', 'desc');
-                    break;
-                case 'price':
-                    $query->orderBy('price_after', 'asc');
-                    break;
-                case 'price-desc':
+            $priceRange = $request->get('priceRange');
+            
+            // If priceRange is set and sort doesn't explicitly handle price, use priceRange for sorting
+            if ($priceRange && !in_array($sortBy, ['price', 'price-desc'])) {
+                if ($priceRange === 'highest') {
                     $query->orderBy('price_after', 'desc');
-                    break;
-                case 'newest':
-                    $query->orderBy('created_at', 'desc');
-                    break;
-                case 'oldest':
-                    $query->orderBy('created_at', 'asc');
-                    break;
-                case 'stock':
-                    $query->orderBy('stock', 'desc');
-                    break;
-                case 'discount':
-                    $query->orderBy('discount_value', 'desc');
-                    break;
-                default:
-                    $query->orderBy('name_en', 'asc');
+                } elseif ($priceRange === 'lowest') {
+                    $query->orderBy('price_after', 'asc');
+                }
+            } else {
+                // Apply sort filter
+                switch ($sortBy) {
+                    case 'name':
+                        $query->orderBy('name_en', 'asc');
+                        break;
+                    case 'name-desc':
+                        $query->orderBy('name_en', 'desc');
+                        break;
+                    case 'price':
+                        $query->orderBy('price_after', 'asc');
+                        break;
+                    case 'price-desc':
+                        $query->orderBy('price_after', 'desc');
+                        break;
+                    case 'newest':
+                        $query->orderBy('created_at', 'desc');
+                        break;
+                    case 'oldest':
+                        $query->orderBy('created_at', 'asc');
+                        break;
+                    case 'stock':
+                        $query->orderBy('stock', 'desc');
+                        break;
+                    case 'discount':
+                        $query->orderBy('discount_value', 'desc');
+                        break;
+                    default:
+                        $query->orderBy('name_en', 'asc');
+                }
             }
 
             // Get pagination per page
             $perPage = $request->get('per_page', 20);
             $perPage = min($perPage, 100); // Limit max per page to 100
 
-            $products = $query->paginate($perPage);
+            // Get current page from request
+            $currentPage = $request->get('page', 1);
+
+            // Paginate with current page
+            $products = $query->paginate($perPage, ['*'], 'page', $currentPage);
+
+            // Set paginator path to products index route (for proper URL generation)
+            $products->setPath(route('products'));
+
+            // Append filter parameters to pagination URLs
+            $products->appends($request->except('page'));
 
             // Add additional data for response
             $additionalData = [
@@ -165,6 +188,10 @@ class ProductController extends Controller
 
         if ($request->filled('price')) {
             $filters['price'] = $request->price;
+        }
+
+        if ($request->filled('priceRange')) {
+            $filters['priceRange'] = $request->priceRange;
         }
 
         if ($request->filled('sort')) {

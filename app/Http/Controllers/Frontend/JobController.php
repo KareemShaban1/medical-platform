@@ -79,8 +79,17 @@ class JobController extends Controller
 					break;
 			}
 
+			// Get current page from request
+			$currentPage = $request->get('page', 1);
+
 			// Pagination
-			$jobs = $query->paginate(12);
+			$jobs = $query->paginate(12, ['*'], 'page', $currentPage);
+
+			// Set paginator path to jobs index route (for proper URL generation)
+			$jobs->setPath(route('jobs'));
+
+			// Append filter parameters to pagination URLs
+			$jobs->appends($request->except('page'));
 
 			// Add additional data for response
 			$additionalData = [
