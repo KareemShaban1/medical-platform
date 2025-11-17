@@ -70,6 +70,15 @@ Route::group(
         Route::get('orders', [ClinicOrderController::class, 'index'])->name('orders.index');
         Route::get('orders/{id}', [ClinicOrderController::class, 'show'])->name('orders.show');
 
+        // Subscription Management
+        Route::group(['prefix' => 'subscriptions'], function () {
+            Route::get('/', [\App\Http\Controllers\Backend\Dashboards\Clinic\SubscriptionController::class, 'index'])->name('subscriptions.index');
+            Route::get('/plans', [\App\Http\Controllers\Backend\Dashboards\Clinic\SubscriptionController::class, 'plans'])->name('subscriptions.plans');
+            Route::post('/subscribe/{planId}', [\App\Http\Controllers\Backend\Dashboards\Clinic\SubscriptionController::class, 'subscribe'])->name('subscriptions.subscribe');
+            Route::post('/cancel', [\App\Http\Controllers\Backend\Dashboards\Clinic\SubscriptionController::class, 'cancel'])->name('subscriptions.cancel');
+            Route::get('/usage', [\App\Http\Controllers\Backend\Dashboards\Clinic\SubscriptionController::class, 'usage'])->name('subscriptions.usage');
+        });
+
         // Users Management
         Route::group(['prefix' => 'users'], function () {
             Route::get('/roles', [\App\Http\Controllers\Backend\Dashboards\Clinic\UserController::class, 'roles'])->name('users.roles');

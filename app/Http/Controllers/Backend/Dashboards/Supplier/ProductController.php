@@ -6,11 +6,15 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Supplier\Product\ProductStoreRequest;
 use App\Http\Requests\Supplier\Product\ProductUpdateRequest;
 use App\Interfaces\Supplier\ProductRepositoryInterface;
+use App\Traits\HandlesFeatureLimits;
 use App\Models\Product;
 use App\Models\Category;
+use Illuminate\Support\Facades\Auth;
 
 class ProductController extends Controller
 {
+    use HandlesFeatureLimits;
+
     protected $productRepo;
 
     public function __construct(ProductRepositoryInterface $productRepo)
@@ -30,8 +34,16 @@ class ProductController extends Controller
 
     public function store(ProductStoreRequest $request)
     {
-        $this->productRepo->store($request->validated());
-        return $this->jsonResponse('success', __('Product created successfully'));
+        $supplier = Auth::guard('supplier')->user()->supplier;
+
+        return $this->checkFeatureLimit(
+            $supplier,
+            'max_products',
+            function() use ($request) {
+                $product = $this->productRepo->store($request->validated());
+                return $this->jsonResponse('success', message: __('Product created successfully'));
+            }
+        );
     }
 
 
@@ -53,8 +65,8 @@ class ProductController extends Controller
 
     public function destroy($id)
     {
-        $this->productRepo->destroy($id);
-        return $this->jsonResponse('success', __('Product deleted successfully'));
+            $this->productRepo->destroy($id);
+            return $this->jsonResponse('success', __('Product deleted successfully'));
     }
 
     public function toggleStatus($id)

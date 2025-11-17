@@ -13,10 +13,24 @@ use App\Models\Clinic;
 use App\Models\Governorate;
 use App\Models\City;
 use App\Models\Area;
+use App\Services\Subscription\PlanService;
+use App\Services\Subscription\SubscriptionService;
+use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
-    public function index()
+    protected PlanService $planService;
+    protected SubscriptionService $subscriptionService;
+
+    public function __construct(
+        PlanService $planService,
+        SubscriptionService $subscriptionService
+    ) {
+        $this->planService = $planService;
+        $this->subscriptionService = $subscriptionService;
+    }
+
+    public function index(Request $request)
     {
         $jobs = Job::approved()->active()->get();
         $suppliers = Supplier::approved()->active()->get();
@@ -24,7 +38,46 @@ class HomeController extends Controller
         $courses = Course::active()->get();
 		$products = Product::approved()->active()->get();
         $clinics = Clinic::approved()->active()->get();
-		return view('frontend.pages.home.index', compact('jobs', 'suppliers', 'rentalSpaces', 'courses', 'products','clinics'));
+
+        // Get subscription plans
+        $planType = $request->get('plan_type', 'doctor'); // doctor, clinic, supplier
+        $doctorPlans = $this->planService->getPlansByType('doctor');
+        $clinicPlans = $this->planService->getPlansByType('clinic');
+        $supplierPlans = $this->planService->getPlansByType('supplier');
+
+        // Get current subscription if authenticated
+        $currentSubscription = null;
+        if (Auth::guard('clinic')->check()) {
+            $user = Auth::guard('clinic')->user();
+            if (!$user->clinic_id) {
+                $currentSubscription = $this->subscriptionService->getEffectiveSubscription($user);
+            } else {
+                $currentSubscription = $this->subscriptionService->getEffectiveSubscription($user->clinic);
+            }
+        } elseif (Auth::guard('supplier')->check()) {
+            $currentSubscription = $this->subscriptionService->getEffectiveSubscription(
+                Auth::guard('supplier')->user()->supplier
+            );
+        }
+
+        // If AJAX request, return only the plans grid
+        if ($request->ajax() || $request->wantsJson()) {
+            $plans = match($planType) {
+                'clinic' => $clinicPlans,
+                'supplier' => $supplierPlans,
+                default => $doctorPlans,
+            };
+
+            return response()->json([
+                'success' => true,
+                'html' => view('frontend.pages.home.partials.plans-grid', compact('plans', 'planType', 'currentSubscription'))->render()
+            ]);
+        }
+
+		return view('frontend.pages.home.index', compact(
+            'jobs', 'suppliers', 'rentalSpaces', 'courses', 'products', 'clinics',
+            'doctorPlans', 'clinicPlans', 'supplierPlans', 'planType', 'currentSubscription'
+        ));
     }
 
     public function getGovernorates()

@@ -92,6 +92,11 @@ class ClinicUser extends Authenticatable
         return $this->hasMany(CourseEnrollment::class);
     }
 
+    public function subscription()
+    {
+        return $this->morphOne(Subscription::class, 'subscribable');
+    }
+
     // ------- helper methods -------
 
     /**
@@ -108,6 +113,14 @@ class ClinicUser extends Authenticatable
     public function getDoctorProfile()
     {
         return $this->doctorProfile;
+    }
+
+    /**
+     * Check if this is a standalone doctor (clinic_id is null)
+     */
+    public function isStandaloneDoctor()
+    {
+        return $this->clinic_id === null;
     }
 
 }

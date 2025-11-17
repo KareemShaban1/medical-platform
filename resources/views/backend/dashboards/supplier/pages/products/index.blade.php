@@ -413,9 +413,56 @@
                     'success');
             },
             error: function(xhr) {
-                if (xhr.status === 422) {
-                    let errors = xhr.responseJSON
-                        .errors || {};
+                const response = xhr.responseJSON || {};
+
+                // Handle subscription feature limit errors (403 or any status with error_type)
+                if (response.error_type === 'feature_limit_exceeded' || response.error_type === 'feature_not_enabled') {
+                    const usage = response.usage || {};
+                    const used = usage.used || 0;
+                    const limit = usage.limit || 'unlimited';
+                    const remaining = usage.remaining || 0;
+                    const percentage = usage.percentage || 0;
+
+                    let htmlMessage = `<div class="text-start">
+                        <p class="mb-3"><strong>${response.message || '{{ __('Feature limit exceeded') }}'}</strong></p>`;
+
+                    if (usage.limit !== null && usage.limit !== undefined) {
+                        htmlMessage += `<div class="mb-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span>{{ __('Usage') }}</span>
+                                <span><strong>${used} / ${limit}</strong></span>
+                            </div>
+                            <div class="progress" style="height: 20px;">
+                                <div class="progress-bar bg-danger" role="progressbar"
+                                     style="width: ${Math.min(100, percentage)}%"
+                                     aria-valuenow="${percentage}"
+                                     aria-valuemin="0"
+                                     aria-valuemax="100">
+                                    ${percentage}%
+                                </div>
+                            </div>
+                            <small class="text-muted">{{ __('Remaining') }}: ${remaining}</small>
+                        </div>`;
+                    }
+
+                    htmlMessage += `</div>`;
+
+                    Swal.fire({
+                        icon: 'warning',
+                        title: '{{ __('Subscription Limit Exceeded') }}',
+                        html: htmlMessage,
+                        confirmButtonText: '{{ __('View Plans') }}',
+                        confirmButtonColor: '#079184',
+                        showCancelButton: true,
+                        cancelButtonText: '{{ __('Cancel') }}',
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                window.location.href = response.action_url || '{{ route('home') }}#subscriptions-plans';
+                            }
+                        });
+                } else if (xhr.status === 422) {
+                    // Handle validation errors
+                    let errors = response.errors || {};
                     let messages = [];
                     Object.keys(errors).forEach(
                         function(
@@ -472,15 +519,15 @@
                         });
                     Swal.fire({
                         icon: 'error',
-                        title: 'Validation Errors',
+                        title: '{{ __('Validation Errors') }}',
                         html: messages
                             .join(
                                 '<br>'
                             )
                     });
                 } else {
-                    Swal.fire('Error', 'Something went wrong',
-                        'error');
+                    // Generic error
+                    Swal.fire('{{ __('Error') }}', response?.message || '{{ __('Something went wrong') }}', 'error');
                 }
             }
         });

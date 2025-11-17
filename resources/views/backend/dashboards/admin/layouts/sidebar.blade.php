@@ -401,6 +401,35 @@
                 </div>
             </li>
 
+            <!-- Subscriptions -->
+            <li class="side-nav-item">
+                <a data-bs-toggle="collapse" href="#sidebarSubscriptions" aria-expanded="false"
+                    aria-controls="sidebarSubscriptions" class="side-nav-link">
+                    <i class="uil-credit-card"></i>
+                    <span> {{ __('Subscriptions') }} </span>
+                    <span class="menu-arrow"></span>
+                </a>
+                <div class="collapse" id="sidebarSubscriptions">
+                    <ul class="side-nav-second-level">
+                        <li>
+                            <a href="{{ route('admin.plans.index') }}">
+                                <span> {{ __('Plans') }} </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.features.index') }}">
+                                <span> {{ __('Features') }} </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.subscriptions.index') }}">
+                                <span> {{ __('Subscriptions') }} </span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+
 
 
         </ul>

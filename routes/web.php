@@ -63,6 +63,9 @@ Route::group(
 		Route::get('/courses/{id}', [CourseController::class, 'show'])->name('courses.show');
         Route::post('/courses/filter', [CourseController::class, 'filter'])->name('courses.filter');
 
+		// Subscription Plans (Public)
+		Route::get('/subscriptions/plans', [\App\Http\Controllers\Frontend\SubscriptionController::class, 'plans'])->name('subscriptions.plans');
+
 		// Doctor Profile Routes
 		Route::get('/doctors', [\App\Http\Controllers\Frontend\DoctorController::class, 'index'])->name('doctors.index');
 		Route::post('/doctors/filter', [\App\Http\Controllers\Frontend\DoctorController::class, 'filter'])->name('doctors.filter');
@@ -87,6 +90,11 @@ Route::group([
 ], function () {
     Route::post('/courses/{id}/enroll', [CourseController::class, 'enroll'])->name('courses.enroll');
 });
+
+// Subscription enrollment (Clinic, Doctor, or Supplier users) - AJAX route without localization middleware
+Route::post('/subscriptions/plans/{planId}/subscribe', [\App\Http\Controllers\Frontend\SubscriptionController::class, 'subscribe'])
+    ->middleware('web')
+    ->name('subscriptions.subscribe');
 
 // Cart and Checkout Routes (requires clinic authentication)
 Route::group([
@@ -130,6 +138,10 @@ Route::group([
 ], function () {
     Route::get('/dashboard', [\App\Http\Controllers\Frontend\Doctor\DashboardController::class, 'index'])->name('dashboard');
     Route::get('/profile', [\App\Http\Controllers\Frontend\Doctor\ProfileController::class, 'index'])->name('profile.index');
+
+    // Doctor Subscriptions
+    Route::get('/subscriptions', [\App\Http\Controllers\Frontend\Doctor\SubscriptionController::class, 'index'])->name('subscriptions.index');
+    Route::post('/subscriptions/cancel', [\App\Http\Controllers\Frontend\Doctor\SubscriptionController::class, 'cancel'])->name('subscriptions.cancel');
     Route::get('/profile/create', [\App\Http\Controllers\Frontend\Doctor\ProfileController::class, 'create'])->name('profile.create');
     Route::post('/profile', [\App\Http\Controllers\Frontend\Doctor\ProfileController::class, 'store'])->name('profile.store');
     Route::get('/profile/edit', [\App\Http\Controllers\Frontend\Doctor\ProfileController::class, 'edit'])->name('profile.edit');
