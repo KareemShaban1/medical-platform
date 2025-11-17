@@ -27,5 +27,7 @@ interface AppointmentRepositoryInterface
     public function cancel($id, $reason = null, $cancelledBy = null);
 
     public function findByConfirmationCode($code);
+
+    public function generatePrescription($appointmentId, $asPdf = false);
 }
 
