@@ -6,6 +6,7 @@ use App\Interfaces\Admin\OrderRepositoryInterface;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\OrderSupplier;
+use Illuminate\Support\Facades\DB;
 
 class OrderRepository implements OrderRepositoryInterface
 {
@@ -58,6 +59,22 @@ class OrderRepository implements OrderRepositoryInterface
             ->get();
     }
 
+    public function updatePaymentStatus($orderId, array $data)
+    {
+        return DB::transaction(function () use ($orderId, $data) {
+            $order = Order::findOrFail($orderId);
+
+            if ($order->payment_method != 0) {
+                throw new \Exception(__('Payment status can only be updated for COD orders'));
+            }
+
+            $status = $data['payment_status'] ?? 'pending';
+            $order->update(['payment_status' => $status]);
+
+            return $order;
+        });
+    }
+
     /** ---------------------- PRIVATE HELPERS ---------------------- */
 
     private function orderStatus($item): string
@@ -90,10 +107,17 @@ class OrderRepository implements OrderRepositoryInterface
     private function orderActions($item): string
     {
         $showUrl = route('admin.orders.show', $item->id);
-        return <<<HTML
-        <div class="d-flex gap-2">
-            <a href="{$showUrl}" class="btn btn-sm btn-success" title="View"><i class="fa fa-eye"></i></a>
-        </div>
-        HTML;
+
+        $html = '<div class="d-flex gap-2">';
+        $html .= '<a href="' . $showUrl . '" class="btn btn-sm btn-success" title="View"><i class="fa fa-eye"></i></a>';
+
+        // Allow payment status updates only for COD orders
+        if ($item->payment_method == 0) {
+            $html .= '<button type="button" onclick="updatePaymentStatus(' . $item->id . ')" class="btn btn-sm btn-primary" title="' . __('Update Payment Status') . '"><i class="fa fa-credit-card"></i></button>';
+        }
+
+        $html .= '</div>';
+
+        return $html;
     }
 }

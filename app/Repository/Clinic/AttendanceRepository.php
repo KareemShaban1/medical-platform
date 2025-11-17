@@ -20,14 +20,6 @@ class AttendanceRepository implements AttendanceRepositoryInterface
     public function checkIn($userId, $at, $source, $notes = null)
     {
         $this->assertBelongsToClinic($userId);
-        // Only one check-in per day
-        $existsToday = AttendanceLog::where('clinic_user_id', $userId)
-            ->where('check_type', 'check_in')
-            ->whereDate('at', Carbon::parse($at)->toDateString())
-            ->exists();
-        if ($existsToday) {
-            throw new \Exception(__('You already checked in today'));
-        }
         return AttendanceLog::create([
             'clinic_user_id' => $userId,
             'check_type' => 'check_in',
@@ -44,15 +36,6 @@ class AttendanceRepository implements AttendanceRepositoryInterface
     {
         $this->assertBelongsToClinic($userId);
         $date = Carbon::parse($at)->toDateString();
-        // Only one checkout per day
-        $existsToday = AttendanceLog::where('clinic_user_id', $userId)
-            ->where('check_type', 'check_out')
-            ->whereDate('at', $date)
-            ->exists();
-        if ($existsToday) {
-            throw new \Exception(__('You already checked out today'));
-        }
-
         // Must have a check-in today and checkout cannot be before it
         $lastCheckIn = AttendanceLog::where('clinic_user_id', $userId)
             ->where('check_type', 'check_in')

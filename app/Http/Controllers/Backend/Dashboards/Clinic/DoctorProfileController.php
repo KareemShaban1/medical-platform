@@ -20,8 +20,16 @@ class DoctorProfileController extends Controller
 
     public function index()
     {
-        $userProfile = $this->profileRepo->getUserProfile(auth('clinic')->id());
-        return view('backend.dashboards.clinic.pages.doctor-profiles.index', compact('userProfile'));
+        // Show all clinic profiles in DataTable (for admins)
+        return view('backend.dashboards.clinic.pages.doctor-profiles.index');
+    }
+
+    public function myProfile()
+    {
+        // Show only current user's profile
+        $user = auth('clinic')->user();
+        $userProfile = $this->profileRepo->getUserProfile($user->id);
+        return view('backend.dashboards.clinic.pages.doctor-profiles.index-old', compact('userProfile'));
     }
 
     public function data()
@@ -31,25 +39,12 @@ class DoctorProfileController extends Controller
 
     public function create()
     {
-        // Check if user already has a profile
-        $existingProfile = $this->profileRepo->getUserProfile(auth('clinic')->id());
-        if ($existingProfile) {
-            return redirect()->route('clinic.doctor-profiles.show', $existingProfile->id)
-                ->with('info', 'You already have a profile. You can edit it below.');
-        }
-
         $specialities = Speciality::orderBy('name_en')->get();
         return view('backend.dashboards.clinic.pages.doctor-profiles.create', compact('specialities'));
     }
 
     public function store(DoctorProfileStoreRequest $request)
     {
-        // Check if user already has a profile
-        $existingProfile = $this->profileRepo->getUserProfile(auth('clinic')->id());
-        if ($existingProfile) {
-            return $this->jsonResponse('error', 'You already have a profile. Please edit your existing profile.');
-        }
-
         $this->profileRepo->store($request->validated());
         return $this->jsonResponse('success', __('Profile created successfully'));
     }
@@ -100,6 +95,36 @@ class DoctorProfileController extends Controller
         try {
             $this->profileRepo->submitForReview($id);
             return $this->jsonResponse('success', __('Profile submitted for review successfully'));
+        } catch (\Exception $e) {
+            return $this->jsonResponse('error', $e->getMessage());
+        }
+    }
+
+    public function trash()
+    {
+        return view('backend.dashboards.clinic.pages.doctor-profiles.trash');
+    }
+
+    public function trashData()
+    {
+        return $this->profileRepo->trashData();
+    }
+
+    public function restore($id)
+    {
+        try {
+            $this->profileRepo->restore($id);
+            return $this->jsonResponse('success', __('Profile restored successfully'));
+        } catch (\Exception $e) {
+            return $this->jsonResponse('error', $e->getMessage());
+        }
+    }
+
+    public function forceDelete($id)
+    {
+        try {
+            $this->profileRepo->forceDelete($id);
+            return $this->jsonResponse('success', __('Profile permanently deleted'));
         } catch (\Exception $e) {
             return $this->jsonResponse('error', $e->getMessage());
         }

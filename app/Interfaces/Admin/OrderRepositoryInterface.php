@@ -9,4 +9,5 @@ interface OrderRepositoryInterface
     public function show($id);
     public function getOrderSuppliers($orderId);
     public function getOrderItems($orderId);
+    public function updatePaymentStatus($orderId, array $data);
 }

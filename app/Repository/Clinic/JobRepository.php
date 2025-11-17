@@ -19,7 +19,7 @@ class JobRepository implements JobRepositoryInterface
 
     public function data()
     {
-        $jobs = Job::query();
+        $jobs = Job::forCurrentClinic();
 
         return datatables()->of($jobs)
             ->editColumn('main_image', function ($item) {
@@ -241,7 +241,7 @@ class JobRepository implements JobRepositoryInterface
             // Update applicant data fields if provided
             if ($request->has('applicant_data')) {
                 $newData = $request->applicant_data;
-                
+
                 // Merge with existing data, but don't allow editing of name, email, phone, cv
                 $protectedFields = ['name', 'email', 'phone', 'cv'];
                 foreach ($newData as $key => $value) {
@@ -249,7 +249,7 @@ class JobRepository implements JobRepositoryInterface
                         $applicantData[$key] = $value;
                     }
                 }
-                
+
                 $application->applicant_data = $applicantData;
             }
 

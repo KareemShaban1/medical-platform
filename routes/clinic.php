@@ -21,6 +21,7 @@ use App\Http\Controllers\Backend\Dashboards\Clinic\AnnouncementController as Cli
 use App\Http\Controllers\Backend\Dashboards\Clinic\ClinicInfoController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Backend\Dashboards\Clinic\CourseEnrollmentController as ClinicCourseEnrollmentController;
+use App\Http\Controllers\Backend\Dashboards\Clinic\OrderController as ClinicOrderController;
 
 Route::group(
     [
@@ -64,6 +65,10 @@ Route::group(
         Route::delete('rental-spaces/{id}/force-delete', [RentalSpaceController::class, 'forceDelete'])->name('rental-spaces.force-delete');
         Route::put('rental-spaces/{id}/update-status', [RentalSpaceController::class, 'updateStatus'])->name('rental-spaces.update-status');
         Route::resource('rental-spaces', RentalSpaceController::class);
+
+        // Clinic Orders (website orders made by clinic users)
+        Route::get('orders', [ClinicOrderController::class, 'index'])->name('orders.index');
+        Route::get('orders/{id}', [ClinicOrderController::class, 'show'])->name('orders.show');
 
         // Users Management
         Route::group(['prefix' => 'users'], function () {
@@ -138,6 +143,12 @@ Route::group(
 
         // Doctor Profiles Management
         Route::group(['prefix' => 'doctor-profiles'], function () {
+            Route::get('/my-profile', [\App\Http\Controllers\Backend\Dashboards\Clinic\DoctorProfileController::class, 'myProfile'])->name('doctor-profiles.my-profile');
+            Route::get('/trash', [\App\Http\Controllers\Backend\Dashboards\Clinic\DoctorProfileController::class, 'trash'])->name('doctor-profiles.trash');
+            Route::get('/trash/data', [\App\Http\Controllers\Backend\Dashboards\Clinic\DoctorProfileController::class, 'trashData'])->name('doctor-profiles.trash.data');
+            Route::post('/{id}/restore', [\App\Http\Controllers\Backend\Dashboards\Clinic\DoctorProfileController::class, 'restore'])->name('doctor-profiles.restore');
+            Route::delete('/{id}/force-delete', [\App\Http\Controllers\Backend\Dashboards\Clinic\DoctorProfileController::class, 'forceDelete'])->name('doctor-profiles.force-delete');
+
             Route::get('/data', [\App\Http\Controllers\Backend\Dashboards\Clinic\DoctorProfileController::class, 'data'])->name('doctor-profiles.data');
             Route::post('/submit/{id}', [\App\Http\Controllers\Backend\Dashboards\Clinic\DoctorProfileController::class, 'submit'])->name('doctor-profiles.submit');
             Route::get('/', [\App\Http\Controllers\Backend\Dashboards\Clinic\DoctorProfileController::class, 'index'])->name('doctor-profiles.index');
@@ -285,6 +296,10 @@ Route::group(
 
         // Appointments Management
         Route::get('appointments/data', [\App\Http\Controllers\Backend\Dashboards\Clinic\AppointmentController::class, 'data'])->name('appointments.data');
+        Route::get('appointments/trash', [\App\Http\Controllers\Backend\Dashboards\Clinic\AppointmentController::class, 'trash'])->name('appointments.trash');
+        Route::get('appointments/trash/data', [\App\Http\Controllers\Backend\Dashboards\Clinic\AppointmentController::class, 'trashData'])->name('appointments.trash.data');
+        Route::post('appointments/{id}/restore', [\App\Http\Controllers\Backend\Dashboards\Clinic\AppointmentController::class, 'restore'])->name('appointments.restore');
+        Route::delete('appointments/{id}/force-delete', [\App\Http\Controllers\Backend\Dashboards\Clinic\AppointmentController::class, 'forceDelete'])->name('appointments.force-delete');
         Route::get('appointments/{doctorId}/analytics', [\App\Http\Controllers\Backend\Dashboards\Clinic\AppointmentController::class, 'analytics'])->name('appointments.analytics');
         Route::get('appointments/available-periods', [\App\Http\Controllers\Backend\Dashboards\Clinic\AppointmentController::class, 'getAvailablePeriods'])->name('appointments.available-periods');
         Route::post('appointments/{id}/confirm', [\App\Http\Controllers\Backend\Dashboards\Clinic\AppointmentController::class, 'confirm'])->name('appointments.confirm');

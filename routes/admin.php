@@ -169,6 +169,8 @@ Route::group(
             Route::get('/data', [\App\Http\Controllers\Backend\Dashboards\Admin\OrderController::class, 'data'])->name('orders.data');
             Route::get('/{id}/suppliers', [\App\Http\Controllers\Backend\Dashboards\Admin\OrderController::class, 'getOrderSuppliers'])->name('orders.suppliers');
             Route::get('/{id}/items', [\App\Http\Controllers\Backend\Dashboards\Admin\OrderController::class, 'getOrderItems'])->name('orders.items');
+            Route::post('/{id}/update-payment-status', [\App\Http\Controllers\Backend\Dashboards\Admin\OrderController::class, 'updatePaymentStatus'])->name('orders.update-payment-status');
+            Route::get('/analytics', [\App\Http\Controllers\Backend\Dashboards\Admin\OrderController::class, 'analytics'])->name('orders.analytics');
             Route::get('/', [\App\Http\Controllers\Backend\Dashboards\Admin\OrderController::class, 'index'])->name('orders.index');
             Route::get('/{id}', [\App\Http\Controllers\Backend\Dashboards\Admin\OrderController::class, 'show'])->name('orders.show');
         });
@@ -232,5 +234,3 @@ Route::post('/admin/logout', function (Request $request) {
 
     return redirect()->to('/');
 })->name('admin.logout');
-
-

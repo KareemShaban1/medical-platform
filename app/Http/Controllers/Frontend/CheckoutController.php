@@ -8,6 +8,10 @@ use App\Models\Cart;
 use App\Models\Checkout;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\Admin;
+use App\Models\OrderSupplier;
+use App\Notifications\Admin\NewOrderPlacedNotification;
+use App\Notifications\Supplier\NewOrderNotification;
 use App\PaymentGateways\PaymentGatewayManager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -194,6 +198,22 @@ class CheckoutController extends Controller
                 // update product stock
                 $cartItem->product->decrement('stock', $cartItem->quantity);
             }
+            // Create per-supplier summary rows for this order
+            $itemsBySupplier = $order->items()->get()->groupBy('supplier_id');
+            foreach ($itemsBySupplier as $supplierId => $items) {
+                if (!$supplierId) {
+                    continue;
+                }
+                $subtotal = $items->sum(function ($item) {
+                    return $item->quantity * $item->price;
+                });
+                OrderSupplier::create([
+                    'order_id' => $order->id,
+                    'supplier_id' => $supplierId,
+                    'subtotal' => $subtotal,
+                    'status' => 'pending',
+                ]);
+            }
 
             // Link checkout to order
             $checkout->update(['order_id' => $order->id]);
@@ -253,6 +273,29 @@ class CheckoutController extends Controller
 
             DB::commit();
 
+            $order->load(['clinic', 'items.supplier.supplierUsers']);
+
+            $itemsBySupplier = $order->items->groupBy('supplier_id');
+            foreach ($itemsBySupplier as $supplierId => $items) {
+                $supplier = $items->first()->supplier;
+                if (! $supplier) {
+                    continue;
+                }
+
+                $supplierTotal = $items->sum(function ($item) {
+                    return $item->quantity * $item->price;
+                });
+
+                foreach ($supplier->supplierUsers as $supplierUser) {
+                    $supplierUser->notify(new NewOrderNotification($order, $supplierTotal));
+                }
+            }
+
+            $admins = Admin::all();
+            foreach ($admins as $admin) {
+                $admin->notify(new NewOrderPlacedNotification($order));
+            }
+
             // Return response with redirect URL if available (for online payments)
             $redirectUrl = $paymentResponse->redirectUrl ?? route('checkout.success', ['order' => $order->id]);
 
@@ -303,5 +346,5 @@ class CheckoutController extends Controller
         return view('frontend.pages.checkout.failed');
     }
 
-   
+
 }

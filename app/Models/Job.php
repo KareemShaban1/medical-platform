@@ -41,6 +41,11 @@ class Job extends Model implements HasMedia
         return $query->where('status', true);
     }
 
+    public function scopeForCurrentClinic($query)
+    {
+        return $query->where('clinic_id', auth('clinic')->user()->clinic_id);
+    }
+
     public function scopeApproved($query)
     {
         return $query->whereHas('approvement', function ($query) {

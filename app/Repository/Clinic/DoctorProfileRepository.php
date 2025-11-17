@@ -18,19 +18,25 @@ class DoctorProfileRepository implements DoctorProfileRepositoryInterface
 
     public function data()
     {
+        $clinicId = auth('clinic')->user()->clinic_id;
+        
         $profiles = DoctorProfile::with(['clinicUser','speciality'])
-            ->forClinicUser(auth('clinic')->id());
+            ->whereHas('clinicUser', function($query) use ($clinicId) {
+                $query->where('clinic_id', $clinicId);
+            });
 
         return datatables()->of($profiles)
             ->addColumn('profile_photo', fn($item) => $this->profilePhoto($item))
             ->addColumn('name', fn($item) => $item->name)
+            ->addColumn('email', fn($item) => $item->email)
+            ->addColumn('phone', fn($item) => $item->phone ?? 'N/A')
+            ->addColumn('speciality', fn($item) => $item->speciality?->name_en ?? 'N/A')
+            ->addColumn('years_experience', fn($item) => $item->years_experience ?? 'N/A')
             ->editColumn('status', fn($item) => $item->status_badge)
             ->addColumn('action', fn($item) => $this->profileActions($item))
             ->rawColumns(['profile_photo', 'status', 'action'])
             ->make(true);
-    }
-
-    public function getUserProfile($clinicUserId)
+    }    public function getUserProfile($clinicUserId)
     {
         return DoctorProfile::forClinicUser($clinicUserId)->first();
     }
@@ -103,14 +109,67 @@ class DoctorProfileRepository implements DoctorProfileRepositoryInterface
     public function destroy($id)
     {
         return DB::transaction(function () use ($id) {
-            $profile = DoctorProfile::forClinicUser(auth('clinic')->id())->findOrFail($id);
+            $clinicId = auth('clinic')->user()->clinic_id;
+            $profile = DoctorProfile::whereHas('clinicUser', function($query) use ($clinicId) {
+                $query->where('clinic_id', $clinicId);
+            })->findOrFail($id);
 
-            if (!in_array($profile->status, [DoctorProfile::STATUS_DRAFT, DoctorProfile::STATUS_REJECTED])) {
-                throw new \Exception('Profile cannot be deleted in current status');
-            }
+            $profile->delete();
+
+            return $profile;
+        });
+    }
+
+    public function trashData()
+    {
+        $clinicId = auth('clinic')->user()->clinic_id;
+
+        $profiles = DoctorProfile::onlyTrashed()
+            ->with(['clinicUser','speciality'])
+            ->whereHas('clinicUser', function($query) use ($clinicId) {
+                $query->where('clinic_id', $clinicId);
+            });
+
+        return datatables()->of($profiles)
+            ->addColumn('profile_photo', fn($item) => $this->profilePhoto($item))
+            ->addColumn('name', fn($item) => $item->name)
+            ->addColumn('email', fn($item) => $item->email)
+            ->addColumn('phone', fn($item) => $item->phone ?? 'N/A')
+            ->addColumn('speciality', fn($item) => $item->speciality?->name_en ?? 'N/A')
+            ->addColumn('years_experience', fn($item) => $item->years_experience ?? 'N/A')
+            ->editColumn('status', fn($item) => $item->status_badge)
+            ->addColumn('deleted_at', fn($item) => $item->deleted_at?->format('Y-m-d H:i'))
+            ->addColumn('action', fn($item) => $this->trashActionButtons($item))
+            ->rawColumns(['profile_photo', 'status', 'action'])
+            ->make(true);
+    }
+
+    public function restore($id)
+    {
+        return DB::transaction(function () use ($id) {
+            $clinicId = auth('clinic')->user()->clinic_id;
+            $profile = DoctorProfile::onlyTrashed()
+                ->whereHas('clinicUser', function($query) use ($clinicId) {
+                    $query->where('clinic_id', $clinicId);
+                })->findOrFail($id);
+
+            $profile->restore();
+
+            return $profile;
+        });
+    }
+
+    public function forceDelete($id)
+    {
+        return DB::transaction(function () use ($id) {
+            $clinicId = auth('clinic')->user()->clinic_id;
+            $profile = DoctorProfile::onlyTrashed()
+                ->whereHas('clinicUser', function($query) use ($clinicId) {
+                    $query->where('clinic_id', $clinicId);
+                })->findOrFail($id);
 
             $profile->clearMediaCollection('profile_photo');
-            $profile->delete();
+            $profile->forceDelete();
 
             return $profile;
         });
@@ -129,19 +188,30 @@ class DoctorProfileRepository implements DoctorProfileRepositoryInterface
     private function profileActions($item): string
     {
         $showUrl = route('clinic.doctor-profiles.show', $item->id);
+        $editUrl = route('clinic.doctor-profiles.edit', $item->id);
         $actions = '<div class="d-flex gap-2">';
 
-        $actions .= '<a href="' . $showUrl . '" class="btn btn-sm btn-success" title="View"><i class="fa fa-eye"></i></a>';
+        $actions .= '<a href="' . $showUrl . '" class="btn btn-sm btn-info" title="View"><i class="fa fa-eye"></i></a>';
 
         if ($item->canBeEdited()) {
-            $actions .= '<button onclick="editProfile(' . $item->id . ')" class="btn btn-sm btn-info" title="Edit"><i class="fa fa-edit"></i></button>';
-            $actions .= '<button onclick="deleteProfile(' . $item->id . ')" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>';
+            $actions .= '<a href="' . $editUrl . '" class="btn btn-sm btn-primary" title="Edit"><i class="fa fa-edit"></i></a>';
         }
 
         if (in_array($item->status, [DoctorProfile::STATUS_DRAFT, DoctorProfile::STATUS_REJECTED])) {
-            $actions .= '<button onclick="submitProfile(' . $item->id . ')" class="btn btn-sm btn-primary" title="Submit for Review"><i class="fa fa-paper-plane"></i></button>';
+            $actions .= '<button onclick="submitProfile(' . $item->id . ')" class="btn btn-sm btn-success" title="Submit for Review"><i class="fa fa-paper-plane"></i></button>';
         }
 
+        $actions .= '<button onclick="deleteProfile(' . $item->id . ')" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>';
+
+        $actions .= '</div>';
+        return $actions;
+    }
+
+    private function trashActionButtons($item): string
+    {
+        $actions = '<div class="d-flex gap-2">';
+        $actions .= '<button onclick="restoreProfile(' . $item->id . ')" class="btn btn-sm btn-success" title="Restore"><i class="fa fa-undo"></i> Restore</button>';
+        $actions .= '<button onclick="forceDeleteProfile(' . $item->id . ')" class="btn btn-sm btn-danger" title="Delete Forever"><i class="fa fa-trash"></i> Delete Forever</button>';
         $actions .= '</div>';
         return $actions;
     }

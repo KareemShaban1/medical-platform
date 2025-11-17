@@ -6,14 +6,11 @@
         <div class="col-12">
             <div class="page-title-box">
                 <div class="page-title-right">
-                    <a href="{{ route('clinic.doctor-profiles.create') }}" class="btn btn-primary">
-                        <i class="mdi mdi-plus"></i> {{ __('Create Profile') }}
-                    </a>
-                    <a href="{{ route('clinic.doctor-profiles.trash') }}" class="btn btn-secondary">
-                        <i class="fas fa-trash"></i> {{ __('Trash') }}
+                    <a href="{{ route('clinic.doctor-profiles.index') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> {{ __('Back to Profiles') }}
                     </a>
                 </div>
-                <h4 class="page-title">{{ __('Doctor Profile Management') }}</h4>
+                <h4 class="page-title">{{ __('Trashed Doctor Profiles') }}</h4>
             </div>
         </div>
     </div>
@@ -22,7 +19,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
-                    <table id="doctor-profiles-table" class="table table-striped dt-responsive nowrap w-100">
+                    <table id="trash-profiles-table" class="table table-striped dt-responsive nowrap w-100">
                         <thead>
                             <tr>
                                 <th>{{ __('Photo') }}</th>
@@ -32,6 +29,7 @@
                                 <th>{{ __('Speciality') }}</th>
                                 <th>{{ __('Years Exp.') }}</th>
                                 <th>{{ __('Status') }}</th>
+                                <th>{{ __('Deleted At') }}</th>
                                 <th>{{ __('Actions') }}</th>
                             </tr>
                         </thead>
@@ -47,10 +45,10 @@
 <script>
 $(document).ready(function() {
     // Initialize DataTable
-    var table = $('#doctor-profiles-table').DataTable({
+    var table = $('#trash-profiles-table').DataTable({
         processing: true,
         serverSide: true,
-        ajax: '{{ route("clinic.doctor-profiles.data") }}',
+        ajax: '{{ route("clinic.doctor-profiles.trash.data") }}',
         columns: [
             { data: 'profile_photo', name: 'profile_photo', orderable: false, searchable: false },
             { data: 'name', name: 'name' },
@@ -59,21 +57,22 @@ $(document).ready(function() {
             { data: 'speciality', name: 'speciality.name_en' },
             { data: 'years_experience', name: 'years_experience' },
             { data: 'status', name: 'status' },
+            { data: 'deleted_at', name: 'deleted_at' },
             { data: 'action', name: 'action', orderable: false, searchable: false }
         ],
-        order: [[1, 'asc']],
+        order: [[7, 'desc']],
         dom: 'Bfrtip',
         buttons: [
             {
                 extend: 'print',
                 exportOptions: {
-                    columns: [1, 2, 3, 4, 5, 6]
+                    columns: [1, 2, 3, 4, 5, 6, 7]
                 }
             },
             {
                 extend: 'excel',
                 exportOptions: {
-                    columns: [1, 2, 3, 4, 5, 6]
+                    columns: [1, 2, 3, 4, 5, 6, 7]
                 }
             },
             'copy'
@@ -82,32 +81,32 @@ $(document).ready(function() {
 });
 
 // ============================================
-// SUBMIT PROFILE FOR REVIEW
+// RESTORE PROFILE
 // ============================================
-function submitProfile(id) {
+function restoreProfile(id) {
     Swal.fire({
-        title: '{{ __("Submit Profile for Review?") }}',
-        text: '{{ __("Your profile will be submitted to admins for review and approval.") }}',
+        title: '{{ __("Restore Profile?") }}',
+        text: '{{ __("This will restore the profile and make it active again.") }}',
         icon: 'question',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
-        confirmButtonText: '{{ __("Yes, submit it!") }}',
+        confirmButtonText: '{{ __("Yes, restore it!") }}',
         cancelButtonText: '{{ __("Cancel") }}'
     }).then((result) => {
         if (result.isConfirmed) {
             $.ajax({
-                url: '{{ route("clinic.doctor-profiles.submit", ":id") }}'.replace(':id', id),
+                url: '{{ route("clinic.doctor-profiles.restore", ":id") }}'.replace(':id', id),
                 method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 success: function(response) {
-                    $('#doctor-profiles-table').DataTable().ajax.reload();
-                    Swal.fire('{{ __("Submitted!") }}', response.message, 'success');
+                    $('#trash-profiles-table').DataTable().ajax.reload();
+                    Swal.fire('{{ __("Restored!") }}', response.message, 'success');
                 },
                 error: function(xhr) {
-                    Swal.fire('{{ __("Error") }}', xhr.responseJSON?.message || '{{ __("Something went wrong") }}', 'error');
+                    Swal.fire('{{ __("Error") }}', xhr.responseJSON?.message || '{{ __("Failed to restore profile") }}', 'error');
                 }
             });
         }
@@ -115,28 +114,28 @@ function submitProfile(id) {
 }
 
 // ============================================
-// DELETE PROFILE (SOFT DELETE)
+// FORCE DELETE PROFILE (PERMANENT)
 // ============================================
-function deleteProfile(id) {
+function forceDeleteProfile(id) {
     Swal.fire({
-        title: '{{ __("Are you sure?") }}',
-        text: '{{ __("This will move the profile to trash. You can restore it later.") }}',
-        icon: 'warning',
+        title: '{{ __("Are you absolutely sure?") }}',
+        text: '{{ __("This will permanently delete the profile. This action cannot be undone!") }}',
+        icon: 'error',
         showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: '{{ __("Yes, delete it!") }}',
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: '{{ __("Yes, delete permanently!") }}',
         cancelButtonText: '{{ __("Cancel") }}'
     }).then((result) => {
         if (result.isConfirmed) {
             $.ajax({
-                url: '{{ route("clinic.doctor-profiles.destroy", ":id") }}'.replace(':id', id),
+                url: '{{ route("clinic.doctor-profiles.force-delete", ":id") }}'.replace(':id', id),
                 method: 'DELETE',
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 success: function(response) {
-                    $('#doctor-profiles-table').DataTable().ajax.reload();
+                    $('#trash-profiles-table').DataTable().ajax.reload();
                     Swal.fire('{{ __("Deleted!") }}', response.message, 'success');
                 },
                 error: function(xhr) {

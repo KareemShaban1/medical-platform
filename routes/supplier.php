@@ -140,6 +140,7 @@ Route::group(
             Route::post('/{id}/update-payment-status', [\App\Http\Controllers\Backend\Dashboards\Supplier\OrderController::class, 'updatePaymentStatus'])->name('orders.update-payment-status');
             Route::post('/{id}/refund', [\App\Http\Controllers\Backend\Dashboards\Supplier\OrderController::class, 'createRefund'])->name('orders.create-refund');
             Route::post('/refund/{refundId}/update-status', [\App\Http\Controllers\Backend\Dashboards\Supplier\OrderController::class, 'updateRefundStatus'])->name('orders.refund.update-status');
+            Route::get('/analytics', [\App\Http\Controllers\Backend\Dashboards\Supplier\OrderController::class, 'analytics'])->name('orders.analytics');
             Route::get('/', [\App\Http\Controllers\Backend\Dashboards\Supplier\OrderController::class, 'index'])->name('orders.index');
             Route::get('/{id}', [\App\Http\Controllers\Backend\Dashboards\Supplier\OrderController::class, 'show'])->name('orders.show');
         });
