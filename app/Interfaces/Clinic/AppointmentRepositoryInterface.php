@@ -28,6 +28,8 @@ interface AppointmentRepositoryInterface
 
     public function findByConfirmationCode($code);
 
+    public function generatePrescription($appointmentId, $asPdf = false);
+
     public function trashData($filters = []);
 
     public function restore($id);
@@ -36,4 +38,3 @@ interface AppointmentRepositoryInterface
 
     public function delete($id);
 }
-

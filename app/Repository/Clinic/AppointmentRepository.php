@@ -31,27 +31,27 @@ class AppointmentRepository implements AppointmentRepositoryInterface
         }
 
         // Apply filters
-        if (!empty($filters['doctor_profile_id'])) {
+        if (! empty($filters['doctor_profile_id'])) {
             $query->where('appointments.doctor_profile_id', $filters['doctor_profile_id']);
         }
 
-        if (!empty($filters['patient_id'])) {
+        if (! empty($filters['patient_id'])) {
             $query->where('patient_id', $filters['patient_id']);
         }
 
-        if (!empty($filters['status'])) {
+        if (! empty($filters['status'])) {
             $query->where('status', $filters['status']);
         }
 
-        if (!empty($filters['start_date']) && !empty($filters['end_date'])) {
+        if (! empty($filters['start_date']) && ! empty($filters['end_date'])) {
             $query->whereHas('period', function ($q) use ($filters) {
                 $q->whereBetween('date', [$filters['start_date'], $filters['end_date']]);
             });
         }
 
-        if (!empty($filters['patient_name'])) {
+        if (! empty($filters['patient_name'])) {
             $query->whereHas('patient.user', function ($q) use ($filters) {
-                $q->where('name', 'like', '%' . $filters['patient_name'] . '%');
+                $q->where('name', 'like', '%'.$filters['patient_name'].'%');
             });
         }
 
@@ -84,15 +84,15 @@ class AppointmentRepository implements AppointmentRepositoryInterface
         }
 
         // Apply filters
-        if (!empty($filters['doctor_profile_id'])) {
+        if (! empty($filters['doctor_profile_id'])) {
             $query->where('appointments.doctor_profile_id', $filters['doctor_profile_id']);
         }
 
-        if (!empty($filters['patient_id'])) {
+        if (! empty($filters['patient_id'])) {
             $query->where('appointments.patient_id', $filters['patient_id']);
         }
 
-        if (!empty($filters['status'])) {
+        if (! empty($filters['status'])) {
             $query->where('appointments.status', $filters['status']);
         }
 
@@ -100,11 +100,11 @@ class AppointmentRepository implements AppointmentRepositoryInterface
         $startDate = $filters['start_date'] ?? null;
         $endDate = $filters['end_date'] ?? null;
 
-        if (!$startDate && !$endDate) {
+        if (! $startDate && ! $endDate) {
             $startDate = $endDate = now()->toDateString();
-        } elseif ($startDate && !$endDate) {
+        } elseif ($startDate && ! $endDate) {
             $endDate = $startDate;
-        } elseif (!$startDate && $endDate) {
+        } elseif (! $startDate && $endDate) {
             $startDate = $endDate;
         }
 
@@ -116,30 +116,30 @@ class AppointmentRepository implements AppointmentRepositoryInterface
         $query->orderBy('created_at', 'desc');
 
         return datatables()->of($query)
-            ->filterColumn('doctor_name', function($query, $keyword) {
-                $query->where(function($q) use ($keyword) {
+            ->filterColumn('doctor_name', function ($query, $keyword) {
+                $query->where(function ($q) use ($keyword) {
                     $q->where('doctor_profiles.name', 'like', "%{$keyword}%");
                 });
             })
-            ->filterColumn('patient_name', function($query, $keyword) {
-                $query->where(function($q) use ($keyword) {
+            ->filterColumn('patient_name', function ($query, $keyword) {
+                $query->where(function ($q) use ($keyword) {
                     $q->where('users.name', 'like', "%{$keyword}%");
                 });
             })
-            ->filterColumn('appointment_date', function($query, $keyword) {
-                $query->where(function($q) use ($keyword) {
+            ->filterColumn('appointment_date', function ($query, $keyword) {
+                $query->where(function ($q) use ($keyword) {
                     $q->whereRaw("DATE_FORMAT(daily_periods.date, '%Y-%m-%d') LIKE ?", ["%{$keyword}%"])
-                      ->orWhereRaw("DATE_FORMAT(daily_periods.date, '%d/%m/%Y') LIKE ?", ["%{$keyword}%"]);
+                        ->orWhereRaw("DATE_FORMAT(daily_periods.date, '%d/%m/%Y') LIKE ?", ["%{$keyword}%"]);
                 });
             })
-            ->filterColumn('appointment_time', function($query, $keyword) {
-                $query->where(function($q) use ($keyword) {
+            ->filterColumn('appointment_time', function ($query, $keyword) {
+                $query->where(function ($q) use ($keyword) {
                     $q->where('daily_periods.start_time', 'like', "%{$keyword}%")
-                      ->orWhere('daily_periods.end_time', 'like', "%{$keyword}%");
+                        ->orWhere('daily_periods.end_time', 'like', "%{$keyword}%");
                 });
             })
-            ->filterColumn('status', function($query, $keyword) {
-                $query->where(function($q) use ($keyword) {
+            ->filterColumn('status', function ($query, $keyword) {
+                $query->where(function ($q) use ($keyword) {
                     $q->where('appointments.status', 'like', "%{$keyword}%");
                 });
             })
@@ -153,7 +153,7 @@ class AppointmentRepository implements AppointmentRepositoryInterface
                 return $item->period ? $item->period->date->format('Y-m-d') : 'N/A';
             })
             ->addColumn('appointment_time', function ($item) {
-                return $item->period ? $item->period->start_time . ' - ' . $item->period->end_time : 'N/A';
+                return $item->period ? $item->period->start_time.' - '.$item->period->end_time : 'N/A';
             })
             ->addColumn('visit_type', function ($item) {
                 return $item->visit_type_label;
@@ -171,10 +171,11 @@ class AppointmentRepository implements AppointmentRepositoryInterface
                     'completed' => 'primary',
                 ];
                 $class = $statusClasses[$item->status] ?? 'secondary';
-                return '<span class="badge bg-' . $class . '">' . ucfirst($item->status) . '</span>';
+
+                return '<span class="badge bg-'.$class.'">'.ucfirst($item->status).'</span>';
             })
-            ->addColumn('action', fn($item) => $this->actionButtons($item))
-            ->addColumn('prescription_actions', fn($item) => $this->prescriptionButtons($item))
+            ->addColumn('action', fn ($item) => $this->actionButtons($item))
+            ->addColumn('prescription_actions', fn ($item) => $this->prescriptionButtons($item))
             ->rawColumns(['status', 'action', 'prescription_actions'])
             ->make(true);
     }
@@ -185,11 +186,11 @@ class AppointmentRepository implements AppointmentRepositoryInterface
             DB::beginTransaction();
 
             // Set default values if not provided
-            if (!isset($data['status'])) {
+            if (! isset($data['status'])) {
                 $data['status'] = Appointment::STATUS_CONFIRMED;
             }
 
-            if (!isset($data['visit_type'])) {
+            if (! isset($data['visit_type'])) {
                 $data['visit_type'] = 0; // Default to Initial Visit
             }
 
@@ -213,6 +214,7 @@ class AppointmentRepository implements AppointmentRepositoryInterface
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
+
             return response()->json([
                 'status' => 'error',
                 'message' => $e->getMessage(),
@@ -231,7 +233,7 @@ class AppointmentRepository implements AppointmentRepositoryInterface
             $oldPeriodId = $appointment->period_id;
 
             // Only update fields that are provided
-            $appointment->update(array_filter($data, function($value) {
+            $appointment->update(array_filter($data, function ($value) {
                 return $value !== null;
             }));
 
@@ -268,6 +270,7 @@ class AppointmentRepository implements AppointmentRepositoryInterface
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
+
             return response()->json([
                 'status' => 'error',
                 'message' => $e->getMessage(),
@@ -295,11 +298,11 @@ class AppointmentRepository implements AppointmentRepositoryInterface
         $query = Appointment::where('doctor_profile_id', $doctorProfileId)
             ->with(['patient.user', 'period']);
 
-        if (!empty($filters['status'])) {
+        if (! empty($filters['status'])) {
             $query->where('status', $filters['status']);
         }
 
-        if (!empty($filters['start_date']) && !empty($filters['end_date'])) {
+        if (! empty($filters['start_date']) && ! empty($filters['end_date'])) {
             $query->whereHas('period', function ($q) use ($filters) {
                 $q->whereBetween('date', [$filters['start_date'], $filters['end_date']]);
             });
@@ -313,7 +316,7 @@ class AppointmentRepository implements AppointmentRepositoryInterface
         $query = Appointment::where('patient_id', $patientId)
             ->with(['doctorProfile.clinicUser', 'doctorProfile.speciality', 'period']);
 
-        if (!empty($filters['status'])) {
+        if (! empty($filters['status'])) {
             $query->where('status', $filters['status']);
         }
 
@@ -336,6 +339,7 @@ class AppointmentRepository implements AppointmentRepositoryInterface
             $this->assertAppointmentBelongsToClinic($appointment);
 
             $appointment->confirm();
+
             return $appointment->fresh();
         });
     }
@@ -347,6 +351,7 @@ class AppointmentRepository implements AppointmentRepositoryInterface
             $this->assertAppointmentBelongsToClinic($appointment);
 
             $appointment->cancel($reason, $cancelledBy);
+
             return $appointment->fresh();
         });
     }
@@ -462,7 +467,7 @@ class AppointmentRepository implements AppointmentRepositoryInterface
             })
             ->exists();
 
-        if (!$belongs) {
+        if (! $belongs) {
             throw new \Exception(__('Unauthorized action'));
         }
     }
@@ -477,18 +482,28 @@ class AppointmentRepository implements AppointmentRepositoryInterface
     {
         // add prescription
         if ($item->prescription) {
-            $prescriptionButton = '<a href="' . route('clinic.prescriptions.edit', $item->prescription->id) . '" class="btn btn-sm btn-warning text-white" title="Edit Prescription">
+            $prescriptionButton = '<a href="'.route('clinic.prescriptions.edit', $item->prescription->id).'" class="btn btn-sm btn-warning text-white" title="Edit Prescription">
             '.__('Edit Prescription').'
             <i class="fa fa-edit"></i></a>';
+            $printButton = '<a href="'.route('clinic.prescriptions.print', $item->id).'" target="_blank" class="btn btn-sm btn-info text-white" title="Print Prescription">
+            '.__('Print').'
+            <i class="fa fa-print"></i></a>';
+            $downloadButton = '<a href="'.route('clinic.prescriptions.download', $item->id).'" class="btn btn-sm btn-success text-white" title="Download PDF">
+            '.__('Download PDF').'
+            <i class="fa fa-download"></i></a>';
         } else {
-            $prescriptionButton = '<a href="' . route('clinic.prescriptions.create', $item->id) . '" class="btn btn-sm btn-primary" title="Add Prescription">
+            $prescriptionButton = '<a href="'.route('clinic.prescriptions.create', $item->id).'" class="btn btn-sm btn-primary" title="Add Prescription">
             '.__('Add Prescription').'
             <i class="fa fa-plus"></i></a>';
+            $printButton = '';
+            $downloadButton = '';
         }
 
         return <<<HTML
-        <div class="d-flex gap-2">
+        <div class="d-flex flex-column gap-2">
             {$prescriptionButton}
+            {$printButton}
+            {$downloadButton}
         </div>
         HTML;
     }
@@ -516,5 +531,61 @@ class AppointmentRepository implements AppointmentRepositoryInterface
             </button>
         </div>
         HTML;
+    }
+
+    /**
+     * Generate prescription view/PDF for an appointment
+     *
+     * @param  int  $appointmentId
+     * @param  bool  $asPdf
+     * @return \Illuminate\View\View|\Illuminate\Http\Response
+     */
+    public function generatePrescription($appointmentId, $asPdf = false)
+    {
+        $appointment = $this->find($appointmentId);
+        $this->assertAppointmentBelongsToClinic($appointment);
+
+        // Load all necessary relationships
+        $appointment->load([
+            'prescription.items',
+            'patient.user',
+            'doctorProfile',
+            'doctorProfile.clinicUser.clinic',
+            'period',
+        ]);
+
+        // Get clinic information
+        $clinic = $appointment->doctorProfile->clinicUser->clinic ?? auth('clinic')->user()->clinic;
+
+        // Get patient information
+        $patient = $appointment->patient;
+        $patientUser = $patient->user;
+
+        // Get doctor information
+        $doctor = $appointment->doctorProfile;
+
+        // Get prescription if exists
+        $prescription = $appointment->prescription;
+
+        $data = compact(
+            'appointment',
+            'clinic',
+            'patient',
+            'patientUser',
+            'doctor',
+            'prescription'
+        );
+
+        if ($asPdf) {
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('backend.dashboards.clinic.pages.prescriptions.print', $data);
+            $pdf->setPaper('a4', 'portrait');
+            $pdf->setOption('enable-local-file-access', true);
+
+            $fileName = 'prescription_'.$appointment->id.'_'.date('Y-m-d').'.pdf';
+
+            return $pdf->download($fileName);
+        }
+
+        return view('backend.dashboards.clinic.pages.prescriptions.print', $data);
     }
 }

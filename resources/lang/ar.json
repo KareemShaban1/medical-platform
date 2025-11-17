@@ -1758,8 +1758,14 @@
     "years of experience": "years of experience",
     "your cart is empty": "سلة التسوق فارغة",
     "Course Enrollments": "اشتراكات الدورات",
-    "doctor register": "تسجيل حساب طبيب",
-    "doctor login": "تسجيل الدخول كطبيب",
-    "Logout": "تسجيل الخروج"
+    "Patient Name": "اسم المريض",
+    "Age": "العمر",
+    "Additional Notes": "الملاحظات الإضافية",
+    "No prescription items available": "لا يوجد عناصر في الروشتة",
+    "Download PDF": "تحميل PDF",
+    "Print Prescription": "طباعة الروشتة",
+    "Download Prescription": "تحميل الروشتة",
+    "Drugs": "الأدوية"
+
 }
 

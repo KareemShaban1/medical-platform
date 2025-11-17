@@ -7,6 +7,7 @@ use App\Models\Prescription;
 use App\Http\Requests\Clinic\Prescription\StorePrescriptionRequest;
 use App\Http\Requests\Clinic\Prescription\UpdatePrescriptionRequest;
 use App\Interfaces\Clinic\PrescriptionRepositoryInterface;
+use App\Interfaces\Clinic\AppointmentRepositoryInterface;
 use App\Models\Appointment;
 use Illuminate\Http\Request;
 
@@ -14,10 +15,14 @@ use Illuminate\Http\Request;
 class PrescriptionController extends Controller
 {
     protected $prescriptionRepo;
+    protected $appointmentRepo;
 
-    public function __construct(PrescriptionRepositoryInterface $prescriptionRepo)
-    {
+    public function __construct(
+        PrescriptionRepositoryInterface $prescriptionRepo,
+        AppointmentRepositoryInterface $appointmentRepo
+    ) {
         $this->prescriptionRepo = $prescriptionRepo;
+        $this->appointmentRepo = $appointmentRepo;
     }
 
     public function index()
@@ -92,5 +97,29 @@ class PrescriptionController extends Controller
     public function forceDelete($id)
     {
         return $this->prescriptionRepo->forceDelete($id);
+    }
+
+    /**
+     * Generate prescription print view for an appointment
+     *
+     * @param int $appointmentId
+     * @param Request $request
+     * @return \Illuminate\View\View|\Barryvdh\DomPDF\PDF
+     */
+    public function print($appointmentId, Request $request)
+    {
+        $asPdf = $request->has('pdf') || $request->get('format') === 'pdf';
+        return $this->appointmentRepo->generatePrescription($appointmentId, $asPdf);
+    }
+
+    /**
+     * Download prescription as PDF
+     *
+     * @param int $appointmentId
+     * @return \Barryvdh\DomPDF\PDF
+     */
+    public function downloadPdf($appointmentId)
+    {
+        return $this->appointmentRepo->generatePrescription($appointmentId, true);
     }
 }

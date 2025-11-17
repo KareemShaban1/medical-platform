@@ -360,6 +360,8 @@ Route::group(
         Route::get('prescriptions/{id}/edit', [PrescriptionController::class, 'edit'])->name('prescriptions.edit');
         Route::put('prescriptions/{id}', [PrescriptionController::class, 'update'])->name('prescriptions.update');
         Route::delete('prescriptions/{id}', [PrescriptionController::class, 'destroy'])->name('prescriptions.destroy');
+        Route::get('prescriptions/print/{appointmentId}', [PrescriptionController::class, 'print'])->name('prescriptions.print');
+        Route::get('prescriptions/download/{appointmentId}', [PrescriptionController::class, 'downloadPdf'])->name('prescriptions.download');
     });
 
 
