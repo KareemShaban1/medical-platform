@@ -106,7 +106,16 @@ class SupplierController extends Controller
 				$query->orderBy('name', 'asc');
 		}
 
-		$suppliers = $query->paginate(12);
+		// Get current page from request
+		$currentPage = $request->get('page', 1);
+
+		$suppliers = $query->paginate(12, ['*'], 'page', $currentPage);
+
+		// Set paginator path to suppliers index route (for proper URL generation)
+		$suppliers->setPath(route('suppliers'));
+
+		// Append filter parameters to pagination URLs
+		$suppliers->appends($request->except('page'));
 
 		if ($request->ajax()) {
 			return response()->json([

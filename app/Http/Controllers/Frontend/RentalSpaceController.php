@@ -165,7 +165,17 @@ class RentalSpaceController extends Controller
             $perPage = (int) ($request->get('per_page', 12));
             $perPage = $perPage > 0 ? min($perPage, 100) : 12;
 
-            $rentalSpaces = $query->paginate($perPage);
+            // Get current page from request
+            $currentPage = $request->get('page', 1);
+
+            // Paginate with current page
+            $rentalSpaces = $query->paginate($perPage, ['*'], 'page', $currentPage);
+
+            // Set paginator path to rental-spaces index route (for proper URL generation)
+            $rentalSpaces->setPath(route('rental-spaces'));
+
+            // Append filter parameters to pagination URLs
+            $rentalSpaces->appends($request->except('page'));
 
             if ($request->ajax()) {
                 return response()->json([

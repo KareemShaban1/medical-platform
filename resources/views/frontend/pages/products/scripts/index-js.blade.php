@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	const searchInput = document.getElementById('search');
 	const heroSearch = document.getElementById('heroSearch');
 	const categorySelect = document.getElementById('category');
+	const priceRangeSelect = document.getElementById('priceRange');
 	const priceRadios = document.querySelectorAll('input[name="price"]');
 	const sortSelect = document.getElementById('sort');
 	const clearFiltersBtn = document.getElementById('clearFilters');
@@ -15,28 +16,40 @@ document.addEventListener('DOMContentLoaded', function() {
 	const listViewBtn = document.getElementById('listView');
 
 	let filterTimeout;
+	let currentPage = 1;
 
-	function filterProducts() {
+	function filterProducts(page = 1) {
 		// Clear existing timeout
 		clearTimeout(filterTimeout);
+		currentPage = page;
 
-		// Add loading state
-		productsGrid.innerHTML =
-			'<div class="col-span-full flex justify-center items-center py-8"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div></div>';
+		// Show loading spinner
+		document.getElementById('loadingSpinner').classList.remove('hidden');
+		productsGrid.style.opacity = '0.5';
+		productsGrid.style.pointerEvents = 'none';
 
 		// Set timeout for search input to avoid too many requests
 		filterTimeout = setTimeout(() => {
 			const formData = new FormData();
 
 			// Get filter values
-			if (searchInput.value) formData.append('search',
-				searchInput.value);
-			if (heroSearch.value) formData.append('search',
-				heroSearch.value);
+			const searchValue = searchInput.value ||
+				heroSearch.value;
+			if (searchValue) formData.append('search',
+				searchValue);
+
 			if (categorySelect.value) formData.append(
 				'category', categorySelect
 				.value);
 
+			// Handle priceRange select (highest/lowest)
+			if (priceRangeSelect && priceRangeSelect.value) {
+				formData.append('priceRange',
+					priceRangeSelect
+					.value);
+			}
+
+			// Handle price radio buttons (if they exist)
 			const selectedPrice = document.querySelector(
 				'input[name="price"]:checked');
 			if (selectedPrice) formData.append('price',
@@ -44,6 +57,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
 			if (sortSelect.value) formData.append('sort',
 				sortSelect.value);
+
+			// Add page number
+			formData.append('page', page);
 
 			// Make AJAX request
 			fetch('{{ route("products.filter") }}', {
@@ -62,20 +78,49 @@ document.addEventListener('DOMContentLoaded', function() {
 				})
 				.then(response => response.json())
 				.then(data => {
+					document.getElementById(
+							'loadingSpinner'
+							)
+						.classList
+						.add(
+							'hidden');
+					productsGrid.style
+						.opacity =
+						'1';
+					productsGrid.style
+						.pointerEvents =
+						'auto';
+
 					if (data.html !==
 						'') {
 						productsGrid
 							.innerHTML =
 							data
 							.html;
-						paginationContainer
-							.innerHTML =
-							data
-							.pagination;
+
+						// Update pagination
+						if (data
+							.pagination) {
+							paginationContainer
+								.innerHTML =
+								data
+								.pagination;
+							// Re-attach pagination click handlers
+							attachPaginationHandlers
+								();
+						}
+
 						resultsCount
 							.textContent =
 							data
 							.count;
+
+						// Scroll to top of products section
+						productsGrid
+							.scrollIntoView({
+								behavior: 'smooth',
+								block: 'start'
+							});
 					} else {
 						productsGrid
 							.innerHTML =
@@ -91,7 +136,19 @@ document.addEventListener('DOMContentLoaded', function() {
 				.catch(error => {
 					console.error('Error:',
 						error
-					);
+						);
+					document.getElementById(
+							'loadingSpinner'
+							)
+						.classList
+						.add(
+							'hidden');
+					productsGrid.style
+						.opacity =
+						'1';
+					productsGrid.style
+						.pointerEvents =
+						'auto';
 					productsGrid
 						.innerHTML =
 						'<div class="col-span-full text-center py-8 text-red-500">Error loading products</div>';
@@ -99,20 +156,81 @@ document.addEventListener('DOMContentLoaded', function() {
 		}, searchInput === document.activeElement ? 500 : 0);
 	}
 
+	// Attach click handlers to pagination links
+	function attachPaginationHandlers() {
+		if (!paginationContainer) return;
+
+		const paginationLinks = paginationContainer.querySelectorAll('a[href]');
+		paginationLinks.forEach(link => {
+			// Remove existing listeners to avoid duplicates
+			const newLink = link.cloneNode(true);
+			link.parentNode.replaceChild(newLink, link);
+
+			newLink.addEventListener('click', function(e) {
+				e.preventDefault();
+				const href = this
+					.getAttribute(
+						'href'
+						);
+				if (!href) return;
+
+				// Extract page number from URL
+				let page = 1;
+				try {
+					const url =
+						new URL(href,
+							window
+							.location
+							.origin
+							);
+					page = parseInt(url.searchParams
+							.get(
+								'page')
+							) ||
+						1;
+				} catch (e) {
+					// Fallback: try to extract page from href string
+					const match =
+						href
+						.match(
+							/[?&]page=(\d+)/);
+					if (
+						match) {
+						page = parseInt(match[
+							1]);
+					}
+				}
+				filterProducts(
+				page);
+			});
+		});
+	}
+
+	// Initial attachment of pagination handlers
+	if (paginationContainer) {
+		attachPaginationHandlers();
+	}
+
 	// Event listeners
-	searchInput.addEventListener('input', filterProducts);
-	heroSearch.addEventListener('input', filterProducts);
-	categorySelect.addEventListener('change', filterProducts);
-	priceRadios.forEach(radio => radio.addEventListener('change', filterProducts));
-	sortSelect.addEventListener('change', filterProducts);
+	searchInput.addEventListener('input', () => filterProducts(1));
+	heroSearch.addEventListener('input', () => filterProducts(1));
+	categorySelect.addEventListener('change', () => filterProducts(1));
+	if (priceRangeSelect) {
+		priceRangeSelect.addEventListener('change', () => filterProducts(1));
+	}
+	priceRadios.forEach(radio => radio.addEventListener('change', () => filterProducts(1)));
+	sortSelect.addEventListener('change', () => filterProducts(1));
 
 	clearFiltersBtn.addEventListener('click', function() {
 		searchInput.value = '';
 		heroSearch.value = '';
 		categorySelect.value = '';
+		if (priceRangeSelect) {
+			priceRangeSelect.value = '';
+		}
 		priceRadios.forEach(radio => radio.checked = false);
 		sortSelect.value = 'name';
-		filterProducts();
+		filterProducts(1);
 	});
 
 	// View toggle
@@ -180,12 +298,13 @@ document.addEventListener('DOMContentLoaded', function() {
 	function updateActiveFilters() {
 		activeFilterCount = 0;
 
-		if (searchInput.value) activeFilterCount++;
+		if (searchInput.value || heroSearch.value) activeFilterCount++;
 		if (categorySelect.value) activeFilterCount++;
+		if (priceRangeSelect && priceRangeSelect.value) activeFilterCount++;
 		if (document.querySelector('input[name="price"]:checked') && document
 			.querySelector('input[name="price"]:checked').value)
 			activeFilterCount++;
-		if (sortSelect.value && sortSelect.value !== 'newest') activeFilterCount++;
+		if (sortSelect.value && sortSelect.value !== 'name') activeFilterCount++;
 
 		if (activeFilterCount > 0) {
 			activeFiltersCount.classList.remove('hidden');
@@ -197,7 +316,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
 	// Add updateActiveFilters to all filter change events
 	searchInput.addEventListener('input', updateActiveFilters);
+	heroSearch.addEventListener('input', updateActiveFilters);
 	categorySelect.addEventListener('change', updateActiveFilters);
+	if (priceRangeSelect) {
+		priceRangeSelect.addEventListener('change', updateActiveFilters);
+	}
 	priceRadios.forEach(radio => radio.addEventListener('change', updateActiveFilters));
 	sortSelect.addEventListener('change', updateActiveFilters);
 

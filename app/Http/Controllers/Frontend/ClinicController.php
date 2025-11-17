@@ -61,7 +61,16 @@ class ClinicController extends Controller
             $query->where('area_id', $request->area_id);
         }
 
-		$clinics = $query->paginate(12);
+		// Get current page from request
+		$currentPage = $request->get('page', 1);
+
+		$clinics = $query->paginate(12, ['*'], 'page', $currentPage);
+
+		// Set paginator path to clinics index route (for proper URL generation)
+		$clinics->setPath(route('clinics'));
+
+		// Append filter parameters to pagination URLs
+		$clinics->appends($request->except('page'));
 
 		if ($request->ajax()) {
 			return response()->json([
