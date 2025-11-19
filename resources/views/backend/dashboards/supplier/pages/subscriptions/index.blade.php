@@ -44,7 +44,7 @@
                                 {{ $subscription->end_date?->format('M d, Y') ?? __('Lifetime') }}
                                 @if($subscription->end_date)
                                     <span class="badge bg-info ms-2">
-                                        {{ now()->diffInDays($subscription->end_date, false) }} {{ __('days remaining') }}
+                                        {{ number_format(now()->diffInDays($subscription->end_date, false), 2) }} {{ __('days remaining') }}
                                     </span>
                                 @endif
                             </p>
@@ -60,23 +60,12 @@
                                 </span>
                             </p>
                         </div>
-                        <div class="col-md-6">
-                            <p class="text-muted mb-1">{{ __('Auto Renew') }}</p>
-                            <p class="mb-0">
-                                <span class="badge bg-{{ $subscription->auto_renew ? 'success' : 'secondary' }}">
-                                    {{ $subscription->auto_renew ? __('Enabled') : __('Disabled') }}
-                                </span>
-                            </p>
-                        </div>
                     </div>
 
                     <div class="d-flex gap-2">
                         <a href="{{ route('home') }}#subscriptions-plans" class="btn btn-primary">
                             <i class="mdi mdi-arrow-up"></i> {{ __('Upgrade Plan') }}
                         </a>
-                        <button onclick="cancelSubscription()" class="btn btn-outline-danger">
-                            <i class="mdi mdi-cancel"></i> {{ __('Cancel Subscription') }}
-                        </button>
                     </div>
                 </div>
             </div>
@@ -150,48 +139,4 @@
 @endsection
 
 @push('scripts')
-<script>
-function cancelSubscription() {
-    Swal.fire({
-        title: '{{ __('Are you sure?') }}',
-        text: '{{ __('This will cancel your subscription. You will lose access to premium features at the end of your billing period.') }}',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: '{{ __('Yes, cancel it!') }}',
-        cancelButtonText: '{{ __('Keep Subscription') }}',
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#3085d6',
-    }).then((result) => {
-        if (result.isConfirmed) {
-            $.ajax({
-                url: '{{ route('supplier.subscriptions.cancel') }}',
-                method: 'POST',
-                data: {
-                    _token: '{{ csrf_token() }}'
-                },
-                success: function(resp) {
-                    Swal.fire({
-                        title: '{{ __('Canceled!') }}',
-                        text: resp.message || '{{ __('Subscription canceled successfully') }}',
-                        icon: 'success',
-                        confirmButtonColor: '#079184',
-                    }).then(() => {
-                        window.location.reload();
-                    });
-                },
-                error: function(xhr) {
-                    const error = xhr.responseJSON?.message || '{{ __('Failed to cancel subscription') }}';
-                    Swal.fire({
-                        title: '{{ __('Error') }}',
-                        text: error,
-                        icon: 'error',
-                        confirmButtonColor: '#079184',
-                    });
-                }
-            });
-        }
-    });
-}
-</script>
 @endpush
-

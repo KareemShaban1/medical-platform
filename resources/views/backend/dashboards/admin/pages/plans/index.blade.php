@@ -86,8 +86,12 @@ $(document).ready(function() {
     });
 
     window.createPlan = function() {
-        $.get('{{ route('admin.plans.create') }}', function(html) {
-            $('#plan-modal').html(html).modal('show');
+        $.get('{{ route('admin.plans.create') }}', function(resp) {
+            if (resp.success && resp.html) {
+                $('#plan-modal').html(resp.html).modal('show');
+            } else {
+                $('#plan-modal').html(resp).modal('show');
+            }
         });
     };
 
@@ -150,4 +154,3 @@ $(document).ready(function() {
 });
 </script>
 @endpush
-

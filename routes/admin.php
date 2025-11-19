@@ -225,6 +225,7 @@ Route::group(
 
         // Subscription Management
         Route::group(['prefix' => 'subscriptions'], function () {
+            Route::get('analytics', [\App\Http\Controllers\Backend\Dashboards\Admin\SubscriptionManagementController::class, 'analytics'])->name('subscriptions.analytics');
             // Plans Management
             Route::get('plans/data', [\App\Http\Controllers\Backend\Dashboards\Admin\PlanController::class, 'data'])->name('plans.data');
             Route::get('plans/create', [\App\Http\Controllers\Backend\Dashboards\Admin\PlanController::class, 'create'])->name('plans.create');

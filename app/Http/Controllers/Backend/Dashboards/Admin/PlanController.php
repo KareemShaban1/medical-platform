@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Services\Subscription\PlanService;
 use App\Models\Plan;
 use Illuminate\Http\Request;
+use Illuminate\Database\QueryException;
 use Yajra\DataTables\Facades\DataTables;
 
 class PlanController extends Controller
@@ -197,12 +198,19 @@ class PlanController extends Controller
             'duration_in_days' => 'nullable|integer|min:1',
             'is_active' => 'boolean',
             'description' => 'nullable|string',
-            'features' => 'required|array',
-            'features.*.feature_id' => 'required|exists:features_master,id',
-            'features.*.is_enabled' => 'boolean',
-            'features.*.value' => 'nullable|string',
-            'features.*.is_limited' => 'boolean',
         ]);
+
+        // Prevent duplicate plan_type + level combinations
+        $duplicateExists = Plan::where('plan_type', $validated['plan_type'])
+            ->where('level', $validated['level'])
+            ->exists();
+
+        if ($duplicateExists) {
+            return response()->json([
+                'status' => 'error',
+                'message' => __('A plan with this type and level already exists.'),
+            ], 422);
+        }
 
         try {
             $plan = $this->planService->createPlan(
@@ -214,18 +222,30 @@ class PlanController extends Controller
                     'duration_in_days' => $validated['duration_in_days'] ?? null,
                     'is_active' => $validated['is_active'] ?? true,
                     'description' => $validated['description'] ?? null,
-                ],
-                $validated['features']
+                ]
             );
 
             return response()->json([
                 'status' => 'success',
                 'message' => __('Plan created successfully')
             ]);
+        } catch (QueryException $e) {
+            // Handle unique constraint or other DB-level issues gracefully
+            if ($e->getCode() === '23000') {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => __('A plan with this type and level already exists.'),
+                ], 422);
+            }
+
+            return response()->json([
+                'status' => 'error',
+                'message' => __('Failed to create plan.'),
+            ], 422);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => $e->getMessage()
+                'message' => __('Failed to create plan.'),
             ], 422);
         }
     }
@@ -259,12 +279,20 @@ class PlanController extends Controller
             'duration_in_days' => 'nullable|integer|min:1',
             'is_active' => 'boolean',
             'description' => 'nullable|string',
-            'features' => 'sometimes|array',
-            'features.*.feature_id' => 'required|exists:features_master,id',
-            'features.*.is_enabled' => 'boolean',
-            'features.*.value' => 'nullable|string',
-            'features.*.is_limited' => 'boolean',
         ]);
+
+        // Prevent duplicate plan_type + level combinations (excluding current plan)
+        $duplicateExists = Plan::where('plan_type', $validated['plan_type'])
+            ->where('level', $validated['level'])
+            ->where('id', '!=', $plan->id)
+            ->exists();
+
+        if ($duplicateExists) {
+            return response()->json([
+                'status' => 'error',
+                'message' => __('A plan with this type and level already exists.'),
+            ], 422);
+        }
 
         try {
             $plan = $this->planService->updatePlan(
@@ -277,18 +305,29 @@ class PlanController extends Controller
                     'duration_in_days' => $validated['duration_in_days'] ?? null,
                     'is_active' => $validated['is_active'] ?? true,
                     'description' => $validated['description'] ?? null,
-                ],
-                $validated['features'] ?? []
+                ]
             );
 
             return response()->json([
                 'status' => 'success',
                 'message' => __('Plan updated successfully')
             ]);
+        } catch (QueryException $e) {
+            if ($e->getCode() === '23000') {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => __('A plan with this type and level already exists.'),
+                ], 422);
+            }
+
+            return response()->json([
+                'status' => 'error',
+                'message' => __('Failed to update plan.'),
+            ], 422);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => $e->getMessage()
+                'message' => __('Failed to update plan.'),
             ], 422);
         }
     }
@@ -311,4 +350,3 @@ class PlanController extends Controller
         }
     }
 }
-

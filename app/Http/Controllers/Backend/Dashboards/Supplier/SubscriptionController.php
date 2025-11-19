@@ -7,8 +7,15 @@ use App\Services\Subscription\SubscriptionService;
 use App\Services\Subscription\PlanService;
 use App\Services\Subscription\SubscriptionFeatureService;
 use App\Models\Plan;
+use App\Models\Admin;
+use App\Notifications\SubscriptionCreatedNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Notification;
+use App\Mail\SubscriptionCreatedUserMail;
+use App\Mail\SubscriptionCreatedAdminMail;
 
 class SubscriptionController extends Controller
 {
@@ -69,7 +76,41 @@ class SubscriptionController extends Controller
             $subscription = $this->subscriptionService->subscribe($supplier, $plan, [
                 'status' => 'active',
                 'auto_renew' => $request->boolean('auto_renew', false),
+                'preserve_dates' => true,
             ]);
+
+            // Notify supplier user
+            $user = Auth::guard('supplier')->user();
+            if ($user && !empty($user->email)) {
+                Mail::to($user->email)->send(new SubscriptionCreatedUserMail($subscription));
+            }
+
+            // Notify admin by mail
+            $adminEmail = config('mail.admin_address') ?? config('mail.from.address');
+            if ($adminEmail) {
+                Mail::to($adminEmail)->send(new SubscriptionCreatedAdminMail($subscription));
+            }
+
+            // Store admin DB notifications
+            $admins = Admin::where('status', true)->get();
+            if ($admins->count()) {
+                Notification::send($admins, new SubscriptionCreatedNotification($subscription, true));
+
+                Log::info('subscription.db_notification.admin', [
+                    'context' => 'supplier_subscribe',
+                    'subscription_id' => $subscription->id,
+                    'plan_id' => $plan->id,
+                    'admin_ids' => $admins->pluck('id')->all(),
+                    'status' => 'stored_in_database',
+                ]);
+            } else {
+                Log::warning('subscription.db_notification.admin_skipped', [
+                    'context' => 'supplier_subscribe',
+                    'subscription_id' => $subscription->id,
+                    'plan_id' => $plan->id,
+                    'reason' => 'no_active_admins',
+                ]);
+            }
 
             return response()->json([
                 'status' => 'success',
@@ -130,4 +171,3 @@ class SubscriptionController extends Controller
         ]);
     }
 }
-

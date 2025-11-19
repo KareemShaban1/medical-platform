@@ -216,15 +216,15 @@
 		<div class="flex justify-center gap-4 mb-8">
 			<button onclick="showPlans('doctor')"
 				class="px-6 py-3 rounded-lg font-semibold transition plan-type-btn {{ $planType === 'doctor' ? 'bg-primary-gradient text-white' : 'bg-white text-gray-700 hover:bg-gray-100' }}">
-				<i class="fas fa-user-md mr-2"></i>{{ __('Doctor Plans') }}
+				<i class="fas fa-user-md mr-2"></i>{{ __('doctor plans') }}
 			</button>
 			<button onclick="showPlans('clinic')"
 				class="px-6 py-3 rounded-lg font-semibold transition plan-type-btn {{ $planType === 'clinic' ? 'bg-primary-gradient text-white' : 'bg-white text-gray-700 hover:bg-gray-100' }}">
-				<i class="fas fa-hospital mr-2"></i>{{ __('Clinic Plans') }}
+				<i class="fas fa-hospital mr-2"></i>{{ __('clinic plans') }}
 			</button>
 			<button onclick="showPlans('supplier')"
 				class="px-6 py-3 rounded-lg font-semibold transition plan-type-btn {{ $planType === 'supplier' ? 'bg-primary-gradient text-white' : 'bg-white text-gray-700 hover:bg-gray-100' }}">
-				<i class="fas fa-truck mr-2"></i>{{ __('Supplier Plans') }}
+				<i class="fas fa-truck mr-2"></i>{{ __('supplier plans') }}
 			</button>
 		</div>
 

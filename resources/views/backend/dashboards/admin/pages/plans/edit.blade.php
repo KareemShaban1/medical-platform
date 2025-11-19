@@ -53,56 +53,6 @@
                         <label class="form-check-label" for="is_active">{{ __('Active') }}</label>
                     </div>
                 </div>
-                <hr>
-                <h6 class="mb-3">{{ __('Plan Features') }}</h6>
-                <div id="features-container" class="border rounded p-3" style="max-height: 400px; overflow-y: auto;">
-                    @php
-                        $planFeatureMap = $plan->planFeatures->keyBy('feature_id');
-                    @endphp
-                    @foreach($features as $feature)
-                    @php
-                        $planFeature = $planFeatureMap->get($feature->id);
-                        $isEnabled = $planFeature && $planFeature->is_enabled;
-                        $isLimited = $planFeature && $planFeature->is_limited;
-                    @endphp
-                    <div class="mb-3 p-3 border rounded feature-item">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div class="flex-grow-1">
-                                <h6 class="mb-1">{{ $feature->name }}</h6>
-                                <small class="text-muted">{{ $feature->code }} - {{ $feature->value_type }}</small>
-                            </div>
-                            <div class="form-check form-switch">
-                                <input type="checkbox" name="features[{{ $feature->id }}][enabled]"
-                                    class="form-check-input feature-toggle"
-                                    data-feature-id="{{ $feature->id }}"
-                                    id="feature_{{$feature->id}}"
-                                    {{ $isEnabled ? 'checked' : '' }}>
-                                <input type="hidden" name="features[{{ $feature->id }}][feature_id]" value="{{ $feature->id }}">
-                                <input type="hidden" name="features[{{ $feature->id }}][is_enabled]" value="{{ $isEnabled ? 1 : 0 }}" class="feature-enabled-input">
-                            </div>
-                        </div>
-                        <div class="feature-options mt-2" style="display: {{ $isEnabled ? 'block' : 'none' }};">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-check">
-                                        <input type="checkbox" name="features[{{ $feature->id }}][is_limited]"
-                                            class="form-check-input limit-toggle"
-                                            id="limit_{{$feature->id}}"
-                                            {{ $isLimited ? 'checked' : '' }}>
-                                        <label class="form-check-label" for="limit_{{$feature->id}}">{{ __('Limited') }}</label>
-                                    </div>
-                                </div>
-                                <div class="col-md-6 limit-value" style="display: {{ $isLimited ? 'block' : 'none' }};">
-                                    <input type="text" name="features[{{ $feature->id }}][value]"
-                                        class="form-control form-control-sm"
-                                        value="{{ $planFeature ? $planFeature->value : '' }}"
-                                        placeholder="{{ __('Limit value') }}">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    @endforeach
-                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
@@ -114,58 +64,16 @@
 
 <script>
 $(document).ready(function() {
-    // Toggle feature options when enabled
-    $(document).on('change', '.feature-toggle', function() {
-        const featureId = $(this).data('feature-id');
-        const isEnabled = $(this).is(':checked');
-        const optionsDiv = $(this).closest('.feature-item').find('.feature-options');
-        const enabledInput = $(this).closest('.feature-item').find('.feature-enabled-input');
-
-        enabledInput.val(isEnabled ? 1 : 0);
-        optionsDiv.toggle(isEnabled);
-    });
-
-    // Toggle limit value input
-    $(document).on('change', '.limit-toggle', function() {
-        const limitValue = $(this).closest('.feature-options').find('.limit-value');
-        limitValue.toggle($(this).is(':checked'));
-    });
-
-    // Handle form submission
     $('#plan-form').on('submit', function(e) {
         e.preventDefault();
         const formData = new FormData(this);
         const data = {};
 
         for (let [key, value] of formData.entries()) {
-            if (key.includes('[')) {
-                const match = key.match(/^(\w+)\[(\d+)\]\[(\w+)\]$/);
-                if (match) {
-                    const [, prefix, id, field] = match;
-                    if (!data[prefix]) data[prefix] = {};
-                    if (!data[prefix][id]) data[prefix][id] = {};
-                    data[prefix][id][field] = value;
-                }
-            } else {
-                data[key] = value;
-            }
+            data[key] = value;
         }
 
-        const features = [];
-        if (data.features) {
-            Object.keys(data.features).forEach(id => {
-                const feature = data.features[id];
-                if (feature.enabled === '1' || feature.enabled === true) {
-                    features.push({
-                        feature_id: parseInt(id),
-                        is_enabled: true,
-                        value: feature.value || null,
-                        is_limited: feature.is_limited === 'on' || feature.is_limited === true
-                    });
-                }
-            });
-        }
-        data.features = features;
+        data.is_active = formData.has('is_active') ? 1 : 0;
 
         $.ajax({
             url: '{{ route('admin.plans.update', ['id' => $plan->id]) }}',

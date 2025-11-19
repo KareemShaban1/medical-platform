@@ -6,9 +6,15 @@ use App\Http\Controllers\Controller;
 use App\Services\Subscription\PlanService;
 use App\Services\Subscription\SubscriptionService;
 use App\Models\Plan;
+use App\Models\Admin;
+use App\Notifications\SubscriptionCreatedNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Notification;
+use App\Mail\SubscriptionCreatedUserMail;
+use App\Mail\SubscriptionCreatedAdminMail;
 
 class SubscriptionController extends Controller
 {
@@ -70,6 +76,7 @@ class SubscriptionController extends Controller
 
         // Determine entity based on plan type and auth
         $entity = null;
+        $requestingUser = null;
 
         if ($plan->plan_type === 'doctor') {
             if (!Auth::guard('clinic')->check()) {
@@ -86,6 +93,7 @@ class SubscriptionController extends Controller
                 ], 422);
             }
             $entity = $user;
+            $requestingUser = $user;
         } elseif ($plan->plan_type === 'clinic') {
             if (!Auth::guard('clinic')->check()) {
                 return response()->json([
@@ -101,6 +109,7 @@ class SubscriptionController extends Controller
                 ], 422);
             }
             $entity = $user->clinic;
+            $requestingUser = $user;
         } elseif ($plan->plan_type === 'supplier') {
             if (!Auth::guard('supplier')->check()) {
                 return response()->json([
@@ -108,7 +117,8 @@ class SubscriptionController extends Controller
                     'message' => __('Please login as a supplier to subscribe')
                 ], 401);
             }
-            $entity = Auth::guard('supplier')->user()->supplier;
+            $requestingUser = Auth::guard('supplier')->user();
+            $entity = $requestingUser->supplier;
         }
 
         if (!$entity) {
@@ -122,7 +132,40 @@ class SubscriptionController extends Controller
             $subscription = $this->subscriptionService->subscribe($entity, $plan, [
                 'status' => 'active',
                 'auto_renew' => $request->boolean('auto_renew', false),
+                'preserve_dates' => true,
             ]);
+
+            // Notify subscribed user
+            if ($requestingUser && !empty($requestingUser->email)) {
+                Mail::to($requestingUser->email)->send(new SubscriptionCreatedUserMail($subscription));
+            }
+
+            // Notify admin by mail
+            $adminEmail = config('mail.admin_address') ?? config('mail.from.address');
+            if ($adminEmail) {
+                Mail::to($adminEmail)->send(new SubscriptionCreatedAdminMail($subscription));
+            }
+
+            // Notify all active admins in database (Laravel notifications)
+            $admins = Admin::where('status', true)->get();
+            if ($admins->count()) {
+                Notification::send($admins, new SubscriptionCreatedNotification($subscription, true));
+
+                Log::info('subscription.db_notification.admin', [
+                    'context' => 'frontend_subscribe',
+                    'subscription_id' => $subscription->id,
+                    'plan_id' => $plan->id,
+                    'admin_ids' => $admins->pluck('id')->all(),
+                    'status' => 'stored_in_database',
+                ]);
+            } else {
+                Log::warning('subscription.db_notification.admin_skipped', [
+                    'context' => 'frontend_subscribe',
+                    'subscription_id' => $subscription->id,
+                    'plan_id' => $plan->id,
+                    'reason' => 'no_active_admins',
+                ]);
+            }
 
             return response()->json([
                 'status' => 'success',
@@ -144,4 +187,3 @@ class SubscriptionController extends Controller
         }
     }
 }
-

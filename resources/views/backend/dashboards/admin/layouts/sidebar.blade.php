@@ -405,7 +405,7 @@
             <li class="side-nav-item">
                 <a data-bs-toggle="collapse" href="#sidebarSubscriptions" aria-expanded="false"
                     aria-controls="sidebarSubscriptions" class="side-nav-link">
-                    <i class="uil-credit-card"></i>
+                    <i class="uil-money-bill"></i>
                     <span> {{ __('Subscriptions') }} </span>
                     <span class="menu-arrow"></span>
                 </a>

@@ -31,6 +31,96 @@ class SubscriptionManagementController extends Controller
         return view('backend.dashboards.admin.pages.subscriptions.index');
     }
 
+    public function analytics(Request $request)
+    {
+        $startDate = $request->get('start_date', now()->startOfMonth()->toDateString());
+        $endDate = $request->get('end_date', now()->endOfMonth()->toDateString());
+
+        $subscriptions = Subscription::with(['plan', 'subscribable'])
+            ->whereBetween('created_at', [$startDate . ' 00:00:00', $endDate . ' 23:59:59'])
+            ->get();
+
+        $totalCount = $subscriptions->count();
+        $activeCount = $subscriptions->where('status', 'active')->count();
+        $expiredCount = $subscriptions->where('status', 'expired')->count();
+        $pendingCount = $subscriptions->where('status', 'pending')->count();
+        $canceledCount = $subscriptions->where('status', 'canceled')->count();
+
+        $totalRevenue = (float) $subscriptions->sum(function ($sub) {
+            return $sub->plan?->price ?? 0;
+        });
+
+        $averageRevenue = $totalCount > 0 ? $totalRevenue / $totalCount : 0;
+
+        $subscriptionsByDate = $subscriptions->groupBy(function ($sub) {
+            return $sub->created_at->format('Y-m-d');
+        })->map->count();
+
+        $revenueByDate = $subscriptions->groupBy(function ($sub) {
+            return $sub->created_at->format('Y-m-d');
+        })->map(function ($group) {
+            return (float) $group->sum(function ($sub) {
+                return $sub->plan?->price ?? 0;
+            });
+        });
+
+        $subscriptionsByPlanType = $subscriptions->groupBy(function ($sub) {
+            return $sub->plan?->plan_type ?? __('Unknown');
+        })->map->count()->sortDesc();
+
+        $subscriptionsByStatus = [
+            'active' => $activeCount,
+            'expired' => $expiredCount,
+            'pending' => $pendingCount,
+            'canceled' => $canceledCount,
+        ];
+
+        $topPlans = $subscriptions->groupBy(function ($sub) {
+            return $sub->plan?->name ?? __('Unknown');
+        })->map(function ($group) {
+            return [
+                'count' => $group->count(),
+                'revenue' => (float) $group->sum(function ($sub) {
+                    return $sub->plan?->price ?? 0;
+                }),
+                'plan_type' => $group->first()->plan?->plan_type ?? null,
+                'level' => $group->first()->plan?->level ?? null,
+            ];
+        })->sortByDesc('count')->take(5);
+
+        $topEntities = $subscriptions->groupBy(function ($sub) {
+            $type = class_basename($sub->subscribable_type);
+            $name = $sub->subscribable->name ?? '-';
+            return $name . ' (' . $type . ')';
+        })->map(function ($group) {
+            return [
+                'count' => $group->count(),
+                'plan_type' => $group->first()->plan?->plan_type ?? null,
+            ];
+        })->sortByDesc('count')->take(5);
+
+        $recentSubscriptions = $subscriptions->sortByDesc('created_at')->take(10);
+
+        $analytics = [
+            'total_count' => $totalCount,
+            'total_revenue' => $totalRevenue,
+            'average_revenue' => $averageRevenue,
+            'status_counts' => $subscriptionsByStatus,
+            'subscriptions_by_date' => $subscriptionsByDate,
+            'revenue_by_date' => $revenueByDate,
+            'subscriptions_by_plan_type' => $subscriptionsByPlanType,
+            'top_plans' => $topPlans,
+            'top_entities' => $topEntities,
+            'recent_subscriptions' => $recentSubscriptions,
+        ];
+
+        return view('backend.dashboards.admin.pages.subscriptions.analytics', compact(
+            'analytics',
+            'startDate',
+            'endDate'
+        ));
+    }
+
     public function data(Request $request)
     {
         $query = Subscription::with(['plan', 'subscribable']);
@@ -97,20 +187,15 @@ class SubscriptionManagementController extends Controller
                 if ($days < 0) {
                     return '<span class="text-danger">Expired</span>';
                 }
-                return '<span>' . $days . ' days</span>';
+                return '<span>' . number_format($days, 2) . ' days</span>';
             })
             ->addColumn('action', function ($subscription) {
                 $id = $subscription->id;
-                $status = $subscription->status;
-                $cancelBtn = $status === 'active'
-                    ? '<a href="javascript:void(0)" onclick="cancelSubscription('.$id.')" class="btn btn-sm btn-outline-warning" title="'.__('Cancel').'"><i class="fa fa-ban"></i></a>'
-                    : '';
                 return <<<HTML
                     <div class="d-flex gap-1">
                         <a href="javascript:void(0)" onclick="extendSubscription({$id})" class="btn btn-sm btn-outline-primary" title="Extend">
                             <i class="fa fa-calendar-plus"></i>
                         </a>
-                        {$cancelBtn}
                         <a href="javascript:void(0)" onclick="deleteSubscription({$id})" class="btn btn-sm btn-outline-danger" title="Delete">
                             <i class="fa fa-trash"></i>
                         </a>
@@ -195,6 +280,7 @@ class SubscriptionManagementController extends Controller
                 'end_date' => $validated['end_date'] ?? null,
                 'status' => $validated['status'],
                 'auto_renew' => $validated['auto_renew'] ?? false,
+                'allow_downgrade' => true,
             ]);
 
             return response()->json([
@@ -273,4 +359,3 @@ class SubscriptionManagementController extends Controller
         }
     }
 }
-

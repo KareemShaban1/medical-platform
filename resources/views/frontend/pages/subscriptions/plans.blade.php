@@ -130,7 +130,7 @@
                         <i class="fas fa-check-circle mr-2"></i>{{ __('Current Plan') }}
                     </button>
                     @else
-                    <button onclick="subscribeToPlan({{ $plan->id }})"
+                    <button onclick="subscribeToPlan({{ $plan->id }}, '{{ $plan->level }}', {{ $plan->price }}, this)"
                         class="w-full py-3 bg-primary-gradient text-white rounded-lg font-semibold hover:opacity-90 transition">
                         {{ __('Subscribe Now') }}
                     </button>
@@ -157,7 +157,56 @@
 
 @push('scripts')
 <script>
-function subscribeToPlan(planId) {
+const currentPlan = {
+    hasActive: {{ ($currentSubscription && $currentSubscription->isActive() && $currentSubscription->plan) ? 'true' : 'false' }},
+    level: "{{ $currentSubscription && $currentSubscription->isActive() && $currentSubscription->plan ? $currentSubscription->plan->level : '' }}",
+    price: {{ $currentSubscription && $currentSubscription->isActive() && $currentSubscription->plan ? (float) $currentSubscription->plan->price : 0 }},
+};
+
+const LEVEL_WEIGHTS = { free: 1, basic: 2, advanced: 3, vip: 4 };
+
+function subscribeToPlan(planId, planLevel, planPrice, btnEl) {
+    const hasCurrent = currentPlan.hasActive && currentPlan.level && LEVEL_WEIGHTS[currentPlan.level];
+    const newRank = LEVEL_WEIGHTS[planLevel] || null;
+
+    if (hasCurrent && newRank !== null) {
+        const currentRank = LEVEL_WEIGHTS[currentPlan.level];
+
+        if (newRank < currentRank) {
+            Swal.fire({
+                title: '{{ __('Not Allowed') }}',
+                text: '{{ __('You cannot subscribe to a lower plan while you have an active subscription.') }}',
+                icon: 'warning',
+                confirmButtonColor: '#079184',
+            });
+            return;
+        }
+
+        if (newRank > currentRank) {
+            const currentPrice = Number(currentPlan.price || 0);
+            const targetPrice = Number(planPrice || 0);
+            const diff = Math.max(0, targetPrice - currentPrice);
+
+            Swal.fire({
+                title: '{{ __('Upgrade Plan') }}',
+                html: `{{ __('Current plan price') }}: <strong>${currentPrice.toFixed(2)} {{ __('EGP') }}</strong><br>` +
+                      `{{ __('New plan price') }}: <strong>${targetPrice.toFixed(2)} {{ __('EGP') }}</strong><br>` +
+                      `{{ __('You will pay the difference') }}: <strong>${diff.toFixed(2)} {{ __('EGP') }}</strong>`,
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonText: '{{ __('Confirm Upgrade') }}',
+                cancelButtonText: '{{ __('Cancel') }}',
+                confirmButtonColor: '#079184',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    performSubscriptionRequest(planId, btnEl);
+                }
+            });
+            return;
+        }
+    }
+
+    // No current plan or same level: generic confirmation
     Swal.fire({
         title: '{{ __('Subscribe to Plan?') }}',
         text: '{{ __('Are you sure you want to subscribe to this plan?') }}',
@@ -168,55 +217,63 @@ function subscribeToPlan(planId) {
         confirmButtonColor: '#079184',
     }).then((result) => {
         if (result.isConfirmed) {
-            const btn = event.target;
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>{{ __('Processing...') }}';
+            performSubscriptionRequest(planId, btnEl);
+        }
+    });
+}
 
-            fetch(`{{ route('subscriptions.subscribe', ['planId' => '__PLAN_ID__']) }}`.replace('__PLAN_ID__', planId), {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: JSON.stringify({
-                    auto_renew: false
-                })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    Swal.fire({
-                        title: '{{ __('Success!') }}',
-                        text: data.message || '{{ __('Subscribed successfully') }}',
-                        icon: 'success',
-                        confirmButtonColor: '#079184',
-                    }).then(() => {
-                        window.location.reload();
-                    });
-                } else {
-                    Swal.fire({
-                        title: '{{ __('Error') }}',
-                        text: data.message || '{{ __('Failed to subscribe') }}',
-                        icon: 'error',
-                        confirmButtonColor: '#079184',
-                    });
-                    btn.disabled = false;
-                    btn.innerHTML = '{{ __('Subscribe Now') }}';
-                }
-            })
-            .catch(error => {
-                Swal.fire({
-                    title: '{{ __('Error') }}',
-                    text: '{{ __('Something went wrong. Please try again.') }}',
-                    icon: 'error',
-                    confirmButtonColor: '#079184',
-                });
+function performSubscriptionRequest(planId, btn) {
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>{{ __('Processing...') }}';
+    }
+
+    fetch(`{{ route('subscriptions.subscribe', ['planId' => '__PLAN_ID__']) }}`.replace('__PLAN_ID__', planId), {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({
+            auto_renew: false
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status === 'success') {
+            Swal.fire({
+                title: '{{ __('Success!') }}',
+                text: data.message || '{{ __('Subscribed successfully') }}',
+                icon: 'success',
+                confirmButtonColor: '#079184',
+            }).then(() => {
+                window.location.reload();
+            });
+        } else {
+            Swal.fire({
+                title: '{{ __('Error') }}',
+                text: data.message || '{{ __('Failed to subscribe') }}',
+                icon: 'error',
+                confirmButtonColor: '#079184',
+            });
+            if (btn) {
                 btn.disabled = false;
                 btn.innerHTML = '{{ __('Subscribe Now') }}';
-            });
+            }
+        }
+    })
+    .catch(error => {
+        Swal.fire({
+            title: '{{ __('Error') }}',
+            text: '{{ __('Something went wrong. Please try again.') }}',
+            icon: 'error',
+            confirmButtonColor: '#079184',
+        });
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = '{{ __('Subscribe Now') }}';
         }
     });
 }
 </script>
 @endpush
-

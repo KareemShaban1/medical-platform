@@ -63,7 +63,7 @@
                             <p class="text-sm text-gray-500 mb-1">{{ __('Days Remaining') }}</p>
                             <p class="font-semibold text-gray-900">
                                 @if($subscription->end_date)
-                                    {{ now()->diffInDays($subscription->end_date, false) }} {{ __('days') }}
+                                    {{ number_format(now()->diffInDays($subscription->end_date, false), 2) }} {{ __('days') }}
                                 @else
                                     {{ __('Lifetime') }}
                                 @endif
@@ -77,11 +77,6 @@
                             <i class="fas fa-arrow-up"></i>
                             {{ __('Upgrade Plan') }}
                         </a>
-                        <button onclick="cancelSubscription()"
-                                class="inline-flex items-center gap-2 px-6 py-3 bg-red-500 text-white rounded-lg font-semibold hover:bg-red-600 transition">
-                            <i class="fas fa-ban"></i>
-                            {{ __('Cancel Subscription') }}
-                        </button>
                     </div>
                 </div>
 
@@ -155,57 +150,4 @@
 @endsection
 
 @push('scripts')
-<script>
-function cancelSubscription() {
-    Swal.fire({
-        title: '{{ __('Are you sure?') }}',
-        text: '{{ __('This will cancel your subscription. You will lose access to premium features at the end of your billing period.') }}',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: '{{ __('Yes, cancel it!') }}',
-        cancelButtonText: '{{ __('Keep Subscription') }}',
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#3085d6',
-    }).then((result) => {
-        if (result.isConfirmed) {
-            fetch('{{ route('doctor.subscriptions.cancel') }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                }
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    Swal.fire({
-                        title: '{{ __('Canceled!') }}',
-                        text: data.message || '{{ __('Subscription canceled successfully') }}',
-                        icon: 'success',
-                        confirmButtonColor: '#079184',
-                    }).then(() => {
-                        window.location.reload();
-                    });
-                } else {
-                    Swal.fire({
-                        title: '{{ __('Error') }}',
-                        text: data.message || '{{ __('Failed to cancel subscription') }}',
-                        icon: 'error',
-                        confirmButtonColor: '#079184',
-                    });
-                }
-            })
-            .catch(error => {
-                Swal.fire({
-                    title: '{{ __('Error') }}',
-                    text: '{{ __('Something went wrong. Please try again.') }}',
-                    icon: 'error',
-                    confirmButtonColor: '#079184',
-                });
-            });
-        }
-    });
-}
-</script>
 @endpush
-

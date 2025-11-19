@@ -7,9 +7,14 @@
         <div class="col-12">
             <div class="page-title-box">
                 <div class="page-title-right">
-                    <button class="btn btn-primary" onclick="createSubscription()">
-                        <i class="mdi mdi-plus"></i> {{ __('Create Subscription') }}
-                    </button>
+                    <div class="btn-group">
+                        <button class="btn btn-primary" onclick="createSubscription()">
+                            <i class="mdi mdi-plus"></i> {{ __('Create Subscription') }}
+                        </button>
+                        <a href="{{ route('admin.subscriptions.analytics') }}" class="btn btn-outline-primary">
+                            <i class="mdi mdi-chart-line"></i> {{ __('Analytics') }}
+                        </a>
+                    </div>
                 </div>
                 <h4 class="page-title">{{ __('Subscriptions Management') }}</h4>
             </div>
@@ -176,45 +181,6 @@ $(document).ready(function() {
         });
     };
 
-    window.cancelSubscription = function(id) {
-        Swal.fire({
-            title: '{{ __('Are you sure?') }}',
-            text: '{{ __('This will cancel the subscription.') }}',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: '{{ __('Yes, cancel it!') }}',
-            cancelButtonText: '{{ __('Cancel') }}',
-            confirmButtonColor: '#f59e0b',
-            cancelButtonColor: '#3085d6',
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    url: '{{ route('admin.subscriptions.cancel', ['id' => '__ID__']) }}'.replace('__ID__', id),
-                    type: 'POST',
-                    data: { _token: '{{ csrf_token() }}' },
-                    success: function(resp) {
-                        Swal.fire({
-                            title: '{{ __('Canceled!') }}',
-                            text: resp.message || '{{ __('Subscription canceled successfully') }}',
-                            icon: 'success',
-                            confirmButtonColor: '#079184',
-                        });
-                        table.ajax.reload(null, false);
-                    },
-                    error: function(xhr) {
-                        const error = xhr.responseJSON?.message || '{{ __('Failed to cancel subscription') }}';
-                        Swal.fire({
-                            title: '{{ __('Error') }}',
-                            text: error,
-                            icon: 'error',
-                            confirmButtonColor: '#079184',
-                        });
-                    }
-                });
-            }
-        });
-    };
-
     window.deleteSubscription = function(id) {
         Swal.fire({
             title: '{{ __('Are you sure?') }}',
@@ -256,4 +222,3 @@ $(document).ready(function() {
 });
 </script>
 @endpush
-
