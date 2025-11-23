@@ -60,6 +60,8 @@ class RepositoryServiceProvider extends ServiceProvider
 
         $this->app->bind('App\Interfaces\Admin\AreaRepositoryInterface', 'App\Repository\Admin\AreaRepository');
 
+        $this->app->bind('App\Interfaces\Admin\UsersManagementRepositoryInterface', 'App\Repository\Admin\UsersManagementRepository');
+
 
 
         $this->app->bind(ProductRepositoryInterface::class, ProductRepository::class);
@@ -198,7 +200,7 @@ class RepositoryServiceProvider extends ServiceProvider
 
         $this->app->bind('App\Interfaces\Clinic\PrescriptionRepositoryInterface', 'App\Repository\Clinic\PrescriptionRepository');
 
-        
+
 
         // Lab Orders Repositories
 

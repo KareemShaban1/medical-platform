@@ -89,4 +89,17 @@ class Supplier extends Model implements HasMedia
     {
         return $this->status == 1;
     }
+
+    // Governorate relation
+    public function governorate()
+    {
+        return $this->belongsTo(Governorate::class);
+    }
+
+    // City relation
+    public function city()
+    {
+        return $this->belongsTo(City::class);
+    }
+
 }

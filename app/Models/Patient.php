@@ -170,4 +170,22 @@ class Patient extends Authenticatable
     {
         return '<span class="badge bg-success">Registered User</span>';
     }
+
+    public function governorate()
+    {
+        return $this->belongsTo(Governorate::class);
+    }
+
+    public function city()
+    {
+        return $this->belongsTo(City::class);
+    }
+
+
+    //clinic
+    public function clinic()
+    {
+        return $this->belongsToMany(Clinic::class, 'doctor_patient')
+                    ->distinct();
+    }
 }
