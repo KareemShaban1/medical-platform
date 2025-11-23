@@ -36,6 +36,36 @@ Route::group(
         Route::get('/dashboard', [DashboardController::class, 'index'])
             ->name('dashboard');
 
+        // Users Management
+        Route::group(['prefix' => 'users-management', 'as' => 'users-management.'], function () {
+            Route::get('/', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'index'])->name('index');
+
+            // Clinics
+            Route::get('/clinics', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'clinics'])->name('clinics');
+            Route::get('/clinics/data', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'clinicsData'])->name('clinics.data');
+            Route::get('/clinics/{id}/details', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'clinicDetails'])->name('clinic-details');
+
+            // Clinic Users
+            Route::get('/clinic-users', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'clinicUsers'])->name('clinic-users');
+            Route::get('/clinic-users/data', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'clinicUsersData'])->name('clinic-users.data');
+            Route::get('/clinic-users/{id}/details', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'clinicUserDetails'])->name('clinic-user-details');
+
+            // Patients
+            Route::get('/patients', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'patients'])->name('patients');
+            Route::get('/patients/data', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'patientsData'])->name('patients.data');
+            Route::get('/patients/{id}/details', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'patientDetails'])->name('patient-details');
+
+            // Doctor Profiles
+            Route::get('/doctor-profiles', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'doctorProfiles'])->name('doctor-profiles');
+            Route::get('/doctor-profiles/data', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'doctorProfilesData'])->name('doctor-profiles.data');
+            Route::get('/doctor-profiles/{id}/details', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'doctorProfileDetails'])->name('doctor-profile-details');
+
+            // Suppliers
+            Route::get('/suppliers', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'suppliers'])->name('suppliers');
+            Route::get('/suppliers/data', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'suppliersData'])->name('suppliers.data');
+            Route::get('/suppliers/{id}/details', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'supplierDetails'])->name('supplier-details');
+        });
+
         Route::get('categories/data', [CategoryController::class, 'data'])->name('categories.data');
         Route::put('categories/{id}/update-status', [CategoryController::class, 'updateStatus'])->name('categories.update-status');
         Route::resource('categories', CategoryController::class);

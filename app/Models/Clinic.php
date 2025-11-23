@@ -119,5 +119,17 @@ class Clinic extends Model implements HasMedia
         return $this->hasMany(ExpenseCategory::class);
     }
 
+    public function doctorProfiles()
+{
+    return $this->hasManyThrough(
+        DoctorProfile::class,   // الموديل النهائي
+        ClinicUser::class,      // الموديل الوسيط
+        'clinic_id',            // ClinicUser → FK to Clinic
+        'clinic_user_id',       // DoctorProfile → FK to ClinicUser
+        'id',                   // local key in Clinic
+        'id'                    // local key in ClinicUser
+    );
+}
+
 
 }

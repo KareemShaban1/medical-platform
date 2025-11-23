@@ -1,4 +1,4 @@
-<!-- ========== Left Sidebar Start ========== -->
+\<!-- ========== Left Sidebar Start ========== -->
 <div class="leftside-menu">
 
     <!-- LOGO -->
@@ -41,6 +41,50 @@
                         {{ __('Admin Dashboard') }}
                     </span>
                 </a>
+            </li>
+
+            <!-- Users Management -->
+            <li class="side-nav-item">
+                <a data-bs-toggle="collapse" href="#sidebarUsersManagement" aria-expanded="false"
+                    aria-controls="sidebarUsersManagement" class="side-nav-link">
+                    <i class="uil-users-alt"></i>
+                    <span> {{ __('Users Management') }} </span>
+                    <span class="menu-arrow"></span>
+                </a>
+                <div class="collapse" id="sidebarUsersManagement">
+                    <ul class="side-nav-second-level">
+                        <li>
+                            <a href="{{ route('admin.users-management.index') }}">
+                                <span> {{__('Overview')}} </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.users-management.clinics') }}">
+                                <span> {{__('Clinics')}} </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.users-management.clinic-users') }}">
+                                <span> {{__('Clinic Users')}} </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.users-management.patients') }}">
+                                <span> {{__('Patients')}} </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.users-management.doctor-profiles') }}">
+                                <span> {{__('Doctor Profiles')}} </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.users-management.suppliers') }}">
+                                <span> {{__('Supplier Users')}} </span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </li>
 
             <!-- location Management -->
