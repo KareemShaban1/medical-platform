@@ -30,8 +30,8 @@
                 </div>
                 <div class="card-body">
                     <div class="text-center mb-3">
-                        @if($supplier->getFirstMediaUrl('suppliers'))
-                            <img src="{{ $supplier->getFirstMediaUrl('suppliers') }}" alt="{{ $supplier->name }}" class="img-fluid rounded" style="max-height: 200px;">
+                        @if($supplier->getFirstMediaUrl('supplier_images'))
+                            <img src="{{ $supplier->getFirstMediaUrl('supplier_images') }}" alt="{{ $supplier->name }}" class="img-fluid rounded" style="max-height: 200px;">
                         @else
                             <div class="bg-light rounded p-5">
                                 <i class="fas fa-warehouse fa-5x text-muted"></i>
@@ -48,14 +48,6 @@
                             <td>{{ $supplier->name }}</td>
                         </tr>
                         <tr>
-                            <th>{{ __('Contact Person') }}:</th>
-                            <td>{{ $supplier->contact_person ?? __('N/A') }}</td>
-                        </tr>
-                        <tr>
-                            <th>{{ __('Email') }}:</th>
-                            <td>{{ $supplier->email }}</td>
-                        </tr>
-                        <tr>
                             <th>{{ __('Phone') }}:</th>
                             <td>{{ $supplier->phone ?? __('N/A') }}</td>
                         </tr>
@@ -64,9 +56,27 @@
                             <td>{{ $supplier->address ?? __('N/A') }}</td>
                         </tr>
                         <tr>
+                            <th>{{ __('Governorate') }}:</th>
+                            <td>{{ $supplier->governorate->name ?? __('N/A') }}</td>
+                        </tr>
+                        <tr>
+                            <th>{{ __('City') }}:</th>
+                            <td>{{ $supplier->city->name ?? __('N/A') }}</td>
+                        </tr>
+                        <tr>
+                            <th>{{ __('Allowed') }}:</th>
+                            <td>
+                                @if($supplier->is_allowed)
+                                    <span class="badge badge-success">{{ __('Yes') }}</span>
+                                @else
+                                    <span class="badge badge-warning">{{ __('No') }}</span>
+                                @endif
+                            </td>
+                        </tr>
+                        <tr>
                             <th>{{ __('Status') }}:</th>
                             <td>
-                                @if($supplier->is_active)
+                                @if($supplier->status)
                                     <span class="badge badge-success">{{ __('Active') }}</span>
                                 @else
                                     <span class="badge badge-danger">{{ __('Inactive') }}</span>
@@ -80,18 +90,6 @@
                     </table>
                 </div>
             </div>
-
-            <!-- Additional Information -->
-            @if($supplier->description)
-                <div class="card shadow-sm mt-4">
-                    <div class="card-header bg-light">
-                        <h5 class="mb-0"><i class="fas fa-info-circle"></i> {{ __('Description') }}</h5>
-                    </div>
-                    <div class="card-body">
-                        <p class="mb-0">{{ $supplier->description }}</p>
-                    </div>
-                </div>
-            @endif
         </div>
 
         <div class="col-lg-8">
@@ -112,34 +110,32 @@
                                         <th>{{ __('Phone') }}</th>
                                         <th>{{ __('Status') }}</th>
                                         <th>{{ __('Joined') }}</th>
+                                        <th>{{ __('Actions') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach($supplier->supplierUsers as $user)
                                         <tr>
                                             <td>{{ $user->id }}</td>
-                                            <td>
-                                                <div class="d-flex align-items-center">
-                                                    @if($user->getFirstMediaUrl('supplier_users'))
-                                                        <img src="{{ $user->getFirstMediaUrl('supplier_users') }}" alt="{{ $user->name }}" class="rounded-circle mr-2" width="30" height="30">
-                                                    @else
-                                                        <div class="bg-light rounded-circle d-flex align-items-center justify-content-center mr-2" style="width: 30px; height: 30px;">
-                                                            <i class="fas fa-user text-muted" style="font-size: 0.8rem;"></i>
-                                                        </div>
-                                                    @endif
-                                                    {{ $user->name }}
-                                                </div>
-                                            </td>
+                                            <td>{{ $user->name }}</td>
                                             <td>{{ $user->email }}</td>
                                             <td>{{ $user->phone ?? __('N/A') }}</td>
                                             <td>
-                                                @if($user->status)
+                                                @if($user->status ?? false)
                                                     <span class="badge badge-success">{{ __('Active') }}</span>
                                                 @else
                                                     <span class="badge badge-secondary">{{ __('Inactive') }}</span>
                                                 @endif
                                             </td>
                                             <td>{{ $user->created_at->format('Y-m-d') }}</td>
+                                            <td>
+                                                <button type="button" class="btn btn-sm btn-warning" onclick="openChangePasswordModal({{ $user->id }}, 'supplier_user', '{{ str_replace("'", "\\'", $user->name) }}')" title="{{ __('Change Password') }}">
+                                                    <i class="fas fa-lock"></i>
+                                                </button>
+                                                <a href="{{ route('admin.users-management.supplier-user-details', $user->id) }}" class="btn btn-sm btn-info" title="{{ __('View Details') }}">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                            </td>
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -162,4 +158,8 @@
         </div>
     </div>
 </div>
+
+<!-- Include Password Change Modal -->
+@include('backend.dashboards.admin.components.change-password-modal')
+
 @endsection

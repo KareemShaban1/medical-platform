@@ -69,6 +69,10 @@ Route::group(
             Route::get('/supplier-users', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'supplierUsers'])->name('supplier-users');
             Route::get('/supplier-users/data', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'supplierUsersData'])->name('supplier-users.data');
             Route::get('/supplier-users/{id}/details', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'supplierUserDetails'])->name('supplier-user-details');
+
+            // User Management Actions
+            Route::post('/change-password', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'changePassword'])->name('change-password');
+            Route::post('/toggle-status', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'toggleStatus'])->name('toggle-status');
         });
 
         Route::get('categories/data', [CategoryController::class, 'data'])->name('categories.data');

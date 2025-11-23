@@ -30,8 +30,8 @@
                 </div>
                 <div class="card-body">
                     <div class="text-center mb-3">
-                        @if($doctor->getFirstMediaUrl('doctor_profiles'))
-                            <img src="{{ $doctor->getFirstMediaUrl('doctor_profiles') }}" alt="{{ $doctor->name }}" class="img-fluid rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
+                        @if($doctor->getFirstMediaUrl('profile_photo'))
+                            <img src="{{ $doctor->getFirstMediaUrl('profile_photo') }}" alt="{{ $doctor->name }}" class="img-fluid rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
                         @else
                             <div class="bg-light rounded-circle d-flex align-items-center justify-content-center mx-auto" style="width: 150px; height: 150px;">
                                 <i class="fas fa-user-md fa-5x text-muted"></i>
@@ -45,11 +45,29 @@
                         </tr>
                         <tr>
                             <th>{{ __('Name') }}:</th>
-                            <td>{{ $doctor->name }}</td>
+                            <td>{{ $doctor->name ?? 'N/A' }}</td>
+                        </tr>
+                        <tr>
+                            <th>{{ __('Email') }}:</th>
+                            <td>{{ $doctor->email ?? 'N/A' }}</td>
+                        </tr>
+                        <tr>
+                            <th>{{ __('Phone') }}:</th>
+                            <td>{{ $doctor->phone ?? 'N/A' }}</td>
                         </tr>
                         <tr>
                             <th>{{ __('Speciality') }}:</th>
-                            <td><span class="badge badge-primary">{{ $doctor->speciality }}</span></td>
+                            <td>
+                                @if($doctor->speciality)
+                                    <span class="badge badge-primary">{{ $doctor->speciality->name_en }}</span>
+                                @else
+                                    <span class="badge badge-secondary">{{ __('N/A') }}</span>
+                                @endif
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>{{ __('Experience') }}:</th>
+                            <td>{{ $doctor->years_experience ?? 0 }} {{ __('years') }}</td>
                         </tr>
                         <tr>
                             <th>{{ __('Type') }}:</th>
@@ -62,22 +80,26 @@
                             </td>
                         </tr>
                         <tr>
-                            <th>{{ __('Approval') }}:</th>
+                            <th>{{ __('Status') }}:</th>
                             <td>
-                                @if($doctor->is_approved)
+                                @if($doctor->status == 'approved')
                                     <span class="badge badge-success">{{ __('Approved') }}</span>
-                                @else
+                                @elseif($doctor->status == 'pending')
                                     <span class="badge badge-warning">{{ __('Pending') }}</span>
+                                @elseif($doctor->status == 'rejected')
+                                    <span class="badge badge-danger">{{ __('Rejected') }}</span>
+                                @else
+                                    <span class="badge badge-secondary">{{ ucfirst($doctor->status) }}</span>
                                 @endif
                             </td>
                         </tr>
                         <tr>
-                            <th>{{ __('Status') }}:</th>
+                            <th>{{ __('Featured') }}:</th>
                             <td>
-                                @if($doctor->is_active)
-                                    <span class="badge badge-success">{{ __('Active') }}</span>
+                                @if($doctor->is_featured)
+                                    <span class="badge badge-warning"><i class="fas fa-star"></i> {{ __('Featured') }}</span>
                                 @else
-                                    <span class="badge badge-danger">{{ __('Inactive') }}</span>
+                                    <span class="badge badge-secondary">{{ __('No') }}</span>
                                 @endif
                             </td>
                         </tr>
@@ -97,8 +119,8 @@
                     </div>
                     <div class="card-body">
                         <div class="text-center mb-3">
-                            @if($doctor->clinic->getFirstMediaUrl('clinics'))
-                                <img src="{{ $doctor->clinic->getFirstMediaUrl('clinics') }}" alt="{{ $doctor->clinic->name }}" class="img-fluid rounded" style="max-height: 150px;">
+                            @if($doctor->clinic->getFirstMediaUrl('clinic_images'))
+                                <img src="{{ $doctor->clinic->getFirstMediaUrl('clinic_images') }}" alt="{{ $doctor->clinic->name }}" class="img-fluid rounded" style="max-height: 150px;">
                             @else
                                 <div class="bg-light rounded p-4">
                                     <i class="fas fa-hospital fa-4x text-muted"></i>
@@ -112,16 +134,20 @@
                             </tr>
                             <tr>
                                 <th>{{ __('Email') }}:</th>
-                                <td>{{ $doctor->clinic->email }}</td>
+                                <td>{{ $doctor->clinic->clinic_email ?? 'N/A' }}</td>
                             </tr>
                             <tr>
                                 <th>{{ __('Phone') }}:</th>
                                 <td>{{ $doctor->clinic->phone }}</td>
                             </tr>
                             <tr>
+                                <th>{{ __('Address') }}:</th>
+                                <td>{{ $doctor->clinic->address ?? 'N/A' }}</td>
+                            </tr>
+                            <tr>
                                 <th>{{ __('Status') }}:</th>
                                 <td>
-                                    @if($doctor->clinic->is_active)
+                                    @if($doctor->clinic->status)
                                         <span class="badge badge-success">{{ __('Active') }}</span>
                                     @else
                                         <span class="badge badge-danger">{{ __('Inactive') }}</span>
@@ -136,8 +162,11 @@
             <!-- Authentication Account -->
             @if($doctor->clinicUser)
                 <div class="card shadow-sm mt-4">
-                    <div class="card-header bg-success text-white">
+                    <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
                         <h5 class="mb-0"><i class="fas fa-key"></i> {{ __('Authentication Account') }}</h5>
+                        <button type="button" class="btn btn-sm btn-light" onclick="openChangePasswordModal({{ $doctor->id }}, 'doctor_profile', '{{ str_replace("'", "\\'", $doctor->name) }}')">
+                            <i class="fas fa-lock"></i> {{ __('Change Password') }}
+                        </button>
                     </div>
                     <div class="card-body">
                         <table class="table table-sm mb-0">
@@ -150,13 +179,25 @@
                                 <td>{{ $doctor->clinicUser->name }}</td>
                             </tr>
                             <tr>
-                                <th>{{ __('Status') }}:</th>
+                                <th>{{ __('Phone') }}:</th>
+                                <td>{{ $doctor->clinicUser->phone ?? 'N/A' }}</td>
+                            </tr>
+                            <tr>
+                                <th>{{ __('Account Status') }}:</th>
                                 <td>
-                                    @if($doctor->clinicUser->is_active)
-                                        <span class="badge badge-success">{{ __('Active') }}</span>
-                                    @else
-                                        <span class="badge badge-secondary">{{ __('Inactive') }}</span>
-                                    @endif
+                                    <div class="d-flex align-items-center">
+                                        @if($doctor->clinicUser->is_active)
+                                            <span class="badge badge-success mr-2">{{ __('Active') }}</span>
+                                        @else
+                                            <span class="badge badge-secondary mr-2">{{ __('Inactive') }}</span>
+                                        @endif
+                                        <button type="button" class="btn btn-sm btn-outline-primary toggle-account-status"
+                                                data-user-id="{{ $doctor->clinicUser->id }}"
+                                                data-user-type="clinic_user"
+                                                data-current-status="{{ $doctor->clinicUser->is_active ? 1 : 0 }}">
+                                            <i class="fas fa-toggle-on"></i> {{ $doctor->clinicUser->is_active ? __('Deactivate') : __('Activate') }}
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         </table>
@@ -202,13 +243,9 @@
                                             <td>{{ $patient->id }}</td>
                                             <td>
                                                 <div class="d-flex align-items-center">
-                                                    @if($patient->getFirstMediaUrl('patients'))
-                                                        <img src="{{ $patient->getFirstMediaUrl('patients') }}" alt="{{ $patient->name }}" class="rounded-circle mr-2" width="30" height="30">
-                                                    @else
-                                                        <div class="bg-light rounded-circle d-flex align-items-center justify-content-center mr-2" style="width: 30px; height: 30px;">
-                                                            <i class="fas fa-user text-muted" style="font-size: 0.8rem;"></i>
-                                                        </div>
-                                                    @endif
+                                                    <div class="bg-light rounded-circle d-flex align-items-center justify-content-center mr-2" style="width: 30px; height: 30px;">
+                                                        <i class="fas fa-user text-muted" style="font-size: 0.8rem;"></i>
+                                                    </div>
                                                     {{ $patient->name }}
                                                 </div>
                                             </td>
@@ -243,4 +280,66 @@
         </div>
     </div>
 </div>
+
+<!-- Include Password Change Modal -->
+@if($doctor->clinicUser)
+    @include('backend.dashboards.admin.components.change-password-modal')
+@endif
+
+<script>
+$(document).ready(function() {
+    // Toggle account status
+    $('.toggle-account-status').click(function() {
+        const btn = $(this);
+        const userId = btn.data('user-id');
+        const userType = btn.data('user-type');
+        const currentStatus = btn.data('current-status');
+        const newStatus = currentStatus ? 0 : 1;
+        const action = newStatus ? '{{ __("activate") }}' : '{{ __("deactivate") }}';
+
+        if (!confirm('{{ __("Are you sure you want to") }} ' + action + ' {{ __("this account?") }}')) {
+            return;
+        }
+
+        btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> {{ __("Processing...") }}');
+
+        $.ajax({
+            url: '{{ route("admin.users-management.toggle-status") }}',
+            method: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}',
+                user_id: userId,
+                user_type: userType,
+                status: newStatus
+            },
+            success: function(response) {
+                // Update badge
+                const badge = btn.closest('td').find('.badge');
+                if (newStatus) {
+                    badge.removeClass('badge-secondary').addClass('badge-success').text('{{ __("Active") }}');
+                    btn.html('<i class="fas fa-toggle-on"></i> {{ __("Deactivate") }}');
+                } else {
+                    badge.removeClass('badge-success').addClass('badge-secondary').text('{{ __("Inactive") }}');
+                    btn.html('<i class="fas fa-toggle-on"></i> {{ __("Activate") }}');
+                }
+                btn.data('current-status', newStatus);
+
+                // Show success message
+                toastr.success(response.message || '{{ __("Account status updated successfully") }}');
+            },
+            error: function(xhr) {
+                let errorMessage = '{{ __("An error occurred") }}';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMessage = xhr.responseJSON.message;
+                }
+                toastr.error(errorMessage);
+            },
+            complete: function() {
+                btn.prop('disabled', false);
+            }
+        });
+    });
+});
+</script>
+
 @endsection

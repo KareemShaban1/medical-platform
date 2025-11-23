@@ -120,16 +120,28 @@ class Clinic extends Model implements HasMedia
     }
 
     public function doctorProfiles()
-{
-    return $this->hasManyThrough(
-        DoctorProfile::class,   // الموديل النهائي
-        ClinicUser::class,      // الموديل الوسيط
-        'clinic_id',            // ClinicUser → FK to Clinic
-        'clinic_user_id',       // DoctorProfile → FK to ClinicUser
-        'id',                   // local key in Clinic
-        'id'                    // local key in ClinicUser
-    );
-}
+    {
+        return $this->hasManyThrough(
+            DoctorProfile::class,   // الموديل النهائي
+            ClinicUser::class,      // الموديل الوسيط
+            'clinic_id',            // ClinicUser → FK to Clinic
+            'clinic_user_id',       // DoctorProfile → FK to ClinicUser
+            'id',                   // local key in Clinic
+            'id'                    // local key in ClinicUser
+        );
+    }
+
+    //governorate
+    public function governorate()
+    {
+        return $this->belongsTo(Governorate::class);
+    }
+
+    // city relation
+    public function city()
+    {
+        return $this->belongsTo(City::class);
+    }
 
 
 }

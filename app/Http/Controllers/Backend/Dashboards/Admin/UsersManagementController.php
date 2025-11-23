@@ -85,8 +85,8 @@ class UsersManagementController extends Controller
 
     public function doctorProfileDetails($id)
     {
-        $doctorProfile = $this->repo->getDoctorProfileDetails($id);
-        return view('backend.dashboards.admin.pages.users-management.doctor-profile-details', compact('doctorProfile'));
+        $doctor = $this->repo->getDoctorProfileDetails($id);
+        return view('backend.dashboards.admin.pages.users-management.doctor-profile-details', compact('doctor'));
     }
 
     // Suppliers
@@ -121,5 +121,109 @@ class UsersManagementController extends Controller
     {
         $supplierUser = $this->repo->getSupplierUserDetails($id);
         return view('backend.dashboards.admin.pages.users-management.supplier-user-details', compact('supplierUser'));
+    }
+
+    // Password Management
+    public function changePassword(\Illuminate\Http\Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|integer',
+            'user_type' => 'required|in:clinic_user,supplier_user,user,doctor_profile',
+            'new_password' => 'required|string|min:8',
+            'confirm_password' => 'required|same:new_password',
+        ]);
+
+        try {
+            $userType = $request->user_type;
+            $userId = $request->user_id;
+
+            // Get the user based on type and update password
+            if ($userType === 'clinic_user') {
+                // Clinic User - password stored directly in clinic_users table
+                $user = \App\Models\ClinicUser::findOrFail($userId);
+                $user->password = \Hash::make($request->new_password);
+                $user->save();
+
+            } elseif ($userType === 'supplier_user') {
+                // Supplier User - password stored directly in supplier_users table
+                $user = \App\Models\SupplierUser::findOrFail($userId);
+                $user->password = \Hash::make($request->new_password);
+                $user->save();
+
+            } elseif ($userType === 'doctor_profile') {
+                // Doctor Profile - password stored in clinic_users table via clinic_user_id
+                $doctorProfile = \App\Models\DoctorProfile::findOrFail($userId);
+                if (!$doctorProfile->clinic_user_id) {
+                    throw new \Exception(__('Doctor profile is not linked to a clinic user account'));
+                }
+
+                $clinicUser = \App\Models\ClinicUser::findOrFail($doctorProfile->clinic_user_id);
+                $clinicUser->password = \Hash::make($request->new_password);
+                $clinicUser->save();
+
+            } else {
+                // Patient - password stored in users table via user_id
+                $patient = \App\Models\Patient::findOrFail($userId);
+                if (!$patient->user_id) {
+                    throw new \Exception(__('Patient is not linked to a user account'));
+                }
+
+                $user = \App\Models\User::findOrFail($patient->user_id);
+                $user->password = \Hash::make($request->new_password);
+                $user->save();
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => __('Password changed successfully'),
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => __('Failed to change password: ') . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    // Toggle Account Status
+    public function toggleStatus(\Illuminate\Http\Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|integer',
+            'user_type' => 'required|in:clinic_user,supplier_user,user',
+            'status' => 'required|boolean',
+        ]);
+
+        try {
+            $userType = $request->user_type;
+            $userId = $request->user_id;
+            $newStatus = $request->status;
+
+            // Get the user based on type
+            if ($userType === 'clinic_user') {
+                $user = \App\Models\ClinicUser::findOrFail($userId);
+            } elseif ($userType === 'supplier_user') {
+                $user = \App\Models\SupplierUser::findOrFail($userId);
+            } else {
+                // Regular user (patient account)
+                $user = \App\Models\User::findOrFail($userId);
+            }
+
+            // Update status
+            $user->is_active = $newStatus;
+            $user->save();
+
+            $statusText = $newStatus ? __('activated') : __('deactivated');
+
+            return response()->json([
+                'success' => true,
+                'message' => __('Account') . ' ' . $statusText . ' ' . __('successfully'),
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => __('Failed to update account status: ') . $e->getMessage(),
+            ], 500);
+        }
     }
 }

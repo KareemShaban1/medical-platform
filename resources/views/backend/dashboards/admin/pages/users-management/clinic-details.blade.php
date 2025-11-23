@@ -30,8 +30,8 @@
                 </div>
                 <div class="card-body">
                     <div class="text-center mb-3">
-                        @if($clinic->getFirstMediaUrl('clinics'))
-                            <img src="{{ $clinic->getFirstMediaUrl('clinics') }}" alt="{{ $clinic->name }}" class="img-fluid rounded" style="max-height: 200px;">
+                        @if($clinic->getFirstMediaUrl('clinic_images'))
+                            <img src="{{ $clinic->getFirstMediaUrl('clinic_images') }}" alt="{{ $clinic->name }}" class="img-fluid rounded" style="max-height: 200px;">
                         @else
                             <div class="bg-light rounded p-5">
                                 <i class="fas fa-hospital fa-5x text-muted"></i>
@@ -49,16 +49,30 @@
                         </tr>
                         <tr>
                             <th>{{ __('Email') }}:</th>
-                            <td>{{ $clinic->email }}</td>
+                            <td>{{ $clinic->clinic_email ?? 'N/A' }}</td>
                         </tr>
                         <tr>
                             <th>{{ __('Phone') }}:</th>
                             <td>{{ $clinic->phone }}</td>
                         </tr>
                         <tr>
+                            <th>{{ __('Address') }}:</th>
+                            <td>{{ $clinic->address ?? 'N/A' }}</td>
+                        </tr>
+                        <tr>
+                            <th>{{ __('Allowed') }}:</th>
+                            <td>
+                                @if($clinic->is_allowed)
+                                    <span class="badge badge-success">{{ __('Yes') }}</span>
+                                @else
+                                    <span class="badge badge-warning">{{ __('No') }}</span>
+                                @endif
+                            </td>
+                        </tr>
+                        <tr>
                             <th>{{ __('Status') }}:</th>
                             <td>
-                                @if($clinic->is_active)
+                                @if($clinic->status)
                                     <span class="badge badge-success">{{ __('Active') }}</span>
                                 @else
                                     <span class="badge badge-danger">{{ __('Inactive') }}</span>
@@ -145,8 +159,8 @@
                                         <div class="card-body">
                                             <div class="d-flex align-items-center">
                                                 <div class="mr-3">
-                                                    @if($doctor->getFirstMediaUrl('doctor_profiles'))
-                                                        <img src="{{ $doctor->getFirstMediaUrl('doctor_profiles') }}" alt="{{ $doctor->name }}" class="rounded-circle" width="60" height="60">
+                                                    @if($doctor->getFirstMediaUrl('profile_photo'))
+                                                        <img src="{{ $doctor->getFirstMediaUrl('profile_photo') }}" alt="{{ $doctor->name }}" class="rounded-circle" width="60" height="60">
                                                     @else
                                                         <div class="bg-light rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
                                                             <i class="fas fa-user-md fa-2x text-muted"></i>
@@ -154,18 +168,25 @@
                                                     @endif
                                                 </div>
                                                 <div class="flex-grow-1">
-                                                    <h6 class="mb-1">{{ $doctor->name }}</h6>
-                                                    <p class="text-muted mb-1"><small>{{ $doctor->speciality }}</small></p>
+                                                    <h6 class="mb-1">{{ $doctor->name ?? 'N/A' }}</h6>
+                                                    <p class="text-muted mb-1">
+                                                        <small>
+                                                            @if($doctor->speciality)
+                                                                {{ $doctor->speciality->name_en }}
+                                                            @else
+                                                                {{ __('Speciality N/A') }}
+                                                            @endif
+                                                        </small>
+                                                    </p>
                                                     <div>
-                                                        @if($doctor->is_approved)
+                                                        @if($doctor->status == 'approved')
                                                             <span class="badge badge-success badge-sm">{{ __('Approved') }}</span>
-                                                        @else
+                                                        @elseif($doctor->status == 'pending')
                                                             <span class="badge badge-warning badge-sm">{{ __('Pending') }}</span>
-                                                        @endif
-                                                        @if($doctor->is_active)
-                                                            <span class="badge badge-primary badge-sm">{{ __('Active') }}</span>
+                                                        @elseif($doctor->status == 'rejected')
+                                                            <span class="badge badge-danger badge-sm">{{ __('Rejected') }}</span>
                                                         @else
-                                                            <span class="badge badge-secondary badge-sm">{{ __('Inactive') }}</span>
+                                                            <span class="badge badge-secondary badge-sm">{{ ucfirst($doctor->status) }}</span>
                                                         @endif
                                                     </div>
                                                 </div>

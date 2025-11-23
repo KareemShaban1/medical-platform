@@ -25,8 +25,11 @@
     <div class="row mb-4">
         <div class="col-lg-4">
             <div class="card shadow-sm">
-                <div class="card-header bg-warning text-dark">
+                <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
                     <h5 class="mb-0"><i class="fas fa-user"></i> {{ __('User Information') }}</h5>
+                    <button type="button" class="btn btn-sm btn-light" onclick="openChangePasswordModal({{ $supplierUser->id }}, 'supplier_user', '{{ str_replace("'", "\\'", $supplierUser->name) }}')">
+                        <i class="fas fa-lock"></i> {{ __('Change Password') }}
+                    </button>
                 </div>
                 <div class="card-body">
                     <div class="text-center mb-3">
@@ -54,7 +57,7 @@
                         <tr>
                             <th>{{ __('Status') }}:</th>
                             <td>
-                                @if($supplierUser->status)
+                                @if($supplierUser->is_active ?? false)
                                     <span class="badge badge-success">{{ __('Active') }}</span>
                                 @else
                                     <span class="badge badge-secondary">{{ __('Inactive') }}</span>
@@ -139,4 +142,8 @@
         </div>
     </div>
 </div>
+
+<!-- Include Password Change Modal -->
+@include('backend.dashboards.admin.components.change-password-modal')
+
 @endsection

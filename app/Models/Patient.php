@@ -181,4 +181,11 @@ class Patient extends Authenticatable
         return $this->belongsTo(City::class);
     }
 
+
+    //clinic
+    public function clinic()
+    {
+        return $this->belongsToMany(Clinic::class, 'doctor_patient')
+                    ->distinct();
+    }
 }
