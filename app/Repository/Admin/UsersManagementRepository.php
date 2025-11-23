@@ -173,21 +173,51 @@ class UsersManagementRepository implements UsersManagementRepositoryInterface
 
     public function getSuppliersData()
     {
-        $suppliers = Supplier::withCount('supplierUsers')->get();
+        $suppliers = Supplier::with('supplierUsers')->get();
 
         return datatables()->of($suppliers)
             ->addColumn('name', fn($item) => $item->name)
+            ->addColumn('phone', fn($item) => $item->phone ?? 'N/A')
+            ->addColumn('address', fn($item) => $item->address ?? 'N/A')
+            ->addColumn('users_count', function($item) {
+                return $item->supplierUsers->count();
+            })
+            ->editColumn('status', fn($item) => $item->status
+                ? '<span class="badge bg-success">Active</span>'
+                : '<span class="badge bg-secondary">Inactive</span>')
+            ->editColumn('is_allowed', fn($item) => $item->is_allowed
+                ? '<span class="badge bg-success">Allowed</span>'
+                : '<span class="badge bg-danger">Not Allowed</span>')
+            ->addColumn('action', function($item) {
+                $viewUrl = route('admin.users-management.supplier-details', $item->id);
+                return '<a href="'.$viewUrl.'" class="btn btn-sm btn-info"><i class="fa fa-eye"></i> Details</a>';
+            })
+            ->rawColumns(['status', 'is_allowed', 'action'])
+            ->make(true);
+    }
+
+    public function getSupplierUsersData()
+    {
+        $supplierUsers = SupplierUser::with('supplier')->whereNotNull('supplier_id')->get();
+
+        return datatables()->of($supplierUsers)
+            ->addColumn('name', fn($item) => $item->name)
             ->addColumn('email', fn($item) => $item->email)
             ->addColumn('phone', fn($item) => $item->phone ?? 'N/A')
-            ->addColumn('users_count', fn($item) => $item->supplier_users_count)
+            ->addColumn('supplier_name', function($item) {
+                if (!$item->supplier) {
+                    return '<span class="text-muted">N/A</span>';
+                }
+                return $item->supplier->name;
+            })
             ->editColumn('status', fn($item) => $item->status
                 ? '<span class="badge bg-success">Active</span>'
                 : '<span class="badge bg-secondary">Inactive</span>')
             ->addColumn('action', function($item) {
-                $viewUrl = route('admin.users-management.supplier-details', $item->id);
-                return '<a href="'.$viewUrl.'" class="btn btn-sm btn-info" title="View Details"><i class="fa fa-eye"></i> Details</a>';
+                $viewUrl = route('admin.users-management.supplier-user-details', $item->id);
+                return '<a href="'.$viewUrl.'" class="btn btn-sm btn-info"><i class="fa fa-eye"></i> Details</a>';
             })
-            ->rawColumns(['status', 'action'])
+            ->rawColumns(['supplier_name', 'status', 'action'])
             ->make(true);
     }
 
@@ -244,5 +274,10 @@ class UsersManagementRepository implements UsersManagementRepositoryInterface
             'governorate',
             'city'
         ])->findOrFail($supplierId);
+    }
+
+    public function getSupplierUserDetails($supplierUserId)
+    {
+        return SupplierUser::with('supplier')->findOrFail($supplierUserId);
     }
 }

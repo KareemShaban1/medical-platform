@@ -1,6 +1,6 @@
 @extends('backend.dashboards.admin.layouts.app')
 
-@section('title', __('Suppliers Management'))
+@section('title', __('Supplier Users Management'))
 
 @section('content')
 <div class="container-fluid">
@@ -8,12 +8,12 @@
     <div class="row mb-4">
         <div class="col-12">
             <div class="page-title-box d-flex align-items-center justify-content-between">
-                <h4 class="mb-0">{{ __('Suppliers Management') }}</h4>
+                <h4 class="mb-0">{{ __('Supplier Users Management') }}</h4>
                 <div class="page-title-right">
                     <ol class="breadcrumb m-0">
                         <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">{{ __('Dashboard') }}</a></li>
                         <li class="breadcrumb-item"><a href="{{ route('admin.users-management.index') }}">{{ __('Users Management') }}</a></li>
-                        <li class="breadcrumb-item active">{{ __('Suppliers') }}</li>
+                        <li class="breadcrumb-item active">{{ __('Supplier Users') }}</li>
                     </ol>
                 </div>
             </div>
@@ -25,19 +25,18 @@
         <div class="col-12">
             <div class="card shadow-sm">
                 <div class="card-header bg-warning text-dark">
-                    <h5 class="mb-0"><i class="fas fa-truck"></i> {{ __('All Suppliers') }}</h5>
+                    <h5 class="mb-0"><i class="fas fa-users"></i> {{ __('All Supplier Users') }}</h5>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table id="suppliers-table" class="table table-bordered table-striped table-hover">
+                        <table id="supplier-users-table" class="table table-bordered table-striped table-hover">
                             <thead class="thead-light">
                                 <tr>
                                     <th>{{ __('ID') }}</th>
                                     <th>{{ __('Name') }}</th>
+                                    <th>{{ __('Email') }}</th>
                                     <th>{{ __('Phone') }}</th>
-                                    <th>{{ __('Address') }}</th>
-                                    <th>{{ __('Users Count') }}</th>
-                                    <th>{{ __('Is Allowed') }}</th>
+                                    <th>{{ __('Supplier') }}</th>
                                     <th>{{ __('Status') }}</th>
                                     <th>{{ __('Actions') }}</th>
                                 </tr>
@@ -54,17 +53,16 @@
 @push('scripts')
 <script>
     $(document).ready(function() {
-        $('#suppliers-table').DataTable({
+        $('#supplier-users-table').DataTable({
             processing: true,
             serverSide: true,
-            ajax: '{{ route('admin.users-management.suppliers.data') }}',
+            ajax: '{{ route('admin.users-management.supplier-users.data') }}',
             columns: [
                 { data: 'id', name: 'id' },
                 { data: 'name', name: 'name' },
+                { data: 'email', name: 'email' },
                 { data: 'phone', name: 'phone' },
-                { data: 'address', name: 'address' },
-                { data: 'users_count', name: 'users_count', orderable: false, searchable: false },
-                { data: 'is_allowed', name: 'is_allowed' },
+                { data: 'supplier_name', name: 'supplier.name' },
                 { data: 'status', name: 'status' },
                 { data: 'action', name: 'action', orderable: false, searchable: false }
             ],

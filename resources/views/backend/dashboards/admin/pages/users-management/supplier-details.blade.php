@@ -133,7 +133,7 @@
                                             <td>{{ $user->email }}</td>
                                             <td>{{ $user->phone ?? __('N/A') }}</td>
                                             <td>
-                                                @if($user->is_active)
+                                                @if($user->status)
                                                     <span class="badge badge-success">{{ __('Active') }}</span>
                                                 @else
                                                     <span class="badge badge-secondary">{{ __('Inactive') }}</span>

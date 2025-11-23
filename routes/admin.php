@@ -64,6 +64,11 @@ Route::group(
             Route::get('/suppliers', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'suppliers'])->name('suppliers');
             Route::get('/suppliers/data', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'suppliersData'])->name('suppliers.data');
             Route::get('/suppliers/{id}/details', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'supplierDetails'])->name('supplier-details');
+
+            // Supplier Users
+            Route::get('/supplier-users', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'supplierUsers'])->name('supplier-users');
+            Route::get('/supplier-users/data', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'supplierUsersData'])->name('supplier-users.data');
+            Route::get('/supplier-users/{id}/details', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'supplierUserDetails'])->name('supplier-user-details');
         });
 
         Route::get('categories/data', [CategoryController::class, 'data'])->name('categories.data');

@@ -105,4 +105,21 @@ class UsersManagementController extends Controller
         $supplier = $this->repo->getSupplierDetails($id);
         return view('backend.dashboards.admin.pages.users-management.supplier-details', compact('supplier'));
     }
+
+    // Supplier Users
+    public function supplierUsers()
+    {
+        return view('backend.dashboards.admin.pages.users-management.supplier-users');
+    }
+
+    public function supplierUsersData()
+    {
+        return $this->repo->getSupplierUsersData();
+    }
+
+    public function supplierUserDetails($id)
+    {
+        $supplierUser = $this->repo->getSupplierUserDetails($id);
+        return view('backend.dashboards.admin.pages.users-management.supplier-user-details', compact('supplierUser'));
+    }
 }

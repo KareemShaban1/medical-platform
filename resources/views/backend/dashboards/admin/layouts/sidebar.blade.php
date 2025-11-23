@@ -80,6 +80,11 @@
                         </li>
                         <li>
                             <a href="{{ route('admin.users-management.suppliers') }}">
+                                <span> {{__('Suppliers')}} </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.users-management.supplier-users') }}">
                                 <span> {{__('Supplier Users')}} </span>
                             </a>
                         </li>
