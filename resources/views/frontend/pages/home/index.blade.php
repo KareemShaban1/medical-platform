@@ -357,7 +357,7 @@ function showPlans(type) {
 					idea.</p>
 				<p class="mt-8">
 					<span
-						class="text-4xl font-bold text-slate-900 tracking-tighter">$0</span>
+						class="text-4xl font-bold text-slate-900 tracking-tighter">{{ __('EGP') }} 0</span>
 
 					<span class="text-base font-medium text-slate-500">/mo</span>
 				</p><a href="/sign-up"
@@ -463,7 +463,7 @@ function showPlans(type) {
 					efficiently test and refine them.</p>
 				<p class="mt-8">
 					<span
-						class="text-4xl font-bold text-slate-900 tracking-tighter">$8</span>
+						class="text-4xl font-bold text-slate-900 tracking-tighter">{{ __('EGP') }} 8</span>
 
 					<span class="text-base font-medium text-slate-500">/mo</span>
 				</p><a href="/sign-up"
@@ -555,7 +555,7 @@ function showPlans(type) {
 					efficiently.</p>
 				<p class="mt-8">
 					<span
-						class="text-4xl font-bold text-slate-900 tracking-tighter">$15</span>
+						class="text-4xl font-bold text-slate-900 tracking-tighter">{{ __('EGP') }} 15</span>
 
 					<span class="text-base font-medium text-slate-500">/mo</span>
 				</p><a href="/sign-up"

@@ -7,6 +7,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\Log;
 
 class SubscriptionCreatedNotification extends Notification
 {
@@ -51,6 +52,9 @@ class SubscriptionCreatedNotification extends Notification
         $entity = $this->subscription->subscribable;
 
         return [
+            'title' => $this->isAdmin ? 'New Subscription Created' : 'Subscription Activated',
+            'message'=> $plan->name ?? 'Subscription Plan',
+            'action_url' => $this->isAdmin ? route('admin.subscriptions.index', $this->subscription->id) : null,
             'subscription_id' => $this->subscription->id,
             'plan_id' => $plan->id ?? null,
             'plan_name' => $plan->name ?? null,

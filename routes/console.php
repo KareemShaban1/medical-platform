@@ -10,3 +10,6 @@ Artisan::command('inspire', function () {
 
 // Schedule daily period generation
 Schedule::command('appointments:generate-periods')->dailyAt('00:00');
+
+// Expire subscriptions whose end date has passed (runs daily at midnight)
+Schedule::command('subscriptions:expire')->dailyAt('00:00');

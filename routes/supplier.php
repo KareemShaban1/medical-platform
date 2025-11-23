@@ -72,9 +72,7 @@ Route::group(
             Route::get('/', [ProductController::class, 'index'])->name('products.index');
 
             // Using middleware approach - checks subscription before allowing access
-            Route::post('/', [ProductController::class, 'store'])
-                ->middleware('check.subscription:max_products')
-                ->name('products.store');
+            Route::post('/', [ProductController::class, 'store'])->middleware('check.subscription:max_products')->name('products.store');
 
             // Alternative: Without middleware (check is done in controller - see ProductController::store)
             // Route::post('/', [ProductController::class, 'store'])->name('products.store');

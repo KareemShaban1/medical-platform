@@ -37,14 +37,18 @@ class ClinicRegisteredNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-        ->subject('Clinic Registration - Email Verification Required')
-        ->greeting('Hello ' . $notifiable->name . '!')
-        ->line('Welcome to ' . config('app.name') . '!')
-        ->line('Thank you for registering your clinic. To complete your registration, please verify your email address using the OTP below:')
-        ->line('**Your OTP Code: ' . $this->otp->otp . '**')
-        ->line('This OTP will expire in 5 minutes.')
-        ->line('⚠️ **Important:** Do not share this OTP with anyone.')
-        ->line('Once verified, your clinic will be automatically approved and you can access your dashboard.')
-        ->salutation('Best regards, ' . config('app.name') . ' Team');
+            ->subject(__('Clinic Registration - Email Verification'))
+            ->view('emails.auth.otp', [
+                'title' => __('Verify your clinic email'),
+                'subtitle' => __('Secure your clinic on :app', ['app' => config('app.name')]),
+                'intro' => __('Use the one-time password below to verify your email and activate your clinic account.'),
+                'otp' => $this->otp->otp,
+                'name' => $notifiable->name,
+                'expiryText' => __('This code expires in :minutes minutes.', ['minutes' => 5]),
+                'warningText' => __('Do not share this code with anyone.'),
+                'ctaUrl' => url('/clinic/dashboard'),
+                'ctaLabel' => __('Open clinic dashboard'),
+                'appName' => config('app.name'),
+            ]);
     }
 }

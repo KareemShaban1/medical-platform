@@ -26,7 +26,7 @@
 			</div>
 			<div class="flex items-center text-sm text-gray-500">
 				<i class="fas fa-dollar-sign mx-2"></i>
-				<span>{{ number_format($job->salary ?? '') }}</span>
+				<span>{{ $job->salary ? __('EGP') . ' ' . number_format($job->salary, 2) : __('Not specified') }}</span>
 			</div>
 			<div class="flex items-center text-sm text-gray-500">
 				<i class="fas fa-clock mx-2"></i>

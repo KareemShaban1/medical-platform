@@ -63,9 +63,9 @@
 				<h1 class="product-title">{{ $product->name }}</h1>
 
 				<div class="product-price">
-					<span class="current-price">${{ $product->price_after }}</span>
+					<span class="current-price">{{ __('EGP') }} {{ number_format($product->price_after, 2) }}</span>
 					@if($product->price_before > $product->price_after)
-					<span class="original-price">${{ $product->price_before }}</span>
+					<span class="original-price">{{ __('EGP') }} {{ number_format($product->price_before, 2) }}</span>
 					@php
 					$discountPercentage = round((($product->price_before -
 					$product->price_after) / $product->price_before) * 100);
@@ -148,11 +148,11 @@
 					<h3 class="product-card-title">{{ $relatedProduct->name }}</h3>
 					<div class="product-card-price">
 						<span
-							class="product-card-current">${{ $relatedProduct->price_after }}</span>
+							class="product-card-current">{{ __('EGP') }} {{ number_format($relatedProduct->price_after, 2) }}</span>
 						@if($relatedProduct->price_before >
 						$relatedProduct->price_after)
 						<span
-							class="product-card-original">${{ $relatedProduct->price_before }}</span>
+							class="product-card-original">{{ __('EGP') }} {{ number_format($relatedProduct->price_before, 2) }}</span>
 						@endif
 					</div>
 					<button class="product-card-btn">{{ __('view details') }}</button>

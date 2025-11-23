@@ -27,6 +27,11 @@ Route::group(
     ],
     function () {
         Route::get('/', [HomeController::class, 'index'])->name('home');
+		Route::get('/terms-of-use', [HomeController::class, 'termsOfUse'])->name('terms');
+		Route::get('/privacy-policy', [HomeController::class, 'privacyPolicy'])->name('privacy');
+		Route::get('/return-policy', [HomeController::class, 'returnPolicy'])->name('return-policy');
+		Route::get('/shipping-policy', [HomeController::class, 'shippingPolicy'])->name('shipping-policy');
+		Route::get('/about-us', [HomeController::class, 'aboutUs'])->name('about');
 
 		Route::get('/products', [ProductController::class, 'index'])->name('products');
 		Route::get('/products/{id}', [ProductController::class, 'show'])->name('products.show');
@@ -64,7 +69,7 @@ Route::group(
         Route::post('/courses/filter', [CourseController::class, 'filter'])->name('courses.filter');
 
 		// Subscription Plans (Public)
-		Route::get('/subscriptions/plans', [\App\Http\Controllers\Frontend\SubscriptionController::class, 'plans'])->name('subscriptions.plans');
+		// Route::get('/subscriptions/plans', [\App\Http\Controllers\Frontend\SubscriptionController::class, 'plans'])->name('subscriptions.plans');
 
 		// Doctor Profile Routes
 		Route::get('/doctors', [\App\Http\Controllers\Frontend\DoctorController::class, 'index'])->name('doctors.index');

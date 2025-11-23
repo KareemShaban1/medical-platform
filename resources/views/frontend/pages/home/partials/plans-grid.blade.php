@@ -5,7 +5,7 @@
         <div class="text-center mb-6">
             <h3 class="text-2xl font-bold text-gray-900 mb-2">{{ $plan->name }}</h3>
             <div class="price-tag">
-                EGP {{ number_format($plan->price, 2) }}
+                <span style="font-size: 2.5rem">EGP {{ number_format($plan->price, 2) }}</span>
                 @if($plan->duration_in_days)
                 <span class="text-lg text-gray-500">/{{ round($plan->duration_in_days / 30) }}mo</span>
                 @else
