@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 use App\Models\FeatureMaster;
 use App\Models\Plan;
 use App\Models\PlanFeature;
@@ -11,6 +12,13 @@ class SubscriptionSeeder extends Seeder
 {
     public function run(): void
     {
+        // Reset tables to ensure clean seed
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        PlanFeature::truncate();
+        Plan::truncate();
+        FeatureMaster::truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+
         // Create features
         $features = [
             [
@@ -78,6 +86,56 @@ class SubscriptionSeeder extends Seeder
                 'value_type' => 'boolean',
                 'is_active' => true,
             ],
+            [
+                'code' => 'purchase_request_offer',
+                'name' => 'Purchase Request Offer Quota',
+                'description' => 'Maximum purchase request offers that can be accepted',
+                'unit' => 'offers',
+                'value_type' => 'integer',
+                'is_active' => true,
+            ],
+            [
+                'code' => 'pay_in_advance',
+                'name' => 'Electronic Collection (Pay in Advance)',
+                'description' => 'Access to electronic collection / pre-payment feature',
+                'value_type' => 'boolean',
+                'is_active' => true,
+            ],
+            [
+                'code' => 'purchase_requests',
+                'name' => 'Purchase Requests',
+                'description' => 'Ability to create purchase/tender requests',
+                'value_type' => 'boolean',
+                'is_active' => true,
+            ],
+            [
+                'code' => 'post_jobs',
+                'name' => 'Post Jobs',
+                'description' => 'Ability to post job listings',
+                'value_type' => 'boolean',
+                'is_active' => true,
+            ],
+            [
+                'code' => 'marketplace_access',
+                'name' => 'Marketplace & Rental Access',
+                'description' => 'Ability to purchase from the store and rent medical spaces',
+                'value_type' => 'boolean',
+                'is_active' => true,
+            ],
+            [
+                'code' => 'doctor_bio_pro',
+                'name' => 'Professional Doctor Bio',
+                'description' => 'Professional bio for doctor profile',
+                'value_type' => 'boolean',
+                'is_active' => true,
+            ],
+            [
+                'code' => 'doctor_bio_private_link',
+                'name' => 'Private Bio Link',
+                'description' => 'Private link for doctor bio',
+                'value_type' => 'boolean',
+                'is_active' => true,
+            ],
         ];
 
         $featureModels = [];
@@ -92,47 +150,27 @@ class SubscriptionSeeder extends Seeder
                 'level' => 'free',
                 'name' => 'Free Doctor Plan',
                 'price' => 0,
-                'duration_in_days' => null,
+                'duration_in_days' => 30,
                 'is_active' => true,
                 'description' => 'Basic plan for standalone doctors',
                 'features' => [
-                    ['code' => 'max_patients', 'is_enabled' => true, 'is_limited' => true, 'value' => '10'],
-                    ['code' => 'lab_module', 'is_enabled' => false],
-                    ['code' => 'appointments_module', 'is_enabled' => true],
-                    ['code' => 'prescriptions_module', 'is_enabled' => true],
+                    ['code' => 'marketplace_access', 'is_enabled' => true],
+                    ['code' => 'doctor_bio_pro', 'is_enabled' => false],
+                    ['code' => 'doctor_bio_private_link', 'is_enabled' => false],
                 ],
             ],
             [
                 'plan_type' => 'doctor',
                 'level' => 'basic',
-                'name' => 'Basic Doctor Plan',
+                'name' => 'Paid Doctor Plan',
                 'price' => 99.00,
                 'duration_in_days' => 30,
                 'is_active' => true,
-                'description' => 'Standard plan for doctors',
+                'description' => 'Paid plan for doctors',
                 'features' => [
-                    ['code' => 'max_patients', 'is_enabled' => true, 'is_limited' => true, 'value' => '100'],
-                    ['code' => 'lab_module', 'is_enabled' => true],
-                    ['code' => 'appointments_module', 'is_enabled' => true],
-                    ['code' => 'prescriptions_module', 'is_enabled' => true],
-                    ['code' => 'medical_records_module', 'is_enabled' => true],
-                ],
-            ],
-            [
-                'plan_type' => 'doctor',
-                'level' => 'advanced',
-                'name' => 'Advanced Doctor Plan',
-                'price' => 199.00,
-                'duration_in_days' => 30,
-                'is_active' => true,
-                'description' => 'Advanced plan for doctors',
-                'features' => [
-                    ['code' => 'max_patients', 'is_enabled' => true, 'is_limited' => true, 'value' => '500'],
-                    ['code' => 'lab_module', 'is_enabled' => true],
-                    ['code' => 'appointments_module', 'is_enabled' => true],
-                    ['code' => 'prescriptions_module', 'is_enabled' => true],
-                    ['code' => 'medical_records_module', 'is_enabled' => true],
-                    ['code' => 'expenses_module', 'is_enabled' => true],
+                    ['code' => 'marketplace_access', 'is_enabled' => true],
+                    ['code' => 'doctor_bio_pro', 'is_enabled' => true],
+                    ['code' => 'doctor_bio_private_link', 'is_enabled' => true],
                 ],
             ],
         ];
@@ -162,13 +200,14 @@ class SubscriptionSeeder extends Seeder
                 'level' => 'free',
                 'name' => 'Free Clinic Plan',
                 'price' => 0,
-                'duration_in_days' => null,
+                'duration_in_days' => 30,
                 'is_active' => true,
                 'description' => 'Basic plan for clinics',
                 'features' => [
-                    ['code' => 'max_patients', 'is_enabled' => true, 'is_limited' => true, 'value' => '50'],
-                    ['code' => 'lab_module', 'is_enabled' => false],
-                    ['code' => 'inventory_module', 'is_enabled' => false],
+                    ['code' => 'max_patients', 'is_enabled' => true, 'is_limited' => true, 'value' => '2'],
+                    ['code'=> 'marketplace_access' , 'is_enabled' => true , 'is_limited' => false , 'value' => null ],
+                    ['code' => 'lab_module', 'is_enabled' => true , 'is_limited' => true , 'value' => '2' ],
+                    ['code' => 'inventory_module', 'is_enabled' => true , 'is_limited' => true , 'value' => '2' ],
                     ['code' => 'appointments_module', 'is_enabled' => true],
                 ],
             ],
@@ -181,12 +220,14 @@ class SubscriptionSeeder extends Seeder
                 'is_active' => true,
                 'description' => 'Standard plan for clinics',
                 'features' => [
-                    ['code' => 'max_patients', 'is_enabled' => true, 'is_limited' => true, 'value' => '500'],
+                    ['code' => 'max_patients', 'is_enabled' => true, 'is_limited' => false, 'value' => null],
+                    ['code'=> 'marketplace_access' , 'is_enabled' => true , 'is_limited' => false , 'value' => null ],
                     ['code' => 'lab_module', 'is_enabled' => true],
                     ['code' => 'inventory_module', 'is_enabled' => true],
                     ['code' => 'appointments_module', 'is_enabled' => true],
                     ['code' => 'prescriptions_module', 'is_enabled' => true],
                     ['code' => 'medical_records_module', 'is_enabled' => true],
+                    ['code' => 'purchase_requests', 'is_enabled' => true, 'is_limited' => false, 'value' => null],
                 ],
             ],
             [
@@ -198,7 +239,8 @@ class SubscriptionSeeder extends Seeder
                 'is_active' => true,
                 'description' => 'Advanced plan for clinics',
                 'features' => [
-                    ['code' => 'max_patients', 'is_enabled' => true, 'is_limited' => true, 'value' => '2000'],
+                    ['code' => 'max_patients', 'is_enabled' => true, 'is_limited' => false, 'value' => null],
+                    ['code'=> 'marketplace_access' , 'is_enabled' => true , 'is_limited' => false , 'value' => null ],
                     ['code' => 'lab_module', 'is_enabled' => true],
                     ['code' => 'inventory_module', 'is_enabled' => true],
                     ['code' => 'appointments_module', 'is_enabled' => true],
@@ -206,6 +248,8 @@ class SubscriptionSeeder extends Seeder
                     ['code' => 'medical_records_module', 'is_enabled' => true],
                     ['code' => 'expenses_module', 'is_enabled' => true],
                     ['code' => 'rental_spaces_module', 'is_enabled' => true],
+                    ['code' => 'purchase_requests', 'is_enabled' => true, 'is_limited' => false, 'value' => null],
+                    ['code' => 'post_jobs', 'is_enabled' => true, 'is_limited' => false, 'value' => null],
                 ],
             ],
         ];
@@ -235,11 +279,12 @@ class SubscriptionSeeder extends Seeder
                 'level' => 'free',
                 'name' => 'Free Supplier Plan',
                 'price' => 0,
-                'duration_in_days' => null,
+                'duration_in_days' => 30,
                 'is_active' => true,
                 'description' => 'Basic plan for suppliers',
                 'features' => [
-                    ['code' => 'max_products', 'is_enabled' => true, 'is_limited' => true, 'value' => '50'],
+                    ['code' => 'max_products', 'is_enabled' => true, 'is_limited' => true, 'value' => '2'],
+                    ['code' => 'purchase_request_offer', 'is_enabled' => false],
                 ],
             ],
             [
@@ -251,7 +296,8 @@ class SubscriptionSeeder extends Seeder
                 'is_active' => true,
                 'description' => 'Standard plan for suppliers',
                 'features' => [
-                    ['code' => 'max_products', 'is_enabled' => true, 'is_limited' => true, 'value' => '500'],
+                    ['code' => 'max_products', 'is_enabled' => true, 'is_limited' => true, 'value' => '30'],
+                    ['code' => 'purchase_request_offer', 'is_enabled' => false],
                 ],
             ],
             [
@@ -263,7 +309,21 @@ class SubscriptionSeeder extends Seeder
                 'is_active' => true,
                 'description' => 'Advanced plan for suppliers',
                 'features' => [
-                    ['code' => 'max_products', 'is_enabled' => true, 'is_limited' => true, 'value' => '5000'],
+                    ['code' => 'max_products', 'is_enabled' => true, 'is_limited' => true, 'value' => '100'],
+                    ['code' => 'purchase_request_offer', 'is_enabled' => true, 'is_limited' => true, 'value' => '10'],
+                ],
+            ],
+            [
+                'plan_type' => 'supplier',
+                'level' => 'vip',
+                'name' => 'VIP Supplier Plan',
+                'price' => 799.00,
+                'duration_in_days' => 30,
+                'is_active' => true,
+                'description' => 'VIP plan for suppliers',
+                'features' => [
+                    ['code' => 'max_products', 'is_enabled' => true, 'is_limited' => false, 'value' => null],
+                    ['code' => 'purchase_request_offer', 'is_enabled' => true, 'is_limited' => false, 'value' => null],
                 ],
             ],
         ];
@@ -287,4 +347,3 @@ class SubscriptionSeeder extends Seeder
         }
     }
 }
-

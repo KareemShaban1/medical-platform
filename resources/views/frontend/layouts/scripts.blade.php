@@ -214,5 +214,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
 
+@if(session('subscription_prompt'))
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+	toastr.info(@json(session('subscription_prompt')), @json(__('Subscription Required')), {
+		timeOut: 6000,
+		closeButton: true,
+		progressBar: true,
+		onclick: function() {
+			window.location.href = '{{ route('home') }}#subscriptions-plans';
+		}
+	});
+});
+</script>
+@endif
+
 
 @stack('scripts')

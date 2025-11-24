@@ -48,20 +48,9 @@ class SubscriptionController extends Controller
 
     public function plans()
     {
-        $user = Auth::guard('clinic')->user();
-        $planType = $user->clinic_id ? 'clinic' : 'doctor';
-
-        $plans = $this->planService->getPlansByType($planType);
-        $currentSubscription = null;
-
-        $entity = $user->clinic_id ? $user->clinic : $user;
-        $currentSubscription = $this->subscriptionService->getEffectiveSubscription($entity);
-
-        return view('backend.dashboards.clinic.pages.subscriptions.plans', [
-            'plans' => $plans,
-            'currentSubscription' => $currentSubscription,
-            'planType' => $planType,
-        ]);
+        return redirect()
+            ->to(route('home', ['plan_type' => 'clinic']) . '#subscriptions-plans')
+            ->with('subscription_prompt', __('Please subscribe to continue.'));
     }
 
     public function subscribe(Request $request, $planId)

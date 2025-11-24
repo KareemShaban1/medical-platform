@@ -1,7 +1,7 @@
 @if($plans->count() > 0)
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
     @foreach($plans as $plan)
-    <div class="plan-card {{ $plan->level === 'advanced' ? 'featured' : '' }} bg-white rounded-2xl p-8 shadow-lg">
+    <div class="plan-card {{ $plan->level === 'advanced' ? 'featured' : '' }} bg-white rounded-2xl p-8 shadow-lg flex flex-col h-full">
         <div class="text-center mb-6">
             <h3 class="text-2xl font-bold text-gray-900 mb-2">{{ $plan->name }}</h3>
             <div class="price-tag">
@@ -26,6 +26,10 @@
                     {{ $planFeature->feature->name }}
                     @if($planFeature->is_limited && $planFeature->value)
                     <strong>({{ $planFeature->value }})</strong>
+                    @elseif(!$planFeature->is_limited)
+                    <span class="inline-flex items-center gap-1 text-green-700 text-sm font-semibold">
+                        &infin;
+                    </span>
                     @endif
                 </span>
             </li>
@@ -33,26 +37,28 @@
             @endforeach
         </ul>
 
-        @if(Auth::guard('clinic')->check() || Auth::guard('supplier')->check())
-            @php
-                $isSubscribed = $currentSubscription && $currentSubscription->plan_id === $plan->id && $currentSubscription->isActive();
-            @endphp
-            @if($isSubscribed)
-            <button class="w-full py-3 bg-green-100 text-green-700 rounded-lg font-semibold" disabled>
-                <i class="fas fa-check-circle mr-2"></i>{{ __('Current Plan') }}
-            </button>
+        <div class="mt-auto">
+            @if(Auth::guard('clinic')->check() || Auth::guard('supplier')->check())
+                @php
+                    $isSubscribed = $currentSubscription && $currentSubscription->plan_id === $plan->id && $currentSubscription->isActive();
+                @endphp
+                @if($isSubscribed)
+                <button class="w-full py-3 bg-green-100 text-green-700 rounded-lg font-semibold" disabled>
+                    <i class="fas fa-check-circle mr-2"></i>{{ __('Current Plan') }}
+                </button>
+                @else
+                <button onclick="subscribeToPlan({{ $plan->id }}, '{{ $plan->level }}', {{ $plan->price }}, this)"
+                    class="w-full py-3 bg-primary-gradient text-white rounded-lg font-semibold hover:opacity-90 transition">
+                    {{ __('Subscribe Now') }}
+                </button>
+                @endif
             @else
-            <button onclick="subscribeToPlan({{ $plan->id }}, '{{ $plan->level }}', {{ $plan->price }}, this)"
-                class="w-full py-3 bg-primary-gradient text-white rounded-lg font-semibold hover:opacity-90 transition">
-                {{ __('Subscribe Now') }}
-            </button>
+            <a href="{{ url('/clinic/login') }}"
+                class="block w-full text-center py-3 bg-primary-gradient text-white rounded-lg font-semibold hover:opacity-90 transition">
+                {{ __('Login to Subscribe') }}
+            </a>
             @endif
-        @else
-        <a href="{{ url('/clinic/login') }}"
-            class="block w-full text-center py-3 bg-primary-gradient text-white rounded-lg font-semibold hover:opacity-90 transition">
-            {{ __('Login to Subscribe') }}
-        </a>
-        @endif
+        </div>
     </div>
     @endforeach
 </div>

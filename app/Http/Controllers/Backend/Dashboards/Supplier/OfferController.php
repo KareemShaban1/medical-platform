@@ -8,10 +8,13 @@ use App\Http\Requests\Supplier\UpdateOfferRequest;
 use App\Interfaces\Supplier\OfferRepositoryInterface;
 use App\Models\SupplierSpecializedCategory;
 use App\Models\Request as RequestModel;
+use App\Traits\HandlesFeatureLimits;
 use Illuminate\Http\Request;
 
 class OfferController extends Controller
 {
+    use HandlesFeatureLimits;
+
     protected $offerRepository;
 
     public function __construct(OfferRepositoryInterface $offerRepository)
@@ -31,18 +34,26 @@ class OfferController extends Controller
 
     public function store(CreateOfferRequest $request)
     {
-        try {
-            $this->offerRepository->store($request->validated());
-            return response()->json([
-                'success' => true,
-                'message' => 'Offer submitted successfully.'
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage()
-            ], 400);
-        }
+        $supplier = auth('supplier')->user()->supplier;
+
+        return $this->checkFeatureLimit(
+            $supplier,
+            'purchase_request_offer',
+            function () use ($request) {
+                try {
+                    $this->offerRepository->store($request->validated());
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Offer submitted successfully.'
+                    ]);
+                } catch (\Exception $e) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => $e->getMessage()
+                    ], 400);
+                }
+            }
+        );
     }
 
     public function show($id)

@@ -47,16 +47,9 @@ class SubscriptionController extends Controller
 
     public function plans()
     {
-        $user = Auth::guard('supplier')->user();
-        $supplier = $user->supplier;
-
-        $plans = $this->planService->getPlansByType('supplier');
-        $currentSubscription = $this->subscriptionService->getEffectiveSubscription($supplier);
-
-        return view('backend.dashboards.supplier.pages.subscriptions.plans', [
-            'plans' => $plans,
-            'currentSubscription' => $currentSubscription,
-        ]);
+        return redirect()
+            ->to(route('home', ['plan_type' => 'supplier']) . '#subscriptions-plans')
+            ->with('subscription_prompt', __('Please subscribe to continue.'));
     }
 
     public function subscribe(Request $request, $planId)

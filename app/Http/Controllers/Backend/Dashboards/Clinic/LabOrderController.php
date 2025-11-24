@@ -6,9 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Interfaces\Clinic\LabOrderRepositoryInterface;
 use App\Models\Patient;
 use Illuminate\Http\Request;
+use App\Traits\HandlesFeatureLimits;
+use Illuminate\Support\Facades\Auth;
 
 class LabOrderController extends Controller
 {
+    use HandlesFeatureLimits;
+
     public function __construct(private LabOrderRepositoryInterface $repo)
     {
     }
@@ -44,7 +48,17 @@ class LabOrderController extends Controller
             'sent_at' => 'nullable|date',
         ]);
 
-        $order = $this->repo->store($validated);
+        $clinic = Auth::guard('clinic')->user()->clinic_id
+            ? Auth::guard('clinic')->user()->clinic
+            : Auth::guard('clinic')->user();
+
+        $order = $this->checkFeatureLimit(
+            $clinic,
+            'lab_module',
+            function () use ($validated) {
+                return $this->repo->store($validated);
+            }
+        );
 
         return redirect()->route('clinic.lab-orders.show', $order->id)
             ->with('success', __('Lab order created successfully'));
