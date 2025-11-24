@@ -191,20 +191,28 @@
   				</div>
   			</li>
 
-  			<!-- Notifications -->
-  			<li class="side-nav-item">
-  				<a href="{{ route('supplier.notifications.index') }}" class="side-nav-link">
-  					<i class="uil-bell"></i>
-  					<span> {{ __('Notifications') }} </span>
-  					<span class="badge bg-danger rounded-pill"
-  						id="sidebar-notification-count"
-  						style="display: none;">0</span>
-  				</a>
-  			</li>
+			<!-- My Subscription -->
+			<li class="side-nav-item">
+				<a href="{{ route('supplier.subscriptions.index') }}" class="side-nav-link">
+					<i class="uil-credit-card"></i>
+					<span> {{ __('My Subscription') }} </span>
+				</a>
+			</li>
+
+			<!-- Notifications -->
+			<li class="side-nav-item">
+				<a href="{{ route('supplier.notifications.index') }}" class="side-nav-link">
+					<i class="uil-bell"></i>
+					<span> {{ __('Notifications') }} </span>
+					<span class="badge bg-danger rounded-pill"
+						id="sidebar-notification-count"
+						style="display: none;">0</span>
+				</a>
+			</li>
 
 
 
-  		</ul>
+		</ul>
 
   		<!-- End Sidebar -->
 

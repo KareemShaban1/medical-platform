@@ -89,8 +89,17 @@ class Supplier extends Model implements HasMedia
     {
         return $this->status == 1;
     }
+     public function subscription()
+    {
+        return $this->morphOne(Subscription::class, 'subscribable');
+    }
 
-    // Governorate relation
+    public function users()
+    {
+        return $this->supplierUsers();
+    }
+
+     // Governorate relation
     public function governorate()
     {
         return $this->belongsTo(Governorate::class);
@@ -101,5 +110,4 @@ class Supplier extends Model implements HasMedia
     {
         return $this->belongsTo(City::class);
     }
-
 }

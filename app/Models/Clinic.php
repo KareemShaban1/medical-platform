@@ -119,6 +119,15 @@ class Clinic extends Model implements HasMedia
         return $this->hasMany(ExpenseCategory::class);
     }
 
+    public function subscription()
+    {
+        return $this->morphOne(Subscription::class, 'subscribable');
+    }
+
+    public function users()
+    {
+        return $this->hasMany(ClinicUser::class);
+    }
     public function doctorProfiles()
     {
         return $this->hasManyThrough(

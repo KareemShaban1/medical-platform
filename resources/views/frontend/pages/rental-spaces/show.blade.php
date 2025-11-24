@@ -51,7 +51,7 @@
 						<div class="text-gray-700">
 							<i class="fas fa-dollar-sign mr-2"></i>
 							<span>{{ __('Price') }}:
-								{{ optional($rentalSpace->pricing)->price }}</span>
+								{{ optional($rentalSpace->pricing)->price ? __('EGP') . ' ' . number_format(optional($rentalSpace->pricing)->price, 2) : __('Not specified') }}</span>
 						</div>
 					</div>
 

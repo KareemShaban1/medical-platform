@@ -188,6 +188,7 @@
 @endsection
 
 @push('scripts')
+@include('backend.components.subscription-limit-handler')
 <script>
     let table = $('#products-table').DataTable({
         ajax: '{{ route("supplier.products.data") }}',
@@ -413,9 +414,13 @@
                     'success');
             },
             error: function(xhr) {
-                if (xhr.status === 422) {
-                    let errors = xhr.responseJSON
-                        .errors || {};
+                const response = xhr.responseJSON || {};
+
+                if (handleSubscriptionError(xhr)) {
+                    return;
+                } else if (xhr.status === 422) {
+                    // Handle validation errors
+                    let errors = response.errors || {};
                     let messages = [];
                     Object.keys(errors).forEach(
                         function(
@@ -472,15 +477,15 @@
                         });
                     Swal.fire({
                         icon: 'error',
-                        title: 'Validation Errors',
+                        title: '{{ __('Validation Errors') }}',
                         html: messages
                             .join(
                                 '<br>'
                             )
                     });
                 } else {
-                    Swal.fire('Error', 'Something went wrong',
-                        'error');
+                    // Generic error
+                    Swal.fire('{{ __('Error') }}', response?.message || '{{ __('Something went wrong') }}', 'error');
                 }
             }
         });

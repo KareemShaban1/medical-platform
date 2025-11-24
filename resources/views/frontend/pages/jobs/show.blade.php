@@ -459,8 +459,8 @@
 					</div>
 					<div class="job-meta-item">
 						<!-- <i class="fas fa-dollar-sign job-meta-icon"></i> -->
-						<span class="text-[#ceeae7]">LE</span>
-						<span>{{ $job->salary }} </span>
+						<span class="text-[#ceeae7]">{{ __('EGP') }}</span>
+						<span>{{ $job->salary ? number_format($job->salary, 2) : __('Not specified') }}</span>
 					</div>
 
 				</div>

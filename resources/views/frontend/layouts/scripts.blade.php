@@ -143,20 +143,20 @@ document.addEventListener('DOMContentLoaded', function() {
                             </div>
                             <div class="flex-grow min-w-0">
                                 <p class="text-sm font-medium text-black truncate">${item.product_name}</p>
-                                <p class="text-xs text-gray-500">${item.quantity} × $${parseFloat(item.price).toFixed(2)}</p>
+                                <p class="text-xs text-gray-500">${item.quantity} × {{ __('EGP') }} ${parseFloat(item.price).toFixed(2)}</p>
                             </div>
                             <div class="text-sm font-semibold text-black">
-                                $${parseFloat(item.total).toFixed(2)}
+                                {{ __('EGP') }} ${parseFloat(item.total).toFixed(2)}
                             </div>
                         </div>
                     </li>
                 `;
-			});
+            });
 
-			cartItemsList.innerHTML = itemsHTML;
-			cartSubtotal.textContent = '$' + parseFloat(data.subtotal).toFixed(2);
-		}
-	}
+            cartItemsList.innerHTML = itemsHTML;
+            cartSubtotal.textContent = '{{ __('EGP') }} ' + parseFloat(data.subtotal).toFixed(2);
+        }
+    }
 });
 </script>
 
@@ -213,6 +213,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
+
+@if(session('subscription_prompt'))
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+	toastr.info(@json(session('subscription_prompt')), @json(__('Subscription Required')), {
+		timeOut: 6000,
+		closeButton: true,
+		progressBar: true,
+		onclick: function() {
+			window.location.href = '{{ route('home') }}#subscriptions-plans';
+		}
+	});
+});
+</script>
+@endif
 
 
 @stack('scripts')

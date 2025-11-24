@@ -5,9 +5,13 @@ namespace App\Http\Controllers\Backend\Dashboards\Clinic;
 use App\Http\Controllers\Controller;
 use App\Interfaces\Clinic\PatientRepositoryInterface;
 use Illuminate\Http\Request;
+use App\Traits\HandlesFeatureLimits;
+
 
 class PatientController extends Controller
 {
+    use HandlesFeatureLimits;
+
     protected $patientRepo;
 
     public function __construct(PatientRepositoryInterface $patientRepo)
@@ -49,6 +53,8 @@ class PatientController extends Controller
     public function store(Request $request)
     {
         $clinicUser = auth('clinic')->user();
+        // For limits, we check against the clinic entity
+        $clinic = $clinicUser->clinic_id ? $clinicUser->clinic : $clinicUser;
 
         $rules = [
             'name' => 'required|string|max:255',
@@ -64,12 +70,18 @@ class PatientController extends Controller
 
         $request->validate($rules);
 
-        try {
-            $this->patientRepo->store($request->all());
-            return $this->jsonResponse('success', __('Patient created/assigned successfully'));
-        } catch (\Exception $e) {
-            return $this->jsonResponse('error', $e->getMessage());
-        }
+        return $this->checkFeatureLimit(
+            $clinic,
+            'max_patients',
+            function () use ($request) {
+                try {
+                    $this->patientRepo->store($request->all());
+                    return $this->jsonResponse('success', __('Patient created/assigned successfully'));
+                } catch (\Exception $e) {
+                    return $this->jsonResponse('error', $e->getMessage());
+                }
+            }
+        );
     }
 
     public function show($id)
@@ -79,7 +91,7 @@ class PatientController extends Controller
 
         // Load all medical data for this patient in this clinic
         $appointments = \App\Models\Appointment::where('patient_id', $id)
-            ->whereHas('doctorProfile.clinicUser', function($q) use ($clinicUser) {
+            ->whereHas('doctorProfile.clinicUser', function ($q) use ($clinicUser) {
                 $q->where('clinic_id', $clinicUser->clinic_id);
             })
             ->with(['doctorProfile', 'prescription.items'])

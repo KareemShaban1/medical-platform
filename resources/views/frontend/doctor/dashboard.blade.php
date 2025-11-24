@@ -37,17 +37,19 @@
 				</div>
 
 				<!-- Feature Cards -->
-				<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-					@php
-					$features = [
-					['icon' => 'fa-user-md', 'color' => 'text-blue-500', 'title' =>
-					__('Doctor Profile'), 'desc' => __('Create and manage your doctor profile'), 'route' => route('doctor.profile.index')],
-					['icon' => 'fa-shopping-cart', 'color' => 'text-green-500', 'title' =>
-					__('My Orders'), 'desc' => __('View your orders from the website'), 'route' => route('doctor.orders.index')],
-					['icon' => 'fa-graduation-cap', 'color' => 'text-purple-500', 'title' =>
-					__('Courses'), 'desc' => __('View your enrollments and access links'), 'route' => route('doctor.courses.index')],
-					];
-					@endphp
+				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+				@php
+				$features = [
+				['icon' => 'fa-user-md', 'color' => 'text-blue-500', 'title' =>
+				__('Doctor Profile'), 'desc' => __('Create and manage your doctor profile'), 'route' => route('doctor.profile.index')],
+				['icon' => 'fa-shopping-cart', 'color' => 'text-green-500', 'title' =>
+				__('My Orders'), 'desc' => __('View your orders from the website'), 'route' => route('doctor.orders.index')],
+				['icon' => 'fa-graduation-cap', 'color' => 'text-purple-500', 'title' =>
+				__('Courses'), 'desc' => __('View your enrollments and access links'), 'route' => route('doctor.courses.index')],
+				['icon' => 'fa-credit-card', 'color' => 'text-orange-500', 'title' =>
+				__('My Subscription'), 'desc' => __('View subscription details and usage'), 'route' => route('doctor.subscriptions.index')],
+				];
+				@endphp
 
 					@foreach($features as $feature)
 					@if(isset($feature['route']))

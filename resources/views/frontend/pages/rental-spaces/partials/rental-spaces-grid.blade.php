@@ -28,7 +28,9 @@
             </div>
             <div class="text-md text-blue-600 font-semibold">
                 <i class="fas fa-dollar-sign mr-1"></i>
-                <span>{{ optional($space->pricing)->price }}</span>
+                <span>
+					{{ optional($space->pricing)->price ? __('EGP') . ' ' . number_format(optional($space->pricing)->price, 2) : __('Not specified') }}
+				</span>
             </div>
         </div>
     </div>

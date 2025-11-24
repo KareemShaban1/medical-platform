@@ -36,10 +36,12 @@
 		</div> -->
 		<div class="flex justify-between items-start flex-col gap-3">
 			<div class="flex items-center gap-2">
-				<span class="text-md text-blue-600">${{ $product->price_after }}</span>
+				<span class="text-md text-blue-600">{{ __('EGP') }} {{ number_format($product->price_after, 2) }}</span>
 				<!-- price before -->
+				@if($product->price_before > $product->price_after)
 				<span
-					class="text-sm text-red-500 line-through">${{ $product->price_before }}</span>
+					class="text-sm text-red-500 line-through">{{ __('EGP') }} {{ number_format($product->price_before, 2) }}</span>
+				@endif
 			</div>
 			<button data-add-to-cart data-product-id="{{ $product->id }}"
 				data-supplier-id="{{ $product->supplier_id }}" data-quantity="1"

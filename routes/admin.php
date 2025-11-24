@@ -261,6 +261,42 @@ Route::group(
         Route::get('course-enrollments/data', [\App\Http\Controllers\Backend\Dashboards\Admin\CourseEnrollmentController::class, 'data'])->name('course-enrollments.data');
         Route::put('course-enrollments/{id}/status', [\App\Http\Controllers\Backend\Dashboards\Admin\CourseEnrollmentController::class, 'updateStatus'])->name('course-enrollments.update-status');
         Route::delete('course-enrollments/{id}', [\App\Http\Controllers\Backend\Dashboards\Admin\CourseEnrollmentController::class, 'destroy'])->name('course-enrollments.destroy');
+
+        // Subscription Management
+        Route::group(['prefix' => 'subscriptions'], function () {
+            Route::get('analytics', [\App\Http\Controllers\Backend\Dashboards\Admin\SubscriptionManagementController::class, 'analytics'])->name('subscriptions.analytics');
+            // Plans Management
+            Route::get('plans/data', [\App\Http\Controllers\Backend\Dashboards\Admin\PlanController::class, 'data'])->name('plans.data');
+            Route::get('plans/create', [\App\Http\Controllers\Backend\Dashboards\Admin\PlanController::class, 'create'])->name('plans.create');
+            Route::post('plans', [\App\Http\Controllers\Backend\Dashboards\Admin\PlanController::class, 'store'])->name('plans.store');
+            Route::get('plans/{id}/edit', [\App\Http\Controllers\Backend\Dashboards\Admin\PlanController::class, 'edit'])->name('plans.edit');
+            Route::put('plans/{id}', [\App\Http\Controllers\Backend\Dashboards\Admin\PlanController::class, 'update'])->name('plans.update');
+            Route::delete('plans/{id}', [\App\Http\Controllers\Backend\Dashboards\Admin\PlanController::class, 'destroy'])->name('plans.destroy');
+            Route::get('plans/{id}/features', [\App\Http\Controllers\Backend\Dashboards\Admin\PlanController::class, 'manageFeatures'])->name('plans.features');
+            Route::post('plans/{planId}/features', [\App\Http\Controllers\Backend\Dashboards\Admin\PlanController::class, 'addFeature'])->name('plans.features.add');
+            Route::put('plans/{planId}/features/{featureId}', [\App\Http\Controllers\Backend\Dashboards\Admin\PlanController::class, 'updateFeature'])->name('plans.features.update');
+            Route::delete('plans/{planId}/features/{featureId}', [\App\Http\Controllers\Backend\Dashboards\Admin\PlanController::class, 'deleteFeature'])->name('plans.features.delete');
+            Route::get('plans', [\App\Http\Controllers\Backend\Dashboards\Admin\PlanController::class, 'index'])->name('plans.index');
+
+            // Features Management
+            Route::get('features/data', [\App\Http\Controllers\Backend\Dashboards\Admin\FeatureMasterController::class, 'data'])->name('features.data');
+            Route::get('features/create', [\App\Http\Controllers\Backend\Dashboards\Admin\FeatureMasterController::class, 'create'])->name('features.create');
+            Route::post('features', [\App\Http\Controllers\Backend\Dashboards\Admin\FeatureMasterController::class, 'store'])->name('features.store');
+            Route::get('features/{id}', [\App\Http\Controllers\Backend\Dashboards\Admin\FeatureMasterController::class, 'show'])->name('features.show');
+            Route::put('features/{id}', [\App\Http\Controllers\Backend\Dashboards\Admin\FeatureMasterController::class, 'update'])->name('features.update');
+            Route::delete('features/{id}', [\App\Http\Controllers\Backend\Dashboards\Admin\FeatureMasterController::class, 'destroy'])->name('features.destroy');
+            Route::get('features', [\App\Http\Controllers\Backend\Dashboards\Admin\FeatureMasterController::class, 'index'])->name('features.index');
+
+            // Subscriptions Management
+            Route::get('subscriptions/data', [\App\Http\Controllers\Backend\Dashboards\Admin\SubscriptionManagementController::class, 'data'])->name('subscriptions.data');
+            Route::get('subscriptions/create', [\App\Http\Controllers\Backend\Dashboards\Admin\SubscriptionManagementController::class, 'create'])->name('subscriptions.create');
+            Route::get('subscriptions/entities', [\App\Http\Controllers\Backend\Dashboards\Admin\SubscriptionManagementController::class, 'getEntities'])->name('subscriptions.entities');
+            Route::post('subscriptions', [\App\Http\Controllers\Backend\Dashboards\Admin\SubscriptionManagementController::class, 'store'])->name('subscriptions.store');
+            Route::post('subscriptions/{id}/extend', [\App\Http\Controllers\Backend\Dashboards\Admin\SubscriptionManagementController::class, 'extend'])->name('subscriptions.extend');
+            Route::post('subscriptions/{id}/cancel', [\App\Http\Controllers\Backend\Dashboards\Admin\SubscriptionManagementController::class, 'cancel'])->name('subscriptions.cancel');
+            Route::delete('subscriptions/{id}', [\App\Http\Controllers\Backend\Dashboards\Admin\SubscriptionManagementController::class, 'destroy'])->name('subscriptions.destroy');
+            Route::get('subscriptions', [\App\Http\Controllers\Backend\Dashboards\Admin\SubscriptionManagementController::class, 'index'])->name('subscriptions.index');
+        });
     }
 );
 

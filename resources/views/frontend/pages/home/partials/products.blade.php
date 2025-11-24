@@ -35,10 +35,12 @@
 							</p>
 							<div class="flex justify-start items-center gap-2">
 								<span
-									class="text-md text-primary">${{ $product->price_after }}</span>
+									class="text-md text-primary">{{ __('EGP') }} {{ number_format($product->price_after, 2) }}</span>
 								<!-- price before -->
+								@if($product->price_before > $product->price_after)
 								<span
-									class="text-md text-red-500 line-through">${{ $product->price_before }}</span>
+									class="text-md text-red-500 line-through">{{ __('EGP') }} {{ number_format($product->price_before, 2) }}</span>
+								@endif
 
 							</div>
 							<!-- <button

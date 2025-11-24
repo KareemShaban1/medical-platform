@@ -58,7 +58,7 @@
 								</path>
 							</svg>
 							<span class="text-gray-700"><strong>{{ __('salary') }}:</strong>
-								{{ $job->salary ? number_format($job->salary) : 'Not specified' }}</span>
+								{{ $job->salary ? __('EGP') . ' ' . number_format($job->salary, 2) : 'Not specified' }}</span>
 						</div>
 
 					</div>

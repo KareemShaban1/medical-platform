@@ -1698,5 +1698,21 @@
     "view doctors" : "View Doctors",
     "course enrollments": "Course Enrollments",
     "doctor register": "Doctor Register",
-    "doctor login": "Doctor Login"
+    "doctor login": "Doctor Login",
+    "doctor plans": "Doctor Plans",
+    "clinic plans": "Clinic Plans",
+    "supplier plans": "Supplier Plans",
+    "lifetime": "Lifetime",
+    "Subscribe Now": "Subscribe Now",
+    "Login to Subscribe": "Login to Subscribe",
+    "Current Plan": "Current Plan",
+    "No plans available at the moment": "No plans available at the moment",
+    "Subscribe to the plan to access all features": "Subscribe to the plan to access all features",
+    "months": "mo",
+    "My Subscription": "My Subscription",
+    "Subscription Required" : "Subscription Required",
+    "Please subscribe to continue." : "Please subscribe to continue.",
+    "unlimited": "unlimited",
+    "You cannot subscribe to a lower plan while you have an active subscription." : "You cannot subscribe to a lower plan while you have an active subscription."
+
 }

@@ -24,6 +24,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'localeViewPath'          => \Mcamara\LaravelLocalization\Middleware\LaravelLocalizationViewPath::class,
             'check.clinic.approval'   => \App\Http\Middleware\CheckClinicApproval::class,
             'check.supplier.approval' => \App\Http\Middleware\CheckSupplierApproval::class,
+            'check.subscription'      => \App\Http\Middleware\CheckSubscription::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

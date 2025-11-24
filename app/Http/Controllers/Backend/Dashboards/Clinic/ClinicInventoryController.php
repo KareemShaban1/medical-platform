@@ -7,11 +7,15 @@ use App\Http\Requests\Clinic\Inventory\StoreClinicInventoryRequest;
 use App\Http\Requests\Clinic\Inventory\UpdateClinicInventoryRequest;
 use App\Http\Controllers\Controller;
 use App\Interfaces\Clinic\ClinicInventoryRepositoryInterface;
+use App\Traits\HandlesFeatureLimits;
+use Illuminate\Support\Facades\Auth;
 
 
 
 class ClinicInventoryController extends Controller
 {
+    use HandlesFeatureLimits;
+
     protected $clinicInventoryRepo;
 
     public function __construct(ClinicInventoryRepositoryInterface $clinicInventoryRepo)
@@ -45,7 +49,17 @@ class ClinicInventoryController extends Controller
      */
     public function store(StoreClinicInventoryRequest $request)
     {
-        return $this->clinicInventoryRepo->store($request);
+        $clinic = Auth::guard('clinic')->user()->clinic_id
+            ? Auth::guard('clinic')->user()->clinic
+            : Auth::guard('clinic')->user();
+
+        return $this->checkFeatureLimit(
+            $clinic,
+            'inventory_module',
+            function () use ($request) {
+                return $this->clinicInventoryRepo->store($request);
+            }
+        );
     }
 
     /**

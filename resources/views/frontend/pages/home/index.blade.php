@@ -160,8 +160,183 @@
 <!-- Registration Section -->
 @include('frontend.pages.home.partials.registration-section')
 
+<!-- Subscription Plans Section -->
+<section id="subscriptions-plans" class="py-16 bg-gray-50 scroll-mt-20">
+	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+		@if(session('error') && session('upgrade_required'))
+		<div class="mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded-lg shadow-md">
+			<div class="flex items-start">
+				<div class="flex-shrink-0">
+					<i class="fas fa-exclamation-circle text-red-400 text-xl"></i>
+				</div>
+				<div class="ml-3 flex-1">
+					<h3 class="text-sm font-semibold text-red-800 mb-2">
+						{{ __('Subscription Required') }}
+					</h3>
+					<p class="text-sm text-red-700 mb-3">
+						{{ session('error') }}
+					</p>
+					@if(session('usage'))
+					@php
+						$usage = session('usage');
+						$used = $usage['used'] ?? 0;
+						$limit = $usage['limit'] ?? null;
+						$remaining = $usage['remaining'] ?? 0;
+						$percentage = $limit ? round(($used / $limit) * 100, 1) : 0;
+					@endphp
+					<div class="bg-white rounded-md p-3 mb-3 border border-red-200">
+						<div class="flex items-center justify-between mb-2">
+							<span class="text-sm font-medium text-gray-700">{{ __('Usage') }}</span>
+							<span class="text-sm text-gray-600">
+								{{ $used }} / {{ $limit ?? __('unlimited') }}
+							</span>
+						</div>
+						@if($limit)
+						<div class="w-full bg-gray-200 rounded-full h-2 mb-2">
+							<div class="bg-red-500 h-2 rounded-full"
+								 style="width: {{ min(100, $percentage) }}%"></div>
+						</div>
+						<p class="text-xs text-gray-600">
+							{{ __('Remaining') }}: {{ $remaining }}
+						</p>
+						@endif
+					</div>
+					@endif
+				</div>
+			</div>
+		</div>
+		@endif
+
+		<div class="text-center mb-12">
+			<h2 class="text-4xl font-bold text-gray-900 mb-4">{{ __('Choose Your Plan') }}</h2>
+			<p class="text-xl text-gray-600">{{ __('Select the perfect subscription plan for your needs') }}</p>
+		</div>
+
+		<!-- Plan Type Selector -->
+		<div class="flex justify-center gap-4 mb-8">
+			<button onclick="showPlans('doctor')"
+				class="px-6 py-3 rounded-lg font-semibold transition plan-type-btn {{ $planType === 'doctor' ? 'bg-primary-gradient text-white' : 'bg-white text-gray-700 hover:bg-gray-100' }}">
+				<i class="fas fa-user-md mr-2"></i>{{ __('doctor plans') }}
+			</button>
+			<button onclick="showPlans('clinic')"
+				class="px-6 py-3 rounded-lg font-semibold transition plan-type-btn {{ $planType === 'clinic' ? 'bg-primary-gradient text-white' : 'bg-white text-gray-700 hover:bg-gray-100' }}">
+				<i class="fas fa-hospital mr-2"></i>{{ __('clinic plans') }}
+			</button>
+			<button onclick="showPlans('supplier')"
+				class="px-6 py-3 rounded-lg font-semibold transition plan-type-btn {{ $planType === 'supplier' ? 'bg-primary-gradient text-white' : 'bg-white text-gray-700 hover:bg-gray-100' }}">
+				<i class="fas fa-truck mr-2"></i>{{ __('supplier plans') }}
+			</button>
+		</div>
+
+		<!-- Plans Grid -->
+		<div id="plans-container">
+			@if($planType === 'doctor')
+				@include('frontend.pages.home.partials.plans-grid', ['plans' => $doctorPlans, 'type' => 'doctor', 'currentSubscription' => $currentSubscription])
+			@elseif($planType === 'clinic')
+				@include('frontend.pages.home.partials.plans-grid', ['plans' => $clinicPlans, 'type' => 'clinic', 'currentSubscription' => $currentSubscription])
+			@else
+				@include('frontend.pages.home.partials.plans-grid', ['plans' => $supplierPlans, 'type' => 'supplier', 'currentSubscription' => $currentSubscription])
+			@endif
+		</div>
+	</div>
+</section>
+
+@push('styles')
+<style>
+.plan-card {
+    transition: all 0.3s ease;
+    border: 2px solid #e5e7eb;
+}
+
+.plan-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.plan-card.featured {
+    border-color: #079184;
+    border-width: 3px;
+    position: relative;
+}
+
+.plan-card.featured::before {
+    content: '{{ __('Most Popular') }}';
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #079184;
+    color: white;
+    padding: 4px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.price-tag {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #079184;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 0;
+}
+
+.feature-item i {
+    color: #10b981;
+}
+</style>
+@endpush
+
+@push('scripts')
+<script>
+// Scroll to subscriptions section if hash is present
+document.addEventListener('DOMContentLoaded', function() {
+    if (window.location.hash === '#subscriptions-plans') {
+        setTimeout(() => {
+            const element = document.getElementById('subscriptions-plans');
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }, 100);
+    }
+});
+
+function showPlans(type) {
+    // Update active button
+    document.querySelectorAll('.plan-type-btn').forEach(btn => {
+        btn.classList.remove('bg-primary-gradient', 'text-white');
+        btn.classList.add('bg-white', 'text-gray-700');
+    });
+    event.target.closest('button').classList.add('bg-primary-gradient', 'text-white');
+    event.target.closest('button').classList.remove('bg-white', 'text-gray-700');
+
+    // Load plans via AJAX
+    fetch(`{{ route('home') }}?plan_type=${type}`, {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success && data.html) {
+            document.getElementById('plans-container').innerHTML = data.html;
+        }
+    })
+    .catch(error => {
+        console.error('Error loading plans:', error);
+    });
+}
+</script>
+@endpush
+
 <!-- plans -->
-<div class="sm:flex sm:flex-col sm:align-center p-10">
+<div class="sm:flex sm:flex-col sm:align-center p-10" style="display: none;">
 	<div class="relative self-center bg-slate-200 rounded-lg p-0.5 flex">
 		<button type="button"
 			class="relative w-1/2 rounded-md py-2 text-sm font-medium whitespace-nowrap focus:outline-none sm:w-auto sm:px-8 bg-slate-50 border-slate-50 text-slate-900 shadow-sm">Monthly
@@ -182,7 +357,7 @@
 					idea.</p>
 				<p class="mt-8">
 					<span
-						class="text-4xl font-bold text-slate-900 tracking-tighter">$0</span>
+						class="text-4xl font-bold text-slate-900 tracking-tighter">{{ __('EGP') }} 0</span>
 
 					<span class="text-base font-medium text-slate-500">/mo</span>
 				</p><a href="/sign-up"
@@ -288,7 +463,7 @@
 					efficiently test and refine them.</p>
 				<p class="mt-8">
 					<span
-						class="text-4xl font-bold text-slate-900 tracking-tighter">$8</span>
+						class="text-4xl font-bold text-slate-900 tracking-tighter">{{ __('EGP') }} 8</span>
 
 					<span class="text-base font-medium text-slate-500">/mo</span>
 				</p><a href="/sign-up"
@@ -380,7 +555,7 @@
 					efficiently.</p>
 				<p class="mt-8">
 					<span
-						class="text-4xl font-bold text-slate-900 tracking-tighter">$15</span>
+						class="text-4xl font-bold text-slate-900 tracking-tighter">{{ __('EGP') }} 15</span>
 
 					<span class="text-base font-medium text-slate-500">/mo</span>
 				</p><a href="/sign-up"

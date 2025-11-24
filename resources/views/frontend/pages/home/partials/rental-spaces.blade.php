@@ -39,7 +39,7 @@
 							<div
 								class="flex items-center text-sm text-gray-500 mb-3">
 								<i class="fas fa-dollar-sign mr-2"></i>
-								<span>{{ $rentalSpace->pricing->price }}</span>
+								<span>{{ $rentalSpace->pricing && $rentalSpace->pricing->price ? __('EGP') . ' ' . number_format($rentalSpace->pricing->price, 2) : __('Not specified') }}</span>
 							</div>
 
 

@@ -84,11 +84,11 @@
 						<p class="text-sm text-gray-600">
 							{{__('quantity')}}:
 							{{ $item->quantity }} ×
-							${{ number_format($item->price, 2) }}</p>
+							{{ __('EGP') }} {{ number_format($item->price, 2) }}</p>
 					</div>
 					<div class="text-right">
 						<p class="font-bold text-gray-900">
-							${{ number_format($item->price * $item->quantity, 2) }}
+							{{ __('EGP') }} {{ number_format($item->price * $item->quantity, 2) }}
 						</p>
 					</div>
 				</div>
@@ -100,26 +100,26 @@
 				<div class="space-y-2">
 					<div class="flex justify-between text-gray-700">
 						<span>{{__('subtotal')}}:</span>
-						<span>${{ number_format($order->total - $order->shipping - $order->tax + $order->discount, 2) }}</span>
+						<span>{{ __('EGP') }} {{ number_format($order->total - $order->shipping - $order->tax + $order->discount, 2) }}</span>
 					</div>
 					<div class="flex justify-between text-gray-700">
 						<span>{{__('shipping')}}:</span>
-						<span>${{ number_format($order->shipping, 2) }}</span>
+						<span>{{ __('EGP') }} {{ number_format($order->shipping, 2) }}</span>
 					</div>
 					<div class="flex justify-between text-gray-700">
 						<span>{{__('tax')}}:</span>
-						<span>${{ number_format($order->tax, 2) }}</span>
+						<span>{{ __('EGP') }} {{ number_format($order->tax, 2) }}</span>
 					</div>
 					@if($order->discount > 0)
 					<div class="flex justify-between text-gray-700">
 						<span>{{__('discount')}}:</span>
-						<span>-${{ number_format($order->discount, 2) }}</span>
+						<span>-{{ __('EGP') }} {{ number_format($order->discount, 2) }}</span>
 					</div>
 					@endif
 					<div
 						class="flex justify-between text-xl font-bold text-gray-900 pt-2 border-t border-gray-300">
 						<span>{{__('total')}}:</span>
-						<span>${{ number_format($order->total, 2) }}</span>
+						<span>{{ __('EGP') }} {{ number_format($order->total, 2) }}</span>
 					</div>
 				</div>
 			</div>

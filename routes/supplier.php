@@ -70,11 +70,26 @@ Route::group(
             Route::post('/restore/{id}', [ProductController::class, 'restore'])->name('products.restore');
             Route::delete('/force/{id}', [ProductController::class, 'forceDelete'])->name('products.force.delete');
             Route::get('/', [ProductController::class, 'index'])->name('products.index');
-            Route::post('/', [ProductController::class, 'store'])->name('products.store');
+
+            // Using middleware approach - checks subscription before allowing access
+            Route::post('/', [ProductController::class, 'store'])->middleware('check.subscription:max_products')->name('products.store');
+
+            // Alternative: Without middleware (check is done in controller - see ProductController::store)
+            // Route::post('/', [ProductController::class, 'store'])->name('products.store');
+
             Route::get('/{id}', [ProductController::class, 'show'])->name('products.show');
             Route::put('/{id}', [ProductController::class, 'update'])->name('products.update');
             Route::patch('/{id}/toggle-status', [ProductController::class, 'toggleStatus'])->name('products.toggle.status');
             Route::delete('/{id}', [ProductController::class, 'destroy'])->name('products.destroy');
+        });
+
+        // Subscription Management
+        Route::group(['prefix' => 'subscriptions'], function () {
+            Route::get('/', [\App\Http\Controllers\Backend\Dashboards\Supplier\SubscriptionController::class, 'index'])->name('subscriptions.index');
+            Route::get('/plans', [\App\Http\Controllers\Backend\Dashboards\Supplier\SubscriptionController::class, 'plans'])->name('subscriptions.plans');
+            Route::post('/subscribe/{planId}', [\App\Http\Controllers\Backend\Dashboards\Supplier\SubscriptionController::class, 'subscribe'])->name('subscriptions.subscribe');
+            Route::post('/cancel', [\App\Http\Controllers\Backend\Dashboards\Supplier\SubscriptionController::class, 'cancel'])->name('subscriptions.cancel');
+            Route::get('/usage', [\App\Http\Controllers\Backend\Dashboards\Supplier\SubscriptionController::class, 'usage'])->name('subscriptions.usage');
         });
 
         // Users Management
@@ -125,7 +140,7 @@ Route::group(
         Route::group(['prefix' => 'offers'], function () {
             Route::get('/data', [\App\Http\Controllers\Backend\Dashboards\Supplier\OfferController::class, 'data'])->name('offers.data');
             Route::get('/', [\App\Http\Controllers\Backend\Dashboards\Supplier\OfferController::class, 'index'])->name('offers.index');
-            Route::post('/', [\App\Http\Controllers\Backend\Dashboards\Supplier\OfferController::class, 'store'])->name('offers.store');
+            Route::post('/', [\App\Http\Controllers\Backend\Dashboards\Supplier\OfferController::class, 'store'])->middleware('check.subscription:purchase_request_offer')->name('offers.store');
             Route::get('/{id}', [\App\Http\Controllers\Backend\Dashboards\Supplier\OfferController::class, 'show'])->name('offers.show');
             Route::get('/{id}/edit', [\App\Http\Controllers\Backend\Dashboards\Supplier\OfferController::class, 'edit'])->name('offers.edit');
             Route::put('/{id}', [\App\Http\Controllers\Backend\Dashboards\Supplier\OfferController::class, 'update'])->name('offers.update');
@@ -154,13 +169,13 @@ Route::group(
             Route::post('/mark-all-as-read', [\App\Http\Controllers\Backend\Dashboards\Supplier\NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-as-read');
         });
 
-          // Location dropdowns endpoints
-          Route::get('/governorates', [SupplierController::class, 'getGovernorates'])
-          ->name('governorates')->withoutMiddleware(['auth:supplier', 'check.supplier.approval']);
-      Route::get('/cities', [SupplierController::class, 'getCities'])
-          ->name('cities')->withoutMiddleware(['auth:supplier', 'check.supplier.approval']);
-      Route::get('/areas', [SupplierController::class, 'getAreas'])
-          ->name('areas')->withoutMiddleware(['auth:supplier', 'check.supplier.approval']);
+        // Location dropdowns endpoints
+        Route::get('/governorates', [SupplierController::class, 'getGovernorates'])
+            ->name('governorates')->withoutMiddleware(['auth:supplier', 'check.supplier.approval']);
+        Route::get('/cities', [SupplierController::class, 'getCities'])
+            ->name('cities')->withoutMiddleware(['auth:supplier', 'check.supplier.approval']);
+        Route::get('/areas', [SupplierController::class, 'getAreas'])
+            ->name('areas')->withoutMiddleware(['auth:supplier', 'check.supplier.approval']);
 
     }
 );

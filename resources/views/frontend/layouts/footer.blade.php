@@ -1,11 +1,11 @@
 <!-- Footer -->
 <footer class="footer bg-primary-gradient">
 	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-			<div>
+		<div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-8 items-start">
+			<div class="space-y-4">
 				<h3 class="text-lg font-semibold mb-4">{{ __('medical platform') }}</h3>
 				<p class="text-white-400 mb-4">{{ __('footer tagline') }}</p>
-				<div class="flex space-x-4">
+				<div class="flex space-x-4 rtl:space-x-reverse">
 					<a href="#" class="text-gray-400 hover:text-white transition"><i
 							class="fab fa-facebook"></i></a>
 					<a href="#" class="text-gray-400 hover:text-white transition"><i
@@ -16,14 +16,11 @@
 							class="fab fa-instagram"></i></a>
 				</div>
 			</div>
-			<div>
+			<div class="space-y-2">
 				<h3 class="text-lg font-semibold mb-4">{{ __('quick links') }}</h3>
 				<ul class="space-y-2">
-					<li><a href="#"
-							class="text-gray-400 hover:text-white transition">{{ __('about us') }}</a>
-					</li>
-					<li><a href="#"
-							class="text-gray-400 hover:text-white transition">{{ __('services') }}</a>
+					<li><a href="{{ route('about') }}"
+							class="text-gray-400 hover:text-white transition">{{ __('legal.about.title') }}</a>
 					</li>
 					<li><a href="{{ route('clinics') }}"
 							class="text-gray-400 hover:text-white transition">{{ __('clinics') }}</a>
@@ -33,7 +30,7 @@
 					</li>
 				</ul>
 			</div>
-			<div>
+			<div class="space-y-2">
 				<h3 class="text-lg font-semibold mb-4">{{ __('services') }}</h3>
 				<ul class="space-y-2">
 					<li><a href="{{ route('products') }}"
@@ -50,8 +47,28 @@
 					</li>
 				</ul>
 			</div>
-			<div>
-				<h3 class="text-lg font-semibold mb-4">{{ __('contact info') }}</h3>
+			<div class="space-y-2">
+				<h3 class="text-lg font-semibold mb-4">{{ __('shipping & returns') }}</h3>
+				<ul class="space-y-2">
+					<li><a href="{{ route('terms') }}"
+							class="text-gray-400 hover:text-white transition">{{ __('legal.terms.title') }}</a>
+					</li>
+					<li><a href="{{ route('privacy') }}"
+							class="text-gray-400 hover:text-white transition">{{ __('legal.privacy.title') }}</a>
+					</li>
+					<li><a href="{{ route('return-policy') }}"
+							class="text-gray-400 hover:text-white transition">{{ __('legal.refund.title') }}</a>
+					</li>
+					<li><a href="{{ route('shipping-policy') }}"
+							class="text-gray-400 hover:text-white transition">{{ __('legal.shipping.title') }}</a>
+					</li>
+				</ul>
+			</div>
+			<div class="space-y-2">
+				<h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+					<i class="fas fa-headset text-white"></i>
+					<span>{{ __('contact info') }}</span>
+				</h3>
 				<ul class="space-y-2 text-white-400">
 					<li><i class="fas fa-phone mr-2"></i> +00201035067680</li>
 					<li><i class="fas fa-envelope mr-2"></i>
