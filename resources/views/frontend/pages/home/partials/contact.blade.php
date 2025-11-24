@@ -16,24 +16,27 @@
 			{{ __('provides contact us that are essential for the platform to get in touch with us.') }}
 		</p>
 	</div>
-	<form action="#" method="POST" class="mx-auto mt-16 max-w-xl sm:mt-20">
+	<form id="contact-form" action="#" method="POST" class="mx-auto mt-16 max-w-xl sm:mt-20">
+		@csrf
 		<div class="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
 			<div>
 				<label for="first-name"
 					class="block text-sm/6 font-semibold text-gray-900">{{ __('first name') }}</label>
 				<div class="mt-2.5">
-					<input id="first-name" type="text" name="first-name"
+					<input id="first-name" type="text" name="first_name"
 						autocomplete="given-name"
 						class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" />
+					<span class="text-danger text-sm error-message" id="error-first_name"></span>
 				</div>
 			</div>
 			<div>
 				<label for="last-name"
 					class="block text-sm/6 font-semibold text-gray-900">{{ __('last name') }}</label>
 				<div class="mt-2.5">
-					<input id="last-name" type="text" name="last-name"
+					<input id="last-name" type="text" name="last_name"
 						autocomplete="family-name"
 						class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" />
+					<span class="text-danger text-sm error-message" id="error-last_name"></span>
 				</div>
 			</div>
 			<div class="sm:col-span-2">
@@ -43,6 +46,7 @@
 					<input id="company" type="text" name="company"
 						autocomplete="organization"
 						class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" />
+					<span class="text-danger text-sm error-message" id="error-company"></span>
 				</div>
 			</div>
 			<div class="sm:col-span-2">
@@ -51,6 +55,7 @@
 				<div class="mt-2.5">
 					<input id="email" type="email" name="email" autocomplete="email"
 						class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" />
+					<span class="text-danger text-sm error-message" id="error-email"></span>
 				</div>
 			</div>
 			<div class="sm:col-span-2">
@@ -60,10 +65,11 @@
 					<div
 						class="flex rounded-md bg-white outline-1 -outline-offset-1 outline-gray-300 has-[input:focus-within]:outline-2 has-[input:focus-within]:-outline-offset-2 has-[input:focus-within]:outline-indigo-600">
 
-						<input id="phone-number" type="text" name="phone-number"
+						<input id="phone-number" type="text" name="phone"
 							placeholder="123-456-7890"
 							class="block min-w-0 grow py-1.5 pr-3 pl-1 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none sm:text-sm/6" />
 					</div>
+					<span class="text-danger text-sm error-message" id="error-phone"></span>
 				</div>
 			</div>
 			<div class="sm:col-span-2">
@@ -72,34 +78,121 @@
 				<div class="mt-2.5">
 					<textarea id="message" name="message" rows="4"
 						class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600"></textarea>
+					<span class="text-danger text-sm error-message" id="error-message"></span>
 				</div>
 			</div>
-			<div class="flex gap-x-4 sm:col-span-2">
-				<div class="flex h-6 items-center">
-					<div
-						class="group relative inline-flex w-8 shrink-0 rounded-full bg-gray-200 p-px inset-ring inset-ring-gray-900/5 outline-offset-2 outline-indigo-600 transition-colors duration-200 ease-in-out has-checked:bg-indigo-600 has-focus-visible:outline-2">
-						<span
-							class="size-4 rounded-full bg-white shadow-xs ring-1 ring-gray-900/5 transition-transform duration-200 ease-in-out group-has-checked:translate-x-3.5"></span>
+			<div class="sm:col-span-2">
+				<div class="flex items-start gap-x-3">
+					<div class="flex h-6 items-center">
 						<input id="agree-to-policies" type="checkbox"
-							name="agree-to-policies"
-							aria-label="Agree to policies"
-							class="absolute inset-0 appearance-none focus:outline-hidden" />
+							name="agree_to_policies"
+							value="1"
+							class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
 					</div>
+					<label for="agree-to-policies" class="text-sm leading-6 text-gray-600 cursor-pointer">
+						{{ __('by selecting this, you agree to our') }}
+						<a href="{{ route('privacy') }}" target="_blank"
+							class="font-semibold text-indigo-600 hover:text-indigo-500">
+							{{ __('privacy policy') }}</a>.
+					</label>
 				</div>
-				<label for="agree-to-policies" class="text-sm/6 text-gray-600">
-					{{ __('by selecting this, you agree to our') }}
-					<a href="#"
-						class="font-semibold whitespace-nowrap text-primary-color">
-						{{ __('privacy policy') }}</a>.
-				</label>
+				<span class="text-danger text-sm error-message" id="error-agree_to_policies"></span>
 			</div>
 		</div>
 		<div class="mt-10">
-			<button type="submit"
+			<button type="submit" id="submit-btn"
 				class="block w-full rounded-md bg-primary-gradient px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
 				{{ __("let's talk") }}</button>
 		</div>
 	</form>
+
+	<!-- Contact Form JavaScript -->
+	<style>
+		.border-danger {
+			border-color: #dc3545 !important;
+			outline-color: #dc3545 !important;
+		}
+		.error-message {
+			display: block;
+			margin-top: 0.25rem;
+			color: #dc3545;
+			font-size: 0.875rem;
+		}
+		/* Make checkbox cursor pointer */
+		#agree-to-policies {
+			cursor: pointer;
+		}
+	</style>
+	<script>
+		$(document).ready(function() {
+			$('#contact-form').on('submit', function(e) {
+				e.preventDefault();
+
+				// Clear previous errors
+				$('.error-message').text('');
+				$('input, textarea').removeClass('border-danger');
+				$('.border-danger').removeClass('border-danger');
+
+				// Disable submit button and show loading
+				const submitBtn = $('#submit-btn');
+				const originalText = submitBtn.html();
+				submitBtn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> {{ __("sending") }}...');
+
+				$.ajax({
+					url: '{{ route("contact.store") }}',
+					method: 'POST',
+					data: $(this).serialize(),
+					success: function(response) {
+						if(response.success) {
+							// Show success message
+							toastr.success(response.message);
+
+							// Reset form
+							$('#contact-form')[0].reset();
+
+							// Reset checkbox toggle visually
+							$('#agree-to-policies').prop('checked', false);
+						}
+					},
+					error: function(xhr) {
+						if(xhr.status === 422) {
+							// Validation errors
+							const errors = xhr.responseJSON.errors;
+							$.each(errors, function(key, value) {
+								// Display error message
+								$('#error-' + key).text(value[0]);
+
+								// Add red border to input/textarea
+								const input = $('[name="' + key + '"]');
+								if(input.length) {
+									input.addClass('border-danger');
+									// For inputs inside a container (like phone)
+									input.closest('div').find('input').addClass('border-danger');
+								}
+							});
+							toastr.error('{{ __("Please fix the errors and try again") }}');
+						} else {
+							// Server error
+							toastr.error(xhr.responseJSON.message || '{{ __("An error occurred. Please try again.") }}');
+						}
+					},
+					complete: function() {
+						// Re-enable submit button
+						submitBtn.prop('disabled', false).html(originalText);
+					}
+				});
+			});
+
+			// Clear error on input change
+			$('#contact-form input, #contact-form textarea, #contact-form select').on('input change', function() {
+				const fieldName = $(this).attr('name');
+				if(fieldName) {
+					$('#error-' + fieldName).text('');
+					$(this).removeClass('border-danger');
+				}
+			});
+		});
+	</script>
 	<span class="absolute top-0 right-0 -z-10">
 		<svg width="388" height="250" viewBox="0 0 388 220" fill="none" class="shape"
 			xmlns="http://www.w3.org/2000/svg">

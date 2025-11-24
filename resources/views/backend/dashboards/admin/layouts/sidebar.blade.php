@@ -43,6 +43,20 @@
                 </a>
             </li>
 
+            <!-- Contact Messages -->
+            <li class="side-nav-item">
+                <a href="{{ route('admin.contact-messages.index') }}" class="side-nav-link">
+                    <i class="uil-envelope"></i>
+                    <span> {{ __('Contact Messages') }} </span>
+                    @php
+                        $newMessagesCount = \App\Models\ContactMessage::where('status', 'new')->count();
+                    @endphp
+                    @if($newMessagesCount > 0)
+                        <span class="badge bg-danger rounded-pill ms-1">{{ $newMessagesCount }}</span>
+                    @endif
+                </a>
+            </li>
+
             <!-- Users Management -->
             <li class="side-nav-item">
                 <a data-bs-toggle="collapse" href="#sidebarUsersManagement" aria-expanded="false"
