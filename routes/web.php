@@ -5,6 +5,7 @@ use App\Http\Controllers\Frontend\JobController;
 use App\Http\Controllers\Frontend\BlogController;
 use App\Http\Controllers\Frontend\CartController;
 use App\Http\Controllers\Frontend\HomeController;
+use App\Http\Controllers\Frontend\ContactController;
 use App\Http\Controllers\Frontend\ClinicController;
 use App\Http\Controllers\Frontend\CourseController;
 use App\Http\Controllers\Frontend\ProductController;
@@ -32,6 +33,9 @@ Route::group(
 		Route::get('/return-policy', [HomeController::class, 'returnPolicy'])->name('return-policy');
 		Route::get('/shipping-policy', [HomeController::class, 'shippingPolicy'])->name('shipping-policy');
 		Route::get('/about-us', [HomeController::class, 'aboutUs'])->name('about');
+
+		// Contact Form
+		Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
 
 		Route::get('/products', [ProductController::class, 'index'])->name('products');
 		Route::get('/products/{id}', [ProductController::class, 'show'])->name('products.show');

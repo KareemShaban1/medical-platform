@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Backend\Dashboards\Admin\AnnouncementController;
 use App\Http\Controllers\Backend\Dashboards\Admin\BlogCategoryController;
+use App\Http\Controllers\Backend\Dashboards\Admin\ContactMessageController;
 use App\Http\Controllers\Backend\Dashboards\Admin\DashboardController;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 use Illuminate\Support\Facades\Route;
@@ -35,6 +36,16 @@ Route::group(
     function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])
             ->name('dashboard');
+
+        // Contact Messages
+        Route::group(['prefix' => 'contact-messages', 'as' => 'contact-messages.'], function () {
+            Route::get('/', [ContactMessageController::class, 'index'])->name('index');
+            Route::get('/data', [ContactMessageController::class, 'data'])->name('data');
+            Route::get('/{id}', [ContactMessageController::class, 'show'])->name('show');
+            Route::post('/{id}/update-status', [ContactMessageController::class, 'updateStatus'])->name('update-status');
+            Route::post('/{id}/add-notes', [ContactMessageController::class, 'addNotes'])->name('add-notes');
+            Route::delete('/{id}', [ContactMessageController::class, 'destroy'])->name('destroy');
+        });
 
         // Users Management
         Route::group(['prefix' => 'users-management', 'as' => 'users-management.'], function () {
