@@ -6,10 +6,18 @@ use App\Http\Controllers\Controller;
 use App\Models\Cart;
 use App\Models\Offer;
 use App\Models\Order;
+use App\Models\Subscription;
 use App\PaymentGateways\PaymentGatewayManager;
 use App\Repository\Clinic\RequestRepository;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Notification;
+use App\Models\Admin;
+use App\Notifications\SubscriptionCreatedNotification;
+use App\Mail\SubscriptionCreatedUserMail;
+use App\Mail\SubscriptionCreatedAdminMail;
 
 class PaymentController extends Controller
 {
@@ -615,13 +623,16 @@ class PaymentController extends Controller
                     ->with('error', 'Order not found');
             }
 
-            // Check if this is an order (ORD-) or offer (OFFER-) payment
+            // Check if this is an order (ORD-), offer (OFFER-), or subscription (SUB-) payment
             if (strpos($orderNumber, 'ORD-') === 0) {
                 // Handle order flow
                 return $this->handleOrderPayment($request, $gateway, $orderNumber, $paymentData);
             } elseif (strpos($orderNumber, 'OFFER-') === 0) {
                 // Handle offer flow
                 return $this->handleOfferPayment($request, $gateway, $orderNumber, $paymentData);
+            } elseif (strpos($orderNumber, 'SUB-') === 0) {
+                // Handle subscription flow
+                return $this->handleSubscriptionPayment($request, $gateway, $orderNumber, $paymentData);
             } else {
                 // Try to find as order (backward compatibility)
                 $order = Order::where('number', $orderNumber)->first();
@@ -1065,6 +1076,257 @@ class PaymentController extends Controller
     }
 
     /**
+     * Handle subscription payment return
+     */
+    protected function handleSubscriptionPayment(Request $request, string $gateway, string $subscriptionNumber, array $paymentData)
+    {
+        // Get pending subscription data from session
+        $pendingSubscription = session()->get('pending_subscription');
+        
+        if (!$pendingSubscription) {
+            Log::error('Pending subscription data not found in session', [
+                'subscription_number' => $subscriptionNumber,
+            ]);
+            return redirect()->route('subscriptions.plans', ['type' => 'doctor'])
+                ->with('error', 'Subscription session expired. Please try again.');
+        }
+
+        // Verify subscription number matches
+        if ($pendingSubscription['subscription_number'] !== $subscriptionNumber) {
+            Log::error('Subscription number mismatch', [
+                'session_number' => $pendingSubscription['subscription_number'],
+                'request_number' => $subscriptionNumber,
+            ]);
+            return redirect()->route('subscriptions.plans', ['type' => 'doctor'])
+                ->with('error', 'Invalid subscription request.');
+        }
+
+        // Verify payment with gateway
+        $gatewayInstance = $this->paymentGatewayManager->gateway($gateway);
+
+        // For Paymob, check if payment was successful
+        $successValue = $paymentData['success'] ?? $request->get('success');
+        $errorOccurred = $paymentData['error_occured'] ?? $paymentData['error_occurred'] ?? $request->get('error_occured') ?? $request->get('error_occurred');
+        
+        $success = $successValue === 'true'
+            || $successValue === true
+            || $successValue === '1'
+            || $request->get('txn_response_code') === 'APPROVED';
+        
+        if ($errorOccurred === 'true' || $errorOccurred === true || $errorOccurred === '1') {
+            $success = false;
+        }
+
+        // Get plan to determine type for redirect
+        $plan = \App\Models\Plan::find($pendingSubscription['plan_id']);
+        $planType = $plan ? $plan->plan_type : 'doctor';
+
+        if ($gateway === 'paymob') {
+            $transactionId = $paymentData['id'] ?? $paymentData['transaction_id'] ?? $request->get('id');
+
+            // If payment successful, create subscription
+            if ($success && $transactionId) {
+                try {
+                    DB::beginTransaction();
+
+                    // Resolve entity
+                    $entityClass = $pendingSubscription['entity_type'];
+                    $entity = $entityClass::find($pendingSubscription['entity_id']);
+
+                    if (!$entity) {
+                        throw new \Exception('Entity not found');
+                    }
+
+                    // Create subscription service instance
+                    $subscriptionService = app(\App\Services\Subscription\SubscriptionService::class);
+
+                    // Create subscription after payment confirmation
+                    $subscription = $subscriptionService->subscribe($entity, $plan, [
+                        'status' => 'active',
+                        'auto_renew' => $pendingSubscription['auto_renew'] ?? false,
+                        'preserve_dates' => true,
+                        'payment_method' => 1, // Online
+                        'payment_status' => 'paid',
+                        'payment_gateway' => $gateway,
+                        'transaction_id' => $transactionId,
+                    ]);
+
+                    DB::commit();
+
+                    // Send notifications
+                    $this->sendSubscriptionNotifications($subscription, $pendingSubscription);
+
+                    session()->forget([
+                        'pending_subscription',
+                        'payment_subscription_number',
+                    ]);
+
+                    return redirect()->route('subscriptions.plans', ['type' => $planType])
+                        ->with('success', 'Payment processed successfully and subscription activated');
+                } catch (\Exception $e) {
+                    DB::rollBack();
+                    Log::error('Failed to create subscription after payment', [
+                        'error' => $e->getMessage(),
+                        'pending_subscription' => $pendingSubscription,
+                    ]);
+
+                    return redirect()->route('subscriptions.plans', ['type' => $planType])
+                        ->with('error', 'Payment successful but subscription creation failed. Please contact support.');
+                }
+            }
+
+            // If payment failed
+            $errorDetails = $this->extractPaymentError($paymentData, $gatewayInstance);
+            $errorMessage = $this->buildUserFriendlyErrorMessage($errorDetails);
+            
+            Log::error('Payment failed (subscription)', [
+                'subscription_number' => $subscriptionNumber,
+                'error_details' => $errorDetails,
+            ]);
+
+            session()->forget([
+                'pending_subscription',
+                'payment_subscription_number',
+            ]);
+
+            return redirect()->route('subscriptions.plans', ['type' => $planType])
+                ->with('error', $errorMessage);
+        }
+
+        // For other gateways, use verifyPayment
+        $paymentResponse = $gatewayInstance->verifyPayment($paymentData);
+
+        if ($paymentResponse->success) {
+            try {
+                DB::beginTransaction();
+
+                // Resolve entity
+                $entityClass = $pendingSubscription['entity_type'];
+                $entity = $entityClass::find($pendingSubscription['entity_id']);
+
+                if (!$entity) {
+                    throw new \Exception('Entity not found');
+                }
+
+                // Create subscription service instance
+                $subscriptionService = app(\App\Services\Subscription\SubscriptionService::class);
+
+                // Create subscription after payment confirmation
+                $subscription = $subscriptionService->subscribe($entity, $plan, [
+                    'status' => 'active',
+                    'auto_renew' => $pendingSubscription['auto_renew'] ?? false,
+                    'preserve_dates' => true,
+                    'payment_method' => 1, // Online
+                    'payment_status' => 'paid',
+                    'payment_gateway' => $gateway,
+                    'transaction_id' => $paymentResponse->transactionId,
+                ]);
+
+                DB::commit();
+
+                // Send notifications
+                $this->sendSubscriptionNotifications($subscription, $pendingSubscription);
+
+                session()->forget([
+                    'pending_subscription',
+                    'payment_subscription_number',
+                ]);
+
+                return redirect()->route('subscriptions.plans', ['type' => $planType])
+                    ->with('success', 'Payment processed successfully and subscription activated');
+            } catch (\Exception $e) {
+                DB::rollBack();
+                Log::error('Failed to create subscription after payment', [
+                    'error' => $e->getMessage(),
+                    'pending_subscription' => $pendingSubscription,
+                ]);
+
+                return redirect()->route('subscriptions.plans', ['type' => $planType])
+                    ->with('error', 'Payment successful but subscription creation failed. Please contact support.');
+            }
+        }
+
+        // If payment failed
+        $errorDetails = $this->extractPaymentError($paymentData, $gatewayInstance);
+        $errorMessage = $this->buildUserFriendlyErrorMessage($errorDetails, $paymentResponse->message);
+        
+        Log::error('Payment failed (subscription - other gateway)', [
+            'subscription_number' => $subscriptionNumber,
+            'gateway' => $gateway,
+            'error_details' => $errorDetails,
+        ]);
+
+        session()->forget([
+            'pending_subscription',
+            'payment_subscription_number',
+        ]);
+
+        return redirect()->route('subscriptions.plans', ['type' => $planType])
+            ->with('error', $errorMessage);
+    }
+
+    /**
+     * Send subscription notifications
+     */
+    protected function sendSubscriptionNotifications(Subscription $subscription, array $pendingData = null)
+    {
+        try {
+            // Get the requesting user based on subscribable type or pending data
+            $requestingUser = null;
+            
+            if ($pendingData) {
+                // Use pending data to get requesting user
+                $requestingUserClass = $pendingData['requesting_user_type'] ?? null;
+                $requestingUserId = $pendingData['requesting_user_id'] ?? null;
+                if ($requestingUserClass && $requestingUserId) {
+                    $requestingUser = $requestingUserClass::find($requestingUserId);
+                }
+            }
+            
+            // Fallback to entity-based lookup
+            if (!$requestingUser) {
+                if ($subscription->subscribable_type === \App\Models\ClinicUser::class) {
+                    $requestingUser = $subscription->subscribable;
+                } elseif ($subscription->subscribable_type === \App\Models\Clinic::class) {
+                    $requestingUser = $subscription->subscribable->users()->first();
+                } elseif ($subscription->subscribable_type === \App\Models\Supplier::class) {
+                    $requestingUser = $subscription->subscribable->supplierUsers()->first();
+                }
+            }
+
+            // Notify subscribed user
+            if ($requestingUser && !empty($requestingUser->email)) {
+                Mail::to($requestingUser->email)->send(new SubscriptionCreatedUserMail($subscription));
+            }
+
+            // Notify admin by mail
+            $adminEmail = config('mail.admin_address') ?? config('mail.from.address');
+            if ($adminEmail) {
+                Mail::to($adminEmail)->send(new SubscriptionCreatedAdminMail($subscription));
+            }
+
+            // Notify all active admins in database
+            $admins = Admin::where('status', true)->get();
+            if ($admins->count()) {
+                Notification::send($admins, new SubscriptionCreatedNotification($subscription, true));
+
+                Log::info('subscription.db_notification.admin', [
+                    'context' => 'payment_callback',
+                    'subscription_id' => $subscription->id,
+                    'plan_id' => $subscription->plan_id,
+                    'admin_ids' => $admins->pluck('id')->all(),
+                    'status' => 'stored_in_database',
+                ]);
+            }
+        } catch (\Exception $e) {
+            Log::error('Failed to send subscription notifications', [
+                'subscription_id' => $subscription->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    /**
      * Handle payment gateway callback/webhook from the payment gateway
      */
     public function paymentCallback(Request $request, string $gateway)
@@ -1073,10 +1335,16 @@ class PaymentController extends Controller
             $gatewayInstance = $this->paymentGatewayManager->gateway($gateway);
             $paymentResponse = $gatewayInstance->verifyPayment($request->all());
 
-            // Find order by transaction ID or order number
+            // Find order or subscription by transaction ID
             $order = null;
+            $subscription = null;
+            
             if ($paymentResponse->transactionId) {
                 $order = Order::where('transaction_id', $paymentResponse->transactionId)
+                    ->orWhere('payment_gateway', $gateway)
+                    ->first();
+                    
+                $subscription = Subscription::where('transaction_id', $paymentResponse->transactionId)
                     ->orWhere('payment_gateway', $gateway)
                     ->first();
             }
@@ -1088,6 +1356,22 @@ class PaymentController extends Controller
                     ]);
                 } else {
                     $order->update([
+                        'payment_status' => 'failed',
+                    ]);
+                }
+            }
+
+            // Handle subscription (only update if exists - creation happens in paymentReturn with session data)
+            if ($subscription) {
+                if ($paymentResponse->success) {
+                    $subscription->update([
+                        'payment_status' => 'paid',
+                        'status' => 'active',
+                        'transaction_id' => $paymentResponse->transactionId,
+                    ]);
+                    $this->sendSubscriptionNotifications($subscription);
+                } else {
+                    $subscription->update([
                         'payment_status' => 'failed',
                     ]);
                 }

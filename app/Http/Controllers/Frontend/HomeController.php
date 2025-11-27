@@ -15,19 +15,23 @@ use App\Models\City;
 use App\Models\Area;
 use App\Services\Subscription\PlanService;
 use App\Services\Subscription\SubscriptionService;
+use App\PaymentGateways\PaymentGatewayManager;
 use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
     protected PlanService $planService;
     protected SubscriptionService $subscriptionService;
+    protected PaymentGatewayManager $paymentGatewayManager;
 
     public function __construct(
         PlanService $planService,
-        SubscriptionService $subscriptionService
+        SubscriptionService $subscriptionService,
+        PaymentGatewayManager $paymentGatewayManager
     ) {
         $this->planService = $planService;
         $this->subscriptionService = $subscriptionService;
+        $this->paymentGatewayManager = $paymentGatewayManager;
     }
 
     public function index(Request $request)
@@ -60,6 +64,8 @@ class HomeController extends Controller
             );
         }
 
+        $availableGateways = $this->paymentGatewayManager->getAvailableGateways();
+
         // If AJAX request, return only the plans grid
         if ($request->ajax() || $request->wantsJson()) {
             $plans = match($planType) {
@@ -70,13 +76,13 @@ class HomeController extends Controller
 
             return response()->json([
                 'success' => true,
-                'html' => view('frontend.pages.home.partials.plans-grid', compact('plans', 'planType', 'currentSubscription'))->render()
+                'html' => view('frontend.pages.home.partials.plans-grid', compact('plans', 'planType', 'currentSubscription', 'availableGateways'))->render()
             ]);
         }
 
 		return view('frontend.pages.home.index', compact(
             'jobs', 'suppliers', 'rentalSpaces', 'courses', 'products', 'clinics',
-            'doctorPlans', 'clinicPlans', 'supplierPlans', 'planType', 'currentSubscription'
+            'doctorPlans', 'clinicPlans', 'supplierPlans', 'planType', 'currentSubscription', 'availableGateways'
         ));
     }
 

@@ -7,9 +7,13 @@ use App\Services\Subscription\PlanService;
 use App\Services\Subscription\SubscriptionService;
 use App\Models\Plan;
 use App\Models\Admin;
+use App\Models\Subscription;
 use App\Notifications\SubscriptionCreatedNotification;
+use App\PaymentGateways\PaymentGatewayManager;
+use App\Enums\PaymentGateway;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
@@ -20,13 +24,16 @@ class SubscriptionController extends Controller
 {
     protected PlanService $planService;
     protected SubscriptionService $subscriptionService;
+    protected PaymentGatewayManager $paymentGatewayManager;
 
     public function __construct(
         PlanService $planService,
-        SubscriptionService $subscriptionService
+        SubscriptionService $subscriptionService,
+        PaymentGatewayManager $paymentGatewayManager
     ) {
         $this->planService = $planService;
         $this->subscriptionService = $subscriptionService;
+        $this->paymentGatewayManager = $paymentGatewayManager;
     }
 
     public function plans(Request $request)
@@ -52,7 +59,9 @@ class SubscriptionController extends Controller
             );
         }
 
-        return view('frontend.pages.subscriptions.plans', compact('plans', 'type', 'currentSubscription'));
+        $availableGateways = $this->paymentGatewayManager->getAvailableGateways();
+
+        return view('frontend.pages.subscriptions.plans', compact('plans', 'type', 'currentSubscription', 'availableGateways'));
     }
 
     public function subscribe(Request $request, $planId)
@@ -63,6 +72,23 @@ class SubscriptionController extends Controller
                 'status' => 'error',
                 'message' => __('Invalid request format')
             ], 400);
+        }
+
+        // Validate payment gateway
+        $request->validate([
+            'payment_gateway' => 'required|string|in:'.implode(',', PaymentGateway::values()),
+            'pay_method' => 'nullable|string|in:card,wallet',
+            'wallet_phone' => 'nullable|string|regex:/^01[0-9]{9}$/',
+        ]);
+
+        // Additional validation: wallet phone required when paymob wallet is selected
+        if ($request->payment_gateway === 'paymob' && $request->pay_method === 'wallet') {
+            $request->validate([
+                'wallet_phone' => 'required|string|regex:/^01[0-9]{9}$/',
+            ], [
+                'wallet_phone.required' => __('Wallet phone is required for wallet payments'),
+                'wallet_phone.regex' => __('Wallet phone must be a valid Egyptian mobile number (01XXXXXXXXX)'),
+            ]);
         }
 
         try {
@@ -129,54 +155,186 @@ class SubscriptionController extends Controller
         }
 
         try {
-            $subscription = $this->subscriptionService->subscribe($entity, $plan, [
-                'status' => 'active',
-                'auto_renew' => $request->boolean('auto_renew', false),
-                'preserve_dates' => true,
-            ]);
+            DB::beginTransaction();
 
-            // Notify subscribed user
-            if ($requestingUser && !empty($requestingUser->email)) {
-                Mail::to($requestingUser->email)->send(new SubscriptionCreatedUserMail($subscription));
+            // Get payment gateway
+            $gatewayName = $request->payment_gateway;
+            $gateway = $this->paymentGatewayManager->gateway($gatewayName);
+            $payMethod = $request->input('pay_method', 'card');
+            $walletPhone = $request->input('wallet_phone');
+
+            if (!$gateway->isEnabled()) {
+                DB::rollBack();
+                return response()->json([
+                    'status' => 'error',
+                    'message' => __('Payment gateway is not enabled')
+                ], 422);
             }
 
-            // Notify admin by mail
-            $adminEmail = config('mail.admin_address') ?? config('mail.from.address');
-            if ($adminEmail) {
-                Mail::to($adminEmail)->send(new SubscriptionCreatedAdminMail($subscription));
-            }
+            // Generate subscription number (SUB-XXXXXX)
+            $subscriptionNumber = 'SUB-' . strtoupper(uniqid());
 
-            // Notify all active admins in database (Laravel notifications)
-            $admins = Admin::where('status', true)->get();
-            if ($admins->count()) {
-                Notification::send($admins, new SubscriptionCreatedNotification($subscription, true));
+            // For online payment gateways, don't create subscription until payment is confirmed
+            // For COD, create subscription immediately
+            $isOnlinePayment = $gatewayName !== 'cod';
+            $paymentResponse = null;
 
-                Log::info('subscription.db_notification.admin', [
-                    'context' => 'frontend_subscribe',
-                    'subscription_id' => $subscription->id,
+            if ($isOnlinePayment) {
+                // If paymob wallet selected, require wallet phone
+                if ($gatewayName === 'paymob' && $payMethod === 'wallet' && empty($walletPhone)) {
+                    DB::rollBack();
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => __('Wallet phone is required for wallet payments')
+                    ], 422);
+                }
+
+                // Prepare payment data
+                $nameParts = explode(' ', $requestingUser->name ?? 'Customer', 2);
+                $firstName = $nameParts[0] ?? 'Customer';
+                $lastName = $nameParts[1] ?? 'Name';
+
+                $paymentData = [
+                    'amount' => $plan->price,
+                    'order_id' => null,
+                    'order_number' => $subscriptionNumber,
+                    'currency' => 'EGP',
+                    'method' => $payMethod,
+                    'wallet_phone' => $walletPhone,
+                    'customer' => [
+                        'first_name' => $firstName,
+                        'last_name' => $lastName,
+                        'email' => $requestingUser->email ?? 'customer@example.com',
+                        'phone' => $requestingUser->phone ?? '01000000000',
+                        'city' => 'Cairo',
+                        'country' => 'EG',
+                        'street' => ($entity instanceof \App\Models\Clinic ? $entity->address : 'NA') ?? 'NA',
+                        'building' => 'NA',
+                        'apartment' => 'NA',
+                        'floor' => 'NA',
+                        'postal_code' => 'NA',
+                        'state' => 'NA',
+                    ],
+                ];
+
+                // Process payment first - if this fails, don't create subscription
+                $paymentResponse = $gateway->processPayment($paymentData);
+
+                if (!$paymentResponse->success) {
+                    DB::rollBack();
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => $paymentResponse->message,
+                    ], 400);
+                }
+
+                // Store subscription data in session - will create subscription after payment confirmation
+                session()->put('pending_subscription', [
                     'plan_id' => $plan->id,
-                    'admin_ids' => $admins->pluck('id')->all(),
-                    'status' => 'stored_in_database',
+                    'entity_type' => get_class($entity),
+                    'entity_id' => $entity->id,
+                    'requesting_user_id' => $requestingUser->id,
+                    'requesting_user_type' => get_class($requestingUser),
+                    'auto_renew' => $request->boolean('auto_renew', false),
+                    'subscription_number' => $subscriptionNumber,
+                    'payment_gateway' => $gatewayName,
+                    'transaction_id' => $paymentResponse->transactionId,
+                ]);
+                session()->put('payment_subscription_number', $subscriptionNumber);
+
+                DB::commit();
+
+                // Return response with redirect URL for payment
+                return response()->json([
+                    'status' => 'success',
+                    'message' => __('Please complete payment to activate your subscription'),
+                    'redirect_url' => $paymentResponse->redirectUrl,
+                    'requires_payment' => true,
                 ]);
             } else {
-                Log::warning('subscription.db_notification.admin_skipped', [
-                    'context' => 'frontend_subscribe',
-                    'subscription_id' => $subscription->id,
-                    'plan_id' => $plan->id,
-                    'reason' => 'no_active_admins',
+                // For COD, create subscription immediately
+                $subscription = $this->subscriptionService->subscribe($entity, $plan, [
+                    'status' => 'active',
+                    'auto_renew' => $request->boolean('auto_renew', false),
+                    'preserve_dates' => true,
+                    'payment_method' => 0, // COD
+                    'payment_status' => 'paid',
+                    'payment_gateway' => 'cod',
+                    'transaction_id' => null,
+                ]);
+
+                // Process COD payment
+                $nameParts = explode(' ', $requestingUser->name ?? 'Customer', 2);
+                $firstName = $nameParts[0] ?? 'Customer';
+                $lastName = $nameParts[1] ?? 'Name';
+
+                $paymentData = [
+                    'amount' => $plan->price,
+                    'order_id' => $subscription->id,
+                    'order_number' => $subscriptionNumber,
+                    'currency' => 'EGP',
+                    'customer' => [
+                        'first_name' => $firstName,
+                        'last_name' => $lastName,
+                        'email' => $requestingUser->email ?? 'customer@example.com',
+                        'phone' => $requestingUser->phone ?? '01000000000',
+                        'city' => 'Cairo',
+                        'country' => 'EG',
+                        'street' => ($entity instanceof \App\Models\Clinic ? $entity->address : 'NA') ?? 'NA',
+                        'building' => 'NA',
+                        'apartment' => 'NA',
+                        'floor' => 'NA',
+                        'postal_code' => 'NA',
+                        'state' => 'NA',
+                    ],
+                ];
+
+                $paymentResponse = $gateway->processPayment($paymentData);
+
+                if (!$paymentResponse->success) {
+                    throw new \Exception($paymentResponse->message);
+                }
+
+                DB::commit();
+
+                // Send notifications for COD (paid immediately)
+                if ($requestingUser && !empty($requestingUser->email)) {
+                    Mail::to($requestingUser->email)->send(new SubscriptionCreatedUserMail($subscription));
+                }
+
+                // Notify admin by mail
+                $adminEmail = config('mail.admin_address') ?? config('mail.from.address');
+                if ($adminEmail) {
+                    Mail::to($adminEmail)->send(new SubscriptionCreatedAdminMail($subscription));
+                }
+
+                // Notify all active admins in database
+                $admins = Admin::where('status', true)->get();
+                if ($admins->count()) {
+                    Notification::send($admins, new SubscriptionCreatedNotification($subscription, true));
+
+                    Log::info('subscription.db_notification.admin', [
+                        'context' => 'frontend_subscribe_cod',
+                        'subscription_id' => $subscription->id,
+                        'plan_id' => $plan->id,
+                        'admin_ids' => $admins->pluck('id')->all(),
+                        'status' => 'stored_in_database',
+                    ]);
+                }
+
+                return response()->json([
+                    'status' => 'success',
+                    'message' => __('Subscribed successfully'),
+                    'subscription' => $subscription->load('plan'),
                 ]);
             }
-
-            return response()->json([
-                'status' => 'success',
-                'message' => __('Subscribed successfully'),
-                'subscription' => $subscription->load('plan'),
-            ]);
         } catch (\Exception $e) {
-            \Log::error('Subscription error: ' . $e->getMessage(), [
+            DB::rollBack();
+
+            Log::error('Subscription error: ' . $e->getMessage(), [
                 'plan_id' => $planId,
-                'entity_type' => get_class($entity),
-                'entity_id' => $entity->id,
+                'entity_type' => isset($entity) ? get_class($entity) : null,
+                'entity_id' => isset($entity) ? $entity->id : null,
                 'trace' => $e->getTraceAsString()
             ]);
 

@@ -1780,5 +1780,11 @@
     "Subscription Required" : "الاشتراك مطلوب",
     "Please subscribe to continue." : "يرجى الاشتراك للمتابعة.",
     "unlimited": "غير محدود",
-    "You cannot subscribe to a lower plan while you have an active subscription." : "لا يمكنك الاشتراك في خطة أقل بينما لديك اشتراك نشط."
+    "You cannot subscribe to a lower plan while you have an active subscription." : "لا يمكنك الاشتراك في خطة أقل بينما لديك اشتراك نشط.",
+    "Subscribe to Plan?" : "اشترك في الخطة",
+    "Are you sure you want to subscribe to this plan?" : "هل أنت متأكد من أنك تريد الاشتراك في هذه الخطة؟",
+    "Yes, Subscribe" : "نعم، اشترك",
+    "Proceed": "متابعة",
+    "Choose Payment Type": "اختر نوع الدفع",
+    "wallet phone": "رقم الهاتف"
 }

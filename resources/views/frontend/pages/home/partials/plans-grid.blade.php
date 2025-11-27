@@ -115,7 +115,7 @@ function subscribeToPlan(planId, planLevel, planPrice, btn) {
                 confirmButtonColor: '#079184',
             }).then((result) => {
                 if (result.isConfirmed) {
-                    performSubscriptionRequest(planId, btn);
+                    showPaymentModal(planId, planPrice, btn);
                 }
             });
             return;
@@ -132,15 +132,194 @@ function subscribeToPlan(planId, planLevel, planPrice, btn) {
         confirmButtonColor: '#079184',
     }).then((result) => {
         if (result.isConfirmed) {
-            performSubscriptionRequest(planId, btn);
+            showPaymentModal(planId, planPrice, btn);
         }
     });
 }
 
-function performSubscriptionRequest(planId, btn) {
+function showPaymentModal(planId, planPrice, btn) {
+    // Get gateways from the page
+    const availableGateways = @json($availableGateways ?? []);
+
+    if (availableGateways.length === 0) {
+        // No gateways available, proceed without payment selection
+        performSubscriptionRequest(planId, btn, 'cod');
+        return;
+    }
+
+    // Build payment options HTML
+    let paymentOptionsHtml = '<div class="text-right mt-4">';
+    paymentOptionsHtml += '<label class="block text-sm font-semibold text-gray-700 mb-3">{{ __('Select Payment Method') }}</label>';
+
+    availableGateways.forEach((gateway, index) => {
+        const isChecked = index === 0 ? 'checked' : '';
+        paymentOptionsHtml += `
+            <label class="flex items-center p-3 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 transition mb-2">
+                <input type="radio" name="payment_gateway" value="${gateway.name}" class="w-4 h-4 text-blue-600" ${isChecked}>
+                <div class="mx-3 text-right">
+                    <div class="font-semibold text-gray-900">${gateway.display_name}</div>
+                    <div class="text-sm text-gray-600">
+                        ${gateway.name === 'cod' ? '{{ __('pay when you receive your order') }}' : '{{ __('pay securely online') }}'}
+                    </div>
+                </div>
+            </label>
+        `;
+    });
+
+    // Add Paymob sub-options
+    const hasPaymob = availableGateways.some(g => g.name === 'paymob');
+    const defaultGateway = availableGateways.length > 0 ? availableGateways[0].name : 'cod';
+    const showPaymobOptions = hasPaymob && defaultGateway === 'paymob';
+
+    if (hasPaymob) {
+        paymentOptionsHtml += `
+            <div id="paymob-options" class="mt-3" style="${showPaymobOptions ? '' : 'display: none;'}">
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-3">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">{{ __('Choose Payment Type') }}:</label>
+                    <div class="flex items-center gap-4">
+                        <label class="flex items-center gap-2 cursor-pointer p-2 rounded hover:bg-blue-100 transition">
+                            <input type="radio" name="pay_method" value="card" class="text-blue-600" checked>
+                            <span class="text-sm font-medium text-gray-800">
+                                <i class="fas fa-credit-card ml-2"></i>{{ __('Credit Card') }}
+                            </span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer p-2 rounded hover:bg-blue-100 transition">
+                            <input type="radio" name="pay_method" value="wallet" class="text-blue-600">
+                            <span class="text-sm font-medium text-gray-800">
+                                <i class="fas fa-wallet mr-1"></i>{{ __('Mobile Wallet') }}
+                            </span>
+                        </label>
+                    </div>
+                </div>
+                <div id="wallet-phone-wrapper" class="hidden">
+                    <label class="block text-sm text-gray-700 mb-1">{{ __('wallet phone') }} <span class="text-red-500">*</span> ({{ __('egypt') }}: 01XXXXXXXXX)</label>
+                    <input type="tel" id="wallet-phone" placeholder="01XXXXXXXXX" pattern="^01[0-9]{9}$" maxlength="11" class="w-full border rounded px-3 py-2 focus:outline-none focus:ring" required>
+                    <p class="text-xs text-gray-500 mt-1">{{ __('Enter your mobile wallet number starting with 01') }}</p>
+                </div>
+            </div>
+        `;
+    }
+
+    paymentOptionsHtml += '</div>';
+
+    Swal.fire({
+        title: '{{ __('Select Payment Method') }}',
+        html: paymentOptionsHtml,
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonText: '{{ __('Proceed') }}',
+        cancelButtonText: '{{ __('Cancel') }}',
+        confirmButtonColor: '#079184',
+        didOpen: () => {
+            // Use setTimeout to ensure DOM is fully rendered
+            setTimeout(() => {
+                // Function to toggle Paymob options
+                const togglePaymobOptions = () => {
+                    const selectedGateway = document.querySelector('input[name="payment_gateway"]:checked')?.value;
+                    const paymobOptions = document.getElementById('paymob-options');
+                    if (paymobOptions) {
+                        if (selectedGateway === 'paymob') {
+                            paymobOptions.classList.remove('hidden');
+                            paymobOptions.style.display = 'block';
+                        } else {
+                            paymobOptions.classList.add('hidden');
+                            paymobOptions.style.display = 'none';
+                        }
+                    }
+                };
+
+                // Function to toggle wallet phone input
+                const toggleWalletPhone = () => {
+                    const selectedMethod = document.querySelector('input[name="pay_method"]:checked')?.value;
+                    const walletWrapper = document.getElementById('wallet-phone-wrapper');
+                    if (walletWrapper) {
+                        if (selectedMethod === 'wallet') {
+                            walletWrapper.classList.remove('hidden');
+                            walletWrapper.style.display = 'block';
+                        } else {
+                            walletWrapper.classList.add('hidden');
+                            walletWrapper.style.display = 'none';
+                        }
+                    }
+                };
+
+                // Show/hide Paymob options based on selected gateway
+                const gatewayRadios = document.querySelectorAll('input[name="payment_gateway"]');
+                gatewayRadios.forEach(radio => {
+                    radio.addEventListener('change', togglePaymobOptions);
+                    // Also trigger on click for immediate feedback
+                    radio.addEventListener('click', togglePaymobOptions);
+                });
+
+                // Show/hide wallet phone input based on payment method
+                const methodRadios = document.querySelectorAll('input[name="pay_method"]');
+                methodRadios.forEach(radio => {
+                    radio.addEventListener('change', toggleWalletPhone);
+                    radio.addEventListener('click', toggleWalletPhone);
+                });
+
+                // Initialize on open (check current selection)
+                togglePaymobOptions();
+                toggleWalletPhone();
+            }, 100);
+        }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const selectedGateway = document.querySelector('input[name="payment_gateway"]:checked')?.value || 'cod';
+                    const payMethod = document.querySelector('input[name="pay_method"]:checked')?.value || 'card';
+                    const walletPhone = document.getElementById('wallet-phone')?.value || '';
+
+                    // Validate wallet phone if wallet method is selected
+                    if (selectedGateway === 'paymob' && payMethod === 'wallet') {
+                        const phoneRegex = /^01[0-9]{9}$/;
+                        if (!walletPhone || !phoneRegex.test(walletPhone)) {
+                            Swal.fire({
+                                title: '{{ __('Validation Error') }}',
+                                text: '{{ __('Please enter a valid Egyptian mobile number (01XXXXXXXXX)') }}',
+                                icon: 'error',
+                                confirmButtonColor: '#079184',
+                            });
+                            return;
+                        }
+                    }
+
+                    performSubscriptionRequest(planId, btn, selectedGateway, payMethod, walletPhone);
+                }
+            });
+}
+
+function performSubscriptionRequest(planId, btn, paymentGateway = 'cod', payMethod = 'card', walletPhone = '') {
     if (btn) {
         btn.disabled = true;
         btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>{{ __('Processing...') }}';
+    }
+
+    // Get CSRF token from meta tag
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+    if (!csrfToken) {
+        Swal.fire({
+            title: '{{ __('Error') }}',
+            text: '{{ __('CSRF token not found. Please refresh the page.') }}',
+            icon: 'error',
+            confirmButtonColor: '#079184',
+        });
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = '{{ __('Subscribe Now') }}';
+        }
+        return;
+    }
+
+    const requestBody = {
+        payment_gateway: paymentGateway,
+        auto_renew: false
+    };
+
+    if (paymentGateway === 'paymob') {
+        requestBody.pay_method = payMethod;
+        if (payMethod === 'wallet' && walletPhone) {
+            requestBody.wallet_phone = walletPhone;
+        }
     }
 
     fetch(`{{ route('subscriptions.subscribe', ['planId' => '__PLAN_ID__']) }}`.replace('__PLAN_ID__', planId), {
@@ -149,11 +328,9 @@ function performSubscriptionRequest(planId, btn) {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
             'X-Requested-With': 'XMLHttpRequest',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            'X-CSRF-TOKEN': csrfToken
         },
-        body: JSON.stringify({
-            auto_renew: false
-        }),
+        body: JSON.stringify(requestBody),
         credentials: 'same-origin'
     })
     .then(async res => {
@@ -171,6 +348,12 @@ function performSubscriptionRequest(planId, btn) {
     })
     .then(data => {
         if (data.status === 'success') {
+            // If payment redirect is required, redirect to payment page
+            if (data.requires_payment && data.redirect_url) {
+                window.location.href = data.redirect_url;
+                return;
+            }
+
             Swal.fire({
                 title: '{{ __('Success!') }}',
                 text: data.message || '{{ __('Subscribed successfully') }}',
