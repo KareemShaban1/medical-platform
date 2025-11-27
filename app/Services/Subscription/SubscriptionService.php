@@ -154,6 +154,10 @@ class SubscriptionService
                 'end_date' => $endDate,
                 'status' => $options['status'] ?? 'active',
                 'auto_renew' => $options['auto_renew'] ?? false,
+                'payment_method' => $options['payment_method'] ?? 0,
+                'payment_status' => $options['payment_status'] ?? 'pending',
+                'payment_gateway' => $options['payment_gateway'] ?? null,
+                'transaction_id' => $options['transaction_id'] ?? null,
             ]);
 
             // Initialize feature usages

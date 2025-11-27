@@ -18,6 +18,10 @@ class Subscription extends Model
         'end_date',
         'status',
         'auto_renew',
+        'payment_method',
+        'payment_status',
+        'payment_gateway',
+        'transaction_id',
     ];
 
     protected $casts = [

@@ -231,11 +231,11 @@
 		<!-- Plans Grid -->
 		<div id="plans-container">
 			@if($planType === 'doctor')
-				@include('frontend.pages.home.partials.plans-grid', ['plans' => $doctorPlans, 'type' => 'doctor', 'currentSubscription' => $currentSubscription])
+				@include('frontend.pages.home.partials.plans-grid', ['plans' => $doctorPlans, 'type' => 'doctor', 'currentSubscription' => $currentSubscription, 'availableGateways' => $availableGateways ?? []])
 			@elseif($planType === 'clinic')
-				@include('frontend.pages.home.partials.plans-grid', ['plans' => $clinicPlans, 'type' => 'clinic', 'currentSubscription' => $currentSubscription])
+				@include('frontend.pages.home.partials.plans-grid', ['plans' => $clinicPlans, 'type' => 'clinic', 'currentSubscription' => $currentSubscription, 'availableGateways' => $availableGateways ?? []])
 			@else
-				@include('frontend.pages.home.partials.plans-grid', ['plans' => $supplierPlans, 'type' => 'supplier', 'currentSubscription' => $currentSubscription])
+				@include('frontend.pages.home.partials.plans-grid', ['plans' => $supplierPlans, 'type' => 'supplier', 'currentSubscription' => $currentSubscription, 'availableGateways' => $availableGateways ?? []])
 			@endif
 		</div>
 	</div>
