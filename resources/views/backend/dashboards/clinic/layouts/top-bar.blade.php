@@ -94,9 +94,15 @@
                    </div>
 
                    <!-- item-->
+                   <a href="{{ route('home') }}" class="dropdown-item notify-item">
+                       <i class="uil-home-alt me-1"></i>
+                       <span>{{ __('Back to Home') }}</span>
+                   </a>
+
+                   <!-- item-->
                    <a href="" class="dropdown-item notify-item">
                        <i class="mdi mdi-account-circle me-1"></i>
-                       <span>My Account</span>
+                       <span>{{ __('My Account') }}</span>
                    </a>
 
                    <div class="dropdown-divider"></div>
