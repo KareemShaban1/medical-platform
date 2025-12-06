@@ -273,6 +273,16 @@ Route::group(
         Route::put('course-enrollments/{id}/status', [\App\Http\Controllers\Backend\Dashboards\Admin\CourseEnrollmentController::class, 'updateStatus'])->name('course-enrollments.update-status');
         Route::delete('course-enrollments/{id}', [\App\Http\Controllers\Backend\Dashboards\Admin\CourseEnrollmentController::class, 'destroy'])->name('course-enrollments.destroy');
 
+        // Translations Management
+        Route::group(['prefix' => 'translations', 'as' => 'translations.'], function () {
+            Route::get('/', [\App\Http\Controllers\Backend\Dashboards\Admin\TranslationController::class, 'index'])->name('index');
+            Route::get('/data', [\App\Http\Controllers\Backend\Dashboards\Admin\TranslationController::class, 'data'])->name('data');
+            Route::post('/update', [\App\Http\Controllers\Backend\Dashboards\Admin\TranslationController::class, 'update'])->name('update');
+            Route::post('/store', [\App\Http\Controllers\Backend\Dashboards\Admin\TranslationController::class, 'store'])->name('store');
+            Route::post('/scan', [\App\Http\Controllers\Backend\Dashboards\Admin\TranslationController::class, 'scan'])->name('scan');
+            Route::delete('/destroy', [\App\Http\Controllers\Backend\Dashboards\Admin\TranslationController::class, 'destroy'])->name('destroy');
+        });
+
         // Subscription Management
         Route::group(['prefix' => 'subscriptions'], function () {
             Route::get('analytics', [\App\Http\Controllers\Backend\Dashboards\Admin\SubscriptionManagementController::class, 'analytics'])->name('subscriptions.analytics');

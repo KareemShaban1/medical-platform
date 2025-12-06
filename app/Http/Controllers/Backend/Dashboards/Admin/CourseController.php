@@ -22,11 +22,15 @@ class CourseController extends Controller
      */
     public function index()
     {
+        // apply permissions
+        abort_if(!hasPermission('view courses'), 403, __('You are not authorized to view courses'));
         return view('backend.dashboards.admin.pages.courses.index');
     }
 
     public function data()
     {
+        // apply permissions
+        abort_if(!hasPermission('view courses'), 403, __('You are not authorized to view courses'));
         return $this->courseRepo->data();
     }
 
@@ -35,6 +39,8 @@ class CourseController extends Controller
      */
     public function create()
     {
+        // apply permissions
+        abort_if(!hasPermission('create course'), 403, __('You are not authorized to create course'));
         return view('backend.dashboards.admin.pages.courses.create');
     }
 
@@ -43,6 +49,8 @@ class CourseController extends Controller
      */
     public function store(StoreCourseRequest $request)
     {
+        // apply permissions
+        abort_if(!hasPermission('create course'), 403, __('You are not authorized to create course'));
         return $this->courseRepo->store($request);
     }
 
@@ -51,6 +59,8 @@ class CourseController extends Controller
      */
     public function show($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('view courses'), 403, __('You are not authorized to view course'));
         $course = $this->courseRepo->show($id);
 
         return request()->ajax()
@@ -63,6 +73,8 @@ class CourseController extends Controller
      */
     public function edit($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('update course'), 403, __('You are not authorized to update course'));
         $course = $this->courseRepo->show($id);
 
         return view('backend.dashboards.admin.pages.courses.edit', compact('course'));
@@ -73,11 +85,15 @@ class CourseController extends Controller
      */
     public function update(UpdateCourseRequest $request, $id)
     {
+        // apply permissions
+        abort_if(!hasPermission('update course'), 403, __('You are not authorized to update course'));
         return $this->courseRepo->update($request, $id);
     }
 
     public function updateStatus(Request $request)
     {
+        // apply permissions
+        abort_if(!hasPermission('toggle course status'), 403, __('You are not authorized to update course status'));
         return $this->courseRepo->updateStatus($request);
     }
 
@@ -86,26 +102,36 @@ class CourseController extends Controller
      */
     public function destroy($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('delete course'), 403, __('You are not authorized to delete course'));
         return $this->courseRepo->destroy($id);
     }
 
     public function trash()
     {
+        // apply permissions
+        abort_if(!hasPermission('view trash courses'), 403, __('You are not authorized to view trash courses'));
         return view('backend.dashboards.admin.pages.courses.trash');
     }
 
     public function trashData()
     {
+        // apply permissions
+        abort_if(!hasPermission('view trash courses'), 403, __('You are not authorized to view trash courses'));
         return $this->courseRepo->trashData();
     }
 
     public function restore($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('restore course'), 403, __('You are not authorized to restore course'));
         return $this->courseRepo->restore($id);
     }
 
     public function forceDelete($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('force delete course'), 403, __('You are not authorized to force delete course'));
         return $this->courseRepo->forceDelete($id);
     }
 }

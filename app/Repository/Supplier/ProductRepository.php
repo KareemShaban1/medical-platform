@@ -229,25 +229,44 @@ class ProductRepository implements ProductRepositoryInterface
 
     private function productActions($item): string
     {
-        $showUrl = route('supplier.products.show', $item->id);
-        return <<<HTML
-        <div class="d-flex gap-2">
-            <a href="{$showUrl}" class="btn btn-sm btn-success" title="View"><i class="fa fa-eye"></i></a>
-            <button onclick="editProduct({$item->id})" class="btn btn-sm btn-info" title="Edit"><i class="fa fa-edit"></i></button>
-            <button onclick="deleteProduct({$item->id})" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>
-        </div>
-        HTML;
+        $html = '<div class="d-flex gap-2">';
+
+        if (hasPermission('view products')) {
+            $showUrl = route('supplier.products.show', $item->id);
+            $html .= '<a href="' . $showUrl . '" class="btn btn-sm btn-success" title="View"><i class="fa fa-eye"></i></a>';
+        }
+
+        if (hasPermission('update product')) {
+            $html .= '<button onclick="editProduct(' . $item->id . ')" class="btn btn-sm btn-info" title="Edit"><i class="fa fa-edit"></i></button>';
+        }
+
+        if (hasPermission('delete product')) {
+            $html .= '<button onclick="deleteProduct(' . $item->id . ')" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>';
+        }
+
+        $html .= '</div>';
+
+        return $html;
     }
 
     private function trashActions($item): string
     {
-        return <<<HTML
-        <button class="btn btn-sm btn-success" onclick="restoreProduct({$item->id})">
-            <i class="mdi mdi-restore"></i> Restore
-        </button>
-        <button class="btn btn-sm btn-danger" onclick="forceDeleteProduct({$item->id})">
-            <i class="mdi mdi-delete-forever"></i> Delete
-        </button>
-        HTML;
+        $html = '<div class="d-flex gap-2">';
+
+        if (hasPermission('restore product')) {
+            $html .= '<button class="btn btn-sm btn-success" onclick="restoreProduct(' . $item->id . ')">';
+            $html .= '<i class="mdi mdi-restore"></i> Restore';
+            $html .= '</button>';
+        }
+
+        if (hasPermission('force delete product')) {
+            $html .= '<button class="btn btn-sm btn-danger" onclick="forceDeleteProduct(' . $item->id . ')">';
+            $html .= '<i class="mdi mdi-delete-forever"></i> Delete';
+            $html .= '</button>';
+        }
+
+        $html .= '</div>';
+
+        return $html;
     }
 }

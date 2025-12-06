@@ -21,11 +21,15 @@ class GovernorateController extends Controller
      */
     public function index()
     {
+        // apply permissions
+        abort_if(!hasPermission('view governorates'), 403, __('You are not authorized to view governorates'));
         return view('backend.dashboards.admin.pages.governorates.index');
     }
 
     public function data()
     {
+        // apply permissions
+        abort_if(!hasPermission('view governorates'), 403, __('You are not authorized to view governorates'));
         return $this->governorateRepo->data();
     }
 
@@ -34,6 +38,8 @@ class GovernorateController extends Controller
      */
     public function create()
     {
+        // apply permissions
+        abort_if(!hasPermission('create governorate'), 403, __('You are not authorized to create governorate'));
         return view('backend.dashboards.admin.pages.governorates.create');
     }
 
@@ -42,6 +48,8 @@ class GovernorateController extends Controller
      */
     public function store(StoreGovernorateRequest $request)
     {
+        // apply permissions
+        abort_if(!hasPermission('create governorate'), 403, __('You are not authorized to create governorate'));
         return $this->governorateRepo->store($request);
     }
 
@@ -50,6 +58,8 @@ class GovernorateController extends Controller
      */
     public function show($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('view governorates'), 403, __('You are not authorized to view governorate'));
         $governorate = $this->governorateRepo->show($id);
 
         return request()->ajax()
@@ -62,6 +72,8 @@ class GovernorateController extends Controller
      */
     public function edit($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('update governorate'), 403, __('You are not authorized to update governorate'));
         $governorate = $this->governorateRepo->show($id);
 
         return view('backend.dashboards.admin.pages.governorates.edit', compact('governorate'));
@@ -72,6 +84,8 @@ class GovernorateController extends Controller
      */
     public function update(UpdateGovernorateRequest $request, $id)
     {
+        // apply permissions
+        abort_if(!hasPermission('update governorate'), 403, __('You are not authorized to update governorate'));
         return $this->governorateRepo->update($request, $id);
     }
 
@@ -81,26 +95,36 @@ class GovernorateController extends Controller
      */
     public function destroy($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('delete governorate'), 403, __('You are not authorized to delete governorate'));
         return $this->governorateRepo->destroy($id);
     }
 
     public function trash()
     {
+        // apply permissions
+        abort_if(!hasPermission('view trash governorates'), 403, __('You are not authorized to view trash governorates'));
         return view('backend.dashboards.admin.pages.governorates.trash');
     }
 
     public function trashData()
     {
+        // apply permissions
+        abort_if(!hasPermission('view trash governorates'), 403, __('You are not authorized to view trash governorates'));
         return $this->governorateRepo->trashData();
     }
 
     public function restore($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('restore governorate'), 403, __('You are not authorized to restore governorate'));
         return $this->governorateRepo->restore($id);
     }
 
     public function forceDelete($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('force delete governorate'), 403, __('You are not authorized to force delete governorate'));
         return $this->governorateRepo->forceDelete($id);
     }
 }

@@ -10,6 +10,9 @@ class NotificationController extends Controller
 {
     public function index()
     {
+        // apply permissions
+        abort_if(!hasPermission('view notifications'), 403, __('You are not authorized to view notifications'));
+
         $notifications = auth('supplier')->user()
             ->notifications()
             ->latest()
@@ -20,6 +23,9 @@ class NotificationController extends Controller
 
     public function getLatest()
     {
+        // apply permissions
+        abort_if(!hasPermission('view notifications'), 403, __('You are not authorized to view notifications'));
+
         $notifications = auth('supplier')->user()
             ->unreadNotifications()
             ->latest()
@@ -46,6 +52,9 @@ class NotificationController extends Controller
 
     public function markAsRead($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('mark notification as read'), 403, __('You are not authorized to mark notification as read'));
+
         $notification = auth('supplier')->user()
             ->notifications()
             ->where('id', $id)
@@ -66,6 +75,9 @@ class NotificationController extends Controller
 
     public function markAllAsRead()
     {
+        // apply permissions
+        abort_if(!hasPermission('mark all notifications as read'), 403, __('You are not authorized to mark all notifications as read'));
+
         auth('supplier')->user()->unreadNotifications->markAsRead();
 
         return response()->json(['status' => 'success']);
@@ -73,6 +85,9 @@ class NotificationController extends Controller
 
     public function data()
     {
+        // apply permissions
+        abort_if(!hasPermission('view notifications'), 403, __('You are not authorized to view notifications'));
+
         $notifications = auth('supplier')->user()
             ->notifications()
             ->latest();

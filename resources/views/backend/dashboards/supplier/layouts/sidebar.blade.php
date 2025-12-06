@@ -36,7 +36,9 @@
 
   			<!-- <li class="side-nav-title side-nav-item">Navigation</li> -->
 
+  			@hasPermission('view dashboard')
   			<li class="side-nav-item">
+
   				<a href="{{ route('supplier.dashboard') }}" class="side-nav-link">
   					<i class="uil-home-alt"></i>
   					<span>
@@ -44,8 +46,10 @@
   					</span>
   				</a>
   			</li>
+  			@endhasPermission
 
 
+  			@hasPermission('view supplier info')
   			<!-- Supplier Info -->
   			<li class="side-nav-item">
   				<a href="{{ route('supplier.settings.supplier-info') }}"
@@ -54,6 +58,7 @@
   					<span> {{ __('Supplier Info') }} </span>
   				</a>
   			</li>
+  			@endhasPermission
 
 
 
@@ -66,13 +71,15 @@
   				</a>
   				<div class="collapse" id="sidebarProducts">
   					<ul class="side-nav-second-level">
+  						@hasPermission('view products')
   						<li>
-
   							<a
   								href="{{ route('supplier.products.index') }}">
   								<span> {{ __('Products') }} </span>
   							</a>
   						</li>
+  						@endhasPermission
+  						@hasPermission('view trash products')
   						<li>
   							<a
   								href="{{ route('supplier.products.trash') }}">
@@ -80,12 +87,14 @@
   								</span>
   							</a>
   						</li>
+  						@endhasPermission
 
   					</ul>
   				</div>
   			</li>
 
   			<!-- Users Management -->
+  			@hasAnyPermission('view users')
   			<li class="side-nav-item">
   				<a data-bs-toggle="collapse" href="#sidebarUsers" aria-expanded="false"
   					aria-controls="sidebarUsers" class="side-nav-link">
@@ -95,21 +104,27 @@
   				</a>
   				<div class="collapse" id="sidebarUsers">
   					<ul class="side-nav-second-level">
+  						@hasPermission('view users')
   						<li>
   							<a href="{{ route('supplier.users.index') }}">
   								<span> {{ __('Users') }} </span>
   							</a>
   						</li>
+  						@endhasPermission
+  						@hasPermission('view roles')
   						<li>
   							<a href="{{ route('supplier.roles.index') }}">
   								<span> {{ __('Roles') }} </span>
   							</a>
   						</li>
+  						@endhasPermission
 
   					</ul>
   				</div>
   			</li>
+  			@endhasAnyPermission
 
+  			@hasAnyPermission('view specialized categories')
   			<!-- Specialized Categories Management -->
   			<li class="side-nav-item">
   				<a data-bs-toggle="collapse" href="#sidebarCategories" aria-expanded="false"
@@ -120,6 +135,7 @@
   				</a>
   				<div class="collapse" id="sidebarCategories">
   					<ul class="side-nav-second-level">
+  						@hasPermission('view specialized categories')
   						<li>
   							<a
   								href="{{ route('supplier.specialized-categories.index') }}">
@@ -127,10 +143,13 @@
   								</span>
   							</a>
   						</li>
+  						@endhasPermission
   					</ul>
   				</div>
   			</li>
+  			@endhasAnyPermission
 
+  			@hasAnyPermission('view available requests')
   			<!-- Available Requests -->
   			<li class="side-nav-item">
   				<a data-bs-toggle="collapse" href="#sidebarAvailableRequests"
@@ -142,6 +161,7 @@
   				</a>
   				<div class="collapse" id="sidebarAvailableRequests">
   					<ul class="side-nav-second-level">
+  						@hasPermission('view available requests')
   						<li>
   							<a
   								href="{{ route('supplier.available-requests.index') }}">
@@ -149,10 +169,13 @@
   								</span>
   							</a>
   						</li>
+  						@endhasPermission
   					</ul>
   				</div>
   			</li>
+  			@endhasAnyPermission
 
+  			@hasAnyPermission('view offers')
   			<!-- Offers Management -->
   			<li class="side-nav-item">
   				<a data-bs-toggle="collapse" href="#sidebarOffers" aria-expanded="false"
@@ -163,15 +186,19 @@
   				</a>
   				<div class="collapse" id="sidebarOffers">
   					<ul class="side-nav-second-level">
+  						@hasPermission('view offers')
   						<li>
   							<a href="{{ route('supplier.offers.index') }}">
   								<span> {{ __('All Offers') }} </span>
   							</a>
   						</li>
+  						@endhasPermission
   					</ul>
   				</div>
   			</li>
+  			@endhasAnyPermission
 
+  			@hasAnyPermission('view orders')
   			<!-- Orders Management -->
   			<li class="side-nav-item">
   				<a data-bs-toggle="collapse" href="#sidebarOrders" aria-expanded="false"
@@ -182,37 +209,44 @@
   				</a>
   				<div class="collapse" id="sidebarOrders">
   					<ul class="side-nav-second-level">
+  						@hasPermission('view orders')
   						<li>
   							<a href="{{ route('supplier.orders.index') }}">
   								<span> {{ __('My Orders') }} </span>
   							</a>
   						</li>
+  						@endhasPermission
   					</ul>
   				</div>
   			</li>
+  			@endhasAnyPermission
 
-			<!-- My Subscription -->
-			<li class="side-nav-item">
-				<a href="{{ route('supplier.subscriptions.index') }}" class="side-nav-link">
-					<i class="uil-credit-card"></i>
-					<span> {{ __('My Subscription') }} </span>
-				</a>
-			</li>
+  			@hasPermission('view subscriptions')
+  			<!-- My Subscription -->
+  			<li class="side-nav-item">
+  				<a href="{{ route('supplier.subscriptions.index') }}" class="side-nav-link">
+  					<i class="uil-credit-card"></i>
+  					<span> {{ __('My Subscription') }} </span>
+  				</a>
+  			</li>
+  			@endhasPermission
 
-			<!-- Notifications -->
-			<li class="side-nav-item">
-				<a href="{{ route('supplier.notifications.index') }}" class="side-nav-link">
-					<i class="uil-bell"></i>
-					<span> {{ __('Notifications') }} </span>
-					<span class="badge bg-danger rounded-pill"
-						id="sidebar-notification-count"
-						style="display: none;">0</span>
-				</a>
-			</li>
+  			@hasPermission('view notifications')
+  			<!-- Notifications -->
+  			<li class="side-nav-item">
+  				<a href="{{ route('supplier.notifications.index') }}" class="side-nav-link">
+  					<i class="uil-bell"></i>
+  					<span> {{ __('Notifications') }} </span>
+  					<span class="badge bg-danger rounded-pill"
+  						id="sidebar-notification-count"
+  						style="display: none;">0</span>
+  				</a>
+  			</li>
+  			@endhasPermission
 
 
 
-		</ul>
+  		</ul>
 
   		<!-- End Sidebar -->
 

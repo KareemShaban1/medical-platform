@@ -166,47 +166,65 @@ class AdminUserRepository implements AdminUserRepositoryInterface
 
     private function adminUserActions($item): string
     {
+        $user = auth('admin')->user();
+        setPermissionsTeamId(Admin::TeamId);
+
         $actions = '';
 
-        // Show action
-        $actions .= '<button class="btn btn-sm btn-info me-1" onclick="showAdminUser(' . $item->id . ')">
-                        <i class="fa fa-eye"></i>
-                    </button>';
+        // Show action - always visible if user can view admin users
+        if ($user->can('view admin users')) {
+            $actions .= '<button class="btn btn-sm btn-info me-1" onclick="showAdminUser(' . $item->id . ')">
+                            <i class="fa fa-eye"></i>
+                        </button>';
+        }
 
         // Edit action
-        $actions .= '<button class="btn btn-sm btn-warning me-1" onclick="editAdminUser(' . $item->id . ')">
-                        <i class="fa fa-edit"></i>
-                    </button>';
+        if ($user->can('update admin user')) {
+            $actions .= '<button class="btn btn-sm btn-warning me-1" onclick="editAdminUser(' . $item->id . ')">
+                            <i class="fa fa-edit"></i>
+                        </button>';
+        }
 
         // Toggle status action
-        $statusIcon = $item->status ? 'fa-toggle-on' : 'fa-toggle-off';
-        $statusClass = $item->status ? 'btn-success' : 'btn-secondary';
-        $actions .= '<button class="btn btn-sm ' . $statusClass . ' me-1" onclick="toggleAdminUserStatus(' . $item->id . ')">
-                        <i class="fa ' . $statusIcon . '"></i>
-                    </button>';
+        if ($user->can('toggle admin user status')) {
+            $statusIcon = $item->status ? 'fa-toggle-on' : 'fa-toggle-off';
+            $statusClass = $item->status ? 'btn-success' : 'btn-secondary';
+            $actions .= '<button class="btn btn-sm ' . $statusClass . ' me-1" onclick="toggleAdminUserStatus(' . $item->id . ')">
+                            <i class="fa ' . $statusIcon . '"></i>
+                        </button>';
+        }
 
         // Delete action
-        $actions .= '<button class="btn btn-sm btn-danger" onclick="deleteAdminUser(' . $item->id . ')">
-                        <i class="fa fa-trash"></i>
-                    </button>';
+        if ($user->can('delete admin user')) {
+            $actions .= '<button class="btn btn-sm btn-danger" onclick="deleteAdminUser(' . $item->id . ')">
+                            <i class="fa fa-trash"></i>
+                        </button>';
+        }
 
-        return $actions;
+        return $actions ?: '<span class="text-muted">No actions available</span>';
     }
 
     private function adminUserTrashActions($item): string
     {
+        $user = auth('admin')->user();
+        setPermissionsTeamId(Admin::TeamId);
+
         $actions = '';
 
         // Restore action
-        $actions .= '<button class="btn btn-sm btn-success me-1" onclick="restoreAdminUser(' . $item->id . ')">
-                        <i class="fa fa-undo"></i>
-                    </button>';
+        if ($user->can('restore admin user')) {
+            $actions .= '<button class="btn btn-sm btn-success me-1" onclick="restoreAdminUser(' . $item->id . ')">
+                            <i class="fa fa-undo"></i>
+                        </button>';
+        }
 
         // Force delete action
-        $actions .= '<button class="btn btn-sm btn-danger" onclick="forceDeleteAdminUser(' . $item->id . ')">
-                        <i class="fa fa-trash"></i>
-                    </button>';
+        if ($user->can('force delete admin user')) {
+            $actions .= '<button class="btn btn-sm btn-danger" onclick="forceDeleteAdminUser(' . $item->id . ')">
+                            <i class="fa fa-trash"></i>
+                        </button>';
+        }
 
-        return $actions;
+        return $actions ?: '<span class="text-muted">No actions available</span>';
     }
 }

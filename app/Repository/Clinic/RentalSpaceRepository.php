@@ -192,26 +192,42 @@ class RentalSpaceRepository implements RentalSpaceRepositoryInterface
 
     private function rentalSpaceActions($item): string
     {
-        $editUrl = route('clinic.rental-spaces.edit', $item->id);
-        $showUrl = route('clinic.rental-spaces.show', $item->id);
-
-        return <<<HTML
-        <div class="d-flex gap-2">
-           <a href="{$showUrl}" class="btn btn-sm btn-info"><i class="fa fa-eye"></i></a>
-           <a href="{$editUrl}" class="btn btn-sm btn-warning text-white"><i class="fa fa-edit"></i></a>
-           <button onclick="deleteRentalSpace({$item->id})" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>
-        </div>
-        HTML;
+        $html = '<div class="d-flex gap-2">';
+        
+        if (hasPermission('view rental spaces')) {
+            $showUrl = route('clinic.rental-spaces.show', $item->id);
+            $html .= '<a href="' . $showUrl . '" class="btn btn-sm btn-info"><i class="fa fa-eye"></i></a>';
+        }
+        
+        if (hasPermission('update rental space')) {
+            $editUrl = route('clinic.rental-spaces.edit', $item->id);
+            $html .= '<a href="' . $editUrl . '" class="btn btn-sm btn-warning text-white"><i class="fa fa-edit"></i></a>';
+        }
+        
+        if (hasPermission('delete rental space')) {
+            $html .= '<button onclick="deleteRentalSpace(' . $item->id . ')" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>';
+        }
+        
+        $html .= '</div>';
+        
+        return $html;
     }
 
     private function rentalSpaceTrashActions($item): string
     {
-        return <<<HTML
-        <div class="d-flex gap-2">
-           <button onclick="restore({$item->id})" class="btn btn-sm btn-info" title="Restore"><i class="fa fa-undo"></i></button>
-           <button onclick="forceDelete({$item->id})" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>
-        </div>
-        HTML;
+        $html = '<div class="d-flex gap-2">';
+        
+        if (hasPermission('restore rental space')) {
+            $html .= '<button onclick="restore(' . $item->id . ')" class="btn btn-sm btn-info" title="Restore"><i class="fa fa-undo"></i></button>';
+        }
+        
+        if (hasPermission('force delete rental space')) {
+            $html .= '<button onclick="forceDelete(' . $item->id . ')" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>';
+        }
+        
+        $html .= '</div>';
+        
+        return $html;
     }
 
 

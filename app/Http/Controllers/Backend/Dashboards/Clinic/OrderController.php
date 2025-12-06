@@ -10,6 +10,9 @@ class OrderController extends Controller
 {
     public function index()
     {
+        // apply permissions
+        abort_if(!hasPermission('view orders'), 403, __('You are not authorized to view orders'));
+
         $user = Auth::guard('clinic')->user();
 
         $orders = Order::where('clinic_user_id', $user->id)
@@ -23,6 +26,9 @@ class OrderController extends Controller
 
     public function show($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('view order'), 403, __('You are not authorized to view order'));
+
         $user = Auth::guard('clinic')->user();
 
         $order = Order::with(['items.product', 'items.supplier'])

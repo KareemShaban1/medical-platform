@@ -17,6 +17,8 @@ class UsersManagementController extends Controller
     // Overview page with analytics
     public function index()
     {
+        // apply permissions
+        abort_if(!hasPermission('view system management'), 403, __('You are not authorized to view overview stats'));
         $stats = $this->repo->getOverviewStats();
         return view('backend.dashboards.admin.pages.users-management.index', compact('stats'));
     }
@@ -24,16 +26,22 @@ class UsersManagementController extends Controller
     // Clinic Users
     public function clinics()
     {
+        // apply permissions
+        abort_if(!hasPermission('view system clinics'), 403, __('You are not authorized to view clinics'));
         return view('backend.dashboards.admin.pages.users-management.clinics');
     }
 
     public function clinicsData()
     {
+        // apply permissions
+        abort_if(!hasPermission('view system clinics'), 403, __('You are not authorized to view clinics'));
         return $this->repo->getClinicsData();
     }
 
     public function clinicDetails($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('view system clinics'), 403, __('You are not authorized to view clinics'));
         $clinic = $this->repo->getClinicDetails($id);
         return view('backend.dashboards.admin.pages.users-management.clinic-details', compact('clinic'));
     }
@@ -41,16 +49,23 @@ class UsersManagementController extends Controller
     // Clinic Users
     public function clinicUsers()
     {
+        // apply permissions
+        abort_if(!hasPermission('view system clinic users'), 403, __('You are not authorized to view clinic users'));
+
         return view('backend.dashboards.admin.pages.users-management.clinic-users');
     }
 
     public function clinicUsersData()
     {
+        // apply permissions
+        abort_if(!hasPermission('view system clinic users'), 403, __('You are not authorized to view clinic users'));
         return $this->repo->getClinicUsersData();
     }
 
     public function clinicUserDetails($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('view system clinic users'), 403, __('You are not authorized to view clinic users'));
         $clinicUser = $this->repo->getClinicUserDetails($id);
         return view('backend.dashboards.admin.pages.users-management.clinic-user-details', compact('clinicUser'));
     }
@@ -58,16 +73,22 @@ class UsersManagementController extends Controller
     // Patients
     public function patients()
     {
+        // apply permissions
+        abort_if(!hasPermission('view patients'), 403, __('You are not authorized to view patients'));
         return view('backend.dashboards.admin.pages.users-management.patients');
     }
 
     public function patientsData()
     {
+        // apply permissions
+        abort_if(!hasPermission('view patients'), 403, __('You are not authorized to view patients'));
         return $this->repo->getPatientsData();
     }
 
     public function patientDetails($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('view patients'), 403, __('You are not authorized to view patients'));
         $patient = $this->repo->getPatientDetails($id);
         return view('backend.dashboards.admin.pages.users-management.patient-details', compact('patient'));
     }
@@ -75,16 +96,22 @@ class UsersManagementController extends Controller
     // Doctor Profiles
     public function doctorProfiles()
     {
+        // apply permissions
+        abort_if(!hasPermission('view system doctor profiles'), 403, __('You are not authorized to view doctor profiles'));
         return view('backend.dashboards.admin.pages.users-management.doctor-profiles');
     }
 
     public function doctorProfilesData()
     {
+        // apply permissions
+        abort_if(!hasPermission('view system doctor profiles'), 403, __('You are not authorized to view doctor profiles'));
         return $this->repo->getDoctorProfilesData();
     }
 
     public function doctorProfileDetails($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('view system doctor profiles'), 403, __('You are not authorized to view doctor profiles'));
         $doctor = $this->repo->getDoctorProfileDetails($id);
         return view('backend.dashboards.admin.pages.users-management.doctor-profile-details', compact('doctor'));
     }
@@ -92,16 +119,22 @@ class UsersManagementController extends Controller
     // Suppliers
     public function suppliers()
     {
+        // apply permissions
+        abort_if(!hasPermission('view system suppliers'), 403, __('You are not authorized to view suppliers'));
         return view('backend.dashboards.admin.pages.users-management.suppliers');
     }
 
     public function suppliersData()
     {
+        // apply permissions
+        abort_if(!hasPermission('view system suppliers'), 403, __('You are not authorized to view suppliers'));
         return $this->repo->getSuppliersData();
     }
 
     public function supplierDetails($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('view system suppliers'), 403, __('You are not authorized to view suppliers'));
         $supplier = $this->repo->getSupplierDetails($id);
         return view('backend.dashboards.admin.pages.users-management.supplier-details', compact('supplier'));
     }
@@ -109,16 +142,22 @@ class UsersManagementController extends Controller
     // Supplier Users
     public function supplierUsers()
     {
+        // apply permissions
+        abort_if(!hasPermission('view system supplier users'), 403, __('You are not authorized to view supplier users'));
         return view('backend.dashboards.admin.pages.users-management.supplier-users');
     }
 
     public function supplierUsersData()
     {
+        // apply permissions
+        abort_if(!hasPermission('view system supplier users'), 403, __('You are not authorized to view supplier users'));
         return $this->repo->getSupplierUsersData();
     }
 
     public function supplierUserDetails($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('view system supplier users'), 403, __('You are not authorized to view supplier users'));
         $supplierUser = $this->repo->getSupplierUserDetails($id);
         return view('backend.dashboards.admin.pages.users-management.supplier-user-details', compact('supplierUser'));
     }

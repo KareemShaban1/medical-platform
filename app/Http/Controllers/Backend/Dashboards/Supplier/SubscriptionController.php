@@ -35,6 +35,9 @@ class SubscriptionController extends Controller
 
     public function index()
     {
+        // apply permissions
+        abort_if(!hasPermission('view subscriptions'), 403, __('You are not authorized to view subscriptions'));
+
         $user = Auth::guard('supplier')->user();
         $supplier = $user->supplier;
         $subscription = $this->subscriptionService->getEffectiveSubscription($supplier);
@@ -47,6 +50,9 @@ class SubscriptionController extends Controller
 
     public function plans()
     {
+        // apply permissions
+        abort_if(!hasPermission('view subscriptions'), 403, __('You are not authorized to view subscription plans'));
+
         return redirect()
             ->to(route('home', ['plan_type' => 'supplier']) . '#subscriptions-plans')
             ->with('subscription_prompt', __('Please subscribe to continue.'));
@@ -54,6 +60,9 @@ class SubscriptionController extends Controller
 
     public function subscribe(Request $request, $planId)
     {
+        // apply permissions
+        abort_if(!hasPermission('subscribe to plan'), 403, __('You are not authorized to subscribe to plan'));
+
         $user = Auth::guard('supplier')->user();
         $supplier = $user->supplier;
         $plan = Plan::findOrFail($planId);
@@ -120,6 +129,9 @@ class SubscriptionController extends Controller
 
     public function cancel()
     {
+        // apply permissions
+        abort_if(!hasPermission('cancel subscription'), 403, __('You are not authorized to cancel subscription'));
+
         $user = Auth::guard('supplier')->user();
         $supplier = $user->supplier;
         $subscription = $this->subscriptionService->getSubscription($supplier);
@@ -148,6 +160,9 @@ class SubscriptionController extends Controller
 
     public function usage()
     {
+        // apply permissions
+        abort_if(!hasPermission('view subscription usage'), 403, __('You are not authorized to view subscription usage'));
+
         $user = Auth::guard('supplier')->user();
         $supplier = $user->supplier;
         $subscription = $this->subscriptionService->getEffectiveSubscription($supplier);

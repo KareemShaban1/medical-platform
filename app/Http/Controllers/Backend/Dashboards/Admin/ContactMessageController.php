@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Backend\Dashboards\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\ContactMessage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Yajra\DataTables\Facades\DataTables;
 
 class ContactMessageController extends Controller
@@ -14,6 +15,8 @@ class ContactMessageController extends Controller
      */
     public function index()
     {
+        // apply permissions
+        abort_if(!hasPermission('view contact messages'), 403, __('You are not authorized to view contact messages'));
         $stats = [
             'total' => ContactMessage::count(),
             'new' => ContactMessage::where('status', 'new')->count(),
@@ -30,6 +33,8 @@ class ContactMessageController extends Controller
      */
     public function data(Request $request)
     {
+        // apply permissions
+        abort_if(!hasPermission('view contact messages'), 403, __('You are not authorized to view contact messages'));
         $query = ContactMessage::query()->orderBy('created_at', 'desc');
 
         // Apply status filter
@@ -59,22 +64,29 @@ class ContactMessageController extends Controller
                 return $badges[$message->status] ?? '<span class="badge bg-secondary">Unknown</span>';
             })
             ->addColumn('short_message', function ($message) {
-                return \Str::limit($message->message, 50);
+                return Str::limit($message->message, 50);
             })
             ->addColumn('action', function ($message) {
-                $viewUrl = route('admin.contact-messages.show', $message->id);
-                $deleteUrl = route('admin.contact-messages.destroy', $message->id);
+                $actions = '<div class="btn-group">';
 
-                return '
-                    <div class="btn-group">
-                        <a href="' . $viewUrl . '" class="btn btn-sm btn-info" title="View">
-                            <i class="fa fa-eye"></i>
-                        </a>
-                        <button type="button" class="btn btn-sm btn-danger delete-btn" data-id="' . $message->id . '" data-url="' . $deleteUrl . '" title="Delete">
-                            <i class="fa fa-trash"></i>
-                        </button>
-                    </div>
-                ';
+                // View button
+                if (hasPermission('view contact messages')) {
+                    $viewUrl = route('admin.contact-messages.show', $message->id);
+                    $actions .= '<a href="' . $viewUrl . '" class="btn btn-sm btn-info" title="View">
+                        <i class="fa fa-eye"></i>
+                    </a>';
+                }
+
+                // Delete button
+                if (hasPermission('delete contact message')) {
+                    $deleteUrl = route('admin.contact-messages.destroy', $message->id);
+                    $actions .= '<button type="button" class="btn btn-sm btn-danger delete-btn" data-id="' . $message->id . '" data-url="' . $deleteUrl . '" title="Delete">
+                        <i class="fa fa-trash"></i>
+                    </button>';
+                }
+
+                $actions .= '</div>';
+                return $actions;
             })
             ->rawColumns(['status_badge', 'action'])
             ->make(true);
@@ -85,6 +97,8 @@ class ContactMessageController extends Controller
      */
     public function show($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('view contact messages'), 403, __('You are not authorized to view contact message'));
         $message = ContactMessage::findOrFail($id);
 
         // Mark as read if it's new
@@ -100,6 +114,8 @@ class ContactMessageController extends Controller
      */
     public function updateStatus(Request $request, $id)
     {
+        // apply permissions
+        abort_if(!hasPermission('update contact message'), 403, __('You are not authorized to update contact message'));
         $request->validate([
             'status' => 'required|in:new,read,replied,archived',
         ]);
@@ -121,6 +137,8 @@ class ContactMessageController extends Controller
      */
     public function addNotes(Request $request, $id)
     {
+        // apply permissions
+        abort_if(!hasPermission('update contact message'), 403, __('You are not authorized to update contact message'));
         $request->validate([
             'admin_notes' => 'required|string|max:1000',
         ]);
@@ -141,6 +159,8 @@ class ContactMessageController extends Controller
      */
     public function destroy($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('delete contact message'), 403, __('You are not authorized to delete contact message'));
         try {
             $message = ContactMessage::findOrFail($id);
             $message->delete();

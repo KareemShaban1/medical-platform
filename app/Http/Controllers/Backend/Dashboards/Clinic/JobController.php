@@ -23,11 +23,17 @@ class JobController extends Controller
      */
     public function index()
     {
+        // apply permissions
+        abort_if(!hasPermission('view jobs'), 403, __('You are not authorized to view jobs'));
+
         return view('backend.dashboards.clinic.pages.jobs.index');
     }
 
     public function data()
     {
+        // apply permissions
+        abort_if(!hasPermission('view jobs'), 403, __('You are not authorized to view jobs'));
+
         return $this->jobRepo->data();
     }
 
@@ -36,6 +42,9 @@ class JobController extends Controller
      */
     public function create()
     {
+        // apply permissions
+        abort_if(!hasPermission('create job'), 403, __('You are not authorized to create job'));
+
         return view('backend.dashboards.clinic.pages.jobs.create');
     }
 
@@ -44,6 +53,9 @@ class JobController extends Controller
      */
     public function store(StoreJobRequest $request)
     {
+        // apply permissions
+        abort_if(!hasPermission('create job'), 403, __('You are not authorized to create job'));
+
         return $this->jobRepo->store($request);
     }
 
@@ -52,6 +64,9 @@ class JobController extends Controller
      */
     public function show($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('view job'), 403, __('You are not authorized to view job'));
+
         $job = $this->jobRepo->show($id);
 
         return request()->ajax()
@@ -64,6 +79,9 @@ class JobController extends Controller
      */
     public function edit($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('update job'), 403, __('You are not authorized to update job'));
+
         $job = $this->jobRepo->show($id);
 
         return view('backend.dashboards.clinic.pages.jobs.edit', compact('job'));
@@ -74,6 +92,9 @@ class JobController extends Controller
      */
     public function update(UpdateJobRequest $request, $id)
     {
+        // apply permissions
+        abort_if(!hasPermission('update job'), 403, __('You are not authorized to update job'));
+
         return $this->jobRepo->update($request, $id);
     }
 
@@ -87,26 +108,41 @@ class JobController extends Controller
      */
     public function destroy($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('delete job'), 403, __('You are not authorized to delete job'));
+
         return $this->jobRepo->destroy($id);
     }
 
     public function trash()
     {
+        // apply permissions
+        abort_if(!hasPermission('view trash jobs'), 403, __('You are not authorized to view trash jobs'));
+
         return view('backend.dashboards.clinic.pages.jobs.trash');
     }
 
     public function trashData()
     {
+        // apply permissions
+        abort_if(!hasPermission('view trash jobs'), 403, __('You are not authorized to view trash jobs'));
+
         return $this->jobRepo->trashData();
     }
 
     public function restore($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('restore job'), 403, __('You are not authorized to restore job'));
+
         return $this->jobRepo->restore($id);
     }
 
     public function forceDelete($id)
     {
+           // apply permissions
+           abort_if(!hasPermission('force delete job'), 403, __('You are not authorized to force delete job'));
+
         return $this->jobRepo->forceDelete($id);
     }
 
@@ -115,6 +151,9 @@ class JobController extends Controller
 	 */
 	public function applicants($id)
 	{
+        // apply permissions
+        abort_if(!hasPermission('view job applicants'), 403, __('You are not authorized to view job applicants'));
+
 		$job = $this->jobRepo->show($id);
 		$applicants = $this->jobRepo->getApplicants($id);
 
@@ -126,6 +165,9 @@ class JobController extends Controller
 	 */
 	public function updateApplicationStatus(Request $request)
 	{
+        // apply permissions
+        abort_if(!hasPermission('update job application status'), 403, __('You are not authorized to update job application status'));
+
 		return $this->jobRepo->updateApplicationStatus($request);
 	}
 
@@ -134,6 +176,10 @@ class JobController extends Controller
 	 */
 	public function getApplicationDetails($applicationId)
 	{
+               // apply permissions
+               abort_if(!hasPermission('view job application details'), 403, __('You are not authorized to view job application details'));
+
+
 		$application = $this->jobRepo->getApplicationDetails($applicationId);
 
 		if (!$application) {
@@ -156,6 +202,9 @@ class JobController extends Controller
 	 */
 	public function updateApplicationData(Request $request, $applicationId)
 	{
+               // apply permissions
+               abort_if(!hasPermission('update job application data'), 403, __('You are not authorized to update job application data'));
+
 		return $this->jobRepo->updateApplicationData($request, $applicationId);
 	}
 }

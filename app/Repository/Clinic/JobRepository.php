@@ -170,35 +170,47 @@ class JobRepository implements JobRepositoryInterface
 
     private function jobApplicationActions($item): string
     {
-        if ($item->jobApplicationFields->count() > 0) {
-            $applicationFieldsUrl = route('clinic.job-application-fields.edit', $item->id);
-            $applicationFieldsIcon = 'fa fa-edit';
-            $applicationFieldsClass = 'btn-warning text-white';
-        } else {
-            $applicationFieldsUrl = route('clinic.job-application-fields.create', $item->id);
-            $applicationFieldsIcon = 'fa fa-plus';
-            $applicationFieldsClass = 'btn-success';
+        $html = '<span>Applicants Count: ' . $item->jobApplications->count() . '</span>';
+        $html .= '<div class="d-flex gap-2 mt-2">';
+        
+        if (hasPermission('view job application fields') || hasPermission('create job application field') || hasPermission('update job application field')) {
+            if ($item->jobApplicationFields->count() > 0) {
+                $applicationFieldsUrl = route('clinic.job-application-fields.edit', $item->id);
+                $applicationFieldsIcon = 'fa fa-edit';
+                $applicationFieldsClass = 'btn-warning text-white';
+            } else {
+                $applicationFieldsUrl = route('clinic.job-application-fields.create', $item->id);
+                $applicationFieldsIcon = 'fa fa-plus';
+                $applicationFieldsClass = 'btn-success';
+            }
+            $html .= '<a href="' . $applicationFieldsUrl . '" class="btn btn-sm ' . $applicationFieldsClass . '"><i class="' . $applicationFieldsIcon . '"></i></a>';
         }
-        $applicantsUrl = route('clinic.jobs.applicants', $item->id);
-        $applicantsIcon = 'fa fa-users';
-
-        return <<<HTML
-        <span>Applicants Count: {$item->jobApplications->count()}</span>
-        <div class="d-flex gap-2 mt-2">
-        <a href="{$applicationFieldsUrl}" class="btn btn-sm {$applicationFieldsClass}"><i class="{$applicationFieldsIcon}"></i></a>
-        <a href="{$applicantsUrl}" class="btn btn-sm btn-primary"><i class="{$applicantsIcon}"></i></a>
-        </div>
-        HTML;
+        
+        if (hasPermission('view job applicants')) {
+            $applicantsUrl = route('clinic.jobs.applicants', $item->id);
+            $html .= '<a href="' . $applicantsUrl . '" class="btn btn-sm btn-primary"><i class="fa fa-users"></i></a>';
+        }
+        
+        $html .= '</div>';
+        
+        return $html;
     }
 
     private function jobTrashActions($item): string
     {
-        return <<<HTML
-        <div class="d-flex gap-2">
-            <button onclick="restore({$item->id})" class="btn btn-sm btn-info" title="Restore"><i class="fa fa-undo"></i></button>
-            <button onclick="forceDelete({$item->id})" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>
-        </div>
-        HTML;
+        $html = '<div class="d-flex gap-2">';
+        
+        if (hasPermission('restore job')) {
+            $html .= '<button onclick="restore(' . $item->id . ')" class="btn btn-sm btn-info" title="Restore"><i class="fa fa-undo"></i></button>';
+        }
+        
+        if (hasPermission('force delete job')) {
+            $html .= '<button onclick="forceDelete(' . $item->id . ')" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>';
+        }
+        
+        $html .= '</div>';
+        
+        return $html;
     }
 
 

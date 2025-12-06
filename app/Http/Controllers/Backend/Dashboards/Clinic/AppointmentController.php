@@ -28,6 +28,9 @@ class AppointmentController extends Controller
 
     public function index(Request $request)
     {
+        // apply permissions
+        abort_if(!hasPermission('view appointments'), 403, __('You are not authorized to view appointments'));
+
         $clinicId = auth('clinic')->user()->clinic_id;
         $clinicUser = auth('clinic')->user();
 
@@ -53,11 +56,17 @@ class AppointmentController extends Controller
 
     public function data(Request $request)
     {
+        // apply permissions
+        abort_if(!hasPermission('view appointments'), 403, __('You are not authorized to view appointments'));
+
         return $this->repo->data($request->all());
     }
 
     public function trash()
     {
+        // apply permissions
+        abort_if(!hasPermission('view trash appointments'), 403, __('You are not authorized to view trash appointments'));
+
         $clinicId = auth('clinic')->user()->clinic_id;
         $clinicUser = auth('clinic')->user();
 
@@ -82,11 +91,17 @@ class AppointmentController extends Controller
 
     public function trashData(Request $request)
     {
+        // apply permissions
+        abort_if(!hasPermission('view trash appointments'), 403, __('You are not authorized to view trash appointments'));
+
         return $this->repo->trashData($request->all());
     }
 
     public function restore($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('restore appointment'), 403, __('You are not authorized to restore appointment'));
+
         try {
             $this->repo->restore($id);
             return response()->json([
@@ -103,6 +118,9 @@ class AppointmentController extends Controller
 
     public function forceDelete($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('force delete appointment'), 403, __('You are not authorized to force delete appointment'));
+
         try {
             $this->repo->forceDelete($id);
             return response()->json([
@@ -119,6 +137,9 @@ class AppointmentController extends Controller
 
     public function destroy($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('delete appointment'), 403, __('You are not authorized to delete appointment'));
+
         try {
             $this->repo->delete($id);
             return response()->json([
@@ -135,11 +156,17 @@ class AppointmentController extends Controller
 
     public function store(StoreAppointmentRequest $request)
     {
+        // apply permissions
+        abort_if(!hasPermission('create appointment'), 403, __('You are not authorized to create appointment'));
+
         return $this->repo->store($request->validated());
     }
 
     public function show($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('view appointment'), 403, __('You are not authorized to view appointment'));
+
         $appointment = $this->repo->find($id);
 
         return request()->ajax()
@@ -149,11 +176,17 @@ class AppointmentController extends Controller
 
     public function update(UpdateAppointmentRequest $request, $id)
     {
+        // apply permissions
+        abort_if(!hasPermission('update appointment'), 403, __('You are not authorized to update appointment'));
+
         return $this->repo->update($id, $request->validated());
     }
 
     public function confirm($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('confirm appointment'), 403, __('You are not authorized to confirm appointment'));
+
         try {
             $appointment = $this->repo->confirm($id);
             return response()->json([
@@ -171,6 +204,9 @@ class AppointmentController extends Controller
 
     public function cancel(Request $request, $id)
     {
+        // apply permissions
+        abort_if(!hasPermission('cancel appointment'), 403, __('You are not authorized to cancel appointment'));
+
         $request->validate(['reason' => 'nullable|string|max:500']);
 
         try {

@@ -123,27 +123,43 @@ class ExpenseRepository implements ExpenseRepositoryInterface
 
     private function expenseActions($item): string
     {
-        $editUrl = route('clinic.expenses.edit', $item->id);
-        $showUrl = route('clinic.expenses.show', $item->id);
+        $html = '<div class="d-flex gap-2">';
 
-        return <<<HTML
-        <div class="d-flex gap-2">
-           <a href="{$showUrl}" class="btn btn-sm btn-info"><i class="fa fa-eye"></i></a>
-           <a href="{$editUrl}" class="btn btn-sm btn-warning text-white"><i class="fa fa-edit"></i></a>
-           <button onclick="deleteExpense({$item->id})" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>
-        </div>
-        HTML;
+        if (hasPermission('view expenses')) {
+            $showUrl = route('clinic.expenses.show', $item->id);
+            $html .= '<a href="' . $showUrl . '" class="btn btn-sm btn-info"><i class="fa fa-eye"></i></a>';
+        }
+
+        if (hasPermission('update expense')) {
+            $editUrl = route('clinic.expenses.edit', $item->id);
+            $html .= '<a href="' . $editUrl . '" class="btn btn-sm btn-warning text-white"><i class="fa fa-edit"></i></a>';
+        }
+
+        if (hasPermission('delete expense')) {
+            $html .= '<button onclick="deleteExpense(' . $item->id . ')" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>';
+        }
+
+        $html .= '</div>';
+
+        return $html;
     }
 
 
     private function expenseTrashActions($item): string
     {
-        return <<<HTML
-        <div class="d-flex gap-2">
-           <button onclick="restore({$item->id})" class="btn btn-sm btn-info" title="Restore"><i class="fa fa-undo"></i></button>
-           <button onclick="forceDelete({$item->id})" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>
-        </div>
-        HTML;
+        $html = '<div class="d-flex gap-2">';
+
+        if (hasPermission('restore expense')) {
+            $html .= '<button onclick="restore(' . $item->id . ')" class="btn btn-sm btn-info" title="Restore"><i class="fa fa-undo"></i></button>';
+        }
+
+        if (hasPermission('force delete expense')) {
+            $html .= '<button onclick="forceDelete(' . $item->id . ')" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>';
+        }
+
+        $html .= '</div>';
+
+        return $html;
     }
 
 

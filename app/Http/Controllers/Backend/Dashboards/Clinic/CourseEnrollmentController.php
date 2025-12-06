@@ -9,6 +9,9 @@ class CourseEnrollmentController extends Controller
 {
     public function index()
     {
+        // apply permissions
+        abort_if(!hasPermission('view course enrollments'), 403, __('You are not authorized to view course enrollments'));
+
         $enrollments = CourseEnrollment::with('course')
             ->where('clinic_user_id', auth('clinic')->id())
             ->latest()
@@ -17,4 +20,3 @@ class CourseEnrollmentController extends Controller
         return view('backend.dashboards.clinic.pages.course-enrollments.index', compact('enrollments'));
     }
 }
-

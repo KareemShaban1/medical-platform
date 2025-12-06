@@ -42,7 +42,18 @@ class UserRepository implements UserRepositoryInterface
 
             if (isset($data['role'])) {
                 setPermissionsTeamId($data['supplier_id']);
-                $user->assignRole($data['role']);
+                // Find role by name and team_id to ensure correct role assignment
+                $role = Role::where('name', $data['role'])
+                    ->where('guard_name', 'supplier')
+                    ->where('team_id', $data['supplier_id'])
+                    ->first();
+
+                if ($role) {
+                    $user->assignRole($role);
+                } else {
+                    // Fallback: try assigning by name (Spatie will use team context)
+                    $user->assignRole($data['role']);
+                }
             }
 
             return $user;
@@ -71,7 +82,18 @@ class UserRepository implements UserRepositoryInterface
 
             if (isset($data['role'])) {
                 setPermissionsTeamId($user->supplier_id);
-                $user->syncRoles([$data['role']]);
+                // Find role by name and team_id to ensure correct role assignment
+                $role = Role::where('name', $data['role'])
+                    ->where('guard_name', 'supplier')
+                    ->where('team_id', $user->supplier_id)
+                    ->first();
+
+                if ($role) {
+                    $user->syncRoles([$role]);
+                } else {
+                    // Fallback: try assigning by name (Spatie will use team context)
+                    $user->syncRoles([$data['role']]);
+                }
             }
 
             return $user;
@@ -167,25 +189,42 @@ class UserRepository implements UserRepositoryInterface
 
     private function userActions($item): string
     {
-        $showUrl = route('supplier.users.show', $item->id);
-        return <<<HTML
-        <div class="d-flex gap-2">
-            <a href="{$showUrl}" class="btn btn-sm btn-success" title="View"><i class="fa fa-eye"></i></a>
-            <button onclick="editUser({$item->id})" class="btn btn-sm btn-info" title="Edit"><i class="fa fa-edit"></i></button>
-            <button onclick="deleteUser({$item->id})" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>
-        </div>
-        HTML;
+        $actions = '<div class="d-flex gap-2">';
+
+        if (hasPermission('view users')) {
+            $showUrl = route('supplier.users.show', $item->id);
+            $actions .= '<a href="' . $showUrl . '" class="btn btn-sm btn-success" title="View"><i class="fa fa-eye"></i></a>';
+        }
+
+        if (hasPermission('update user')) {
+            $actions .= '<button onclick="editUser(' . $item->id . ')" class="btn btn-sm btn-info" title="Edit"><i class="fa fa-edit"></i></button>';
+        }
+
+        if (hasPermission('delete user')) {
+            $actions .= '<button onclick="deleteUser(' . $item->id . ')" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>';
+        }
+
+        $actions .= '</div>';
+        return $actions;
     }
 
     private function trashActions($item): string
     {
-        return <<<HTML
-        <button class="btn btn-sm btn-success" onclick="restoreUser({$item->id})">
-            <i class="mdi mdi-restore"></i> Restore
-        </button>
-        <button class="btn btn-sm btn-danger" onclick="forceDeleteUser({$item->id})">
-            <i class="mdi mdi-delete-forever"></i> Delete
-        </button>
-        HTML;
+        $actions = '<div class="d-flex gap-2">';
+
+        if (hasPermission('restore user')) {
+            $actions .= '<button class="btn btn-sm btn-success" onclick="restoreUser(' . $item->id . ')">';
+            $actions .= '<i class="mdi mdi-restore"></i> Restore';
+            $actions .= '</button>';
+        }
+
+        if (hasPermission('force delete user')) {
+            $actions .= '<button class="btn btn-sm btn-danger" onclick="forceDeleteUser(' . $item->id . ')">';
+            $actions .= '<i class="mdi mdi-delete-forever"></i> Delete';
+            $actions .= '</button>';
+        }
+
+        $actions .= '</div>';
+        return $actions;
     }
 }

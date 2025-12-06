@@ -240,19 +240,28 @@ class DailyPeriodRepository implements DailyPeriodRepositoryInterface
         $toggleClass = $item->is_open ? 'warning' : 'success';
         $toggleTitle = $item->is_open ? __('Close') : __('Open');
 
-        return <<<HTML
-        <div class="d-flex gap-2">
-            <button onclick="viewAppointments({$item->id})" class="btn btn-sm btn-info text-white" title="View Appointments">
-                <i class="mdi mdi-calendar-check"></i>
-            </button>
-            <button onclick="editCapacity({$item->id}, {$item->capacity})" class="btn btn-sm btn-primary" title="Edit Capacity">
-                <i class="mdi mdi-pencil"></i>
-            </button>
-            <button onclick="toggleStatus({$item->id})" class="btn btn-sm btn-{$toggleClass}" title="{$toggleTitle}">
-                <i class="mdi mdi-{$toggleIcon}"></i>
-            </button>
-        </div>
-        HTML;
+        $html = '<div class="d-flex gap-2">';
+
+        if (hasPermission('view daily period appointments')) {
+            $html .= '<button onclick="viewAppointments(' . $item->id . ')" class="btn btn-sm btn-info text-white" title="View Appointments">';
+            $html .= '<i class="mdi mdi-calendar-check"></i>';
+            $html .= '</button>';
+        }
+
+        if (hasPermission('update daily period capacity')) {
+            $html .= '<button onclick="editCapacity(' . $item->id . ', ' . $item->capacity . ')" class="btn btn-sm btn-primary" title="Edit Capacity">';
+            $html .= '<i class="mdi mdi-pencil"></i>';
+            $html .= '</button>';
+        }
+
+        if (hasPermission('toggle daily period open')) {
+            $html .= '<button onclick="toggleStatus(' . $item->id . ')" class="btn btn-sm btn-' . $toggleClass . '" title="' . $toggleTitle . '">';
+            $html .= '<i class="mdi mdi-' . $toggleIcon . '"></i>';
+            $html .= '</button>';
+        }
+
+        $html .= '</div>';
+
+        return $html;
     }
 }
-

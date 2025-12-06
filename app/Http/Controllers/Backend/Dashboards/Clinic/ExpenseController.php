@@ -23,11 +23,17 @@ class ExpenseController extends Controller
      */
     public function index()
     {
+        // apply permissions
+        abort_if(!hasPermission('view expenses'), 403, __('You are not authorized to view expenses'));
+
         return view('backend.dashboards.clinic.pages.expenses.index');
     }
 
     public function data()
     {
+        // apply permissions
+        abort_if(!hasPermission('view expenses'), 403, __('You are not authorized to view expenses'));
+
         return $this->expenseRepo->data();
     }
 
@@ -36,6 +42,9 @@ class ExpenseController extends Controller
      */
     public function create()
     {
+        // apply permissions
+        abort_if(!hasPermission('create expense'), 403, __('You are not authorized to create expense'));
+
         $expenseCategories = ExpenseCategory::all();
         $suppliers = Supplier::all();
         return view('backend.dashboards.clinic.pages.expenses.create', compact('expenseCategories', 'suppliers'));
@@ -46,6 +55,9 @@ class ExpenseController extends Controller
      */
     public function store(StoreExpenseRequest $request)
     {
+        // apply permissions
+        abort_if(!hasPermission('create expense'), 403, __('You are not authorized to create expense'));
+
         return $this->expenseRepo->store($request);
     }
 
@@ -54,6 +66,9 @@ class ExpenseController extends Controller
      */
     public function show($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('view expenses'), 403, __('You are not authorized to view expense'));
+
         $expense = $this->expenseRepo->show($id);
         return request()->ajax()
             ? response()->json($expense)
@@ -62,6 +77,9 @@ class ExpenseController extends Controller
 
     public function edit($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('update expense'), 403, __('You are not authorized to update expense'));
+
         $expense = $this->expenseRepo->show($id);
         $expenseCategories = ExpenseCategory::all();
         $suppliers = Supplier::all();
@@ -71,6 +89,9 @@ class ExpenseController extends Controller
 
     public function update(UpdateExpenseRequest $request, $id)
     {
+        // apply permissions
+        abort_if(!hasPermission('update expense'), 403, __('You are not authorized to update expense'));
+
         return $this->expenseRepo->update($request, $id);
     }
 
@@ -79,26 +100,41 @@ class ExpenseController extends Controller
      */
     public function destroy($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('delete expense'), 403, __('You are not authorized to delete expense'));
+
         return $this->expenseRepo->destroy($id);
     }
 
     public function trash()
     {
+        // apply permissions
+        abort_if(!hasPermission('view trash expenses'), 403, __('You are not authorized to view trash expenses'));
+
         return view('backend.dashboards.clinic.pages.expenses.trash');
     }
 
     public function trashData()
     {
+        // apply permissions
+        abort_if(!hasPermission('view trash expenses'), 403, __('You are not authorized to view trash expenses'));
+
         return $this->expenseRepo->trashData();
     }
 
     public function restore($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('restore expense'), 403, __('You are not authorized to restore expense'));
+
         return $this->expenseRepo->restore($id);
     }
 
     public function forceDelete($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('force delete expense'), 403, __('You are not authorized to force delete expense'));
+
         return $this->expenseRepo->forceDelete($id);
     }
 

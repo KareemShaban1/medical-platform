@@ -244,16 +244,24 @@ class RequestRepository implements RequestRepositoryInterface
 
     private function requestActions($item): string
     {
-        $showUrl = route('clinic.requests.show', $item->id);
         $actions = '<div class="d-flex gap-2">';
-        $actions .= '<a href="' . $showUrl . '" class="btn btn-sm btn-success" title="View"><i class="fa fa-eye"></i></a>';
-
-        if ($item->status === Request::STATUS_OPEN) {
-            $actions .= '<button onclick="editRequest(' . $item->id . ')" class="btn btn-sm btn-info" title="Edit"><i class="fa fa-edit"></i></button>';
-            $actions .= '<button onclick="cancelRequest(' . $item->id . ')" class="btn btn-sm btn-warning" title="Cancel"><i class="fa fa-ban"></i></button>';
+        
+        if (hasPermission('view purchase requests')) {
+            $showUrl = route('clinic.requests.show', $item->id);
+            $actions .= '<a href="' . $showUrl . '" class="btn btn-sm btn-success" title="View"><i class="fa fa-eye"></i></a>';
         }
 
-        if ($item->status !== Request::STATUS_CLOSED || !$item->acceptedOffer) {
+        if ($item->status === Request::STATUS_OPEN) {
+            if (hasPermission('update purchase request')) {
+                $actions .= '<button onclick="editRequest(' . $item->id . ')" class="btn btn-sm btn-info" title="Edit"><i class="fa fa-edit"></i></button>';
+            }
+            
+            if (hasPermission('cancel request')) {
+                $actions .= '<button onclick="cancelRequest(' . $item->id . ')" class="btn btn-sm btn-warning" title="Cancel"><i class="fa fa-ban"></i></button>';
+            }
+        }
+
+        if (hasPermission('delete purchase request') && ($item->status !== Request::STATUS_CLOSED || !$item->acceptedOffer)) {
             $actions .= '<button onclick="deleteRequest(' . $item->id . ')" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>';
         }
 

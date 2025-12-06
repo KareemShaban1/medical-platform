@@ -480,57 +480,79 @@ class AppointmentRepository implements AppointmentRepositoryInterface
     // prescription buttons
     private function prescriptionButtons($item): string
     {
-        // add prescription
+        $html = '<div class="d-flex flex-column gap-2">';
+
         if ($item->prescription) {
-            $prescriptionButton = '<a href="'.route('clinic.prescriptions.edit', $item->prescription->id).'" class="btn btn-sm btn-warning text-white" title="Edit Prescription">
-            '.__('Edit Prescription').'
-            <i class="fa fa-edit"></i></a>';
-            $printButton = '<a href="'.route('clinic.prescriptions.print', $item->id).'" target="_blank" class="btn btn-sm btn-info text-white" title="Print Prescription">
-            '.__('Print').'
-            <i class="fa fa-print"></i></a>';
-            $downloadButton = '<a href="'.route('clinic.prescriptions.download', $item->id).'" class="btn btn-sm btn-success text-white" title="Download PDF">
-            '.__('Download PDF').'
-            <i class="fa fa-download"></i></a>';
+            if (hasPermission('update prescription')) {
+                $html .= '<a href="' . route('clinic.prescriptions.edit', $item->prescription->id) . '" class="btn btn-sm btn-warning text-white" title="Edit Prescription">';
+                $html .= __('Edit Prescription');
+                $html .= '<i class="fa fa-edit"></i></a>';
+            }
+
+            if (hasPermission('print prescription')) {
+                $html .= '<a href="' . route('clinic.prescriptions.print', $item->id) . '" target="_blank" class="btn btn-sm btn-info text-white" title="Print Prescription">';
+                $html .= __('Print');
+                $html .= '<i class="fa fa-print"></i></a>';
+            }
+
+            if (hasPermission('download prescription')) {
+                $html .= '<a href="' . route('clinic.prescriptions.download', $item->id) . '" class="btn btn-sm btn-success text-white" title="Download PDF">';
+                $html .= __('Download PDF');
+                $html .= '<i class="fa fa-download"></i></a>';
+            }
         } else {
-            $prescriptionButton = '<a href="'.route('clinic.prescriptions.create', $item->id).'" class="btn btn-sm btn-primary" title="Add Prescription">
-            '.__('Add Prescription').'
-            <i class="fa fa-plus"></i></a>';
-            $printButton = '';
-            $downloadButton = '';
+            if (hasPermission('create prescription')) {
+                $html .= '<a href="' . route('clinic.prescriptions.create', $item->id) . '" class="btn btn-sm btn-primary" title="Add Prescription">';
+                $html .= __('Add Prescription');
+                $html .= '<i class="fa fa-plus"></i></a>';
+            }
         }
 
-        return <<<HTML
-        <div class="d-flex flex-column gap-2">
-            {$prescriptionButton}
-            {$printButton}
-            {$downloadButton}
-        </div>
-        HTML;
+        $html .= '</div>';
+
+        return $html;
     }
 
     private function actionButtons($item): string
     {
-        return <<<HTML
-        <div class="d-flex gap-2">
-            <button onclick="editAppointment({$item->id})" class="btn btn-sm btn-warning text-white" title="Edit"><i class="fa fa-edit"></i></button>
-            <button onclick="viewAppointment({$item->id})" class="btn btn-sm btn-info text-white" title="View"><i class="fa fa-eye"></i></button>
-            <button onclick="deleteAppointment({$item->id})" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>
-        </div>
-        HTML;
+        $html = '<div class="d-flex gap-2">';
+
+        if (hasPermission('update appointment')) {
+            $html .= '<button onclick="editAppointment(' . $item->id . ')" class="btn btn-sm btn-warning text-white" title="Edit"><i class="fa fa-edit"></i></button>';
+        }
+
+        if (hasPermission('view appointments')) {
+            $html .= '<button onclick="viewAppointment(' . $item->id . ')" class="btn btn-sm btn-info text-white" title="View"><i class="fa fa-eye"></i></button>';
+        }
+
+        if (hasPermission('delete appointment')) {
+            $html .= '<button onclick="deleteAppointment(' . $item->id . ')" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>';
+        }
+
+        $html .= '</div>';
+
+        return $html;
     }
 
     private function trashActionButtons($item): string
     {
-        return <<<HTML
-        <div class="d-flex gap-2">
-            <button onclick="restoreAppointment({$item->id})" class="btn btn-sm btn-success" title="Restore">
-                <i class="fa fa-undo"></i> Restore
-            </button>
-            <button onclick="forceDeleteAppointment({$item->id})" class="btn btn-sm btn-danger" title="Delete Forever">
-                <i class="fa fa-trash"></i> Delete Forever
-            </button>
-        </div>
-        HTML;
+        $html = '<div class="d-flex gap-2">';
+
+        if (hasPermission('restore appointment')) {
+            $html .= '<button onclick="restoreAppointment(' . $item->id . ')" class="btn btn-sm btn-success" title="Restore">';
+            $html .= '<i class="fa fa-undo"></i> Restore';
+            $html .= '</button>';
+        }
+
+        if (hasPermission('force delete appointment')) {
+            $html .= '<button onclick="forceDeleteAppointment(' . $item->id . ')" class="btn btn-sm btn-danger" title="Delete Forever">';
+            $html .= '<i class="fa fa-trash"></i> Delete Forever';
+            $html .= '</button>';
+        }
+
+        $html .= '</div>';
+
+        return $html;
     }
 
     /**

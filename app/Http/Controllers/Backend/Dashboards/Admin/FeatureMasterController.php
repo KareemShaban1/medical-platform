@@ -11,6 +11,8 @@ class FeatureMasterController extends Controller
 {
     public function index(Request $request)
     {
+        // apply permissions
+        abort_if(!hasPermission('view features'), 403, __('You are not authorized to view features'));
         if ($request->has('modal') && $request->modal === 'create') {
             return response()->json([
                 'success' => true,
@@ -22,6 +24,8 @@ class FeatureMasterController extends Controller
 
     public function create()
     {
+        // apply permissions
+        abort_if(!hasPermission('create feature'), 403, __('You are not authorized to create feature'));
         return response()->json([
             'success' => true,
             'html' => view('backend.dashboards.admin.pages.features.create')->render()
@@ -30,6 +34,8 @@ class FeatureMasterController extends Controller
 
     public function data()
     {
+        // apply permissions
+        abort_if(!hasPermission('view features'), 403, __('You are not authorized to view features'));
         return DataTables::of(FeatureMaster::query())
             ->editColumn('is_active', function ($feature) {
                 return $feature->is_active
@@ -55,6 +61,8 @@ class FeatureMasterController extends Controller
 
     public function store(Request $request)
     {
+        // apply permissions
+        abort_if(!hasPermission('create feature'), 403, __('You are not authorized to create feature'));
         $validated = $request->validate([
             'code' => 'required|string|max:255|unique:features_master,code',
             'name' => 'required|string|max:255',
@@ -74,6 +82,8 @@ class FeatureMasterController extends Controller
 
     public function update(Request $request, $id)
     {
+        // apply permissions
+        abort_if(!hasPermission('update feature'), 403, __('You are not authorized to update feature'));
         $feature = FeatureMaster::findOrFail($id);
 
         $validated = $request->validate([
@@ -95,6 +105,8 @@ class FeatureMasterController extends Controller
 
     public function destroy($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('delete feature'), 403, __('You are not authorized to delete feature'));
         $feature = FeatureMaster::findOrFail($id);
 
         // Check if feature is used in any plan
@@ -115,6 +127,8 @@ class FeatureMasterController extends Controller
 
     public function show($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('view feature'), 403, __('You are not authorized to view feature'));
         $feature = FeatureMaster::findOrFail($id);
         return response()->json([
             'success' => true,
@@ -122,4 +136,3 @@ class FeatureMasterController extends Controller
         ]);
     }
 }
-

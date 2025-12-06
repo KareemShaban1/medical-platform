@@ -54,7 +54,14 @@ class InvoiceRepository implements InvoiceRepositoryInterface
             })
             ->addColumn('created_at', fn($i) => $i->created_at?->format('Y-m-d H:i'))
             ->addColumn('total_fmt', fn($i) => number_format($i->total, 2))
-            ->addColumn('action', fn($i) => '<a href="' . route('clinic.invoices.show', $i->id) . '" class="btn btn-sm btn-info text-white"><i class="fa fa-eye"></i></a>')
+            ->addColumn('action', function($i) {
+                $html = '<div class="d-flex gap-2">';
+                if (hasPermission('view invoices')) {
+                    $html .= '<a href="' . route('clinic.invoices.show', $i->id) . '" class="btn btn-sm btn-info text-white"><i class="fa fa-eye"></i></a>';
+                }
+                $html .= '</div>';
+                return $html;
+            })
             ->rawColumns(['status_badge', 'action'])
             ->make(true);
     }
@@ -133,4 +140,3 @@ class InvoiceRepository implements InvoiceRepositoryInterface
         });
     }
 }
-

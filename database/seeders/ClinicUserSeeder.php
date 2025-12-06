@@ -7,6 +7,7 @@ use App\Models\ClinicUser;
 use App\Models\DoctorProfile;
 use App\Models\Role;
 use App\Models\Clinic;
+use App\Models\Admin;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 
@@ -71,6 +72,9 @@ class ClinicUserSeeder extends Seeder
 
     public function run(): void
     {
+        $this->command->info('Clearing existing clinic users and doctor profiles...');
+        $this->clearExistingData();
+
         $this->command->info('Creating clinic users and doctor profiles...');
 
         $clinics = Clinic::all();
@@ -92,6 +96,17 @@ class ClinicUserSeeder extends Seeder
         }
 
         $this->command->info("\n✓ Successfully created all clinic users and doctor profiles");
+    }
+
+    private function clearExistingData(): void
+    {
+        $this->command->info('  Deleting doctor profiles...');
+        DoctorProfile::query()->forceDelete();
+
+        $this->command->info('  Deleting clinic users (including soft-deleted)...');
+        $deletedCount = ClinicUser::withTrashed()->forceDelete();
+
+        $this->command->info("  ✓ Deleted {$deletedCount} clinic user(s) and their related data");
     }
 
     private function createClinicAdmin($clinic, $index)
@@ -141,6 +156,9 @@ class ClinicUserSeeder extends Seeder
 
     private function createDoctorProfile($clinicUser, $doctorInfo)
     {
+        // Get an admin ID for reviewed_by, or null if no admin exists
+        $adminId = $this->getAdminId();
+
         $profile = DoctorProfile::create([
             'clinic_user_id' => $clinicUser->id,
             'speciality_id' => rand(1, 10), // Assuming specialities exist
@@ -156,12 +174,21 @@ class ClinicUserSeeder extends Seeder
             'education' => $this->generateEducation($doctorInfo['specialty']),
             'experience' => $this->generateExperience($clinicUser->name, $doctorInfo['specialty']),
             'status' => DoctorProfile::STATUS_APPROVED,
-            'reviewed_at' => now(),
-            'reviewed_by' => 1,
+            'reviewed_at' => $adminId ? now() : null,
+            'reviewed_by' => $adminId,
             'is_featured' => rand(0, 100) > 70, // 30% chance of being featured
         ]);
 
         $this->addProfileImage($profile, $clinicUser->name);
+    }
+
+    /**
+     * Get the first available admin ID, or null if no admin exists
+     */
+    private function getAdminId(): ?int
+    {
+        $admin = Admin::first();
+        return $admin ? $admin->id : null;
     }
 
     private function generateEducation($specialty)

@@ -10,12 +10,18 @@ class SupplierInfoController extends Controller
 {
     public function index()
     {
+        // apply permissions
+        abort_if(!hasPermission('view supplier info'), 403, __('You are not authorized to view supplier info'));
+
         $supplier = auth('supplier')->user()->supplier;
         return view('backend.dashboards.supplier.pages.supplier-info.index', compact('supplier'));
     }
 
     public function update(Request $request)
     {
+        // apply permissions
+        abort_if(!hasPermission('update supplier info'), 403, __('You are not authorized to update supplier info'));
+
         $supplier = auth('supplier')->user()->supplier;
 
         $request->validate([

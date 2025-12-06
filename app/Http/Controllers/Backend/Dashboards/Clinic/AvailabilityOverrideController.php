@@ -20,6 +20,9 @@ class AvailabilityOverrideController extends Controller
 
     public function index(Request $request)
     {
+        // apply permissions
+        abort_if(!hasPermission('view availability overrides'), 403, __('You are not authorized to view availability overrides'));
+
         $clinicId = auth('clinic')->user()->clinic_id;
         $doctors = DoctorProfile::whereHas('clinicUser', function ($q) use ($clinicId) {
             $q->where('clinic_id', $clinicId);
@@ -30,16 +33,25 @@ class AvailabilityOverrideController extends Controller
 
     public function data(Request $request)
     {
+        // apply permissions
+        abort_if(!hasPermission('view availability overrides'), 403, __('You are not authorized to view availability overrides'));
+
         return $this->repo->data($request->all());
     }
 
     public function store(StoreAvailabilityOverrideRequest $request)
     {
+        // apply permissions
+        abort_if(!hasPermission('create availability override'), 403, __('You are not authorized to create availability override'));
+
         return $this->repo->store($request->validated());
     }
 
     public function show($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('view availability overrides'), 403, __('You are not authorized to view availability override'));
+
         $override = $this->repo->find($id);
 
         return request()->ajax()
@@ -49,31 +61,49 @@ class AvailabilityOverrideController extends Controller
 
     public function update(UpdateAvailabilityOverrideRequest $request, $id)
     {
+        // apply permissions
+        abort_if(!hasPermission('update availability override'), 403, __('You are not authorized to update availability override'));
+
         return $this->repo->update($id, $request->validated());
     }
 
     public function destroy($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('delete availability override'), 403, __('You are not authorized to delete availability override'));
+
         return $this->repo->destroy($id);
     }
 
     public function trash()
     {
+        // apply permissions
+        abort_if(!hasPermission('view trash availability overrides'), 403, __('You are not authorized to view trash availability overrides'));
+
         return view('backend.dashboards.clinic.pages.availability-overrides.trash');
     }
 
     public function trashData()
     {
+        // apply permissions
+        abort_if(!hasPermission('view trash availability overrides'), 403, __('You are not authorized to view trash availability overrides'));
+
         return $this->repo->trashData();
     }
 
     public function restore($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('restore availability override'), 403, __('You are not authorized to restore availability override'));
+
         return $this->repo->restore($id);
     }
 
     public function forceDelete($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('force delete availability override'), 403, __('You are not authorized to force delete availability override'));
+
         return $this->repo->forceDelete($id);
     }
 
@@ -88,4 +118,3 @@ class AvailabilityOverrideController extends Controller
         }
     }
 }
-

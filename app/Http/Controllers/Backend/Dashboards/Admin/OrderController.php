@@ -20,16 +20,22 @@ class OrderController extends Controller
 
     public function index()
     {
+        // apply permissions
+        abort_if(!hasPermission('view orders'), 403, __('You are not authorized to view orders'));
         return view('backend.dashboards.admin.pages.orders.index');
     }
 
     public function data()
     {
+        // apply permissions
+        abort_if(!hasPermission('view orders'), 403, __('You are not authorized to view orders'));
         return $this->orderRepo->data();
     }
 
     public function show($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('view order'), 403, __('You are not authorized to view order'));
         $order = $this->orderRepo->show($id);
         return request()->ajax()
             ? response()->json($order)
@@ -38,18 +44,24 @@ class OrderController extends Controller
 
     public function getOrderSuppliers($orderId)
     {
+        // apply permissions
+        abort_if(!hasPermission('view order'), 403, __('You are not authorized to view order'));
         $suppliers = $this->orderRepo->getOrderSuppliers($orderId);
         return response()->json($suppliers);
     }
 
     public function getOrderItems($orderId)
     {
+        // apply permissions
+        abort_if(!hasPermission('view order'), 403, __('You are not authorized to view order'));
         $items = $this->orderRepo->getOrderItems($orderId);
         return response()->json($items);
     }
 
     public function updatePaymentStatus(Request $request, $id)
     {
+        // apply permissions
+        abort_if(!hasPermission('update order payment status'), 403, __('You are not authorized to update order payment status'));
         $request->validate([
             'payment_status' => 'required|in:pending,paid,failed',
         ]);
@@ -70,6 +82,8 @@ class OrderController extends Controller
 
     public function analytics(Request $request)
     {
+        // apply permissions
+        abort_if(!hasPermission('view orders'), 403, __('You are not authorized to view orders'));
         $startDate = $request->get('start_date', now()->startOfMonth()->toDateString());
         $endDate = $request->get('end_date', now()->endOfMonth()->toDateString());
         $supplierId = $request->get('supplier_id');

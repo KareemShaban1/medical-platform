@@ -24,16 +24,25 @@ class OfferController extends Controller
 
     public function index()
     {
+        // apply permissions
+        abort_if(!hasPermission('view offers'), 403, __('You are not authorized to view offers'));
+
         return view('backend.dashboards.supplier.pages.offers.index');
     }
 
     public function data()
     {
+        // apply permissions
+        abort_if(!hasPermission('view offers'), 403, __('You are not authorized to view offers'));
+
         return $this->offerRepository->data();
     }
 
     public function store(CreateOfferRequest $request)
     {
+        // apply permissions
+        abort_if(!hasPermission('create offer'), 403, __('You are not authorized to create offers'));
+
         $supplier = auth('supplier')->user()->supplier;
 
         return $this->checkFeatureLimit(
@@ -58,6 +67,9 @@ class OfferController extends Controller
 
     public function show($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('view offer'), 403, __('You are not authorized to view offer'));
+
         try {
             $offer = $this->offerRepository->show($id);
             return view('backend.dashboards.supplier.pages.offers.show', compact('offer'));
@@ -68,6 +80,9 @@ class OfferController extends Controller
 
     public function edit($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('edit offer'), 403, __('You are not authorized to edit offer'));
+
         try {
             $offer = $this->offerRepository->show($id);
             return view('backend.dashboards.supplier.pages.offers.edit', compact('offer'));
@@ -78,6 +93,9 @@ class OfferController extends Controller
 
     public function update(UpdateOfferRequest $request, $id)
     {
+        // apply permissions
+        abort_if(!hasPermission('update offer'), 403, __('You are not authorized to update offer'));
+
         try {
             $this->offerRepository->update($request->validated(), $id);
             return response()->json([
@@ -94,6 +112,9 @@ class OfferController extends Controller
 
     public function destroy($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('delete offer'), 403, __('You are not authorized to delete offer'));
+
         try {
             $this->offerRepository->destroy($id);
             return response()->json([
@@ -121,6 +142,9 @@ class OfferController extends Controller
 
     public function showAvailableRequest($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('view available requests'), 403, __('You are not authorized to view available request'));
+
         try {
             $request = RequestModel::with(['categories', 'clinic'])->findOrFail($id);
 
@@ -149,6 +173,9 @@ class OfferController extends Controller
 
     public function createOfferForRequest($requestId)
     {
+        // apply permissions
+        abort_if(!hasPermission('create offer for request'), 403, __('You are not authorized to create offer for request'));
+
         try {
             $request = RequestModel::with(['categories', 'clinic'])->findOrFail($requestId);
 

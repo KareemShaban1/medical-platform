@@ -25,6 +25,9 @@ class DailyPeriodController extends Controller
 
     public function index(Request $request)
     {
+        // apply permissions
+        abort_if(!hasPermission('view daily periods'), 403, __('You are not authorized to view daily periods'));
+
         $clinicId = auth('clinic')->user()->clinic_id;
         $doctors = DoctorProfile::whereHas('clinicUser', function ($q) use ($clinicId) {
             $q->where('clinic_id', $clinicId);
@@ -35,11 +38,17 @@ class DailyPeriodController extends Controller
 
     public function data(Request $request)
     {
+        // apply permissions
+        abort_if(!hasPermission('view daily periods'), 403, __('You are not authorized to view daily periods'));
+
         return $this->repo->data($request->all());
     }
 
     public function create()
     {
+        // apply permissions
+        abort_if(!hasPermission('create daily period'), 403, __('You are not authorized to create daily period'));
+
         $clinicId = auth('clinic')->user()->clinic_id;
         $doctors = DoctorProfile::whereHas('clinicUser', function ($q) use ($clinicId) {
             $q->where('clinic_id', $clinicId);
@@ -50,6 +59,9 @@ class DailyPeriodController extends Controller
 
     public function store(StoreDailyPeriodRequest $request)
     {
+        // apply permissions
+        abort_if(!hasPermission('create daily period'), 403, __('You are not authorized to create daily period'));
+
         try {
             $period = $this->repo->store($request->validated());
             return redirect()->route('clinic.daily-periods.index')
@@ -61,6 +73,9 @@ class DailyPeriodController extends Controller
 
     public function edit($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('update daily period'), 403, __('You are not authorized to update daily period'));
+
         $period = $this->repo->find($id);
 
         $clinicId = auth('clinic')->user()->clinic_id;
@@ -73,6 +88,9 @@ class DailyPeriodController extends Controller
 
     public function update(UpdateDailyPeriodRequest $request, $id)
     {
+        // apply permissions
+        abort_if(!hasPermission('update daily period'), 403, __('You are not authorized to update daily period'));
+
         try {
             $period = $this->repo->update($id, $request->validated());
             return redirect()->route('clinic.daily-periods.index')
@@ -84,6 +102,9 @@ class DailyPeriodController extends Controller
 
     public function destroy($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('delete daily period'), 403, __('You are not authorized to delete daily period'));
+
         try {
             $this->repo->destroy($id);
             return response()->json([
@@ -117,6 +138,9 @@ class DailyPeriodController extends Controller
 
     public function updateCapacity(Request $request, $id)
     {
+        // apply permissions
+        abort_if(!hasPermission('update daily period capacity'), 403, __('You are not authorized to update daily period capacity'));
+
         $request->validate(['capacity' => 'required|integer|min:1|max:100']);
 
         try {
@@ -136,6 +160,9 @@ class DailyPeriodController extends Controller
 
     public function generatePeriods(Request $request)
     {
+        // apply permissions
+        abort_if(!hasPermission('generate daily periods'), 403, __('You are not authorized to generate daily periods'));
+
         $request->validate([
             'doctor_profile_id' => 'required|exists:doctor_profiles,id',
             'days_ahead' => 'sometimes|integer|min:1|max:90'
@@ -163,6 +190,9 @@ class DailyPeriodController extends Controller
 
     public function viewAppointments($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('view daily period appointments'), 403, __('You are not authorized to view daily period appointments'));
+
         try {
             $period = $this->repo->find($id);
 
@@ -214,4 +244,3 @@ class DailyPeriodController extends Controller
         }
     }
 }
-

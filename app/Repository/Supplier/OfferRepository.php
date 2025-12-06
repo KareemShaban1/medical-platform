@@ -170,13 +170,21 @@ class OfferRepository implements OfferRepositoryInterface
 
     private function offerActions($item): string
     {
-        $showUrl = route('supplier.offers.show', $item->id);
         $actions = '<div class="d-flex gap-2">';
-        $actions .= '<a href="' . $showUrl . '" class="btn btn-sm btn-success" title="View"><i class="fa fa-eye"></i></a>';
+
+        if (hasPermission('view offers')) {
+            $showUrl = route('supplier.offers.show', $item->id);
+            $actions .= '<a href="' . $showUrl . '" class="btn btn-sm btn-success" title="View"><i class="fa fa-eye"></i></a>';
+        }
 
         if ($item->status === Offer::STATUS_PENDING) {
-            $actions .= '<button onclick="editOffer(' . $item->id . ')" class="btn btn-sm btn-info" title="Edit"><i class="fa fa-edit"></i></button>';
-            $actions .= '<button onclick="deleteOffer(' . $item->id . ')" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>';
+            if (hasPermission('update offer')) {
+                $actions .= '<button onclick="editOffer(' . $item->id . ')" class="btn btn-sm btn-info" title="Edit"><i class="fa fa-edit"></i></button>';
+            }
+
+            if (hasPermission('delete offer')) {
+                $actions .= '<button onclick="deleteOffer(' . $item->id . ')" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>';
+            }
         }
 
         $actions .= '</div>';
@@ -185,12 +193,19 @@ class OfferRepository implements OfferRepositoryInterface
 
     private function availableRequestActions($item): string
     {
-        $viewUrl = route('supplier.available-requests.show', $item->id);
-        return <<<HTML
-        <div class="d-flex gap-2">
-            <a href="{$viewUrl}" class="btn btn-sm btn-success" title="View Details"><i class="fa fa-eye"></i></a>
-            <button onclick="submitOffer({$item->id})" class="btn btn-sm btn-primary" title="Submit Offer"><i class="fa fa-paper-plane"></i></button>
-        </div>
-        HTML;
+        $html = '<div class="d-flex gap-2">';
+
+        if (hasPermission('view available requests')) {
+            $viewUrl = route('supplier.available-requests.show', $item->id);
+            $html .= '<a href="' . $viewUrl . '" class="btn btn-sm btn-success" title="View Details"><i class="fa fa-eye"></i></a>';
+        }
+
+        if (hasPermission('create offer for request')) {
+            $html .= '<button onclick="submitOffer(' . $item->id . ')" class="btn btn-sm btn-primary" title="Submit Offer"><i class="fa fa-paper-plane"></i></button>';
+        }
+
+        $html .= '</div>';
+
+        return $html;
     }
 }

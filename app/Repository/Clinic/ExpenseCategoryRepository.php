@@ -130,27 +130,42 @@ class ExpenseCategoryRepository implements ExpenseCategoryRepositoryInterface
 
     private function expenseCategoryActions($item): string
     {
-        $editUrl = route('clinic.expense-categories.edit', $item->id);
-        $showUrl = route('clinic.expense-categories.show', $item->id);
+        $html = '<div class="d-flex gap-2">';
 
-        return <<<HTML
-        <div class="d-flex gap-2">
-           <a href="{$showUrl}" class="btn btn-sm btn-info"><i class="fa fa-eye"></i></a>
-           <button onclick="editExpenseCategory({$item->id})" class="btn btn-sm btn-warning text-white"><i class="fa fa-edit"></i></button>
-           <button onclick="deleteExpenseCategory({$item->id})" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>
-        </div>
-        HTML;
+        if (hasPermission('view expense categories')) {
+            $showUrl = route('clinic.expense-categories.show', $item->id);
+            $html .= '<a href="' . $showUrl . '" class="btn btn-sm btn-info"><i class="fa fa-eye"></i></a>';
+        }
+
+        if (hasPermission('update expense category')) {
+            $html .= '<button onclick="editExpenseCategory(' . $item->id . ')" class="btn btn-sm btn-warning text-white"><i class="fa fa-edit"></i></button>';
+        }
+
+        if (hasPermission('delete expense category')) {
+            $html .= '<button onclick="deleteExpenseCategory(' . $item->id . ')" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>';
+        }
+
+        $html .= '</div>';
+
+        return $html;
     }
 
 
     private function expenseCategoryTrashActions($item): string
     {
-        return <<<HTML
-        <div class="d-flex gap-2">
-           <button onclick="restore({$item->id})" class="btn btn-sm btn-info" title="Restore"><i class="fa fa-undo"></i></button>
-           <button onclick="forceDelete({$item->id})" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>
-        </div>
-        HTML;
+        $html = '<div class="d-flex gap-2">';
+
+        if (hasPermission('restore expense category')) {
+            $html .= '<button onclick="restore(' . $item->id . ')" class="btn btn-sm btn-info" title="Restore"><i class="fa fa-undo"></i></button>';
+        }
+
+        if (hasPermission('force delete expense category')) {
+            $html .= '<button onclick="forceDelete(' . $item->id . ')" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>';
+        }
+
+        $html .= '</div>';
+
+        return $html;
     }
 
     private function expenseCategoryStatus($item): string
