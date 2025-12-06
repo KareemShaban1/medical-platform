@@ -15,6 +15,7 @@ class UsersManagementRepository implements UsersManagementRepositoryInterface
 {
     public function getOverviewStats()
     {
+
         return [
             'clinics' => [
                 'total' => Clinic::count(),

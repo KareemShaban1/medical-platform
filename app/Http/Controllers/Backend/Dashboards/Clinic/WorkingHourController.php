@@ -18,6 +18,9 @@ class WorkingHourController extends Controller
 
     public function index()
     {
+        // apply permissions
+        abort_if(!hasPermission('view working hours'), 403, __('You are not authorized to view working hours'));
+
         $clinicUsers = ClinicUser::where('clinic_id', auth('clinic')->user()->clinic_id)
             ->orderBy('name')
             ->get();
@@ -33,6 +36,9 @@ class WorkingHourController extends Controller
 
     public function bulkSave(BulkSaveWorkingHoursRequest $request)
     {
+        // apply permissions
+        abort_if(!hasPermission('bulk save working hours'), 403, __('You are not authorized to bulk save working hours'));
+
         $validated = $request->validated();
         $slots = $validated['slots'] ?? [];
         $isRecurring = (bool)($validated['is_recurring'] ?? true);
@@ -42,8 +48,10 @@ class WorkingHourController extends Controller
 
     public function destroy($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('delete working hours'), 403, __('You are not authorized to delete working hours'));
+
         $this->repo->destroy($id);
         return response()->json(['status' => 'success', 'message' => __('Slot deleted successfully')]);
     }
 }
-

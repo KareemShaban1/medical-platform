@@ -25,6 +25,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'check.clinic.approval'   => \App\Http\Middleware\CheckClinicApproval::class,
             'check.supplier.approval' => \App\Http\Middleware\CheckSupplierApproval::class,
             'check.subscription'      => \App\Http\Middleware\CheckSubscription::class,
+            'permission'              => \App\Http\Middleware\CheckPermission::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

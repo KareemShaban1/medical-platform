@@ -19,16 +19,25 @@ class OrderController extends Controller
 
     public function index()
     {
+        // apply permissions
+        abort_if(!hasPermission('view orders'), 403, __('You are not authorized to view orders'));
+
         return view('backend.dashboards.supplier.pages.orders.index');
     }
 
     public function data()
     {
+        // apply permissions
+        abort_if(!hasPermission('view orders'), 403, __('You are not authorized to view orders'));
+
         return $this->orderRepo->data();
     }
 
     public function show($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('view order'), 403, __('You are not authorized to view order'));
+
         $order = $this->orderRepo->show($id);
         return request()->ajax()
             ? response()->json($order)
@@ -49,6 +58,9 @@ class OrderController extends Controller
 
     public function createRefund(Request $request, $id)
     {
+        // apply permissions
+        abort_if(!hasPermission('create refund'), 403, __('You are not authorized to create refund'));
+
         $request->validate([
             'amount' => 'required|numeric|min:0',
             'refund_type' => 'required|in:full,partial',
@@ -78,6 +90,9 @@ class OrderController extends Controller
 
     public function updateRefundStatus(Request $request, $refundId)
     {
+        // apply permissions
+        abort_if(!hasPermission('update refund status'), 403, __('You are not authorized to update refund status'));
+
         $request->validate([
             'status' => 'required|in:pending,approved,rejected,processed',
             'notes' => 'nullable|string|max:500'

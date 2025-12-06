@@ -36,6 +36,8 @@
 
   			<!-- <li class="side-nav-title side-nav-item">Navigation</li> -->
 
+
+  			@hasPermission('view dashboard')
   			<li class="side-nav-item">
   				<a href="{{ route('clinic.dashboard') }}" class="side-nav-link">
   					<i class="uil-home-alt"></i>
@@ -44,7 +46,8 @@
   					</span>
   				</a>
   			</li>
-
+  			@endhasPermission
+  			@hasPermission('view clinic info')
   			<!-- Clinic Info -->
   			<li class="side-nav-item">
   				<a href="{{ route('clinic.settings.clinic-info') }}" class="side-nav-link">
@@ -52,9 +55,11 @@
   					<span> {{ __('Clinic Info') }} </span>
   				</a>
   			</li>
+  			@endhasPermission
 
 
-  			<!-- Roles Management -->
+
+  			@hasPermission('view roles')
   			<li class="side-nav-item">
   				<a data-bs-toggle="collapse" href="#sidebarRoles" aria-expanded="false"
   					aria-controls="sidebarRoles" class="side-nav-link">
@@ -64,21 +69,28 @@
   				</a>
   				<div class="collapse" id="sidebarRoles">
   					<ul class="side-nav-second-level">
+  						@hasPermission('view roles')
   						<li>
   							<a href="{{ route('clinic.roles.index') }}">
   								<span> {{__('Roles')}} </span>
   							</a>
   						</li>
+  						@endhasPermission
+  						@hasPermission('view roles')
   						<li>
   							<a href="{{ route('clinic.roles.trash') }}">
   								<span> {{__('Trash Roles')}} </span>
   							</a>
   						</li>
+  						@endhasPermission
+
   					</ul>
   				</div>
   			</li>
+  			@endhasPermission
 
 
+  			@hasAnyPermission('view users', 'view doctor profiles')
   			<!-- HR Management -->
   			<li class="side-nav-item">
   				<a data-bs-toggle="collapse" href="#sidebarUsers" aria-expanded="false"
@@ -89,32 +101,34 @@
   				</a>
   				<div class="collapse" id="sidebarUsers">
   					<ul class="side-nav-second-level">
+  						@hasPermission('view users')
   						<li>
   							<a href="{{ route('clinic.users.index') }}">
   								<span> {{__('Employees')}} </span>
   							</a>
   						</li>
-  						@if(auth('clinic')->user()->isDoctor())
+  						@endhasPermission
+  						@if(auth('clinic')->user()->isDoctor() &&
+  						hasPermission('view doctor profiles'))
   						<li>
-  							<a href="{{ route('clinic.doctor-profiles.my-profile') }}">
+  							<a
+  								href="{{ route('clinic.doctor-profiles.my-profile') }}">
   								<span> {{__('My Doctor Profile')}}
   								</span>
   							</a>
   						</li>
   						@endif
+  						@hasPermission('view doctor profiles')
   						<li>
-  							<a href="{{ route('clinic.doctor-profiles.index') }}">
+  							<a
+  								href="{{ route('clinic.doctor-profiles.index') }}">
   								<span> {{__('Doctor Profile Management')}}
   								</span>
   							</a>
   						</li>
-  						<li>
-  							<a
-  								href="{{ route('clinic.doctor-profiles.trash') }}">
-  								<span> {{__('Trash Doctor Profiles')}}
-  								</span>
-  							</a>
-  						</li>
+  						@endhasPermission
+
+  						@hasPermission('view salary contracts')
   						<li>
   							<a
   								href="{{ route('clinic.salary-contracts.index') }}">
@@ -122,31 +136,42 @@
   								</span>
   							</a>
   						</li>
+  						@endhasPermission
+  						@hasPermission('view payslips')
   						<li>
   							<a href="{{ route('clinic.payslips.index') }}">
   								<span> {{__('Payslip')}}
   								</span>
   							</a>
   						</li>
-
+  						@endhasPermission
+  						@hasPermission('view working hours')
   						<li>
-  							<a href="{{ route('clinic.working-hours.index') }}">
-                                <span> {{ __('Working Hours') }}
-                                </span>
+  							<a
+  								href="{{ route('clinic.working-hours.index') }}">
+  								<span> {{ __('Working Hours') }}
+  								</span>
   							</a>
-                        </li>
-                        <!-- attendance -->
-                        <li>
-  							<a href="{{ route('clinic.attendance.index') }}">
+  						</li>
+  						@endhasPermission
+  						@hasPermission('view attendance')
+  						<!-- attendance -->
+  						<li>
+  							<a
+  								href="{{ route('clinic.attendance.index') }}">
   								<span> {{__('Attendance')}}
   								</span>
   							</a>
   						</li>
+  						@endhasPermission
   					</ul>
   				</div>
   			</li>
+  			@endhasAnyPermission
 
 
+  			@hasAnyPermission('view clinic inventory', 'view rental spaces', 'view jobs', 'view
+  			purchase requests', 'view orders', 'view course enrollments')
   			<!-- Clinic Management -->
   			<li class="side-nav-item">
   				<a data-bs-toggle="collapse" href="#sidebarClinicInventory"
@@ -158,46 +183,66 @@
   					<span class=" menu-arrow"></span>
   				</a>
   				<div class="collapse" id="sidebarClinicInventory">
- 					<ul class="side-nav-second-level">
- 						<li>
- 							<a
- 								href="{{ route('clinic.clinic-inventories.index') }}">
- 								<span> {{__('Clinic Inventory')}}
- 								</span>
- 							</a>
- 						</li>
-
+  					<ul class="side-nav-second-level">
+  						@hasPermission('view clinic inventory')
+  						<li>
+  							<a
+  								href="{{ route('clinic.clinic-inventories.index') }}">
+  								<span> {{__('Clinic Inventory')}}
+  								</span>
+  							</a>
+  						</li>
+  						@endhasPermission
+  						@hasPermission('view rental spaces')
   						<li>
   							<a
   								href="{{ route('clinic.rental-spaces.index') }}">
   								<span> {{__('Rental Space')}} </span>
   							</a>
   						</li>
-
+  						@endhasPermission
   						<!-- jobs -->
+  						@hasPermission('view jobs')
   						<li>
   							<a href="{{ route('clinic.jobs.index') }}">
   								<span> {{__('Jobs')}} </span>
   							</a>
   						</li>
-
+  						@endhasPermission
+  						@hasPermission('view purchase requests')
   						<li>
   							<a href="{{ route('clinic.requests.index') }}">
   								<span> {{__('My Requests')}} </span>
   							</a>
   						</li>
-                        <li>
-                            <a href="{{ route('clinic.orders.index') }}">
-                                <span> {{ __('My Orders') }} </span>
-                            </a>
-                        </li>
+  						@endhasPermission
+  						@hasPermission('view orders')
+  						<li>
+  							<a href="{{ route('clinic.orders.index') }}">
+  								<span> {{ __('My Orders') }} </span>
+  							</a>
+  						</li>
+  						@endhasPermission
+  						<!-- Course Enrollments -->
+  						@hasPermission('view course enrollments')
+  						<li class="side-nav-item">
+  							<a href="{{ route('clinic.course-enrollments.index') }}"
+  								class="side-nav-link">
+  								<i class="uil-book-open"></i>
+  								<span> {{ __('Course Enrollments') }}
+  								</span>
+  							</a>
+  						</li>
+  						@endhasPermission
   					</ul>
   				</div>
   			</li>
-
+  			@endhasAnyPermission
 
 
   			<!-- Appointments Management -->
+  			@hasAnyPermission('view appointments', 'view availability overrides', 'view daily
+  			periods', 'view appointments' ,'view medical records')
   			<li class="side-nav-item">
   				<a data-bs-toggle="collapse" href="#sidebarAppointments" aria-expanded="false"
   					aria-controls="sidebarAppointments" class="side-nav-link">
@@ -207,6 +252,7 @@
   				</a>
   				<div class="collapse" id="sidebarAppointments">
   					<ul class="side-nav-second-level">
+  						@hasPermission('view appointments')
   						<li>
   							<a
   								href="{{ route('clinic.appointments.index') }}">
@@ -214,6 +260,8 @@
   								</span>
   							</a>
   						</li>
+  						@endhasPermission
+  						@hasPermission('view availability overrides')
   						<li>
   							<a
   								href="{{ route('clinic.availability-overrides.index') }}">
@@ -221,24 +269,34 @@
   								</span>
   							</a>
   						</li>
+  						@endhasPermission
+  						@hasPermission('view daily periods')
   						<li>
   							<a
   								href="{{ route('clinic.daily-periods.index') }}">
   								<span> {{__('Daily Periods')}} </span>
   							</a>
   						</li>
-                        {{-- Trash section --}}
-                        <li>
-  							<a href="{{ route('clinic.appointments.trash') }}">
-                                    <span> {{__('Trash Appointments')}} </span>
-                            </a>
-                        </li>
-
+  						@endhasPermission
+  						<!-- Medical Records -->
+  						@hasPermission('view medical records')
+  						<li class="side-nav-item">
+  							<a href="{{ route('clinic.medical-records.index') }}"
+  								class="side-nav-link">
+  								<i class="uil-notes"></i>
+  								<span> {{ __('Medical Records') }}
+  								</span>
+  							</a>
+  						</li>
+  						@endhasPermission
   					</ul>
   				</div>
   			</li>
+  			@endhasAnyPermission
 
-			<!-- Patients Management -->
+
+  			<!-- Patients Management -->
+  			@hasAnyPermission('view patients', 'view trash patients')
   			<li class="side-nav-item">
   				<a data-bs-toggle="collapse" href="#sidebarPatients" aria-expanded="false"
   					aria-controls="sidebarPatients" class="side-nav-link">
@@ -246,32 +304,30 @@
   					<span> {{__('Patients')}} </span>
   					<span class="menu-arrow"></span>
   				</a>
-				<div class="collapse" id="sidebarPatients">
-					<ul class="side-nav-second-level">
-						<li>
-							<a href="{{ route('clinic.patients.index') }}">
-								<span> {{__('All Patients')}} </span>
-							</a>
-						</li>
+  				<div class="collapse" id="sidebarPatients">
+  					<ul class="side-nav-second-level">
+  						@hasPermission('view patients')
+  						<li>
+  							<a href="{{ route('clinic.patients.index') }}">
+  								<span> {{__('All Patients')}} </span>
+  							</a>
+  						</li>
+  						@endhasPermission
+  						@hasPermission('view trash patients')
+  						<li>
+  							<a href="{{ route('clinic.patients.trash') }}">
+  								<span> {{__('Trash Patients')}}
+  								</span>
+  							</a>
+  						</li>
+  						@endhasPermission
+  					</ul>
+  				</div>
+  			</li>
+  			@endhasAnyPermission
 
-						<li>
-							<a href="{{ route('clinic.patients.trash') }}">
-								<span> {{__('Trash Patients')}} </span>
-							</a>
-						</li>
 
-					</ul>
-				</div>
-			</li>
-
-			<!-- Course Enrollments -->
-			<li class="side-nav-item">
-				<a href="{{ route('clinic.course-enrollments.index') }}" class="side-nav-link">
-					<i class="uil-book-open"></i>
-					<span> {{ __('Course Enrollments') }} </span>
-				</a>
-			</li>
-
+  			@hasAnyPermission('view lab orders', 'create lab orders')
   			<!-- Lab Orders -->
   			<li class="side-nav-item">
   				<a data-bs-toggle="collapse" href="#sidebarLabOrders" aria-expanded="false"
@@ -282,34 +338,27 @@
   				</a>
   				<div class="collapse" id="sidebarLabOrders">
   					<ul class="side-nav-second-level">
+  						@hasPermission('view lab orders')
   						<li><a href="{{ route('clinic.lab-orders.index') }}"><span>
   									{{__('All Lab Orders')}}
   								</span></a></li>
+  						@endhasPermission
+  						@hasPermission('create lab orders')
   						<li><a href="{{ route('clinic.lab-orders.create') }}"><span>
   									{{__('Create Lab Order')}}
   								</span></a></li>
+  						@endhasPermission
   					</ul>
   				</div>
   			</li>
+  			@endhasAnyPermission
 
-  			<!-- Medical Records -->
-  			<li class="side-nav-item">
-  				<a href="{{ route('clinic.medical-records.index') }}" class="side-nav-link">
-  					<i class="uil-notes"></i>
-  					<span> {{ __('Medical Records') }} </span>
-  				</a>
-  			</li>
 
-          <!-- Invoices -->
-            <li class="side-nav-item">
-                <a href="{{ route('clinic.invoices.index') }}" class="side-nav-link">
-                    <i class="uil-receipt-alt"></i>
-                    <span> {{ __('Invoices') }} </span>
-                </a>
-            </li>
+
 
 
   			<!-- Expense Categories Management -->
+  			@hasAnyPermission('view expense categories', 'view expenses', 'view invoices')
   			<li class="side-nav-item">
   				<a data-bs-toggle="collapse" href="#sidebarExpenseCategories"
   					aria-expanded="false" aria-controls="sidebarExpenseCategories"
@@ -320,6 +369,7 @@
   				</a>
   				<div class="collapse" id="sidebarExpenseCategories">
   					<ul class="side-nav-second-level">
+  						@hasPermission('view expense categories')
   						<li>
   							<a
   								href="{{ route('clinic.expense-categories.index') }}">
@@ -327,36 +377,51 @@
   								</span>
   							</a>
   						</li>
+  						@endhasPermission
+  						@hasPermission('view expenses')
   						<li> <a href="{{ route('clinic.expenses.index') }}">
   								<span> {{__('Expenses')}}
   								</span>
   							</a>
   						</li>
+  						@endhasPermission
+  						@hasPermission('view invoices')
+  						<!-- Invoices -->
+  						<li class="side-nav-item">
+  							<a href="{{ route('clinic.invoices.index') }}"
+  								class="side-nav-link">
+  								<i class="uil-receipt-alt"></i>
+  								<span> {{ __('Invoices') }} </span>
+  							</a>
+  						</li>
+  						@endhasPermission
   					</ul>
   				</div>
   			</li>
+  			@endhasAnyPermission
+
+  			<!-- My Subscription -->
+  			@hasPermission('view subscriptions')
+  			<li class="side-nav-item">
+  				<a href="{{ route('clinic.subscriptions.index') }}" class="side-nav-link">
+  					<i class="uil-credit-card"></i>
+  					<span> {{__('My Subscription')}} </span>
+  				</a>
   			</li>
-
-			<!-- My Subscription -->
-			<li class="side-nav-item">
-				<a href="{{ route('clinic.subscriptions.index') }}" class="side-nav-link">
-					<i class="uil-credit-card"></i>
-					<span> {{__('My Subscription')}} </span>
-				</a>
-			</li>
-
-			<!-- Notifications -->
-			<li class="side-nav-item">
-				<a href="{{ route('clinic.notifications.index') }}" class="side-nav-link">
-					<i class="uil-bell"></i>
-					<span> {{__('Notifications')}} </span>
-					<span class="badge bg-danger rounded-pill"
-						id="sidebar-notification-count"
-						style="display: none;">0</span>
-				</a>
-			</li>
-
-		</ul>
+  			@endhasPermission
+  			<!-- Notifications -->
+  			@hasPermission('view notifications')
+  			<li class="side-nav-item">
+  				<a href="{{ route('clinic.notifications.index') }}" class="side-nav-link">
+  					<i class="uil-bell"></i>
+  					<span> {{__('Notifications')}} </span>
+  					<span class="badge bg-danger rounded-pill"
+  						id="sidebar-notification-count"
+  						style="display: none;">0</span>
+  				</a>
+  			</li>
+  			@endhasPermission
+  		</ul>
 
   		<!-- End Sidebar -->
 

@@ -187,21 +187,25 @@ class DoctorProfileRepository implements DoctorProfileRepositoryInterface
 
     private function profileActions($item): string
     {
-        $showUrl = route('clinic.doctor-profiles.show', $item->id);
-        $editUrl = route('clinic.doctor-profiles.edit', $item->id);
         $actions = '<div class="d-flex gap-2">';
 
-        $actions .= '<a href="' . $showUrl . '" class="btn btn-sm btn-info" title="View"><i class="fa fa-eye"></i></a>';
+        if (hasPermission('view doctor profiles')) {
+            $showUrl = route('clinic.doctor-profiles.show', $item->id);
+            $actions .= '<a href="' . $showUrl . '" class="btn btn-sm btn-info" title="View"><i class="fa fa-eye"></i></a>';
+        }
 
-        if ($item->canBeEdited()) {
+        if (hasPermission('update doctor profile') && $item->canBeEdited()) {
+            $editUrl = route('clinic.doctor-profiles.edit', $item->id);
             $actions .= '<a href="' . $editUrl . '" class="btn btn-sm btn-primary" title="Edit"><i class="fa fa-edit"></i></a>';
         }
 
-        if (in_array($item->status, [DoctorProfile::STATUS_DRAFT, DoctorProfile::STATUS_REJECTED])) {
+        if (hasPermission('submit doctor profile') && in_array($item->status, [DoctorProfile::STATUS_DRAFT, DoctorProfile::STATUS_REJECTED])) {
             $actions .= '<button onclick="submitProfile(' . $item->id . ')" class="btn btn-sm btn-success" title="Submit for Review"><i class="fa fa-paper-plane"></i></button>';
         }
 
-        $actions .= '<button onclick="deleteProfile(' . $item->id . ')" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>';
+        if (hasPermission('delete doctor profile')) {
+            $actions .= '<button onclick="deleteProfile(' . $item->id . ')" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>';
+        }
 
         $actions .= '</div>';
         return $actions;
@@ -210,8 +214,15 @@ class DoctorProfileRepository implements DoctorProfileRepositoryInterface
     private function trashActionButtons($item): string
     {
         $actions = '<div class="d-flex gap-2">';
-        $actions .= '<button onclick="restoreProfile(' . $item->id . ')" class="btn btn-sm btn-success" title="Restore"><i class="fa fa-undo"></i> Restore</button>';
-        $actions .= '<button onclick="forceDeleteProfile(' . $item->id . ')" class="btn btn-sm btn-danger" title="Delete Forever"><i class="fa fa-trash"></i> Delete Forever</button>';
+        
+        if (hasPermission('restore doctor profile')) {
+            $actions .= '<button onclick="restoreProfile(' . $item->id . ')" class="btn btn-sm btn-success" title="Restore"><i class="fa fa-undo"></i> Restore</button>';
+        }
+        
+        if (hasPermission('force delete doctor profile')) {
+            $actions .= '<button onclick="forceDeleteProfile(' . $item->id . ')" class="btn btn-sm btn-danger" title="Delete Forever"><i class="fa fa-trash"></i> Delete Forever</button>';
+        }
+        
         $actions .= '</div>';
         return $actions;
     }

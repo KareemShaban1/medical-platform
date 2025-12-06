@@ -22,6 +22,9 @@ class RoleController extends Controller
      */
     public function index()
     {
+        // apply permissions
+        abort_if(!hasPermission('view roles'), 403, __('You are not authorized to view roles'));
+
         return $this->roleRepository->index();
     }
 
@@ -30,6 +33,9 @@ class RoleController extends Controller
      */
     public function data()
     {
+        // apply permissions
+        abort_if(!hasPermission('view roles'), 403, __('You are not authorized to view roles'));
+
         return $this->roleRepository->data();
     }
 
@@ -38,6 +44,9 @@ class RoleController extends Controller
      */
     public function create()
     {
+        // apply permissions
+        abort_if(!hasPermission('create role'), 403, __('You are not authorized to create roles'));
+
         return $this->roleRepository->create();
     }
 
@@ -46,6 +55,9 @@ class RoleController extends Controller
      */
     public function store(CreateRoleRequest $request)
     {
+        // apply permissions
+        abort_if(!hasPermission('create role'), 403, __('You are not authorized to create roles'));
+
         return $this->roleRepository->store($request);
     }
 
@@ -54,6 +66,9 @@ class RoleController extends Controller
      */
     public function show(string $id)
     {
+        // apply permissions
+        abort_if(!hasPermission('view role'), 403, __('You are not authorized to view role'));
+
         return $this->roleRepository->show($id);
     }
 
@@ -62,6 +77,9 @@ class RoleController extends Controller
      */
     public function edit(string $id)
     {
+        // apply permissions
+        abort_if(!hasPermission('edit role'), 403, __('You are not authorized to edit role'));
+
         return $this->roleRepository->edit($id);
     }
 
@@ -70,6 +88,9 @@ class RoleController extends Controller
      */
     public function update(UpdateRoleRequest $request, string $id)
     {
+        // apply permissions
+        abort_if(!hasPermission('update role'), 403, __('You are not authorized to update role'));
+
         return $this->roleRepository->update($request, $id);
     }
 
@@ -78,6 +99,9 @@ class RoleController extends Controller
      */
     public function destroy(string $id)
     {
+        // apply permissions
+        abort_if(!hasPermission('delete role'), 403, __('You are not authorized to delete role'));
+
         return $this->roleRepository->destroy($id);
     }
 
@@ -86,6 +110,9 @@ class RoleController extends Controller
      */
     public function trash()
     {
+        // apply permissions
+        abort_if(!hasPermission('view trash roles'), 403, __('You are not authorized to view trash roles'));
+
         return $this->roleRepository->trash();
     }
 
@@ -94,6 +121,9 @@ class RoleController extends Controller
      */
     public function trashData()
     {
+        // apply permissions
+        abort_if(!hasPermission('view trash roles'), 403, __('You are not authorized to view trash roles'));
+
         return $this->roleRepository->trashData();
     }
 
@@ -102,6 +132,9 @@ class RoleController extends Controller
      */
     public function restore(string $id)
     {
+        // apply permissions
+        abort_if(!hasPermission('restore role'), 403, __('You are not authorized to restore role'));
+
         return $this->roleRepository->restore($id);
     }
 
@@ -110,6 +143,9 @@ class RoleController extends Controller
      */
     public function forceDelete(string $id)
     {
+        // apply permissions
+        abort_if(!hasPermission('force delete role'), 403, __('You are not authorized to force delete role'));
+
         return $this->roleRepository->forceDelete($id);
     }
 }

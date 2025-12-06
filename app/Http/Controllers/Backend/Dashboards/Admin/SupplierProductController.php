@@ -22,22 +22,30 @@ class SupplierProductController extends Controller
 
     public function index()
     {
+        // apply permissions
+        abort_if(!hasPermission('view supplier products'), 403, __('You are not authorized to view supplier products'));
         return view('backend.dashboards.admin.pages.supplier-products.index');
     }
 
     public function data()
     {
+        // apply permissions
+        abort_if(!hasPermission('view supplier products'), 403, __('You are not authorized to view supplier products'));
         return $this->supplierProductRepository->data();
     }
 
     public function show($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('view supplier product'), 403, __('You are not authorized to view supplier product'));
         $product = $this->supplierProductRepository->show($id);
         return view('backend.dashboards.admin.pages.supplier-products.show', compact('product'));
     }
 
     public function updateApprovalStatus(Request $request, $id)
     {
+        // apply permissions
+        abort_if(!hasPermission('approve supplier product'), 403, __('You are not authorized to update supplier product approval status'));
         $data = $request->validate([
             'action' => 'required|in:pending,under_review,approved,rejected',
             'notes' => 'nullable|string|max:1000'
@@ -49,6 +57,8 @@ class SupplierProductController extends Controller
 
     public function supplierProducts($supplierId)
     {
+        // apply permissions
+        abort_if(!hasPermission('view supplier products'), 403, __('You are not authorized to view supplier products'));
         $data = $this->supplierProductRepository->supplierProducts($supplierId);
         return view('backend.dashboards.admin.pages.supplier-products.supplier-products', $data);
     }

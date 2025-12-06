@@ -6,19 +6,27 @@
 		<div class="col-12">
 			<div class="page-title-box">
 				<div class="page-title-right">
+					@hasPermission('create expense')
 					<a href="{{ route('clinic.expenses.create') }}"
 						class="btn btn-primary">
 						<i class="mdi mdi-plus"></i>
 						{{ __('Add Expense') }}
 					</a>
-					<a href="{{ route('clinic.expenses.analytics') }}" class="btn btn-info text-white">
-						<i class="mdi mdi-chart-line"></i> {{ __('Expenses Analytics') }}
+					@endhasPermission
+					@hasPermission('view expenses')
+					<a href="{{ route('clinic.expenses.analytics') }}"
+						class="btn btn-info text-white">
+						<i class="mdi mdi-chart-line"></i>
+						{{ __('Expenses Analytics') }}
 					</a>
+					@endhasPermission
+					@hasPermission('view trash expenses')
 					<!-- trash button -->
 					<a href="{{ route('clinic.expenses.trash') }}"
 						class="btn btn-warning">
 						<i class="mdi mdi-delete"></i> {{ __('Trash') }}
 					</a>
+					@endhasPermission
 				</div>
 				<h4 class="page-title">{{ __('Expenses') }}</h4>
 			</div>

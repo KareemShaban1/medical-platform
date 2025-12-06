@@ -43,7 +43,18 @@ class UserRepository implements UserRepositoryInterface
 
             if (isset($data['role'])) {
                 setPermissionsTeamId($data['clinic_id']);
-                $user->assignRole($data['role']);
+                // Find role by name and team_id to ensure correct role assignment
+                $role = Role::where('name', $data['role'])
+                    ->where('guard_name', 'clinic')
+                    ->where('team_id', $data['clinic_id'])
+                    ->first();
+                
+                if ($role) {
+                    $user->assignRole($role);
+                } else {
+                    // Fallback: try assigning by name (Spatie will use team context)
+                    $user->assignRole($data['role']);
+                }
             }
 
             return $user;
@@ -72,7 +83,18 @@ class UserRepository implements UserRepositoryInterface
 
             if (isset($data['role'])) {
                 setPermissionsTeamId($user->clinic_id);
-                $user->syncRoles([$data['role']]);
+                // Find role by name and team_id to ensure correct role assignment
+                $role = Role::where('name', $data['role'])
+                    ->where('guard_name', 'clinic')
+                    ->where('team_id', $user->clinic_id)
+                    ->first();
+                
+                if ($role) {
+                    $user->syncRoles([$role]);
+                } else {
+                    // Fallback: try assigning by name (Spatie will use team context)
+                    $user->syncRoles([$data['role']]);
+                }
             }
 
             return $user;
@@ -168,25 +190,44 @@ class UserRepository implements UserRepositoryInterface
 
     private function userActions($item): string
     {
-        $showUrl = route('clinic.users.show', $item->id);
-        return <<<HTML
-        <div class="d-flex gap-2">
-            <a href="{$showUrl}" class="btn btn-sm btn-success" title="View"><i class="fa fa-eye"></i></a>
-            <button onclick="editUser({$item->id})" class="btn btn-sm btn-info" title="Edit"><i class="fa fa-edit"></i></button>
-            <button onclick="deleteUser({$item->id})" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>
-        </div>
-        HTML;
+        $html = '<div class="d-flex gap-2">';
+        
+        if (hasPermission('view users')) {
+            $showUrl = route('clinic.users.show', $item->id);
+            $html .= '<a href="' . $showUrl . '" class="btn btn-sm btn-success" title="View"><i class="fa fa-eye"></i></a>';
+        }
+        
+        if (hasPermission('update user')) {
+            $html .= '<button onclick="editUser(' . $item->id . ')" class="btn btn-sm btn-info" title="Edit"><i class="fa fa-edit"></i></button>';
+        }
+        
+        if (hasPermission('delete user')) {
+            $html .= '<button onclick="deleteUser(' . $item->id . ')" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>';
+        }
+        
+        $html .= '</div>';
+        
+        return $html;
     }
 
     private function trashActions($item): string
     {
-        return <<<HTML
-        <button class="btn btn-sm btn-success" onclick="restoreUser({$item->id})">
-            <i class="mdi mdi-restore"></i> Restore
-        </button>
-        <button class="btn btn-sm btn-danger" onclick="forceDeleteUser({$item->id})">
-            <i class="mdi mdi-delete-forever"></i> Delete
-        </button>
-        HTML;
+        $html = '<div class="d-flex gap-2">';
+        
+        if (hasPermission('restore user')) {
+            $html .= '<button class="btn btn-sm btn-success" onclick="restoreUser(' . $item->id . ')">';
+            $html .= '<i class="mdi mdi-restore"></i> Restore';
+            $html .= '</button>';
+        }
+        
+        if (hasPermission('force delete user')) {
+            $html .= '<button class="btn btn-sm btn-danger" onclick="forceDeleteUser(' . $item->id . ')">';
+            $html .= '<i class="mdi mdi-delete-forever"></i> Delete';
+            $html .= '</button>';
+        }
+        
+        $html .= '</div>';
+        
+        return $html;
     }
 }

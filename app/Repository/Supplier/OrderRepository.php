@@ -85,7 +85,7 @@ class OrderRepository implements OrderRepositoryInterface
                     $newStatus = $request['item_statuses'][$item->id] ?? null;
                     if ($newStatus && $item->status !== $newStatus) {
                         $item->status = $newStatus;
-                        $item->save(); 
+                        $item->save();
                     }
                 }
             }
@@ -234,21 +234,27 @@ class OrderRepository implements OrderRepositoryInterface
 
     private function orderActions($item): string
     {
-        $showUrl = route('supplier.orders.show', $item->id);
-        return <<<HTML
-        <div class="d-flex gap-2">
-            <a href="{$showUrl}" class="btn btn-sm btn-success" title="View"><i class="fa fa-eye"></i></a>
-            <button onclick="updateOrderStatus({$item->id})" class="btn btn-sm btn-info" title="Update Status"><i class="fa fa-edit"></i></button>
-            <button onclick="createRefund({$item->id})" class="btn btn-sm btn-warning" title="Create Refund"><i class="fa fa-undo"></i></button>
-        HTML;
+        $html = '<div class="d-flex gap-2">';
+
+        if (hasPermission('view orders')) {
+            $showUrl = route('supplier.orders.show', $item->id);
+            $html .= '<a href="' . $showUrl . '" class="btn btn-sm btn-success" title="View"><i class="fa fa-eye"></i></a>';
+        }
+
+        if (hasPermission('update order status')) {
+            $html .= '<button onclick="updateOrderStatus(' . $item->id . ')" class="btn btn-sm btn-info" title="Update Status"><i class="fa fa-edit"></i></button>';
+        }
+
+        if (hasPermission('create refund')) {
+            $html .= '<button onclick="createRefund(' . $item->id . ')" class="btn btn-sm btn-warning" title="Create Refund"><i class="fa fa-undo"></i></button>';
+        }
 
         // Add payment status button for COD orders
-        if ($item->payment_method == 0) {
+        if (hasPermission('update order payment status') && $item->payment_method == 0) {
             $html .= '<button onclick="updatePaymentStatus(' . $item->id . ')" class="btn btn-sm btn-primary" title="Update Payment"><i class="fa fa-credit-card"></i></button>';
         }
 
         $html .= '</div>';
         return $html;
-        HTML;
     }
 }

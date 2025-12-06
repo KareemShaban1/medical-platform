@@ -11,11 +11,15 @@ class PurchaseRequestController extends Controller
 {
     public function index()
     {
+        // apply permissions
+        abort_if(!hasPermission('view purchase requests'), 403, __('You are not authorized to view purchase requests'));
         return view('backend.dashboards.admin.pages.purchase-requests.index');
     }
 
     public function data()
     {
+        // apply permissions
+        abort_if(!hasPermission('view purchase requests'), 403, __('You are not authorized to view purchase requests'));
         $requests = Request::with(['categories', 'clinic', 'offers'])->latest();
 
         return datatables()->of($requests)
@@ -45,12 +49,16 @@ class PurchaseRequestController extends Controller
 
     public function offers($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('view purchase requests'), 403, __('You are not authorized to view purchase requests'));
         $request = Request::with(['categories', 'clinic'])->findOrFail($id);
         return view('backend.dashboards.admin.pages.purchase-requests.offers', compact('request'));
     }
 
     public function offersData($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('view purchase requests'), 403, __('You are not authorized to view purchase requests'));
         $offers = Offer::with(['supplier'])
             ->where('request_id', $id)
             ->latest();
@@ -78,4 +86,3 @@ class PurchaseRequestController extends Controller
             ->make(true);
     }
 }
-

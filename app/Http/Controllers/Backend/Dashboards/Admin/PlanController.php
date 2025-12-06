@@ -20,11 +20,15 @@ class PlanController extends Controller
 
     public function index()
     {
+        // apply permissions
+        abort_if(!hasPermission('view plans'), 403, __('You are not authorized to view plans'));
         return view('backend.dashboards.admin.pages.plans.index');
     }
 
     public function data(Request $request)
     {
+        // apply permissions
+        abort_if(!hasPermission('view plans'), 403, __('You are not authorized to view plans'));
         $query = Plan::with('planFeatures.feature');
 
         if ($request->filled('plan_type')) {
@@ -61,6 +65,8 @@ class PlanController extends Controller
 
     public function manageFeatures($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('view features'), 403, __('You are not authorized to view plans'));
         $plan = $this->planService->getPlan($id);
         if (!$plan) {
             return response()->json([
@@ -80,6 +86,8 @@ class PlanController extends Controller
 
     public function addFeature(Request $request, $planId)
     {
+        // apply permissions
+        abort_if(!hasPermission('create feature'), 403, __('You are not authorized to view features'));
         $plan = Plan::findOrFail($planId);
 
         $validated = $request->validate([
@@ -119,6 +127,8 @@ class PlanController extends Controller
 
     public function updateFeature(Request $request, $planId, $featureId)
     {
+        // apply permissions
+        abort_if(!hasPermission('update feature'), 403, __('You are not authorized to update feature'));
         $plan = Plan::findOrFail($planId);
         $planFeature = $plan->planFeatures()->where('feature_id', $featureId)->firstOrFail();
 
@@ -161,6 +171,8 @@ class PlanController extends Controller
 
     public function deleteFeature($planId, $featureId)
     {
+        // apply permissions
+        abort_if(!hasPermission('delete feature'), 403, __('You are not authorized to delete feature'));
         $plan = Plan::findOrFail($planId);
         $planFeature = $plan->planFeatures()->where('feature_id', $featureId)->firstOrFail();
 
@@ -181,6 +193,8 @@ class PlanController extends Controller
 
     public function create()
     {
+        // apply permissions
+        abort_if(!hasPermission('create plan'), 403, __('You are not authorized to create plan'));
         $features = $this->planService->getAllFeatures();
         return response()->json([
             'success' => true,
@@ -190,6 +204,8 @@ class PlanController extends Controller
 
     public function store(Request $request)
     {
+        // apply permissions
+        abort_if(!hasPermission('create plan'), 403, __('You are not authorized to create plan'));
         $validated = $request->validate([
             'plan_type' => 'required|in:doctor,clinic,supplier',
             'level' => 'required|in:free,basic,advanced,vip',
@@ -252,6 +268,8 @@ class PlanController extends Controller
 
     public function edit($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('update plan'), 403, __('You are not authorized to update plan'));
         $plan = $this->planService->getPlan($id);
         if (!$plan) {
             return response()->json([
@@ -269,6 +287,8 @@ class PlanController extends Controller
 
     public function update(Request $request, $id)
     {
+        // apply permissions
+        abort_if(!hasPermission('update plan'), 403, __('You are not authorized to update plan'));
         $plan = Plan::findOrFail($id);
 
         $validated = $request->validate([
@@ -334,6 +354,8 @@ class PlanController extends Controller
 
     public function destroy($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('delete plan'), 403, __('You are not authorized to delete plan'));
         try {
             $plan = Plan::findOrFail($id);
             $this->planService->deletePlan($plan);

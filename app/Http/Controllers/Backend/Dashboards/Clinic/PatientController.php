@@ -21,6 +21,9 @@ class PatientController extends Controller
 
     public function index()
     {
+        // apply permissions
+        abort_if(!hasPermission('view patients'), 403, __('You are not authorized to view patients'));
+
         $clinicUser = auth('clinic')->user();
         $isDoctor = $clinicUser->isDoctor();
 
@@ -37,21 +40,33 @@ class PatientController extends Controller
 
     public function data()
     {
+        // apply permissions
+        abort_if(!hasPermission('view patients'), 403, __('You are not authorized to view patients'));
+
         return $this->patientRepo->data();
     }
 
     public function trash()
     {
+        // apply permissions
+        abort_if(!hasPermission('view trash patients'), 403, __('You are not authorized to view trash patients'));
+
         return view('backend.dashboards.clinic.pages.patients.trash');
     }
 
     public function trashData()
     {
+        // apply permissions
+        abort_if(!hasPermission('view trash patients'), 403, __('You are not authorized to view trash patients'));
+
         return $this->patientRepo->trashData();
     }
 
     public function store(Request $request)
     {
+        // apply permissions
+        abort_if(!hasPermission('create patient'), 403, __('You are not authorized to create patient'));
+
         $clinicUser = auth('clinic')->user();
         // For limits, we check against the clinic entity
         $clinic = $clinicUser->clinic_id ? $clinicUser->clinic : $clinicUser;
@@ -86,6 +101,9 @@ class PatientController extends Controller
 
     public function show($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('view patient'), 403, __('You are not authorized to view patient'));
+
         $clinicUser = auth('clinic')->user();
         $patient = $this->patientRepo->show($id);
 
@@ -143,12 +161,18 @@ class PatientController extends Controller
 
     public function edit(Request $request, $id)
     {
+        // apply permissions
+        abort_if(!hasPermission('update patient'), 403, __('You are not authorized to update patient'));
+
         $patient = $this->patientRepo->edit($request, $id);
         return $patient;
     }
 
     public function update(Request $request, $id)
     {
+        // apply permissions
+        abort_if(!hasPermission('update patient'), 403, __('You are not authorized to update patient'));
+
         $clinicUser = auth('clinic')->user();
 
         $rules = [
@@ -175,6 +199,9 @@ class PatientController extends Controller
 
     public function destroy($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('delete patient'), 403, __('You are not authorized to delete patient'));
+
         try {
             $this->patientRepo->destroy($id);
             return $this->jsonResponse('success', __('Patient deleted successfully'));
@@ -185,6 +212,9 @@ class PatientController extends Controller
 
     public function restore($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('restore patient'), 403, __('You are not authorized to restore patient'));
+
         try {
             $this->patientRepo->restore($id);
             return $this->jsonResponse('success', __('Patient restored successfully'));
@@ -195,6 +225,9 @@ class PatientController extends Controller
 
     public function forceDelete($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('force delete patient'), 403, __('You are not authorized to force delete patient'));
+
         try {
             $this->patientRepo->forceDelete($id);
             return $this->jsonResponse('success', __('Patient permanently deleted successfully'));

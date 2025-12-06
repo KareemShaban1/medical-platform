@@ -23,6 +23,8 @@ class AreaController extends Controller
      */
     public function index()
     {
+        // apply permissions
+        abort_if(!hasPermission('view areas'), 403, __('You are not authorized to view areas'));
         $governorates = Governorate::all();
         $cities = City::all();
         return view('backend.dashboards.admin.pages.areas.index', compact('cities', 'governorates'));
@@ -30,6 +32,8 @@ class AreaController extends Controller
 
     public function data()
     {
+        // apply permissions
+        abort_if(!hasPermission('view areas'), 403, __('You are not authorized to view areas'));
         return $this->areaRepo->data();
     }
 
@@ -38,6 +42,8 @@ class AreaController extends Controller
      */
     public function create()
     {
+        // apply permissions
+        abort_if(!hasPermission('create area'), 403, __('You are not authorized to create area'));
         return view('backend.dashboards.admin.pages.areas.create');
     }
 
@@ -46,6 +52,8 @@ class AreaController extends Controller
      */
     public function store(StoreAreaRequest $request)
     {
+        // apply permissions
+        abort_if(!hasPermission('create area'), 403, __('You are not authorized to create area'));
         return $this->areaRepo->store($request);
     }
 
@@ -54,6 +62,8 @@ class AreaController extends Controller
      */
     public function show($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('view areas'), 403, __('You are not authorized to view area'));
         $area = $this->areaRepo->show($id);
 
         return request()->ajax()
@@ -66,6 +76,8 @@ class AreaController extends Controller
      */
     public function edit($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('update area'), 403, __('You are not authorized to update area'));
         $area = $this->areaRepo->show($id);
 
         return view('backend.dashboards.admin.pages.areas.edit', compact('area'));
@@ -76,6 +88,8 @@ class AreaController extends Controller
      */
     public function update(UpdateAreaRequest $request, $id)
     {
+        // apply permissions
+        abort_if(!hasPermission('update area'), 403, __('You are not authorized to update area'));
         return $this->areaRepo->update($request, $id);
     }
 
@@ -85,26 +99,36 @@ class AreaController extends Controller
      */
     public function destroy($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('delete area'), 403, __('You are not authorized to delete area'));
         return $this->areaRepo->destroy($id);
     }
 
     public function trash()
     {
+        // apply permissions
+        abort_if(!hasPermission('view trash areas'), 403, __('You are not authorized to view trash areas'));
         return view('backend.dashboards.admin.pages.areas.trash');
     }
 
     public function trashData()
     {
+        // apply permissions
+        abort_if(!hasPermission('view trash areas'), 403, __('You are not authorized to view trash areas'));
         return $this->areaRepo->trashData();
     }
 
     public function restore($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('restore area'), 403, __('You are not authorized to restore area'));
         return $this->areaRepo->restore($id);
     }
 
     public function forceDelete($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('force delete area'), 403, __('You are not authorized to force delete area'));
         return $this->areaRepo->forceDelete($id);
     }
 }

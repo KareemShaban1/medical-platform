@@ -35,6 +35,9 @@ class SubscriptionController extends Controller
 
     public function index()
     {
+        // apply permissions
+        abort_if(!hasPermission('view subscriptions'), 403, __('You are not authorized to view subscriptions'));
+
         $user = Auth::guard('clinic')->user();
         $entity = $user->clinic_id ? $user->clinic : $user;
         $subscription = $this->subscriptionService->getEffectiveSubscription($entity);
@@ -48,6 +51,9 @@ class SubscriptionController extends Controller
 
     public function plans()
     {
+        // apply permissions
+        abort_if(!hasPermission('view subscription plans'), 403, __('You are not authorized to view subscription plans'));
+
         return redirect()
             ->to(route('home', ['plan_type' => 'clinic']) . '#subscriptions-plans')
             ->with('subscription_prompt', __('Please subscribe to continue.'));
@@ -55,6 +61,9 @@ class SubscriptionController extends Controller
 
     public function subscribe(Request $request, $planId)
     {
+        // apply permissions
+        abort_if(!hasPermission('subscribe'), 403, __('You are not authorized to subscribe to plan'));
+
         $user = Auth::guard('clinic')->user();
         $plan = Plan::findOrFail($planId);
 
@@ -128,6 +137,9 @@ class SubscriptionController extends Controller
 
     public function cancel()
     {
+        // apply permissions
+        abort_if(!hasPermission('cancel subscription'), 403, __('You are not authorized to cancel subscription'));
+
         $user = Auth::guard('clinic')->user();
         $entity = $user->clinic_id ? $user->clinic : $user;
         $subscription = $this->subscriptionService->getSubscription($entity);
@@ -156,6 +168,9 @@ class SubscriptionController extends Controller
 
     public function usage()
     {
+        // apply permissions
+        abort_if(!hasPermission('view subscription usage'), 403, __('You are not authorized to view subscription usage'));
+
         $user = Auth::guard('clinic')->user();
         $entity = $user->clinic_id ? $user->clinic : $user;
         $subscription = $this->subscriptionService->getEffectiveSubscription($entity);

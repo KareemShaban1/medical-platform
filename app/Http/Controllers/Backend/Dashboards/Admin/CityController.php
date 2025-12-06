@@ -23,12 +23,16 @@ class CityController extends Controller
      */
     public function index()
     {
+        // apply permissions
+        abort_if(!hasPermission('view cities'), 403, __('You are not authorized to view cities'));
         $governorates = Governorate::all();
         return view('backend.dashboards.admin.pages.cities.index', compact('governorates'));
     }
 
     public function data()
     {
+        // apply permissions
+        abort_if(!hasPermission('view cities'), 403, __('You are not authorized to view cities'));
         return $this->cityRepo->data();
     }
 
@@ -37,6 +41,8 @@ class CityController extends Controller
      */
     public function create()
     {
+        // apply permissions
+        abort_if(!hasPermission('create city'), 403, __('You are not authorized to create city'));
         return view('backend.dashboards.admin.pages.cities.create');
     }
 
@@ -45,6 +51,8 @@ class CityController extends Controller
      */
     public function store(StoreCityRequest $request)
     {
+        // apply permissions
+        abort_if(!hasPermission('create city'), 403, __('You are not authorized to create city'));
         return $this->cityRepo->store($request);
     }
 
@@ -53,6 +61,8 @@ class CityController extends Controller
      */
     public function show($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('view cities'), 403, __('You are not authorized to view city'));
         $city = $this->cityRepo->show($id);
 
         return request()->ajax()
@@ -70,6 +80,8 @@ class CityController extends Controller
      */
     public function edit($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('update city'), 403, __('You are not authorized to update city'));
         $city = $this->cityRepo->show($id);
 
         return view('backend.dashboards.admin.pages.cities.edit', compact('city'));
@@ -80,6 +92,8 @@ class CityController extends Controller
      */
     public function update(UpdateCityRequest $request, $id)
     {
+        // apply permissions
+        abort_if(!hasPermission('update city'), 403, __('You are not authorized to update city'));
         return $this->cityRepo->update($request, $id);
     }
 
@@ -89,26 +103,36 @@ class CityController extends Controller
      */
     public function destroy($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('delete city'), 403, __('You are not authorized to delete city'));
         return $this->cityRepo->destroy($id);
     }
 
     public function trash()
     {
+        // apply permissions
+        abort_if(!hasPermission('view trash cities'), 403, __('You are not authorized to view trash cities'));
         return view('backend.dashboards.admin.pages.cities.trash');
     }
 
     public function trashData()
     {
+        // apply permissions
+        abort_if(!hasPermission('view trash cities'), 403, __('You are not authorized to view trash cities'));
         return $this->cityRepo->trashData();
     }
 
     public function restore($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('restore city'), 403, __('You are not authorized to restore city'));
         return $this->cityRepo->restore($id);
     }
 
     public function forceDelete($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('force delete city'), 403, __('You are not authorized to force delete city'));
         return $this->cityRepo->forceDelete($id);
     }
 }

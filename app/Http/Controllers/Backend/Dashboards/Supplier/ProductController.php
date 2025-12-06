@@ -24,6 +24,9 @@ class ProductController extends Controller
 
     public function index()
     {
+        // apply permissions
+        abort_if(!hasPermission('view products'), 403, __('You are not authorized to view products'));
+
         return view('backend.dashboards.supplier.pages.products.index');
     }
 
@@ -34,6 +37,9 @@ class ProductController extends Controller
 
     public function store(ProductStoreRequest $request)
     {
+        // apply permissions
+        abort_if(!hasPermission('create product'), 403, __('You are not authorized to create products'));
+
         $supplier = Auth::guard('supplier')->user()->supplier;
 
         return $this->checkFeatureLimit(
@@ -49,6 +55,9 @@ class ProductController extends Controller
 
     public function show($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('view product'), 403, __('You are not authorized to view product'));
+
         $product = $this->productRepo->show($id);
         return request()->ajax()
         ? response()->json($product->load('categories'))
@@ -58,6 +67,9 @@ class ProductController extends Controller
 
     public function update(ProductUpdateRequest $request, $id)
     {
+        // apply permissions
+        abort_if(!hasPermission('update product'), 403, __('You are not authorized to update product'));
+
         $this->productRepo->update($request->validated(), $id);
         return $this->jsonResponse('success', __('Product updated successfully'));
     }
@@ -65,6 +77,9 @@ class ProductController extends Controller
 
     public function destroy($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('delete product'), 403, __('You are not authorized to delete product'));
+
             $this->productRepo->destroy($id);
             return $this->jsonResponse('success', __('Product deleted successfully'));
     }
@@ -79,22 +94,35 @@ class ProductController extends Controller
 
     public function trash()
     {
+         // apply permissions
+         abort_if(!hasPermission('view trash products'), 403, __('You are not authorized to view trash products'));
+
+        
         return view('backend.dashboards.supplier.pages.products.trash');
     }
 
     public function trashData()
     {
+        // apply permissions
+        abort_if(!hasPermission('view trash products'), 403, __('You are not authorized to view trash products'));
+
         return $this->productRepo->trashData();
     }
 
     public function restore($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('restore product'), 403, __('You are not authorized to restore product'));
+
         $this->productRepo->restore($id);
         return $this->jsonResponse('success', __('Product restored successfully'));
     }
 
     public function forceDelete($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('force delete product'), 403, __('You are not authorized to force delete product'));
+
         $this->productRepo->forceDelete($id);
         return $this->jsonResponse('success', __('Product permanently deleted successfully'));
     }

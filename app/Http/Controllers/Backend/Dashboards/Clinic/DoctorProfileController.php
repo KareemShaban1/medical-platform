@@ -20,13 +20,17 @@ class DoctorProfileController extends Controller
 
     public function index()
     {
-        // Show all clinic profiles in DataTable (for admins)
+        // apply permissions
+        abort_if(!hasPermission('view doctor profiles'), 403, __('You are not authorized to view doctor profiles'));
+
         return view('backend.dashboards.clinic.pages.doctor-profiles.index');
     }
 
     public function myProfile()
     {
-        // Show only current user's profile
+        // apply permissions
+        abort_if(!hasPermission('view doctor profiles'), 403, __('You are not authorized to view my doctor profile'));
+
         $user = auth('clinic')->user();
         $userProfile = $this->profileRepo->getUserProfile($user->id);
         return view('backend.dashboards.clinic.pages.doctor-profiles.index-old', compact('userProfile'));
@@ -34,23 +38,35 @@ class DoctorProfileController extends Controller
 
     public function data()
     {
+        // apply permissions
+        abort_if(!hasPermission('view doctor profiles'), 403, __('You are not authorized to view doctor profiles'));
+
         return $this->profileRepo->data();
     }
 
     public function create()
     {
+        // apply permissions
+        abort_if(!hasPermission('create doctor profile'), 403, __('You are not authorized to create doctor profile'));
+
         $specialities = Speciality::orderBy('name_en')->get();
         return view('backend.dashboards.clinic.pages.doctor-profiles.create', compact('specialities'));
     }
 
     public function store(DoctorProfileStoreRequest $request)
     {
+        // apply permissions
+        abort_if(!hasPermission('create doctor profile'), 403, __('You are not authorized to create doctor profile'));
+
         $this->profileRepo->store($request->validated());
         return $this->jsonResponse('success', __('Profile created successfully'));
     }
 
     public function show($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('view doctor profiles'), 403, __('You are not authorized to view doctor profile'));
+
         $profile = $this->profileRepo->show($id);
         return request()->ajax()
             ? response()->json($profile)
@@ -59,6 +75,9 @@ class DoctorProfileController extends Controller
 
     public function edit($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('edit doctor profile'), 403, __('You are not authorized to edit doctor profile'));
+
         $profile = $this->profileRepo->show($id);
 
         if (!$profile->canBeEdited()) {
@@ -72,6 +91,9 @@ class DoctorProfileController extends Controller
 
     public function update(DoctorProfileUpdateRequest $request, $id)
     {
+        // apply permissions
+        abort_if(!hasPermission('update doctor profile'), 403, __('You are not authorized to update doctor profile'));
+
         try {
             $this->profileRepo->update($request->validated(), $id);
             return $this->jsonResponse('success', __('Profile updated successfully'));
@@ -82,6 +104,9 @@ class DoctorProfileController extends Controller
 
     public function destroy($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('delete doctor profile'), 403, __('You are not authorized to delete doctor profile'));
+
         try {
             $this->profileRepo->destroy($id);
             return $this->jsonResponse('success', __('Profile deleted successfully'));
@@ -92,6 +117,9 @@ class DoctorProfileController extends Controller
 
     public function submit($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('submit doctor profile'), 403, __('You are not authorized to submit doctor profile'));
+
         try {
             $this->profileRepo->submitForReview($id);
             return $this->jsonResponse('success', __('Profile submitted for review successfully'));
@@ -102,16 +130,25 @@ class DoctorProfileController extends Controller
 
     public function trash()
     {
+        // apply permissions
+        abort_if(!hasPermission('view trash doctor profiles'), 403, __('You are not authorized to view trash doctor profiles'));
+
         return view('backend.dashboards.clinic.pages.doctor-profiles.trash');
     }
 
     public function trashData()
     {
+        // apply permissions
+        abort_if(!hasPermission('view trash doctor profiles'), 403, __('You are not authorized to view trash doctor profiles'));
+
         return $this->profileRepo->trashData();
     }
 
     public function restore($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('restore doctor profile'), 403, __('You are not authorized to restore doctor profile'));
+
         try {
             $this->profileRepo->restore($id);
             return $this->jsonResponse('success', __('Profile restored successfully'));
@@ -122,6 +159,9 @@ class DoctorProfileController extends Controller
 
     public function forceDelete($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('force delete doctor profile'), 403, __('You are not authorized to force delete doctor profile'));
+
         try {
             $this->profileRepo->forceDelete($id);
             return $this->jsonResponse('success', __('Profile permanently deleted'));

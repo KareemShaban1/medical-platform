@@ -28,11 +28,15 @@ class SubscriptionManagementController extends Controller
 
     public function index()
     {
+        // apply permissions
+        abort_if(!hasPermission('view subscriptions'), 403, __('You are not authorized to view subscriptions'));
         return view('backend.dashboards.admin.pages.subscriptions.index');
     }
 
     public function analytics(Request $request)
     {
+        // apply permissions
+        abort_if(!hasPermission('view subscriptions'), 403, __('You are not authorized to view subscriptions'));
         $startDate = $request->get('start_date', now()->startOfMonth()->toDateString());
         $endDate = $request->get('end_date', now()->endOfMonth()->toDateString());
 
@@ -123,6 +127,8 @@ class SubscriptionManagementController extends Controller
 
     public function data(Request $request)
     {
+        // apply permissions
+        abort_if(!hasPermission('view subscriptions'), 403, __('You are not authorized to view subscriptions'));
         $query = Subscription::with(['plan', 'subscribable']);
 
         // Filters
@@ -208,6 +214,8 @@ class SubscriptionManagementController extends Controller
 
     public function create()
     {
+        // apply permissions
+        abort_if(!hasPermission('create subscription'), 403, __('You are not authorized to create subscription'));
         $plans = Plan::active()->get();
         return response()->json([
             'success' => true,
@@ -242,6 +250,8 @@ class SubscriptionManagementController extends Controller
 
     public function store(Request $request)
     {
+        // apply permissions
+        abort_if(!hasPermission('create subscription'), 403, __('You are not authorized to create subscription'));
         $validated = $request->validate([
             'plan_id' => 'required|exists:plans,id',
             'entity_type' => 'required|in:clinic,doctor,supplier',
@@ -297,6 +307,8 @@ class SubscriptionManagementController extends Controller
 
     public function extend(Request $request, $id)
     {
+        // apply permissions
+        abort_if(!hasPermission('extend subscription'), 403, __('You are not authorized to extend subscription'));
         $validated = $request->validate([
             'days' => 'required|integer|min:1',
         ]);
@@ -325,6 +337,8 @@ class SubscriptionManagementController extends Controller
 
     public function cancel($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('cancel subscription'), 403, __('You are not authorized to cancel subscription'));
         try {
             $subscription = Subscription::findOrFail($id);
             $this->subscriptionService->cancelSubscription($subscription);
@@ -343,6 +357,8 @@ class SubscriptionManagementController extends Controller
 
     public function destroy($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('delete subscription'), 403, __('You are not authorized to delete subscription'));
         try {
             $subscription = Subscription::findOrFail($id);
             $subscription->delete();

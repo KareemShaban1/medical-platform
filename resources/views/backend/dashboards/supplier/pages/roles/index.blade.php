@@ -1,20 +1,26 @@
 @extends('backend.dashboards.supplier.layouts.app')
 
+@section('title', __('Roles Management'))
+
+
 @section('content')
 <div class="container-fluid">
 	<div class="row">
 		<div class="col-12">
 			<div class="page-title-box">
 				<div class="page-title-right">
+					@hasPermission('view trash roles')
 					<a href="{{ route('supplier.roles.trash') }}"
 						class="btn btn-warning me-2">
 						<i class="mdi mdi-delete"></i> {{ __('Trash Roles') }}
 					</a>
+					@endhasPermission
+					@hasPermission('create role')
 					<button type="button" class="btn btn-primary" data-bs-toggle="modal"
 						data-bs-target="#rolesModal" onclick="resetForm()">
 						<i class="mdi mdi-plus"></i> {{ __('Add Role') }}
 					</button>
-
+					@endhasPermission
 				</div>
 				<h4 class="page-title">{{ __('Roles Management') }}</h4>
 			</div>
@@ -68,19 +74,99 @@
 						<div class="col-12 mb-3">
 							<label
 								class="form-label">{{ __('Permissions') }}</label>
-							<div class="row">
-								@foreach($permissions as $permission)
-								<div class="col-md-4 col-sm-6 mb-2">
-									<div class="form-check">
-										<input class="form-check-input permission-check"
-											type="checkbox"
-											name="permissions[]"
-											value="{{ $permission->id }}"
-											id="permission_{{ $permission->id }}">
-										<label class="form-check-label"
-											for="permission_{{ $permission->id }}">
-											{{ $permission->name }}
-										</label>
+
+							<div class="mb-3">
+								<div class="row align-items-end">
+									<div class="col-md-6">
+										<input type="text"
+											class="form-control"
+											id="permissionSearch"
+											placeholder="{{ __('Search permissions...') }}">
+									</div>
+									<div class="col-md-3">
+										<div
+											class="form-check">
+											<input class="form-check-input"
+												type="checkbox"
+												id="selectAllPermissions">
+											<label class="form-check-label"
+												for="selectAllPermissions">
+												<strong>{{ __('Select All') }}</strong>
+											</label>
+										</div>
+									</div>
+									<div class="col-md-3">
+										<div
+											class="form-check">
+											<input class="form-check-input"
+												type="checkbox"
+												id="expandAllGroups">
+											<label class="form-check-label"
+												for="expandAllGroups">
+												<strong>{{ __('Expand All') }}</strong>
+											</label>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<div id="permissionsContainer"
+								style="max-height: 400px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 0.375rem; padding: 15px;">
+								@php
+								$groupedPermissions = [];
+
+								foreach($permissions as $permission) {
+								$group = $permission->group ?? 'Other';
+								if (!isset($groupedPermissions[$group]))
+								{
+								$groupedPermissions[$group] = [];
+								}
+								$groupedPermissions[$group][] =
+								$permission;
+								}
+
+								ksort($groupedPermissions);
+								@endphp
+
+								@foreach($groupedPermissions as $group => $perms)
+								<div class="permission-group mb-4"
+									data-resource="{{ strtolower($group) }}">
+									<h6
+										class="mb-2 text-primary border-bottom pb-2">
+										<i
+											class="mdi mdi-folder-outline"></i>
+										{{ $group }}
+										<button type="button"
+											class="btn btn-sm btn-link p-0 ms-2 toggle-group"
+											data-group="{{ $group }}"
+											style="font-size: 0.75rem;">
+											<span
+												class="expand-text">{{ __('Expand') }}</span>
+											<span
+												class="collapse-text d-none">{{ __('Collapse') }}</span>
+										</button>
+									</h6>
+									<div class="row group-permissions"
+										data-group="{{ $group }}"
+										style="display: none;">
+										@foreach($perms as $permission)
+										<div class="col-md-6 col-lg-4 mb-2 permission-item"
+											data-name="{{ strtolower($permission->name) }}">
+											<div
+												class="form-check">
+												<input class="form-check-input permission-check group-{{ str_replace(' ', '-', strtolower($group)) }}"
+													type="checkbox"
+													name="permissions[]"
+													value="{{ $permission->id }}"
+													id="permission_{{ $permission->id }}"
+													data-resource="{{ strtolower($group) }}">
+												<label class="form-check-label"
+													for="permission_{{ $permission->id }}">
+													{{ $permission->name }}
+												</label>
+											</div>
+										</div>
+										@endforeach
 									</div>
 								</div>
 								@endforeach
@@ -162,14 +248,179 @@ let table = $('#roles-table').DataTable({
 	}
 });
 
-// Reset form
 function resetForm() {
 	$('#rolesForm')[0].reset();
 	$('#rolesForm').attr('action', '{{ route("supplier.roles.store") }}');
 	$('#rolesId').val('');
 	$('#rolesModal .modal-title').text('{{ __("Add Role") }}');
 	$('.permission-check').prop('checked', false);
+	$('#permissionSearch').val('');
+	$('#selectAllPermissions').prop('checked', false);
+	$('#expandAllGroups').prop('checked', false);
+	$('.permission-item').show();
+	$('.permission-group').show();
 }
+
+function performPermissionSearch() {
+	let searchTerm = $('#permissionSearch').val().toLowerCase();
+
+	if (searchTerm === '') {
+		$('.permission-item').show();
+		$('.permission-group').show();
+		$('.group-permissions').each(function() {
+			let group = $(this).data('group');
+			let toggleBtn = $('.toggle-group[data-group="' + group + '"]');
+			if ($(this).is(':visible')) {
+				toggleBtn.find('.expand-text').addClass('d-none');
+				toggleBtn.find('.collapse-text').removeClass('d-none');
+			} else {
+				toggleBtn.find('.expand-text').removeClass('d-none');
+				toggleBtn.find('.collapse-text').addClass('d-none');
+			}
+		});
+	} else {
+		$('.group-permissions').show();
+		$('.expand-text').addClass('d-none');
+		$('.collapse-text').removeClass('d-none');
+
+		$('.permission-item').each(function() {
+			let permissionName = $(this).data('name') || '';
+			let permissionText = $(this).find('label').text().toLowerCase();
+
+			if (permissionName.includes(searchTerm) || permissionText.includes(
+					searchTerm)) {
+				$(this).show();
+			} else {
+				$(this).hide();
+			}
+		});
+
+		$('.permission-group').each(function() {
+			let visibleItems = $(this).find('.permission-item:visible').length;
+			if (visibleItems === 0) {
+				$(this).hide();
+			} else {
+				$(this).show();
+			}
+		});
+	}
+
+	updateSelectAllState();
+	updateExpandAllState();
+}
+
+$(document).on('input keyup', '#permissionSearch', function() {
+	performPermissionSearch();
+});
+
+$('#selectAllPermissions').on('change', function() {
+	let isChecked = $(this).prop('checked');
+	$('.permission-check:visible').prop('checked', isChecked);
+	updateGroupSelectAllStates();
+});
+
+$(document).on('change', '.permission-check', function() {
+	updateSelectAllState();
+	updateGroupSelectAllStates();
+});
+
+function updateSelectAllState() {
+	let visibleChecks = $('.permission-check:visible');
+	let checkedVisible = $('.permission-check:visible:checked');
+
+	if (visibleChecks.length === 0) {
+		$('#selectAllPermissions').prop('checked', false);
+		$('#selectAllPermissions').prop('indeterminate', false);
+	} else if (checkedVisible.length === visibleChecks.length) {
+		$('#selectAllPermissions').prop('checked', true);
+		$('#selectAllPermissions').prop('indeterminate', false);
+	} else if (checkedVisible.length > 0) {
+		$('#selectAllPermissions').prop('checked', false);
+		$('#selectAllPermissions').prop('indeterminate', true);
+	} else {
+		$('#selectAllPermissions').prop('checked', false);
+		$('#selectAllPermissions').prop('indeterminate', false);
+	}
+}
+
+function updateGroupSelectAllStates() {
+	$('.permission-group').each(function() {
+		let group = $(this);
+		let groupChecks = group.find('.permission-check:visible');
+		let checkedGroup = group.find('.permission-check:visible:checked');
+	});
+}
+
+function expandAllGroups() {
+	$('.group-permissions').slideDown(200);
+	$('.expand-text').addClass('d-none');
+	$('.collapse-text').removeClass('d-none');
+	$('#expandAllGroups').prop('checked', true);
+}
+
+function collapseAllGroups() {
+	$('.group-permissions').slideUp(200);
+	$('.expand-text').removeClass('d-none');
+	$('.collapse-text').addClass('d-none');
+	$('#expandAllGroups').prop('checked', false);
+}
+
+function updateExpandAllState() {
+	let visibleGroups = $('.group-permissions:visible').length;
+	let totalGroups = $('.group-permissions').length;
+
+	if (visibleGroups === 0) {
+		$('#expandAllGroups').prop('checked', false);
+		$('#expandAllGroups').prop('indeterminate', false);
+	} else if (visibleGroups === totalGroups) {
+		$('#expandAllGroups').prop('checked', true);
+		$('#expandAllGroups').prop('indeterminate', false);
+	} else {
+		$('#expandAllGroups').prop('checked', false);
+		$('#expandAllGroups').prop('indeterminate', true);
+	}
+}
+
+$('#expandAllGroups').on('change', function() {
+	let isChecked = $(this).prop('checked');
+	if (isChecked) {
+		expandAllGroups();
+	} else {
+		collapseAllGroups();
+	}
+});
+
+$(document).on('click', '.toggle-group', function(e) {
+	e.preventDefault();
+	let group = $(this).data('group');
+	let groupPermissions = $('.group-permissions[data-group="' + group + '"]');
+	let expandText = $(this).find('.expand-text');
+	let collapseText = $(this).find('.collapse-text');
+
+	if (groupPermissions.is(':visible')) {
+		groupPermissions.slideUp(200);
+		expandText.removeClass('d-none');
+		collapseText.addClass('d-none');
+	} else {
+		groupPermissions.slideDown(200);
+		expandText.addClass('d-none');
+		collapseText.removeClass('d-none');
+	}
+
+	updateExpandAllState();
+});
+
+$('#rolesModal').on('shown.bs.modal', function() {
+	$('#permissionSearch').val('');
+	$('.permission-item').show();
+	$('.permission-group').show();
+	$('.group-permissions').hide();
+	$('.expand-text').removeClass('d-none');
+	$('.collapse-text').addClass('d-none');
+	$('#expandAllGroups').prop('checked', false);
+	updateSelectAllState();
+	updateExpandAllState();
+});
 
 // Handle Add/Edit Form Submission
 $('#rolesForm').on('submit', function(e) {
@@ -249,20 +500,24 @@ $('#rolesForm').on('submit', function(e) {
 	});
 });
 
-// Edit Role
 function editRole(id, name, permissions) {
 	$('#rolesId').val(id);
 	$('#name').val(name);
 
-	// Uncheck all permissions first
 	$('.permission-check').prop('checked', false);
 
-	// Check the permissions for this role
 	if (permissions && permissions.length > 0) {
 		permissions.forEach(function(permissionId) {
 			$('#permission_' + permissionId).prop('checked', true);
 		});
 	}
+
+	$('#permissionSearch').val('');
+	$('.permission-item').show();
+	$('.permission-group').show();
+	$('#expandAllGroups').prop('checked', false);
+	updateSelectAllState();
+	updateExpandAllState();
 
 	$('#rolesForm').attr('action', '{{ route("supplier.roles.update", ":id") }}'.replace(':id', id));
 	$('#rolesModal .modal-title').text('{{ __("Edit Role") }}');

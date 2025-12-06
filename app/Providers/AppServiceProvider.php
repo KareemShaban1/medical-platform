@@ -23,6 +23,8 @@ use App\Observers\ExpenseCategoryObserver;
 use App\Models\Expense;
 use App\Observers\ExpenseObserver;
 use App\PaymentGateways\PaymentGatewayManager;
+use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Auth;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -54,5 +56,43 @@ class AppServiceProvider extends ServiceProvider
         ExpenseCategory::observe(ExpenseCategoryObserver::class);
         Expense::observe(ExpenseObserver::class);
 
+        // Register Blade directives for permissions
+        $this->registerBladeDirectives();
+    }
+
+    /**
+     * Register custom Blade directives for permissions
+     */
+    protected function registerBladeDirectives(): void
+    {
+        // @hasPermission directive - uses the helper function to avoid code duplication
+        Blade::if('hasPermission', function ($permission) {
+            return hasPermission($permission);
+        });
+
+        // @hasRole directive - uses helper function
+        Blade::if('hasRole', function ($role) {
+            return hasRole($role);
+        });
+
+        // @hasAnyRole directive - uses helper function
+        Blade::if('hasAnyRole', function (...$roles) {
+            return hasAnyRole(...$roles);
+        });
+
+        // @hasAllRoles directive - uses helper function
+        Blade::if('hasAllRoles', function (...$roles) {
+            return hasAllRoles(...$roles);
+        });
+
+        // @hasAnyPermission directive - check if user has ANY of the given permissions
+        Blade::if('hasAnyPermission', function (...$permissions) {
+            return hasAnyPermission(...$permissions);
+        });
+
+        // @hasAllPermissions directive - check if user has ALL of the given permissions
+        Blade::if('hasAllPermissions', function (...$permissions) {
+            return hasAllPermissions(...$permissions);
+        });
     }
 }

@@ -15,6 +15,11 @@ class SupplierUserSeeder extends Seeder
      */
     public function run(): void
     {
+        $this->command->info('Clearing existing supplier users...');
+        $this->clearExistingData();
+
+        $this->command->info('Creating supplier users...');
+
         // Create supplier admin user
         $supplierAdmin = SupplierUser::create([
             'supplier_id' => 1,
@@ -35,6 +40,26 @@ class SupplierUserSeeder extends Seeder
 
         // Assign roles after user creation
         $this->assignRoles($supplierAdmin, $supplierStaff);
+
+        $this->command->info('✓ Successfully created supplier users');
+    }
+
+    /**
+     * Clear existing supplier user data
+     */
+    private function clearExistingData(): void
+    {
+        $this->command->info('  Deleting supplier users (including soft-deleted)...');
+
+        // Clear role assignments first
+        if (function_exists('setPermissionsTeamId')) {
+            setPermissionsTeamId(1); // First supplier ID
+        }
+
+        // Delete all supplier users including soft-deleted ones
+        $deletedCount = SupplierUser::withTrashed()->forceDelete();
+
+        $this->command->info("  ✓ Deleted {$deletedCount} supplier user(s) and their related data");
     }
 
     /**

@@ -427,12 +427,20 @@ class PatientRepository implements PatientRepositoryInterface
 
     private function patientActions($item): string
     {
-        $showUrl = route('clinic.patients.show', $item->id);
         $actions = '<div class="d-flex gap-2">';
 
-        $actions .= '<a href="' . $showUrl . '" class="btn btn-sm btn-success" title="View"><i class="fa fa-eye"></i></a>';
-        $actions .= '<button onclick="editPatient(' . $item->id . ')" class="btn btn-sm btn-info" title="Edit"><i class="fa fa-edit"></i></button>';
-        $actions .= '<button onclick="deletePatient(' . $item->id . ')" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>';
+        if (hasPermission('view patients')) {
+            $showUrl = route('clinic.patients.show', $item->id);
+            $actions .= '<a href="' . $showUrl . '" class="btn btn-sm btn-success" title="View"><i class="fa fa-eye"></i></a>';
+        }
+
+        if (hasPermission('update patient')) {
+            $actions .= '<button onclick="editPatient(' . $item->id . ')" class="btn btn-sm btn-info" title="Edit"><i class="fa fa-edit"></i></button>';
+        }
+
+        if (hasPermission('delete patient')) {
+            $actions .= '<button onclick="deletePatient(' . $item->id . ')" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>';
+        }
 
         $actions .= '</div>';
         return $actions;

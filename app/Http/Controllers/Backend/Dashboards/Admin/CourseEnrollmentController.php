@@ -10,11 +10,15 @@ class CourseEnrollmentController extends Controller
 {
     public function index()
     {
+        // apply permissions
+        abort_if(!hasPermission('view course enrollments'), 403, __('You are not authorized to view course enrollments'));
         return view('backend.dashboards.admin.pages.course-enrollments.index');
     }
 
     public function data(Request $request)
     {
+        // apply permissions
+        abort_if(!hasPermission('view course enrollments'), 403, __('You are not authorized to view course enrollments'));
         $enrollments = CourseEnrollment::with(['course', 'clinicUser.clinic']);
 
         if ($request->filled('status') && $request->status !== 'all') {
@@ -63,6 +67,8 @@ class CourseEnrollmentController extends Controller
 
     public function updateStatus(Request $request, $id)
     {
+        // apply permissions
+        abort_if(!hasPermission('update course enrollment'), 403, __('You are not authorized to update course enrollment status'));
         $request->validate([
             'status' => 'required|in:pending,approved,rejected',
         ]);
@@ -76,6 +82,8 @@ class CourseEnrollmentController extends Controller
 
     public function destroy($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('delete course enrollment'), 403, __('You are not authorized to delete course enrollment'));
         $enrollment = CourseEnrollment::findOrFail($id);
         $enrollment->delete();
         return response()->json(['status' => 'success', 'message' => __('Enrollment deleted')]);

@@ -6,12 +6,14 @@
 		<div class="col-12">
 			<div class="page-title-box">
 				<div class="page-title-right">
+					@hasPermission('create expense category')
 					<button type="button" class="btn btn-primary" data-bs-toggle="modal"
 						data-bs-target="#expenseCategoriesModal"
 						onclick="resetForm()">
 						<i class="mdi mdi-plus"></i>
 						{{ __('Add Expense Category') }}
 					</button>
+					@endhasPermission
 				</div>
 				<h4 class="page-title">{{ __('Expense Categories') }}</h4>
 			</div>

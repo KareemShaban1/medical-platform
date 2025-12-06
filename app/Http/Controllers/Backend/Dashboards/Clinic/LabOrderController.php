@@ -19,6 +19,9 @@ class LabOrderController extends Controller
 
     public function index()
     {
+        // apply permissions
+        abort_if(!hasPermission('view lab orders'), 403, __('You are not authorized to view lab orders'));
+
         $clinicId = auth('clinic')->user()->clinic_id;
         $patients = Patient::registered()->forClinic($clinicId)->get();
         return view('backend.dashboards.clinic.pages.lab-orders.index', compact('patients'));
@@ -26,11 +29,17 @@ class LabOrderController extends Controller
 
     public function data()
     {
+        // apply permissions
+        abort_if(!hasPermission('view lab orders'), 403, __('You are not authorized to view lab orders'));
+
         return $this->repo->data();
     }
 
     public function create()
     {
+        // apply permissions
+        abort_if(!hasPermission('create lab order'), 403, __('You are not authorized to create lab orders'));
+
         $clinicId = auth('clinic')->user()->clinic_id;
         $patients = Patient::registered()->forClinic($clinicId)->get();
         return view('backend.dashboards.clinic.pages.lab-orders.create', compact('patients'));
@@ -38,6 +47,9 @@ class LabOrderController extends Controller
 
     public function store(Request $request)
     {
+        // apply permissions
+        abort_if(!hasPermission('create lab order'), 403, __('You are not authorized to create lab orders'));
+
         $validated = $request->validate([
             'patient_id' => 'required|exists:patients,id',
             'test_name' => 'required|string|max:255',
@@ -66,12 +78,18 @@ class LabOrderController extends Controller
 
     public function show($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('view lab orders'), 403, __('You are not authorized to view lab order'));
+
         $order = $this->repo->show($id);
         return view('backend.dashboards.clinic.pages.lab-orders.show', compact('order'));
     }
 
     public function upload(Request $request, $id)
     {
+        // apply permissions
+        abort_if(!hasPermission('upload lab order'), 403, __('You are not authorized to upload lab order'));
+
         $validated = $request->validate([
             'results' => 'nullable|array',
             'results.*' => 'file|mimes:jpeg,png,jpg,gif,pdf,doc,docx,xls,xlsx|max:10240',
@@ -91,6 +109,9 @@ class LabOrderController extends Controller
 
     public function complete($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('complete lab order'), 403, __('You are not authorized to complete lab order'));
+
         $this->repo->complete($id);
         return back()->with('success', __('Lab order marked as completed'));
     }

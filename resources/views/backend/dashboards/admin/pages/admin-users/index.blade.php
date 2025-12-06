@@ -8,13 +8,17 @@
         <div class="col-12">
                 <div class="page-title-box">
                     <div class="page-title-right">
+                    @hasPermission('view admin users')
                     <a href="{{ route('admin.admin-users.trash') }}" class="btn btn-warning me-2">
                         <i class="mdi mdi-delete"></i> {{ __('Trash') }}
                     </a>
+                    @endhasPermission
+                    @hasPermission('create admin user')
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                         data-bs-target="#adminUserModal" onclick="resetForm()">
                         <i class="mdi mdi-plus"></i> {{ __('Add Admin User') }}
                     </button>
+                    @endhasPermission
                 </div>
                 <h4 class="page-title">{{ __('Admin Users') }}</h4>
         </div>

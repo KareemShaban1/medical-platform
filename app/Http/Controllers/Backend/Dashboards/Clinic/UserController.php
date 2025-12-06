@@ -20,16 +20,24 @@ class UserController extends Controller
 
     public function index()
     {
+        // apply permissions
+        abort_if(!hasPermission('view users'), 403, __('You are not authorized to view users'));
+
         return view('backend.dashboards.clinic.pages.users.index');
     }
 
     public function data()
     {
+        // apply permissions
+        abort_if(!hasPermission('view users'), 403, __('You are not authorized to view users'));
+
         return $this->userRepo->data();
     }
 
     public function store(StoreClinicUserRequest $request)
     {
+        // apply permissions
+        abort_if(!hasPermission('create user'), 403, __('You are not authorized to create users'));
 
         $this->userRepo->store($request->validated());
         return $this->jsonResponse('success', __('User created successfully'));
@@ -37,6 +45,9 @@ class UserController extends Controller
 
     public function show($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('view user'), 403, __('You are not authorized to view user'));
+
         $user = $this->userRepo->show($id);
         return request()->ajax()
         ? response()->json($user->load('roles'))
@@ -45,12 +56,18 @@ class UserController extends Controller
 
     public function update(UpdateClinicUserRequest $request, $id)
     {
+        // apply permissions
+        abort_if(!hasPermission('update user'), 403, __('You are not authorized to update user'));
+
         $this->userRepo->update($request->validated(), $id);
         return $this->jsonResponse('success', __('User updated successfully'));
     }
 
     public function destroy($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('delete user'), 403, __('You are not authorized to delete user'));
+
         try {
             $this->userRepo->destroy($id);
             return $this->jsonResponse('success', __('User deleted successfully'));
@@ -61,22 +78,34 @@ class UserController extends Controller
 
     public function trash()
     {
+        // apply permissions
+        abort_if(!hasPermission('view trash users'), 403, __('You are not authorized to view trash users'));
+
         return view('backend.dashboards.clinic.pages.users.trash');
     }
 
     public function trashData()
     {
+        // apply permissions
+        abort_if(!hasPermission('view trash users'), 403, __('You are not authorized to view trash users'));
+
         return $this->userRepo->trashData();
     }
 
     public function restore($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('restore user'), 403, __('You are not authorized to restore user'));
+
         $this->userRepo->restore($id);
         return $this->jsonResponse('success', __('User restored successfully'));
     }
 
     public function forceDelete($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('force delete user'), 403, __('You are not authorized to force delete user'));
+
         try {
             $this->userRepo->forceDelete($id);
             return $this->jsonResponse('success', __('User permanently deleted successfully'));

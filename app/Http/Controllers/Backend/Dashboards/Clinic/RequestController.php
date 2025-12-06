@@ -26,16 +26,25 @@ class RequestController extends Controller
 
     public function index()
     {
+        // apply permissions
+        abort_if(! hasPermission('view purchase requests'), 403, __('You are not authorized to view purchase requests'));
+
         return view('backend.dashboards.clinic.pages.requests.index');
     }
 
     public function data()
     {
+        // apply permissions
+        abort_if(! hasPermission('view purchase requests'), 403, __('You are not authorized to view purchase requests'));
+
         return $this->requestRepository->data();
     }
 
     public function create()
     {
+        // apply permissions
+        abort_if(! hasPermission('create purchase request'), 403, __('You are not authorized to create purchase request'));
+
         $categories = $this->requestRepository->getCategories();
 
         return view('backend.dashboards.clinic.pages.requests.create', compact('categories'));
@@ -43,6 +52,10 @@ class RequestController extends Controller
 
     public function store(CreateRequestRequest $request)
     {
+
+        // apply permissions
+        abort_if(! hasPermission('create purchase request'), 403, __('You are not authorized to create purchase request'));
+
         try {
             $this->requestRepository->store($request->validated());
 
@@ -60,6 +73,9 @@ class RequestController extends Controller
 
     public function show($id)
     {
+                     // apply permissions
+             abort_if(!hasPermission('view purchase request'), 403, __('You are not authorized to show purchase request'));
+
         try {
             $request = $this->requestRepository->show($id);
 
@@ -71,6 +87,9 @@ class RequestController extends Controller
 
     public function edit($id)
     {
+                     // apply permissions
+             abort_if(!hasPermission('update purchase request'), 403, __('You are not authorized to update purchase request'));
+
         try {
             $request = $this->requestRepository->show($id);
             $categories = $this->requestRepository->getCategories();
@@ -83,6 +102,10 @@ class RequestController extends Controller
 
     public function update(UpdateRequestRequest $request, $id)
     {
+        
+        // apply permissions
+        abort_if(!hasPermission('update purchase request'), 403, __('You are not authorized to update purchase request'));
+
         try {
             $this->requestRepository->update($request->validated(), $id);
 
@@ -100,6 +123,9 @@ class RequestController extends Controller
 
     public function destroy($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('delete purchase request'), 403, __('You are not authorized to delete purchase request'));
+
         try {
             $this->requestRepository->destroy($id);
 
@@ -117,6 +143,9 @@ class RequestController extends Controller
 
     public function acceptOffer(Request $request, $requestId)
     {
+        // apply permissions
+        abort_if(!hasPermission('accept offer'), 403, __('You are not authorized to accept offer'));
+
         try {
             $offerId = $request->input('offer_id');
             $this->requestRepository->acceptOffer($requestId, $offerId);
@@ -135,6 +164,9 @@ class RequestController extends Controller
 
     public function cancel($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('cancel request'), 403, __('You are not authorized to cancel request'));
+
         try {
             $this->requestRepository->cancelRequest($id);
 
@@ -169,6 +201,10 @@ class RequestController extends Controller
 
     public function invoice($offerId)
     {
+        
+        // apply permissions
+        abort_if(!hasPermission('view invoice'), 403, __('You are not authorized to view invoice'));
+
         try {
             $offer = \App\Models\Offer::with(['request.clinic', 'supplier'])
                 ->accepted()
@@ -193,6 +229,9 @@ class RequestController extends Controller
     public function processOfferPayment(Request $request, $requestId)
     {
         try {
+            // apply permissions
+            abort_if(!hasPermission('process offer payment'), 403, __('You are not authorized to process offer payment'));
+
             $request->validate([
                 'offer_id' => 'required|exists:offers,id',
                 'payment_gateway' => 'required|string|in:cod,paymob',
@@ -327,6 +366,9 @@ class RequestController extends Controller
     public function offerPaymentReturn(Request $request, $requestId)
     {
         try {
+            // apply permissions
+            abort_if(!hasPermission('process offer payment'), 403, __('You are not authorized to process offer payment'));
+
             $offerId = session()->get('offer_payment_offer_id');
             $gatewayName = session()->get('offer_payment_gateway', 'paymob');
 
@@ -399,6 +441,9 @@ class RequestController extends Controller
     public function offerPaymentCallback(Request $request, $requestId)
     {
         try {
+            // apply permissions
+            abort_if(!hasPermission('process offer payment'), 403, __('You are not authorized to process offer payment'));
+
             $offerId = session()->get('offer_payment_offer_id');
             $gatewayName = session()->get('offer_payment_gateway', 'paymob');
 

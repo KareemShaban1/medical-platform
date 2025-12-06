@@ -10,12 +10,18 @@ class ClinicInfoController extends Controller
 {
     public function index()
     {
+        // apply permissions
+        abort_if(!hasPermission('view clinic info'), 403, __('You are not authorized to view clinic info'));
+
         $clinic = auth('clinic')->user()->clinic;
         return view('backend.dashboards.clinic.pages.clinic-info.index', compact('clinic'));
     }
 
     public function update(Request $request)
     {
+        // apply permissions
+        abort_if(!hasPermission('update clinic info'), 403, __('You are not authorized to update clinic info'));
+
         $clinic = auth('clinic')->user()->clinic;
 
         $request->validate([

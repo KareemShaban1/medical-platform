@@ -245,22 +245,36 @@ class AvailabilityOverrideRepository implements AvailabilityOverrideRepositoryIn
 
     private function actionButtons($item): string
     {
-        return <<<HTML
-        <div class="d-flex gap-2">
-            <button onclick="editOverride({$item->id})" class="btn btn-sm btn-warning text-white" title="Edit"><i class="fa fa-edit"></i></button>
-            <button onclick="deleteOverride({$item->id})" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>
-        </div>
-        HTML;
+        $html = '<div class="d-flex gap-2">';
+        
+        if (hasPermission('update availability override')) {
+            $html .= '<button onclick="editOverride(' . $item->id . ')" class="btn btn-sm btn-warning text-white" title="Edit"><i class="fa fa-edit"></i></button>';
+        }
+        
+        if (hasPermission('delete availability override')) {
+            $html .= '<button onclick="deleteOverride(' . $item->id . ')" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>';
+        }
+        
+        $html .= '</div>';
+        
+        return $html;
     }
 
     private function trashActionButtons($item): string
     {
-        return <<<HTML
-        <div class="d-flex gap-2">
-            <button onclick="restore({$item->id})" class="btn btn-sm btn-info" title="Restore"><i class="fa fa-undo"></i></button>
-            <button onclick="forceDelete({$item->id})" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>
-        </div>
-        HTML;
+        $html = '<div class="d-flex gap-2">';
+        
+        if (hasPermission('restore availability override')) {
+            $html .= '<button onclick="restore(' . $item->id . ')" class="btn btn-sm btn-info" title="Restore"><i class="fa fa-undo"></i></button>';
+        }
+        
+        if (hasPermission('force delete availability override')) {
+            $html .= '<button onclick="forceDelete(' . $item->id . ')" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>';
+        }
+        
+        $html .= '</div>';
+        
+        return $html;
     }
 
     private function assertDoctorBelongsToClinic($doctorProfileId): void

@@ -65,14 +65,44 @@ class ScanTranslations extends Command
         foreach ($files as $file) {
             $content = $file->getContents();
 
+            // Extract translation keys in various formats
+            // Format 1: __('key') or __('key.subkey')
             preg_match_all("/__\\(['\"](.+?)['\"]\\)/", $content, $matches1);
+            
+            // Format 2: @lang('key') or @lang('key.subkey')
             preg_match_all("/@lang\\(['\"](.+?)['\"]\\)/", $content, $matches2);
+            
+            // Format 3: trans('key') or trans('key.subkey')
             preg_match_all("/trans\\(['\"](.+?)['\"]\\)/", $content, $matches3);
+            
+            // Format 4: Lang::get('key') or Lang::get('key.subkey')
+            preg_match_all("/Lang::get\\(['\"](.+?)['\"]\\)/", $content, $matches4);
+            
+            // Format 5: {{ __('key') }} in blade templates
+            preg_match_all("/\\{\\{\\s*__\\(['\"](.+?)['\"]\\)\\s*\\}\\}/", $content, $matches5);
+            
+            // Format 6: {{ @lang('key') }} in blade templates
+            preg_match_all("/\\{\\{\\s*@lang\\(['\"](.+?)['\"]\\)\\s*\\}\\}/", $content, $matches6);
+            
+            // Format 7: {{ trans('key') }} in blade templates
+            preg_match_all("/\\{\\{\\s*trans\\(['\"](.+?)['\"]\\)\\s*\\}\\}/", $content, $matches7);
 
-            $matches = array_merge($matches1[1], $matches2[1], $matches3[1]);
+            $matches = array_merge(
+                $matches1[1] ?? [],
+                $matches2[1] ?? [],
+                $matches3[1] ?? [],
+                $matches4[1] ?? [],
+                $matches5[1] ?? [],
+                $matches6[1] ?? [],
+                $matches7[1] ?? []
+            );
 
             foreach ($matches as $match) {
-                $keys[] = $match;
+                // Clean up the key (remove whitespace)
+                $cleanKey = trim($match);
+                if (!empty($cleanKey)) {
+                    $keys[] = $cleanKey;
+                }
             }
 
             $bar->advance();
@@ -155,52 +185,47 @@ class ScanTranslations extends Command
         if (!empty($jsonKeys)) {
             $jsonPath = lang_path("{$locale}.json");
     
-            if (!File::exists(lang_path())) {
-                File::makeDirectory(lang_path(), 0755, true);
-            }
-    
+            // Only update if JSON file exists, don't create new files
             if (!File::exists($jsonPath)) {
-                File::put($jsonPath, json_encode(new \stdClass(), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-            }
-    
-            $translations = File::exists($jsonPath)
-                ? json_decode(File::get($jsonPath), true)
-                : [];
-    
-            if (!is_array($translations)) {
-                $translations = [];
-            }
-    
-            $new = 0;
-            $bar = $this->output->createProgressBar(count($jsonKeys));
-            $bar->setFormat("  Translating {$locale}.json [<fg=yellow>%bar%</>] %current%/%max% keys");
-    
-            foreach ($jsonKeys as $key) {
-                $shouldTranslate = !isset($translations[$key]) 
-                    || $this->option('overwrite') 
-                    || $this->needsTranslation($translations[$key], $locale);
-    
-                if ($shouldTranslate) {
-                    $translations[$key] = $this->option('translate')
-                        ? $this->translate($key, $locale)
-                        : $key;
-                    $new++;
+                $this->warn("⏭️ Skipping {$locale}.json (file does not exist, only updating existing files)");
+            } else {
+                $translations = json_decode(File::get($jsonPath), true);
+        
+                if (!is_array($translations)) {
+                    $translations = [];
                 }
-    
-                $bar->advance();
+        
+                $new = 0;
+                $bar = $this->output->createProgressBar(count($jsonKeys));
+                $bar->setFormat("  Translating {$locale}.json [<fg=yellow>%bar%</>] %current%/%max% keys");
+        
+                foreach ($jsonKeys as $key) {
+                    $shouldTranslate = !isset($translations[$key]) 
+                        || $this->option('overwrite') 
+                        || $this->needsTranslation($translations[$key], $locale);
+        
+                    if ($shouldTranslate) {
+                        $translations[$key] = $this->option('translate')
+                            ? $this->translate($key, $locale)
+                            : $key;
+                        $new++;
+                    }
+        
+                    $bar->advance();
+                }
+        
+                $bar->finish();
+                $this->newLine();
+        
+                ksort($translations);
+        
+                File::put(
+                    $jsonPath,
+                    json_encode($translations, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
+                );
+        
+                $this->info("✅ Updated {$jsonPath} with {$new} new/updated keys.");
             }
-    
-            $bar->finish();
-            $this->newLine();
-    
-            ksort($translations);
-    
-            File::put(
-                $jsonPath,
-                json_encode($translations, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
-            );
-    
-            $this->info("✅ Updated {$jsonPath} with {$new} new/updated keys.");
         }
     }
     

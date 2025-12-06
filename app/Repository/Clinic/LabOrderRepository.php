@@ -152,15 +152,21 @@ class LabOrderRepository implements LabOrderRepositoryInterface
 
     private function actions(LabOrder $item): string
     {
-        $showUrl = route('clinic.lab-orders.show', $item->id);
         $buttons = '<div class="d-flex gap-2">';
-        $buttons .= '<a href="' . $showUrl . '" class="btn btn-sm btn-success" title="View"><i class="fa fa-eye"></i></a>';
-        if (in_array($item->status, ['pending', 'received'])) {
+
+        if (hasPermission('view lab orders')) {
+            $showUrl = route('clinic.lab-orders.show', $item->id);
+            $buttons .= '<a href="' . $showUrl . '" class="btn btn-sm btn-success" title="View"><i class="fa fa-eye"></i></a>';
+        }
+
+        if (hasPermission('upload lab order') && in_array($item->status, ['pending', 'received'])) {
             $buttons .= '<button onclick="openUpload(' . $item->id . ')" class="btn btn-sm btn-info" title="Upload"><i class="fa fa-upload"></i></button>';
         }
-        if ($item->status !== 'completed') {
+
+        if (hasPermission('complete lab order') && $item->status !== 'completed') {
             $buttons .= '<button onclick="markCompleted(' . $item->id . ')" class="btn btn-sm btn-primary" title="Complete"><i class="fa fa-check"></i></button>';
         }
+
         $buttons .= '</div>';
         return $buttons;
     }

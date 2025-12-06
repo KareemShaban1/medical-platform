@@ -170,29 +170,46 @@ class RoleRepository implements RoleRepositoryInterface
     {
         $permissions = $role->permissions->pluck('id')->toArray();
         $permissionsJson = htmlspecialchars(json_encode($permissions), ENT_QUOTES, 'UTF-8');
+        $roleNameJson = htmlspecialchars(json_encode($role->name), ENT_QUOTES, 'UTF-8');
 
-        return <<<HTML
-        <div class="d-flex gap-2">
-            <button onclick="editRole({$role->id}, '{$role->name}', {$permissionsJson})" class="btn btn-sm btn-info">
-                <i class="fa fa-edit"></i>
-            </button>
-            <button onclick="deleteRole({$role->id})" class="btn btn-sm btn-danger">
-                <i class="fa fa-trash"></i>
-            </button>
-        </div>
-        HTML;
+        $html = '<div class="d-flex gap-2">';
+        
+        if (hasPermission('update role')) {
+            $html .= '<button onclick="editRole(' . $role->id . ', ' . $roleNameJson . ', ' . $permissionsJson . ')" class="btn btn-sm btn-info">';
+            $html .= '<i class="fa fa-edit"></i>';
+            $html .= '</button>';
+        }
+        
+        if (hasPermission('delete role')) {
+            $html .= '<button onclick="deleteRole(' . $role->id . ')" class="btn btn-sm btn-danger">';
+            $html .= '<i class="fa fa-trash"></i>';
+            $html .= '</button>';
+        }
+        
+        $html .= '</div>';
+        
+        return $html;
     }
 
     private function trashActions($role): string
     {
-        return <<<HTML
-        <button class="btn btn-sm btn-success" onclick="restoreRole({$role->id})">
-            <i class="mdi mdi-restore"></i> Restore
-        </button>
-        <button class="btn btn-sm btn-danger" onclick="forceDeleteRole({$role->id})">
-            <i class="mdi mdi-delete-forever"></i> Delete
-        </button>
-        HTML;
+        $html = '<div class="d-flex gap-2">';
+        
+        if (hasPermission('restore role')) {
+            $html .= '<button class="btn btn-sm btn-success" onclick="restoreRole(' . $role->id . ')">';
+            $html .= '<i class="mdi mdi-restore"></i> Restore';
+            $html .= '</button>';
+        }
+        
+        if (hasPermission('force delete role')) {
+            $html .= '<button class="btn btn-sm btn-danger" onclick="forceDeleteRole(' . $role->id . ')">';
+            $html .= '<i class="mdi mdi-delete-forever"></i> Delete';
+            $html .= '</button>';
+        }
+        
+        $html .= '</div>';
+        
+        return $html;
     }
 
     private function jsonResponse(string $status, string $message)

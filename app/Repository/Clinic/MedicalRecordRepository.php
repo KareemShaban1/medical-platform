@@ -27,14 +27,24 @@ class MedicalRecordRepository implements MedicalRecordRepositoryInterface
                 return '<span class="badge bg-' . $cls . '">' . e($label) . '</span>';
             })
             ->addColumn('actions', function ($r) {
-                $editUrl = route('clinic.medical-records.edit', $r->appointment_id);
-                $shareUrl = route('clinic.medical-records.share', $r->id);
-                $shareLabel = $r->is_shared_with_patient ? __('Unshare') : __('Share');
-                return '<a href="' . $editUrl . '" class="btn btn-sm btn-primary">' . __('Edit') . '</a> '
-                    . '<form method="POST" action="' . $shareUrl . '" class="d-inline">'
-                    . csrf_field()
-                    . '<button class="btn btn-sm btn-outline-secondary">' . e($shareLabel) . '</button>'
-                    . '</form>';
+                $html = '<div class="d-flex gap-2">';
+
+                if (hasPermission('update medical record')) {
+                    $editUrl = route('clinic.medical-records.edit', $r->appointment_id);
+                    $html .= '<a href="' . $editUrl . '" class="btn btn-sm btn-primary">' . __('Edit') . '</a>';
+                }
+
+                if (hasPermission('share medical record')) {
+                    $shareUrl = route('clinic.medical-records.share', $r->id);
+                    $shareLabel = $r->is_shared_with_patient ? __('Unshare') : __('Share');
+                    $html .= '<form method="POST" action="' . $shareUrl . '" class="d-inline">';
+                    $html .= csrf_field();
+                    $html .= '<button class="btn btn-sm btn-outline-secondary">' . e($shareLabel) . '</button>';
+                    $html .= '</form>';
+                }
+
+                $html .= '</div>';
+                return $html;
             })
             ->rawColumns(['shared_badge', 'actions'])
             ->make(true);

@@ -22,6 +22,9 @@ class AttendanceController extends Controller
 
     public function index()
     {
+        // apply permissions
+        abort_if(!hasPermission('view attendance'), 403, __('You are not authorized to view attendance'));
+
         $today = now()->toDateString();
         $logs = $this->repo->listForDay($today);
         $pending = $this->repo->pendingAbsences();
@@ -31,6 +34,9 @@ class AttendanceController extends Controller
 
     public function checkIn(Request $request)
     {
+        // apply permissions
+        abort_if(!hasPermission('check in'), 403, __('You are not authorized to check in'));
+
         $request->validate(['at' => 'nullable|date']);
         $at = $request->input('at', now());
         try {
@@ -43,6 +49,9 @@ class AttendanceController extends Controller
 
     public function checkOut(Request $request)
     {
+        // apply permissions
+        abort_if(!hasPermission('check out'), 403, __('You are not authorized to check out'));
+
         $request->validate(['at' => 'nullable|date']);
         $at = $request->input('at', now());
         try {
@@ -55,6 +64,9 @@ class AttendanceController extends Controller
 
     public function absence(Request $request)
     {
+        // apply permissions
+        abort_if(!hasPermission('mark absence'), 403, __('You are not authorized to request absence'));
+
         $request->validate([
             'at' => 'required|date',
             'notes' => 'nullable|string',
@@ -93,6 +105,9 @@ class AttendanceController extends Controller
 
     public function approve($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('approve attendance'), 403, __('You are not authorized to approve attendance'));
+
         try {
             $log = $this->repo->approve($id, auth('clinic')->id());
             return response()->json(['status' => 'success', 'message' => __('Attendance approved'), 'data' => $log]);
@@ -103,6 +118,9 @@ class AttendanceController extends Controller
 
     public function approveCheckIn($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('approve attendance'), 403, __('You are not authorized to approve attendance'));
+
         try {
             $log = $this->repo->approveCheckIn($id, auth('clinic')->id());
             return response()->json(['status' => 'success', 'message' => __('Check-in approved'), 'data' => $log]);
@@ -113,6 +131,9 @@ class AttendanceController extends Controller
 
     public function approveCheckOut($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('approve attendance'), 403, __('You are not authorized to approve attendance'));
+
         try {
             $log = $this->repo->approveCheckOut($id, auth('clinic')->id());
             return response()->json(['status' => 'success', 'message' => __('Check-out approved'), 'data' => $log]);
@@ -135,6 +156,9 @@ class AttendanceController extends Controller
 
     public function compute(Request $request)
     {
+        // apply permissions
+        abort_if(!hasPermission('compute attendance'), 403, __('You are not authorized to compute attendance'));
+
         $request->validate([
             'clinic_user_id' => 'required|exists:clinic_users,id',
             'start' => 'required|date',

@@ -17,11 +17,15 @@ class DoctorProfileController extends Controller
 
     public function index()
     {
+        // apply permissions
+        abort_if(!hasPermission('view doctor profiles'), 403, __('You are not authorized to view doctor profiles'));
         return view('backend.dashboards.admin.pages.doctor-profiles.index');
     }
 
     public function data()
     {
+        // apply permissions
+        abort_if(!hasPermission('view doctor profiles'), 403, __('You are not authorized to view doctor profiles'));
         return $this->profileRepo->data();
     }
 
@@ -37,12 +41,16 @@ class DoctorProfileController extends Controller
 
     public function show($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('view doctor profiles'), 403, __('You are not authorized to view doctor profile'));
         $profile = $this->profileRepo->show($id);
         return view('backend.dashboards.admin.pages.doctor-profiles.show', compact('profile'));
     }
 
     public function approve($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('approve doctor profile'), 403, __('You are not authorized to approve doctor profile'));
         try {
             $this->profileRepo->approve($id);
             return $this->jsonResponse('success', __('Profile approved successfully'));
@@ -53,6 +61,8 @@ class DoctorProfileController extends Controller
 
     public function reject(Request $request, $id)
     {
+        // apply permissions
+        abort_if(!hasPermission('reject doctor profile'), 403, __('You are not authorized to reject doctor profile'));
         $request->validate([
             'rejection_reason' => 'required|string|max:1000'
         ]);
@@ -67,6 +77,8 @@ class DoctorProfileController extends Controller
 
     public function toggleFeatured($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('toggle featured doctor profile'), 403, __('You are not authorized to toggle featured doctor profile'));
         try {
             $profile = $this->profileRepo->toggleFeatured($id);
             $message = $profile->is_featured
@@ -81,6 +93,8 @@ class DoctorProfileController extends Controller
 
     public function toggleLockForEdit($id)
     {
+        // apply permissions
+        abort_if(!hasPermission('toggle lock for edit doctor profile'), 403, __('You are not authorized to toggle lock for edit doctor profile'));
         try {
             $profile = $this->profileRepo->toggleLockForEdit($id);
             $message = $profile->locked_for_edit

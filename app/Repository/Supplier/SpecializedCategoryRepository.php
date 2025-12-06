@@ -124,11 +124,18 @@ class SpecializedCategoryRepository implements SpecializedCategoryRepositoryInte
 
     private function categoryActions($item): string
     {
-        return <<<HTML
-        <div class="d-flex gap-2">
-            <button onclick="editCategory({$item->id})" class="btn btn-sm btn-info" title="Edit"><i class="fa fa-edit"></i></button>
-            <button onclick="deleteCategory({$item->id})" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>
-        </div>
-        HTML;
+        $html = '<div class="d-flex gap-2">';
+
+        if (hasPermission('update specialized category')) {
+            $html .= '<button onclick="editCategory(' . $item->id . ')" class="btn btn-sm btn-info" title="Edit"><i class="fa fa-edit"></i></button>';
+        }
+
+        if (hasPermission('delete specialized category')) {
+            $html .= '<button onclick="deleteCategory(' . $item->id . ')" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>';
+        }
+
+        $html .= '</div>';
+
+        return $html;
     }
 }
