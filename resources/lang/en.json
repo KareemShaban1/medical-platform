@@ -2469,4 +2469,17 @@
     "years of experience": "years of experience",
     "you don\\'t have any orders yet": "you don\\'t have any orders yet",
     "your cart is empty": "your cart is empty"
+    "You cannot subscribe to a lower plan while you have an active subscription." : "You cannot subscribe to a lower plan while you have an active subscription.",
+    "Trash Appointments" : "Trash Appointments",
+    "Doctor Profile Management": "Doctor Profile Management",
+    "Trash Doctor Profiles": "Trash Doctor Profiles",
+    "Contact Messages": "Contact Messages",
+    "Supplier Users" : "Supplier Users",
+    "Subscriptions": "Subscriptions",
+    "Plans": "Plans",
+    "Features": "Features",
+    "My Account": "My Account",
+    "Choose Your Plan" : "Choose Your Plan",
+    "Select the perfect subscription plan for your needs" : "Select the perfect subscription plan for your needs"
+
 }
