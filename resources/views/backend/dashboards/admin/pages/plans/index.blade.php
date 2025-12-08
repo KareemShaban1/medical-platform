@@ -71,8 +71,7 @@ $(document).ready(function() {
 		processing: true,
 		serverSide: true,
 		ajax: {
-			url: '{{ route('
-			admin.plans.data ') }}',
+			url: '{{ route('admin.plans.data') }}',
 			data: function(d) {
 				d.plan_type = $(
 						'#plan-type-filter'
@@ -129,8 +128,7 @@ $(document).ready(function() {
 	});
 
 	window.createPlan = function() {
-		$.get('{{ route('
-			admin.plans.create ') }}',
+		$.get('{{ route('admin.plans.create') }}',
 			function(resp) {
 				if (resp.success && resp.html) {
 					$('#plan-modal').html(resp
@@ -144,10 +142,7 @@ $(document).ready(function() {
 	};
 
 	window.editPlan = function(id) {
-		$.get('{{ route('
-			admin.plans.edit ', ['
-			id ' => '
-			__ID__ ']) }}'.replace('__ID__', id),
+		$.get('{{ route('admin.plans.edit', ['id' => '__ID__']) }}'.replace('__ID__', id),
 			function(resp) {
 				if (resp.success && resp.html) {
 					$('#plan-modal').html(resp
@@ -161,10 +156,7 @@ $(document).ready(function() {
 	};
 
 	window.managePlanFeatures = function(id) {
-		$.get('{{ route('
-			admin.plans.features ', ['
-			id ' => '
-			__ID__ ']) }}'.replace('__ID__', id),
+		$.get('{{ route('admin.plans.features', ['id' => '__ID__']) }}'.replace('__ID__', id),
 			function(resp) {
 				if (resp.success && resp.html) {
 					$('#plan-modal').html(resp
@@ -176,34 +168,18 @@ $(document).ready(function() {
 
 	window.deletePlan = function(id) {
 		Swal.fire({
-			title: '{{ __('
-			Are you sure ? ') }}',
-			text : '{{ __('
-			This will delete the plan
-			.Existing subscriptions will remain active
-			.
-			') }}',
+			title: '{{ __('Are you sure ?') }}',
+			text : '{{ __('This will delete the plan. Existing subscriptions will remain active.') }}',
 			icon: 'warning',
 			showCancelButton: true,
-			confirmButtonText: '{{ __('
-			Yes,
-			delete it!') }}',
-			cancelButtonText: '{{ __('
-			Cancel ') }}',
+			confirmButtonText: '{{ __('Yes, delete it!') }}',
+			cancelButtonText: '{{ __('Cancel') }}',
 			confirmButtonColor: '#d33',
 			cancelButtonColor: '#3085d6',
 		}).then((result) => {
 			if (result.isConfirmed) {
 				$.ajax({
-					url: '{{ route('
-					admin
-					.plans
-					.destroy ', ['
-					id ' => '
-					__ID__ ']) }}'
-					.replace('__ID__',
-						id
-					),
+					url: '{{ route('admin.plans.destroy', ['id' => '__ID__']) }}'.replace('__ID__', id),
 					type: 'DELETE',
 					data: {
 						_token: '{{ csrf_token() }}'
@@ -212,12 +188,9 @@ $(document).ready(function() {
 						resp
 					) {
 						Swal.fire({
-							title: '{{ __('
-							Deleted!
-							') }}',
+							title: '{{ __('Deleted!') }}',
 							text: resp.message ||
-								'{{ __('
-							Plan deleted successfully ') }}',
+								'{{ __('Plan deleted successfully') }}',
 							icon: 'success',
 							confirmButtonColor: '#079184',
 						});
@@ -232,12 +205,9 @@ $(document).ready(function() {
 							xhr
 							.responseJSON
 							?.message ||
-							'{{ __('
-						Failed to delete plan
-							') }}';
+							'{{ __('Failed to delete plan') }}';
 						Swal.fire({
-							title: '{{ __('
-							Error ') }}',
+							title: '{{ __('Error') }}',
 							text: error,
 							icon: 'error',
 							confirmButtonColor: '#079184',

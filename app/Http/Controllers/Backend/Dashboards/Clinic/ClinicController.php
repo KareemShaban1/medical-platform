@@ -8,6 +8,8 @@ use App\Models\ClinicUser;
 use App\Models\UserOtp;
 use App\Models\ModuleApprovement;
 use App\Notifications\Clinic\ClinicRegisteredNotification;
+use App\Notifications\Admin\EntityRegisteredNotification;
+use App\Models\Admin;
 use App\Http\Requests\StoreClinicRequest;
 use App\Http\Requests\UpdateClinicRequest;
 use Illuminate\Support\Facades\DB;
@@ -17,6 +19,8 @@ use Illuminate\Http\Request;
 use App\Models\Governorate;
 use App\Models\City;
 use App\Models\Area;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Log;
 
 class ClinicController extends Controller
 {
@@ -222,6 +226,25 @@ class ClinicController extends Controller
             ]);
 
             DB::commit();
+
+            // Notify all active admins in DB with redirect to clinic management
+            $admins = Admin::where('status', true)->get();
+            if ($admins->count()) {
+                Notification::send($admins, new EntityRegisteredNotification('Clinic', $clinic->id, $clinic->name));
+
+                Log::info('entity.db_notification.admin', [
+                    'context' => 'clinic_registration_verified',
+                    'clinic_id' => $clinic->id,
+                    'admin_ids' => $admins->pluck('id')->all(),
+                    'status' => 'stored_in_database',
+                ]);
+            } else {
+                Log::warning('entity.db_notification.admin_skipped', [
+                    'context' => 'clinic_registration_verified',
+                    'clinic_id' => $clinic->id,
+                    'reason' => 'no_active_admins',
+                ]);
+            }
 
             return response()->json([
                 'success' => true,

@@ -8,6 +8,8 @@ use App\Models\SupplierUser;
 use App\Models\UserOtp;
 use App\Models\ModuleApprovement;
 use App\Notifications\Supplier\SupplierRegisteredNotification;
+use App\Notifications\Admin\EntityRegisteredNotification;
+use App\Models\Admin;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -15,6 +17,8 @@ use Spatie\Permission\Models\Role;
 use App\Models\Governorate;
 use App\Models\City;
 use App\Models\Area;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Log;
 
 class SupplierController extends Controller
 {
@@ -113,7 +117,7 @@ class SupplierController extends Controller
                 // Create new supplier and user
                 $supplier = Supplier::create([
                     'name' => $request->supplier_name,
-                    'phone' => $request->phone, 
+                    'phone' => $request->phone,
                     'address' => $request->address,
                     'is_allowed' => false,
                     'status' => false,
@@ -218,6 +222,25 @@ class SupplierController extends Controller
             ]);
 
             DB::commit();
+
+            // Notify all active admins in DB with redirect to supplier management
+            $admins = Admin::where('status', true)->get();
+            if ($admins->count()) {
+                Notification::send($admins, new EntityRegisteredNotification('Supplier', $supplier->id, $supplier->name));
+
+                Log::info('entity.db_notification.admin', [
+                    'context' => 'supplier_registration_verified',
+                    'supplier_id' => $supplier->id,
+                    'admin_ids' => $admins->pluck('id')->all(),
+                    'status' => 'stored_in_database',
+                ]);
+            } else {
+                Log::warning('entity.db_notification.admin_skipped', [
+                    'context' => 'supplier_registration_verified',
+                    'supplier_id' => $supplier->id,
+                    'reason' => 'no_active_admins',
+                ]);
+            }
 
             return response()->json([
                 'success' => true,

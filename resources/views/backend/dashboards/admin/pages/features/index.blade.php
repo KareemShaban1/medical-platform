@@ -50,8 +50,7 @@ $(document).ready(function() {
 const table = $('#features-table').DataTable({
 	processing: true,
 	serverSide: true,
-	ajax: '{{ route('
-	admin.features.data ') }}',
+	ajax: '{{ route('admin.features.data') }}',
 	order: [
 		[0, 'desc']
 	],
@@ -89,8 +88,7 @@ const table = $('#features-table').DataTable({
 });
 
 window.createFeature = function() {
-	$.get('{{ route('
-		admin.features.create ') }}',
+	$.get('{{ route('admin.features.create') }}',
 		function(resp) {
 			if (resp.success && resp.html) {
 				$('#feature-modal').html(resp
@@ -99,9 +97,7 @@ window.createFeature = function() {
 			}
 		}).fail(function() {
 		// Fallback
-		$.get('{{ route('
-			admin.features
-			.index ') }}?modal=create',
+		$.get('{{ route('admin.features.index') }}?modal=create',
 			function(resp) {
 				if (resp.success &&
 					resp
@@ -120,10 +116,7 @@ window.createFeature = function() {
 };
 
 window.editFeature = function(id) {
-	$.get('{{ route('
-		admin.features.show ', ['
-		id ' => '
-		__ID__ ']) }}'.replace('__ID__', id),
+	$.get('{{ route('admin.features.show', ['id' => '__ID__']) }}'.replace('__ID__', id),
 		function(resp) {
 			if (resp.success && resp.html) {
 				$('#feature-modal').html(resp
@@ -135,42 +128,27 @@ window.editFeature = function(id) {
 
 window.deleteFeature = function(id) {
 	Swal.fire({
-			title: '{{ __('
-			Are you sure ? ') }}',
-			text : '{{ __('
-			This will delete the feature
-			.Make sure it\ 's not used in any plans.'
-		)
-	}
-}
-',
+			title: '{{ __('Are you sure ?') }}',
+			text : '{{ __('This will delete the feature. Make sure it\'s not used in any plans.') }}',
 icon: 'warning',
 	showCancelButton: true,
-	confirmButtonText: '{{ __('
-Yes, delete it!') }}',
-	cancelButtonText: '{{ __('
-Cancel ') }}',
+	confirmButtonText: '{{ __('Yes, delete it!') }}',
+	cancelButtonText: '{{ __('Cancel') }}',
 	confirmButtonColor: '#d33',
 	cancelButtonColor: '#3085d6',
 }).then((result) => {
 if (result.isConfirmed) {
 	$.ajax({
-		url: '{{ route('
-		admin.features.destroy ', ['
-		id ' => '
-		__ID__ ']) }}'.replace('__ID__', id),
+		url: '{{ route('admin.features.destroy', ['id' => '__ID__']) }}'.replace('__ID__', id),
 		type: 'DELETE',
 		data: {
 			_token: '{{ csrf_token() }}'
 		},
 		success: function(resp) {
 			Swal.fire({
-				title: '{{ __('
-				Deleted!
-				') }}',
+				title: '{{ __('Deleted!') }}',
 				text: resp.message ||
-					'{{ __('
-				Feature deleted successfully ') }}',
+					'{{ __('Feature deleted successfully') }}',
 				icon: 'success',
 				confirmButtonColor: '#079184',
 			});
@@ -180,12 +158,9 @@ if (result.isConfirmed) {
 		error: function(xhr) {
 			const error = xhr.responseJSON
 				?.message ||
-				'{{ __('
-			Failed to delete feature
-				') }}';
+				'{{ __('Failed to delete feature') }}';
 			Swal.fire({
-				title: '{{ __('
-				Error ') }}',
+				title: '{{ __('Error') }}',
 				text: error,
 				icon: 'error',
 				confirmButtonColor: '#079184',

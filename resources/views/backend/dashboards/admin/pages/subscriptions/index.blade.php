@@ -119,8 +119,7 @@ $(document).ready(function() {
 		processing: true,
 		serverSide: true,
 		ajax: {
-			url: '{{ route('
-			admin.subscriptions.data ') }}',
+			url: '{{ route('admin.subscriptions.data') }}',
 			data: function(d) {
 				d.status = $('#status-filter')
 					.val() || 'all';
@@ -141,13 +140,12 @@ $(document).ready(function() {
 		buttons: [{
 				extend: 'excel',
 				className: 'btn btn-sm btn-light',
-				text: '<i class="mdi mdi-file-excel"></i> {{ __('
-				Export Excel ') }}'
+				text: '<i class="mdi mdi-file-excel"></i> {{ __('Export Excel') }}'
 			},
 			{
 				extend: 'print',
 				className: 'btn btn-sm btn-light',
-				text: '<i class="mdi mdi-printer"></i> {{ __('
+				text: '<i class="mdi mdi-printer"></i> {{ __('Print') }}'
 				Print ') }}'
 			}
 		],
@@ -199,8 +197,7 @@ $(document).ready(function() {
 	});
 
 	window.createSubscription = function() {
-		$.get('{{ route('
-			admin.subscriptions.create ') }}',
+		$.get('{{ route('admin.subscriptions.create') }}',
 			function(resp) {
 				if (resp.success && resp.html) {
 					$('#subscription-modal').html(
@@ -212,8 +209,7 @@ $(document).ready(function() {
 
 	window.extendSubscription = function(id) {
 		Swal.fire({
-			title: '{{ __('
-			Extend Subscription ') }}',
+			title: '{{ __('Extend Subscription') }}',
 			html: `
                 <div class="text-start">
                     <label class="form-label">{{ __('Number of Days') }}</label>
@@ -222,10 +218,8 @@ $(document).ready(function() {
             `,
 			icon: 'question',
 			showCancelButton: true,
-			confirmButtonText: '{{ __('
-			Extend ') }}',
-			cancelButtonText: '{{ __('
-			Cancel ') }}',
+			confirmButtonText: '{{ __('Extend') }}',
+			cancelButtonText: '{{ __('Cancel') }}',
 			confirmButtonColor: '#079184',
 			preConfirm: () => {
 				const days =
@@ -237,9 +231,7 @@ $(document).ready(function() {
 				if (!days || days <
 					1) {
 					Swal.showValidationMessage(
-						'{{ __('
-						Please enter a valid number of
-						days ') }}'
+						'{{ __('Please enter a valid number of days') }}'
 					);
 				}
 				return {
@@ -251,12 +243,7 @@ $(document).ready(function() {
 		}).then((result) => {
 			if (result.isConfirmed) {
 				$.ajax({
-					url: '{{ route('
-					admin
-					.subscriptions
-					.extend ', ['
-					id ' => '
-					__ID__ ']) }}'
+					url: '{{ route('admin.subscriptions.extend', ['id' => '__ID__']) }}'
 					.replace('__ID__',
 						id
 					),
@@ -273,12 +260,9 @@ $(document).ready(function() {
 						resp
 					) {
 						Swal.fire({
-							title: '{{ __('
-							Success!
-							') }}',
+							title: '{{ __('Success!') }}',
 							text: resp.message ||
-								'{{ __('
-							Subscription extended successfully ') }}',
+								'{{ __('Subscription extended successfully') }}',
 							icon: 'success',
 							confirmButtonColor: '#079184',
 						});
@@ -293,12 +277,9 @@ $(document).ready(function() {
 							xhr
 							.responseJSON
 							?.message ||
-							'{{ __('
-						Failed to extend subscription
-							') }}';
+							'{{ __('Failed to extend subscription') }}';
 						Swal.fire({
-							title: '{{ __('
-							Error ') }}',
+							title: '{{ __('Error') }}',
 							text: error,
 							icon: 'error',
 							confirmButtonColor: '#079184',
@@ -311,30 +292,19 @@ $(document).ready(function() {
 
 	window.deleteSubscription = function(id) {
 		Swal.fire({
-			title: '{{ __('
-			Are you sure ? ') }}',
-			text : '{{ __('
-			This will permanently delete the subscription
-			.This action cannot be undone.
-			') }}',
+			title: '{{ __('Are you sure?') }}',
+			text : '{{ __('This will permanently delete the subscription. This action cannot be undone.') }}',
 			icon: 'warning',
 			showCancelButton: true,
-			confirmButtonText: '{{ __('
-			Yes,
-			delete it!') }}',
-			cancelButtonText: '{{ __('
+			confirmButtonText: '{{ __('Yes, delete it!') }}',
+			cancelButtonText: '{{ __('Cancel') }}',
 			Cancel ') }}',
 			confirmButtonColor: '#d33',
 			cancelButtonColor: '#3085d6',
 		}).then((result) => {
 			if (result.isConfirmed) {
 				$.ajax({
-					url: '{{ route('
-					admin
-					.subscriptions
-					.destroy ', ['
-					id ' => '
-					__ID__ ']) }}'
+					url: '{{ route('admin.subscriptions.destroy', ['id' => '__ID__']) }}'
 					.replace('__ID__',
 						id
 					),
@@ -346,12 +316,9 @@ $(document).ready(function() {
 						resp
 					) {
 						Swal.fire({
-							title: '{{ __('
-							Deleted!
-							') }}',
+							title: '{{ __('Deleted!') }}',
 							text: resp.message ||
-								'{{ __('
-							Subscription deleted successfully ') }}',
+								'{{ __('Subscription deleted successfully') }}',
 							icon: 'success',
 							confirmButtonColor: '#079184',
 						});
@@ -366,12 +333,9 @@ $(document).ready(function() {
 							xhr
 							.responseJSON
 							?.message ||
-							'{{ __('
-						Failed to delete subscription
-							') }}';
+							'{{ __('Failed to delete subscription') }}';
 						Swal.fire({
-							title: '{{ __('
-							Error ') }}',
+							title: '{{ __('Error') }}',
 							text: error,
 							icon: 'error',
 							confirmButtonColor: '#079184',
