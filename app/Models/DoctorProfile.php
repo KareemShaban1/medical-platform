@@ -37,6 +37,7 @@ class DoctorProfile extends Model implements HasMedia
         'is_featured',
         'featured_by',
         'locked_for_edit',
+        'slug',
     ];
 
     protected $casts = [

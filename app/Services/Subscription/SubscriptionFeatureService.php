@@ -152,6 +152,11 @@ class SubscriptionFeatureService
             return false;
         }
 
+        // Some legacy subscriptions might miss a plan relation; guard against null.
+        if (!$subscription->plan) {
+            return false;
+        }
+
         $planFeature = $subscription->plan->planFeatures()
             ->whereHas('feature', function ($q) use ($featureCode) {
                 $q->where('code', $featureCode);
@@ -189,4 +194,3 @@ class SubscriptionFeatureService
         }
     }
 }
-

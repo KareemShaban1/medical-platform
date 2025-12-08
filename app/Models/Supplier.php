@@ -24,6 +24,7 @@ class Supplier extends Model implements HasMedia
         'governorate_id',
         'city_id',
         'area_id',
+        'slug',
     ];
 
     public $appends = ['images'];

@@ -105,18 +105,25 @@ class ClinicController extends Controller
 	/**
 	 * Show clinic details
 	 */
-	public function show($id)
-	{
-		$clinic = Clinic::approved()
-			->where('status', true)
-			->with(['approvement'])
-			->findOrFail($id);
+    public function show($id)
+    {
+        $query = Clinic::approved()
+            ->where('status', true)
+            ->with(['approvement']);
+
+        $clinic = null;
+        if (!is_numeric($id)) {
+            $clinic = (clone $query)->where('slug', $id)->first();
+        }
+        if (!$clinic) {
+            $clinic = $query->findOrFail($id);
+        }
 
 		// Get doctor profiles for this clinic
 		$doctors = \App\Models\DoctorProfile::where('status', \App\Models\DoctorProfile::STATUS_APPROVED)
-			->whereHas('clinicUser', function($q) use ($id) {
-				$q->where('clinic_id', $id);
-			})
+            ->whereHas('clinicUser', function($q) use ($clinic) {
+                $q->where('clinic_id', $clinic->id);
+            })
 			->with(['speciality', 'clinicUser'])
 			->orderBy('is_featured', 'desc')
 			->orderBy('name')
@@ -125,14 +132,14 @@ class ClinicController extends Controller
 		// Get related clinics with same specialization
 		$relatedClinics = Clinic::approved()
 			->where('status', true)
-			->where('id', '!=', $id)
+            ->where('id', '!=', $clinic->id)
 			->limit(4)
 			->get();
 
 		// Get nearby clinics
 		$nearbyClinics = Clinic::approved()
 			->where('status', true)
-			->where('id', '!=', $id)
+            ->where('id', '!=', $clinic->id)
 			->limit(4)
 			->get();
 
