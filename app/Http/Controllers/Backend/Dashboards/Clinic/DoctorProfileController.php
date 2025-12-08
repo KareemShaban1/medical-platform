@@ -76,7 +76,7 @@ class DoctorProfileController extends Controller
     public function edit($id)
     {
         // apply permissions
-        abort_if(!hasPermission('edit doctor profile'), 403, __('You are not authorized to edit doctor profile'));
+        abort_if(!hasPermission('update doctor profile'), 403, __('You are not authorized to edit doctor profile'));
 
         $profile = $this->profileRepo->show($id);
 

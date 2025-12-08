@@ -10,6 +10,9 @@
 	padding: 40px 0;
 	margin-bottom: 32px;
 }
+.clinic-header.pro {
+	background: radial-gradient(circle at 20% 15%, rgba(245,158,11,0.18), transparent 45%), linear-gradient(135deg, #0f172a 0%, #0ea5e9 55%, #f59e0b 100%);
+}
 
 .clinic-title {
 	font-size: 32px;
@@ -45,6 +48,44 @@
 	display: flex;
 	gap: 12px;
 	margin-top: 24px;
+}
+
+.pro-chip {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	padding: 0;
+	border-radius: 9999px;
+	background: transparent;
+	color: #e0f2fe;
+	font-weight: 700;
+	font-size: 14px;
+}
+
+.pro-chip i {
+	color: #e0f2fe;
+	text-shadow: 0 0 6px rgba(0,0,0,0.35);
+}
+
+.share-pill {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	padding: 12px 18px;
+	border-radius: 9999px;
+	background: linear-gradient(135deg, #111827, #f59e0b);
+	color: #fff;
+	font-weight: 700;
+	text-decoration: none;
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
+	box-shadow: 0 10px 24px rgba(245, 158, 11, 0.25);
+	border: 1px solid rgba(255,255,255,0.1);
+}
+
+.share-pill:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 12px 30px rgba(245, 158, 11, 0.35);
+	color: #fff;
 }
 
 .btn-book {
@@ -87,10 +128,11 @@
 }
 
 .clinic-main {
-	background: white;
+	background: linear-gradient(145deg, #ffffff, #f8fafc);
 	border-radius: 12px;
 	padding: 32px;
 	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+	border: 1px solid rgba(245,158,11,0.25);
 }
 
 .clinic-sidebar {
@@ -469,8 +511,58 @@
 
 </style>
 @endpush
+@push('scripts')
+<script>
+document.addEventListener('click', function(e) {
+	const btn = e.target.closest('.copy-share-link');
+	if (!btn) return;
+	const url = btn.dataset.url;
+	if (!url) return;
+	const done = () => showToast();
+
+	if (navigator.clipboard && navigator.clipboard.writeText) {
+		navigator.clipboard.writeText(url).then(done);
+	} else {
+		const el = document.createElement('textarea');
+		el.value = url;
+		document.body.appendChild(el);
+		el.select();
+		document.execCommand('copy');
+		document.body.removeChild(el);
+		done();
+	}
+});
+
+function showToast() {
+	const toast = document.createElement('div');
+	toast.textContent = '{{ __("Link copied!") }}';
+	Object.assign(toast.style, {
+		position: 'fixed',
+		bottom: '24px',
+		right: '24px',
+		padding: '12px 16px',
+		background: 'linear-gradient(135deg, #111827, #f59e0b)',
+		color: '#fff',
+		borderRadius: '9999px',
+		boxShadow: '0 12px 30px rgba(0,0,0,0.25)',
+		zIndex: '9999',
+		transition: 'opacity .3s ease'
+	});
+	document.body.appendChild(toast);
+	setTimeout(() => {
+		toast.style.opacity = '0';
+		setTimeout(() => toast.remove(), 300);
+	}, 1500);
+}
+</script>
+@endpush
 
 @section('content')
+@php
+	$proService = app(\App\Services\ProfessionalBioService::class);
+	$hasProBio = $proService->hasForClinic($clinic);
+	$shareUrl = $hasProBio ? $proService->getShareUrl($clinic, 'clinic') : null;
+@endphp
 
 <!-- Breadcrumb -->
 <nav class="breadcrumb">
@@ -490,12 +582,20 @@
 </nav>
 
 <!-- Clinic Header -->
-<section class="clinic-header">
+<section class="clinic-header {{ $hasProBio ? 'pro' : '' }}">
 	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 		<div class="flex items-center justify-between">
-			<div>
-				<h1 class="clinic-title">{{ $clinic->name }}</h1>
-				<p class="clinic-specialization">{{ ucfirst($clinic->specialization) }} Clinic
+			<div class="relative">
+				<div class="flex items-center gap-3">
+					<h1 class="clinic-title mb-0">{{ $clinic->name }}</h1>
+					@if($hasProBio)
+						<span class="pro-chip">
+							<i class="fas fa-check-circle"></i>
+						</span>
+					@endif
+				</div>
+				<p class="clinic-specialization flex items-center gap-3">
+					{{ ucfirst($clinic->specialization) }} Clinic
 				</p>
 
 				<div class="clinic-meta">
@@ -517,15 +617,13 @@
 					</div>
 				</div>
 			</div>
-{{--
-			<div class="clinic-actions">
-				<a href="#" class="btn-book" onclick="bookAppointment()">
-					<i class="fas fa-calendar-plus mr-2"></i>Book Appointment
-				</a>
-				<a href="#" class="btn-contact" onclick="contactClinic()">
-					<i class="fas fa-phone mr-2"></i>Contact
-				</a>
-			</div> --}}
+			<div class="clinic-actions items-center">
+				@if($hasProBio && $shareUrl)
+					<button type="button" class="share-pill copy-share-link" data-url="{{ $shareUrl }}">
+						<i class="fas fa-link"></i> {{ __('Copy verified link') }}
+					</button>
+				@endif
+			</div>
 		</div>
 	</div>
 </section>

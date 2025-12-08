@@ -29,6 +29,7 @@ class Clinic extends Model implements HasMedia
         'working_hours',
         'has_emergency',
         'patient_rating',
+        'slug',
     ];
 
     protected $casts = [

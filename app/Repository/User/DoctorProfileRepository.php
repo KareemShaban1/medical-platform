@@ -36,9 +36,17 @@ class DoctorProfileRepository implements DoctorProfileRepositoryInterface
 
     public function find($id)
     {
-        return DoctorProfile::where('status', DoctorProfile::STATUS_APPROVED)
-            ->with(['clinicUser.clinic', 'speciality'])
-            ->findOrFail($id);
+        $query = DoctorProfile::where('status', DoctorProfile::STATUS_APPROVED)
+            ->with(['clinicUser.clinic', 'speciality']);
+
+        if (!is_numeric($id)) {
+            $profile = $query->where('slug', $id)->first();
+            if ($profile) {
+                return $profile;
+            }
+        }
+
+        return $query->findOrFail($id);
     }
 
     public function forClinic($clinicId)
@@ -124,4 +132,3 @@ class DoctorProfileRepository implements DoctorProfileRepositoryInterface
         });
     }
 }
-

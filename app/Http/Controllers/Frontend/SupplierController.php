@@ -222,15 +222,22 @@ class SupplierController extends Controller
 	 */
 	public function show($id)
 	{
-		$supplier = Supplier::approved()
+		$query = Supplier::approved()
 			->where('status', true)
-			->with(['approvement'])
-			->findOrFail($id);
+			->with(['approvement']);
+
+		$supplier = null;
+		if (!is_numeric($id)) {
+			$supplier = (clone $query)->where('slug', $id)->first();
+		}
+		if (!$supplier) {
+			$supplier = $query->findOrFail($id);
+		}
 
 		// Get related suppliers with same category
 		$relatedSuppliers = Supplier::approved()
 			->where('status', true)
-			->where('id', '!=', $id)
+			->where('id', '!=', $supplier->id)
 			// ->where('category', $supplier->category)
 			->limit(4)
 			->get();
@@ -238,7 +245,7 @@ class SupplierController extends Controller
 		// Get suppliers with similar specialties
 		$similarSuppliers = Supplier::approved()
 			->where('status', true)
-			->where('id', '!=', $id)
+			->where('id', '!=', $supplier->id)
 			// ->where('location', $supplier->location)
 			->limit(4)
 			->get();

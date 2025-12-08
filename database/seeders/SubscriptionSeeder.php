@@ -123,16 +123,9 @@ class SubscriptionSeeder extends Seeder
                 'is_active' => true,
             ],
             [
-                'code' => 'doctor_bio_pro',
-                'name' => 'Professional Doctor Bio',
-                'description' => 'Professional bio for doctor profile',
-                'value_type' => 'boolean',
-                'is_active' => true,
-            ],
-            [
-                'code' => 'doctor_bio_private_link',
-                'name' => 'Private Bio Link',
-                'description' => 'Private link for doctor bio',
+                'code' => 'professional_bio',
+                'name' => 'Professional Bio with Shareable Link',
+                'description' => 'Premium bio, badge, and shareable link',
                 'value_type' => 'boolean',
                 'is_active' => true,
             ],
@@ -155,8 +148,6 @@ class SubscriptionSeeder extends Seeder
                 'description' => 'Basic plan for standalone doctors',
                 'features' => [
                     ['code' => 'marketplace_access', 'is_enabled' => true],
-                    ['code' => 'doctor_bio_pro', 'is_enabled' => false],
-                    ['code' => 'doctor_bio_private_link', 'is_enabled' => false],
                 ],
             ],
             [
@@ -169,8 +160,7 @@ class SubscriptionSeeder extends Seeder
                 'description' => 'Paid plan for doctors',
                 'features' => [
                     ['code' => 'marketplace_access', 'is_enabled' => true],
-                    ['code' => 'doctor_bio_pro', 'is_enabled' => true],
-                    ['code' => 'doctor_bio_private_link', 'is_enabled' => true],
+                    ['code' => 'professional_bio', 'is_enabled' => true],
                 ],
             ],
         ];
@@ -228,6 +218,7 @@ class SubscriptionSeeder extends Seeder
                     ['code' => 'prescriptions_module', 'is_enabled' => true],
                     ['code' => 'medical_records_module', 'is_enabled' => true],
                     ['code' => 'purchase_requests', 'is_enabled' => true, 'is_limited' => false, 'value' => null],
+                    ['code' => 'professional_bio', 'is_enabled' => true],
                 ],
             ],
             [
@@ -250,6 +241,7 @@ class SubscriptionSeeder extends Seeder
                     ['code' => 'rental_spaces_module', 'is_enabled' => true],
                     ['code' => 'purchase_requests', 'is_enabled' => true, 'is_limited' => false, 'value' => null],
                     ['code' => 'post_jobs', 'is_enabled' => true, 'is_limited' => false, 'value' => null],
+                    ['code' => 'professional_bio', 'is_enabled' => true],
                 ],
             ],
         ];
@@ -298,6 +290,7 @@ class SubscriptionSeeder extends Seeder
                 'features' => [
                     ['code' => 'max_products', 'is_enabled' => true, 'is_limited' => true, 'value' => '30'],
                     ['code' => 'purchase_request_offer', 'is_enabled' => false],
+                    ['code' => 'professional_bio', 'is_enabled' => true],
                 ],
             ],
             [
@@ -311,6 +304,7 @@ class SubscriptionSeeder extends Seeder
                 'features' => [
                     ['code' => 'max_products', 'is_enabled' => true, 'is_limited' => true, 'value' => '100'],
                     ['code' => 'purchase_request_offer', 'is_enabled' => true, 'is_limited' => true, 'value' => '10'],
+                    ['code' => 'professional_bio', 'is_enabled' => true],
                 ],
             ],
             [
@@ -324,6 +318,7 @@ class SubscriptionSeeder extends Seeder
                 'features' => [
                     ['code' => 'max_products', 'is_enabled' => true, 'is_limited' => false, 'value' => null],
                     ['code' => 'purchase_request_offer', 'is_enabled' => true, 'is_limited' => false, 'value' => null],
+                    ['code' => 'professional_bio', 'is_enabled' => true],
                 ],
             ],
         ];
