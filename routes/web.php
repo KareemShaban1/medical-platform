@@ -97,7 +97,9 @@ Route::group([
         'localeViewPath'
     ]
 ], function () {
-    Route::post('/courses/{id}/enroll', [CourseController::class, 'enroll'])->name('courses.enroll');
+    Route::post('/courses/{id}/enroll', [CourseController::class, 'enroll'])
+        ->middleware('check.subscription:enroll_courses')
+        ->name('courses.enroll');
 });
 
 // Subscription enrollment (Clinic, Doctor, or Supplier users) - AJAX route without localization middleware

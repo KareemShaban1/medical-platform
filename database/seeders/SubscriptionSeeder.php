@@ -109,6 +109,14 @@ class SubscriptionSeeder extends Seeder
                 'is_active' => true,
             ],
             [
+                'code' => 'enroll_courses',
+                'name' => 'Course Enrollments',
+                'description' => 'Allowed number of course enrollments',
+                'unit' => 'courses',
+                'value_type' => 'integer',
+                'is_active' => true,
+            ],
+            [
                 'code' => 'post_jobs',
                 'name' => 'Post Jobs',
                 'description' => 'Ability to post job listings',
@@ -161,6 +169,7 @@ class SubscriptionSeeder extends Seeder
                 'features' => [
                     ['code' => 'marketplace_access', 'is_enabled' => true],
                     ['code' => 'professional_bio', 'is_enabled' => true],
+                    ['code' => 'enroll_courses', 'is_enabled' => true, 'is_limited' => true, 'value' => '2'],
                 ],
             ],
         ];
@@ -217,6 +226,7 @@ class SubscriptionSeeder extends Seeder
                     ['code' => 'appointments_module', 'is_enabled' => true],
                     ['code' => 'prescriptions_module', 'is_enabled' => true],
                     ['code' => 'medical_records_module', 'is_enabled' => true],
+                    ['code' => 'enroll_courses', 'is_enabled' => true, 'is_limited' => true, 'value' => '2'],
                     ['code' => 'purchase_requests', 'is_enabled' => true, 'is_limited' => false, 'value' => null],
                     ['code' => 'professional_bio', 'is_enabled' => true],
                 ],
@@ -239,6 +249,7 @@ class SubscriptionSeeder extends Seeder
                     ['code' => 'medical_records_module', 'is_enabled' => true],
                     ['code' => 'expenses_module', 'is_enabled' => true],
                     ['code' => 'rental_spaces_module', 'is_enabled' => true],
+                    ['code' => 'enroll_courses', 'is_enabled' => true, 'is_limited' => true, 'value' => '5'],
                     ['code' => 'purchase_requests', 'is_enabled' => true, 'is_limited' => false, 'value' => null],
                     ['code' => 'post_jobs', 'is_enabled' => true, 'is_limited' => false, 'value' => null],
                     ['code' => 'professional_bio', 'is_enabled' => true],

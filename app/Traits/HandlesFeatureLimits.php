@@ -41,6 +41,22 @@ trait HandlesFeatureLimits
     }
 
     /**
+     * Decide if the current request prefers a JSON response
+     */
+    protected function requestPrefersJson(): bool
+    {
+        $request = request();
+        $accepts = strtolower($request->header('accept', ''));
+        $contentType = strtolower($request->header('content-type', ''));
+
+        return $request->expectsJson()
+            || $request->ajax()
+            || $request->wantsJson()
+            || str_contains($accepts, 'application/json')
+            || str_contains($contentType, 'application/json');
+    }
+
+    /**
      * Check if entity can use a feature and handle error responses
      *
      * @param mixed $entity The entity to check (Clinic, ClinicUser, Supplier)
@@ -100,7 +116,7 @@ trait HandlesFeatureLimits
      */
     protected function featureNotEnabledResponse(string $featureCode)
     {
-        if (request()->expectsJson() || request()->ajax()) {
+        if ($this->requestPrefersJson()) {
             return response()->json([
                 'status' => 'error',
                 'message' => __('This feature requires an active subscription. Please subscribe to a plan.'),
@@ -137,7 +153,7 @@ trait HandlesFeatureLimits
             'limit' => $limit ?? __('unlimited'),
         ]);
 
-        if (request()->expectsJson() || request()->ajax()) {
+        if ($this->requestPrefersJson()) {
             return response()->json([
                 'status' => 'error',
                 'message' => $message,
@@ -180,4 +196,3 @@ trait HandlesFeatureLimits
         }
     }
 }
-

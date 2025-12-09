@@ -146,7 +146,6 @@ $(document).ready(function() {
 				extend: 'print',
 				className: 'btn btn-sm btn-light',
 				text: '<i class="mdi mdi-printer"></i> {{ __('Print') }}'
-				Print ') }}'
 			}
 		],
 		columns: [{
@@ -298,7 +297,6 @@ $(document).ready(function() {
 			showCancelButton: true,
 			confirmButtonText: '{{ __('Yes, delete it!') }}',
 			cancelButtonText: '{{ __('Cancel') }}',
-			Cancel ') }}',
 			confirmButtonColor: '#d33',
 			cancelButtonColor: '#3085d6',
 		}).then((result) => {

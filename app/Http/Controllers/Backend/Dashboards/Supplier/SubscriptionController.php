@@ -51,7 +51,7 @@ class SubscriptionController extends Controller
     public function plans()
     {
         // apply permissions
-        abort_if(!hasPermission('view subscriptions'), 403, __('You are not authorized to view subscription plans'));
+        // abort_if(!hasPermission('view subscriptions'), 403, __('You are not authorized to view subscription plans'));
 
         return redirect()
             ->to(route('home', ['plan_type' => 'supplier']) . '#subscriptions-plans')

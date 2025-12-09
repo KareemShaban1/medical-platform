@@ -29,6 +29,7 @@ class CheckSubscription
 
         $entity = null;
         $redirectRoute = null;
+        $wantsJson = $this->wantsJson($request);
 
         if (auth('clinic')->check()) {
             $user = auth('clinic')->user();
@@ -43,7 +44,7 @@ class CheckSubscription
 
         // Check if feature is enabled
         if (!$this->featureService->isFeatureEnabled($entity, $featureCode)) {
-            if ($request->expectsJson()) {
+            if ($wantsJson) {
                 return response()->json([
                     'status' => 'error',
                     'message' => __('This feature requires a subscription'),
@@ -63,7 +64,7 @@ class CheckSubscription
         if (!$this->featureService->canUse($entity, $featureCode)) {
             $usage = $this->featureService->getUsage($entity, $featureCode);
 
-            if ($request->expectsJson()) {
+            if ($wantsJson) {
                 return response()->json([
                     'status' => 'error',
                     'message' => __('Feature limit exceeded. Please upgrade your plan.'),
@@ -86,5 +87,19 @@ class CheckSubscription
 
         return $next($request);
     }
-}
 
+    /**
+     * Determine if request should receive JSON response
+     */
+    protected function wantsJson(Request $request): bool
+    {
+        $accepts = strtolower($request->header('accept', ''));
+        $contentType = strtolower($request->header('content-type', ''));
+
+        return $request->expectsJson()
+            || $request->ajax()
+            || $request->wantsJson()
+            || str_contains($accepts, 'application/json')
+            || str_contains($contentType, 'application/json');
+    }
+}

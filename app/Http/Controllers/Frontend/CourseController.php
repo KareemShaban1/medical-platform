@@ -9,9 +9,12 @@ use App\Models\Admin;
 use App\Notifications\Admin\NewCourseEnrollmentNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Traits\HandlesFeatureLimits;
 
 class CourseController extends Controller
 {
+	use HandlesFeatureLimits;
+
 	public function index(Request $request)
 	{
 		// Get initial courses with pagination
@@ -19,7 +22,7 @@ class CourseController extends Controller
 			->where('status', true)
 			->paginate(12);
 
-	
+
 
 		$levels = [
 			'beginner' => 'Beginner',
@@ -28,7 +31,7 @@ class CourseController extends Controller
 			'expert' => 'Expert'
 		];
 
-	
+
 		return view('frontend.pages.courses.index', compact(
 			'courses',
 			'levels',
@@ -57,9 +60,9 @@ class CourseController extends Controller
 		}
 
 
-		
 
-	
+
+
 
 		// Sort options
 		switch ($request->get('sort', 'newest')) {
@@ -86,7 +89,7 @@ class CourseController extends Controller
 		// Clone query to get total count without affecting the main query
 		$totalCount = (clone $query)->count();
 		$lastPage = max(1, (int) ceil($totalCount / $perPage));
-		
+
 		// Ensure current page doesn't exceed available pages
 		// If filters were applied and page is invalid, reset to page 1
 		if ($currentPage > $lastPage) {
@@ -142,8 +145,8 @@ class CourseController extends Controller
 			];
 		}
 
-	
-		
+
+
 		return $filters;
 	}
 
@@ -197,28 +200,46 @@ class CourseController extends Controller
         $course = Course::active()->where('status', true)->findOrFail($id);
         $clinicUserId = Auth::guard('clinic')->id();
 
-        $enrollment = CourseEnrollment::firstOrCreate(
-            [
-                'course_id' => $course->id,
-                'clinic_user_id' => $clinicUserId,
-            ],
-            [
-                'status' => 'pending',
-            ]
+        // If already enrolled, do not consume quota
+        $existingEnrollment = CourseEnrollment::where('course_id', $course->id)
+            ->where('clinic_user_id', $clinicUserId)
+            ->first();
+
+        if ($existingEnrollment) {
+            return response()->json([
+                'status' => 'success',
+                'message' => __('You are already enrolled in this course.'),
+                'enrollment' => $existingEnrollment,
+            ]);
+        }
+
+        $entity = $this->getAuthenticatedEntity();
+
+        $enrollment = $this->checkFeatureLimit(
+            $entity,
+            'enroll_courses',
+            function() use ($course, $clinicUserId) {
+                return CourseEnrollment::create([
+                    'course_id' => $course->id,
+                    'clinic_user_id' => $clinicUserId,
+                    'status' => 'approved',
+                ]);
+            }
         );
 
-        if ($enrollment->wasRecentlyCreated) {
-            // Notify all admins
-            Admin::query()->each(function ($admin) use ($enrollment) {
-                $admin->notify(new NewCourseEnrollmentNotification($enrollment));
-            });
+        // If middleware/limit returned a response, forward it
+        if ($enrollment instanceof \Symfony\Component\HttpFoundation\Response) {
+            return $enrollment;
         }
+
+        // Notify admins for new enrollment
+        Admin::query()->each(function ($admin) use ($enrollment) {
+            $admin->notify(new NewCourseEnrollmentNotification($enrollment));
+        });
 
         return response()->json([
             'status' => 'success',
-            'message' => $enrollment->wasRecentlyCreated
-                ? __('Enrollment submitted successfully and pending approval.')
-                : __('You are already enrolled in this course.'),
+            'message' => __('Enrollment submitted successfully and approved.'),
             'enrollment' => $enrollment
         ]);
     }
