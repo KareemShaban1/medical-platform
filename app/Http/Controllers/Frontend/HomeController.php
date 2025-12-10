@@ -64,7 +64,10 @@ class HomeController extends Controller
             );
         }
 
-        $availableGateways = $this->paymentGatewayManager->getAvailableGateways();
+        $availableGateways = collect($this->paymentGatewayManager->getAvailableGateways())
+            ->reject(fn($gateway) => $gateway['name'] === 'cod')
+            ->values()
+            ->toArray();
 
         // If AJAX request, return only the plans grid
         if ($request->ajax() || $request->wantsJson()) {
