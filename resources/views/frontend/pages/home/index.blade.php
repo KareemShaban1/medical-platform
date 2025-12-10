@@ -30,7 +30,7 @@
 			<div class="w-full px-4 lg:w-1/2 flex justify-end">
 				<div class="text-center lg:text-right"><a
 						class="font-semibold rounded-lg mx-auto inline-flex items-center justify-center bg-white py-4 px-9 hover:bg-opacity-90"
-						href="#">{{ __('create your first appointment') }}</a>
+						href="{{ route('doctors.index') }}">{{ __('create your first appointment') }}</a>
 				</div>
 			</div>
 		</div>
@@ -142,7 +142,7 @@
 				</p>
 			</div>
 
-			<a href="#" target="_blank"
+			<a href="{{ route('courses') }}"
 				class="group inline-flex items-center justify-center px-6 text-lg sm:text-xl font-semibold tracking-tight text-white transition rounded-lg h-11 ring-2 ring-inset ring-white hover:bg-yellow-200 hover:text-yellow-800 hover:ring-yellow-200 focus:ring-yellow-200 focus:text-yellow-800 focus:bg-yellow-200 focus:outline-none">
 				{{ __('find courses') }}
 			</a>

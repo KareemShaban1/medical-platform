@@ -2480,6 +2480,9 @@
     "Features": "Features",
     "My Account": "My Account",
     "Choose Your Plan" : "Choose Your Plan",
-    "Select the perfect subscription plan for your needs" : "Select the perfect subscription plan for your needs"
+    "Select the perfect subscription plan for your needs" : "Select the perfect subscription plan for your needs",
+    "Clinics Managemen" : "Clinics Management",
+    "Suppliers Management" : "Suppliers Management",
+    "System Data" : "System Data"
 
 }

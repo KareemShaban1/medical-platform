@@ -2535,5 +2535,8 @@
     "Features": "الميزات",
     "My Account": "حسابي",
     "Choose Your Plan": "اختر خطتك",
-    "Select the perfect subscription plan for your needs": "اختر خطة الاشتراك المثالية لاحتياجاتك"
+    "Select the perfect subscription plan for your needs": "اختر خطة الاشتراك المثالية لاحتياجاتك",
+    "Clinics Management" : "ادارة العيادات",
+    "Suppliers Management" : "ادارة الموردين",
+    "System Data" : "بيانات النظام"
 }

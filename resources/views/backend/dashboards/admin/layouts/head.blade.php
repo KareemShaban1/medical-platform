@@ -7,7 +7,7 @@
 	<meta name="csrf-token" content="{{ csrf_token() }}">
 
 	<!-- App favicon -->
-	<link rel="shortcut icon" href="{{asset('backend/assets/images/favicon.ico')}}">
+	<link rel="shortcut icon" href="{{asset('frontend/images/favicon/favicon-96x96.png')}}">
 
 	<!-- third party css -->
 	<link href="{{asset('backend/assets/css/vendor/jquery-jvectormap-1.2.2.css')}}" rel="stylesheet" type="text/css">
@@ -87,7 +87,7 @@
            border-radius: 4px;
            transition: background-color 0.2s ease;
          }
-		 
+
         </style>
 
 	<!-- Custom CSS -->
