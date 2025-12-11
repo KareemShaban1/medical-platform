@@ -6,6 +6,7 @@ use App\Interfaces\Admin\SupplierProductRepositoryInterface;
 use App\Models\Product;
 use App\Models\Supplier;
 use App\Notifications\Supplier\ProductApprovalStatusNotification;
+use App\Models\ModuleApprovement;
 use Illuminate\Support\Facades\DB;
 
 class SupplierProductRepository implements SupplierProductRepositoryInterface
@@ -96,10 +97,12 @@ class SupplierProductRepository implements SupplierProductRepositoryInterface
             $approval = $product->approvement;
 
             if (!$approval) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'No approval record found.'
-                ], 404);
+                // Create an approval record if missing
+                $approval = $product->approvement()->create([
+                    'action_by' => auth()->id(),
+                    'action' => 'pending',
+                    'notes' => null,
+                ]);
             }
 
             // Update approval
