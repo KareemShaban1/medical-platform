@@ -148,28 +148,40 @@ class SubscriptionManagementController extends Controller
 
         return DataTables::of($query)
             ->addColumn('entity_name', function ($subscription) {
+                $entity = $subscription->subscribable;
+                if (!$entity) {
+                    return '-';
+                }
+
                 if ($subscription->subscribable_type === 'App\Models\Clinic') {
-                    return $subscription->subscribable->name ?? '-';
+                    return $entity->name ?? '-';
                 } elseif ($subscription->subscribable_type === 'App\Models\ClinicUser') {
-                    return $subscription->subscribable->name . ($subscription->subscribable->clinic_id ? ' (Clinic User)' : ' (Standalone Doctor)');
+                    $label = $entity->clinic_id ? ' (Clinic User)' : ' (Standalone Doctor)';
+                    return ($entity->name ?? '-') . $label;
                 } elseif ($subscription->subscribable_type === 'App\Models\Supplier') {
-                    return $subscription->subscribable->name ?? '-';
+                    return $entity->name ?? '-';
                 }
                 return '-';
             })
             ->addColumn('entity_type', function ($subscription) {
                 $type = class_basename($subscription->subscribable_type);
+                $entity = $subscription->subscribable;
                 if ($type === 'Clinic') {
                     return 'Clinic';
                 } elseif ($type === 'ClinicUser') {
-                    return $subscription->subscribable->clinic_id ? 'Clinic User' : 'Standalone Doctor';
+                    $isClinicUser = $entity && $entity->clinic_id;
+                    return $isClinicUser ? 'Clinic User' : 'Standalone Doctor';
                 } elseif ($type === 'Supplier') {
                     return 'Supplier';
                 }
                 return $type;
             })
-            ->addColumn('plan_name', fn($sub) => $sub->plan->name ?? '-')
-            ->addColumn('plan_type', fn($sub) => $sub->plan->plan_type ?? '-')
+            ->addColumn('plan_name', function ($sub) {
+                return $sub->plan?->name ?? '-';
+            })
+            ->addColumn('plan_type', function ($sub) {
+                return $sub->plan?->plan_type ?? '-';
+            })
             ->editColumn('status', function ($subscription) {
                 $statusClass = 'bg-secondary';
                 if ($subscription->status === 'active') {
