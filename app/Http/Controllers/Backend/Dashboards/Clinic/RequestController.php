@@ -74,7 +74,7 @@ class RequestController extends Controller
     public function show($id)
     {
                      // apply permissions
-             abort_if(!hasPermission('view purchase request'), 403, __('You are not authorized to show purchase request'));
+             abort_if(!hasPermission('view purchase requests'), 403, __('You are not authorized to show purchase request'));
 
         try {
             $request = $this->requestRepository->show($id);
@@ -102,7 +102,7 @@ class RequestController extends Controller
 
     public function update(UpdateRequestRequest $request, $id)
     {
-        
+
         // apply permissions
         abort_if(!hasPermission('update purchase request'), 403, __('You are not authorized to update purchase request'));
 
@@ -201,7 +201,7 @@ class RequestController extends Controller
 
     public function invoice($offerId)
     {
-        
+
         // apply permissions
         abort_if(!hasPermission('view invoice'), 403, __('You are not authorized to view invoice'));
 
