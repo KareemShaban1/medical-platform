@@ -1161,7 +1161,7 @@ class PaymentController extends Controller
                         'payment_subscription_number',
                     ]);
 
-                    return redirect()->route('home', ['type' => $planType])
+                    return redirect()->route('home' .'#subscriptions-plans')
                         ->with('success', 'Payment processed successfully and subscription activated');
                 } catch (\Exception $e) {
                     DB::rollBack();
@@ -1170,7 +1170,7 @@ class PaymentController extends Controller
                         'pending_subscription' => $pendingSubscription,
                     ]);
 
-                    return redirect()->route('home', ['type' => $planType])
+                    return redirect()->route('home' .'#subscriptions-plans')
                         ->with('error', 'Payment successful but subscription creation failed. Please contact support.');
                 }
             }
