@@ -162,8 +162,24 @@ class SubscriptionController extends Controller
         try {
             DB::beginTransaction();
 
-            // Check if plan is free (price = 0)
-            $isFreePlan = $plan->price <= 0;
+            // Get current active subscription to calculate upgrade difference
+            $currentSubscription = $this->subscriptionService->getActiveSubscription($entity);
+            $currentPlanPrice = 0;
+            $isUpgrade = false;
+
+            if ($currentSubscription && $currentSubscription->plan) {
+                $currentPlanPrice = (float) $currentSubscription->plan->price;
+                // Check if this is an upgrade (new plan price > current plan price)
+                if ($plan->price > $currentPlanPrice) {
+                    $isUpgrade = true;
+                }
+            }
+
+            // Calculate payment amount: difference for upgrades, full price for new subscriptions
+            $paymentAmount = $isUpgrade ? max(0, $plan->price - $currentPlanPrice) : $plan->price;
+
+            // Check if plan is free (price = 0) or upgrade difference is 0
+            $isFreePlan = $plan->price <= 0 || $paymentAmount <= 0;
 
             // For free plans, use first available online gateway (paymob) but skip payment processing
             if ($isFreePlan) {
@@ -213,7 +229,7 @@ class SubscriptionController extends Controller
                 $lastName = $nameParts[1] ?? 'Name';
 
                 $paymentData = [
-                    'amount' => $plan->price,
+                    'amount' => $paymentAmount, // Use calculated difference for upgrades
                     'order_id' => null,
                     'order_number' => $subscriptionNumber,
                     'currency' => 'EGP',
@@ -291,7 +307,7 @@ class SubscriptionController extends Controller
                     $lastName = $nameParts[1] ?? 'Name';
 
                     $paymentData = [
-                        'amount' => $plan->price,
+                        'amount' => $paymentAmount, // Use calculated difference for upgrades
                         'order_id' => $subscription->id,
                         'order_number' => $subscriptionNumber,
                         'currency' => 'EGP',
