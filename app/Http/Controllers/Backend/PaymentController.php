@@ -1087,7 +1087,7 @@ class PaymentController extends Controller
             Log::error('Pending subscription data not found in session', [
                 'subscription_number' => $subscriptionNumber,
             ]);
-            return redirect()->route('home', ['type' => 'doctor'])
+            return redirect()->route('home' .'#subscriptions-plans')
                 ->with('error', 'Subscription session expired. Please try again.');
         }
 
@@ -1097,7 +1097,7 @@ class PaymentController extends Controller
                 'session_number' => $pendingSubscription['subscription_number'],
                 'request_number' => $subscriptionNumber,
             ]);
-            return redirect()->route('home', ['type' => 'doctor'])
+            return redirect()->route('home' .'#subscriptions-plans')
                 ->with('error', 'Invalid subscription request.');
         }
 
