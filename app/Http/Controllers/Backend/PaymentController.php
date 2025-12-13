@@ -1163,7 +1163,7 @@ class PaymentController extends Controller
                         'payment_subscription_number',
                     ]);
 
-                    return redirect()->route('home')
+                    return redirect()->route('home' , ['plan_type' => $planType])
                         ->withFragment('subscriptions-plans')
                         ->with('success', 'Payment processed successfully and subscription activated');
                 } catch (\Exception $e) {
@@ -1173,7 +1173,7 @@ class PaymentController extends Controller
                         'pending_subscription' => $pendingSubscription,
                     ]);
 
-                    return redirect()->route('home')
+                    return redirect()->route('home' , ['plan_type' => $planType])
                         ->withFragment('subscriptions-plans')
                         ->with('error', 'Payment successful but subscription creation failed. Please contact support.');
                 }
@@ -1193,7 +1193,7 @@ class PaymentController extends Controller
                 'payment_subscription_number',
             ]);
 
-            return redirect()->route('home')
+            return redirect()->route('home' , ['plan_type' => $planType])
                 ->withFragment('subscriptions-plans')
                 ->with('error', $errorMessage);
         }
@@ -1237,7 +1237,7 @@ class PaymentController extends Controller
                     'payment_subscription_number',
                 ]);
 
-                return redirect()->route('home')
+                return redirect()->route('home' , ['plan_type' => $planType])
                     ->withFragment('subscriptions-plans')
                     ->with('success', 'Payment processed successfully and subscription activated');
             } catch (\Exception $e) {
@@ -1247,7 +1247,7 @@ class PaymentController extends Controller
                     'pending_subscription' => $pendingSubscription,
                 ]);
 
-                return redirect()->route('home')
+                return redirect()->route('home' , ['plan_type' => $planType])
                     ->withFragment('subscriptions-plans')
                     ->with('error', 'Payment successful but subscription creation failed. Please contact support.');
             }
@@ -1268,7 +1268,7 @@ class PaymentController extends Controller
             'payment_subscription_number',
         ]);
 
-        return redirect()->route('home')
+        return redirect()->route('home' , ['plan_type' => $planType])
             ->withFragment('subscriptions-plans')
             ->with('error', $errorMessage);
     }
