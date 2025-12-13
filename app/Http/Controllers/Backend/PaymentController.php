@@ -1089,7 +1089,7 @@ class PaymentController extends Controller
             ]);
             return redirect()->route('home')
                 ->withFragment('subscriptions-plans')
-                ->with('error', 'Subscription session expired. Please try again.');
+                ->with(['success' => false, 'message' => 'Subscription session expired. Please try again.']);
         }
 
         // Verify subscription number matches
@@ -1100,7 +1100,7 @@ class PaymentController extends Controller
             ]);
             return redirect()->route('home')
                 ->withFragment('subscriptions-plans')
-                ->with('error', 'Invalid subscription request.');
+                ->with(['success' => false, 'message' => 'Invalid subscription request.']);
         }
 
         // Verify payment with gateway
@@ -1165,7 +1165,7 @@ class PaymentController extends Controller
 
                     return redirect()->route('home' , ['plan_type' => $planType])
                         ->withFragment('subscriptions-plans')
-                        ->with('success', 'Payment processed successfully and subscription activated');
+                        ->with(['success' => true , 'message' => 'Payment processed successfully and subscription activated']);
                 } catch (\Exception $e) {
                     DB::rollBack();
                     Log::error('Failed to create subscription after payment', [
@@ -1175,7 +1175,7 @@ class PaymentController extends Controller
 
                     return redirect()->route('home' , ['plan_type' => $planType])
                         ->withFragment('subscriptions-plans')
-                        ->with('error', 'Payment successful but subscription creation failed. Please contact support.');
+                        ->with(['success' => false, 'message' => 'Payment successful but subscription creation failed. Please contact support.']);
                 }
             }
 
@@ -1195,7 +1195,7 @@ class PaymentController extends Controller
 
             return redirect()->route('home' , ['plan_type' => $planType])
                 ->withFragment('subscriptions-plans')
-                ->with('error', $errorMessage);
+                ->with(['success' => false, 'message' => $errorMessage]);
         }
 
         // For other gateways, use verifyPayment
@@ -1239,7 +1239,7 @@ class PaymentController extends Controller
 
                 return redirect()->route('home' , ['plan_type' => $planType])
                     ->withFragment('subscriptions-plans')
-                    ->with('success', 'Payment processed successfully and subscription activated');
+                    ->with(['success' => true, 'message' => 'Payment processed successfully and subscription activated']);
             } catch (\Exception $e) {
                 DB::rollBack();
                 Log::error('Failed to create subscription after payment', [
@@ -1249,7 +1249,7 @@ class PaymentController extends Controller
 
                 return redirect()->route('home' , ['plan_type' => $planType])
                     ->withFragment('subscriptions-plans')
-                    ->with('error', 'Payment successful but subscription creation failed. Please contact support.');
+                    ->with(['success' => false, 'message' => 'Payment successful but subscription creation failed. Please contact support.']);
             }
         }
 
@@ -1270,7 +1270,7 @@ class PaymentController extends Controller
 
         return redirect()->route('home' , ['plan_type' => $planType])
             ->withFragment('subscriptions-plans')
-            ->with('error', $errorMessage);
+            ->with(['success' => false, 'message' => $errorMessage]);
     }
 
     /**
