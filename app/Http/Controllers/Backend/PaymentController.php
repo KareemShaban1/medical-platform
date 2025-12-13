@@ -53,7 +53,7 @@ class PaymentController extends Controller
         // Extract error message from various possible locations
         $errorMessage = null;
         $hmacError = false;
-        
+
         // Check Paymob specific error fields first (before HMAC verification)
         // Paymob can return error messages in data_message field
         if (isset($paymentData['data_message']) && !empty($paymentData['data_message'])) {
@@ -71,11 +71,11 @@ class PaymentController extends Controller
         // Check for error codes - Paymob provides response codes
         $errorCode = $paymentData['acq_response_code']  // Acquirer response code (most important)
             ?? $paymentData['txn_response_code']  // Transaction response code
-            ?? $paymentData['error_code'] 
-            ?? $paymentData['data']['error_code'] 
-            ?? $paymentData['obj']['data']['error_code'] 
+            ?? $paymentData['error_code']
+            ?? $paymentData['data']['error_code']
+            ?? $paymentData['obj']['data']['error_code']
             ?? null;
-        
+
         // Map response codes to human-readable messages if available
         $responseCodeMessage = null;
         if ($paymentData['acq_response_code'] ?? null) {
@@ -83,15 +83,15 @@ class PaymentController extends Controller
         } elseif ($paymentData['txn_response_code'] ?? null) {
             $responseCodeMessage = $this->getPaymobResponseCodeMessage($paymentData['txn_response_code']);
         }
-        
+
         // Use response code message if no other error message found
         if (!$errorMessage && $responseCodeMessage) {
             $errorMessage = $responseCodeMessage;
         }
 
         // Check transaction status for clues
-        $status = $paymentData['status'] 
-            ?? $paymentData['obj']['status'] 
+        $status = $paymentData['status']
+            ?? $paymentData['obj']['status']
             ?? null;
 
         // Check if card was declined
@@ -101,36 +101,36 @@ class PaymentController extends Controller
         // For Paymob, try to fetch detailed transaction info from API if we have transaction ID
         $transactionId = $paymentData['id'] ?? $paymentData['transaction_id'] ?? null;
         $analysis = null;
-        
+
         if ($gatewayInstance && $transactionId && $errorOccurred) {
             try {
                 // Try to get detailed transaction info from Paymob API
                 if (method_exists($gatewayInstance, 'getTransactionDetails')) {
                     $transactionDetails = $gatewayInstance->getTransactionDetails((string)$transactionId);
-                    
+
                     if ($transactionDetails) {
                         // Extract error information from transaction details
-                        $apiErrorMessage = $transactionDetails['data']['message'] 
-                            ?? $transactionDetails['message'] 
-                            ?? $transactionDetails['error_message'] 
+                        $apiErrorMessage = $transactionDetails['data']['message']
+                            ?? $transactionDetails['message']
+                            ?? $transactionDetails['error_message']
                             ?? null;
-                        
-                        $apiErrorCode = $transactionDetails['data']['error_code'] 
-                            ?? $transactionDetails['error_code'] 
+
+                        $apiErrorCode = $transactionDetails['data']['error_code']
+                            ?? $transactionDetails['error_code']
                             ?? $transactionDetails['data']['transaction_error_code']
                             ?? $transactionDetails['transaction_error_code']
                             ?? null;
-                        
+
                         // Always analyze transaction details to infer failure reason
                         $analysis = $this->analyzePaymobTransactionFailure($transactionDetails);
-                        
+
                         // Use API error message if available, otherwise use analysis
                         if ($apiErrorMessage) {
                             $errorMessage = $apiErrorMessage;
                         } elseif ($analysis['inferred_reason']) {
                             $errorMessage = $analysis['inferred_reason'];
                         }
-                        
+
                         // Use API error code if available, otherwise use analysis
                         if ($apiErrorCode) {
                             $errorCode = $apiErrorCode;
@@ -139,22 +139,22 @@ class PaymentController extends Controller
                             $errorCode = $analysis['error_code'];
                             $errorDetails['error_code'] = $analysis['error_code'];
                         }
-                        
+
                         // Always store analysis in error details for tracking
                         $errorDetails['analysis'] = $analysis;
                         $errorDetails['transaction_analysis'] = [
                             'payment_status' => $transactionDetails['order']['payment_status'] ?? null,
                             'is_3d_secure' => $transactionDetails['is_3d_secure'] ?? false,
                             'card_type' => $transactionDetails['card_type'] ?? null,
-                            'card_pan' => isset($transactionDetails['source_data']['pan']) 
-                                ? substr($transactionDetails['source_data']['pan'], -4) 
+                            'card_pan' => isset($transactionDetails['source_data']['pan'])
+                                ? substr($transactionDetails['source_data']['pan'], -4)
                                 : null,
                             'payment_method' => $transactionDetails['order']['payment_method'] ?? null,
                             'is_voided' => $transactionDetails['is_voided'] ?? false,
                             'is_refunded' => $transactionDetails['is_refunded'] ?? false,
                             'amount_cents' => $transactionDetails['amount_cents'] ?? null,
                         ];
-                        
+
                         // Log the detailed transaction info with analysis
                         Log::info('Paymob transaction details retrieved with analysis', [
                             'transaction_id' => $transactionId,
@@ -314,7 +314,7 @@ class PaymentController extends Controller
                 }
             }
         }
-        
+
         if ($isTestCard) {
             $analysis['indicators'][] = 'Test card detected (PAN: ' . $pan . ')';
             $analysis['inferred_reason'] = 'Payment failed. Test cards may not work in production. Please use a real card for payment.';
@@ -346,14 +346,14 @@ class PaymentController extends Controller
         $require3DSecure = config('payment_gateways.paymob.require_3d_secure', true);
         $is3DSecure = $transactionDetails['is_3d_secure'] ?? false;
         $sourceType = $transactionDetails['source_data']['type'] ?? null;
-        
+
         if ($paymentMethod === 'tbc' || $paymentMethod === null) {
             $analysis['indicators'][] = 'Payment method not finalized';
             if (!$analysis['inferred_reason']) {
                 // Payment method not finalized - this is a strong indicator of failure
                 $message = 'Payment failed. The payment method was not finalized. This usually means: ';
                 $causes = [];
-                
+
                 // Only include 3D Secure if it's required and not completed
                 if (!$is3DSecure && $sourceType === 'card' && $require3DSecure) {
                     $causes[] = '3D Secure authentication was not completed';
@@ -362,10 +362,10 @@ class PaymentController extends Controller
                 $causes[] = 'Insufficient funds';
                 $causes[] = 'Card details are incorrect or card is expired';
                 $causes[] = 'Bank security restrictions blocked the transaction';
-                
+
                 $message .= implode(', ', $causes) . '. ';
                 $message .= 'Please verify your card details, ensure sufficient funds, and try again. If the issue persists, contact your bank.';
-                
+
                 $analysis['inferred_reason'] = $message;
                 $analysis['confidence'] = 'high';
             }
@@ -417,26 +417,26 @@ class PaymentController extends Controller
             // Build detailed failure reason based on available indicators
             $reasons = [];
             $require3DSecure = config('payment_gateways.paymob.require_3d_secure', true);
-            
+
             if ($paymentStatus === 'UNPAID') {
                 $reasons[] = 'Payment status: UNPAID';
             }
-            
+
             // Only include 3D Secure as a reason if it's required
             if (!$is3DSecure && $sourceType === 'card' && $require3DSecure) {
                 $reasons[] = '3D Secure authentication not completed';
             }
-            
+
             if ($paymentMethod === 'tbc' || $paymentMethod === null) {
                 $reasons[] = 'Payment method not finalized (tbc)';
             }
-            
+
             // Build comprehensive message - prioritize payment_method: tbc as most specific indicator
             if ($paymentMethod === 'tbc' || $paymentMethod === null) {
                 // Payment method not finalized - this is a strong indicator of failure
                 $message = 'Payment failed. The payment method was not finalized. This usually means: ';
                 $causes = [];
-                
+
                 if (!$is3DSecure && $sourceType === 'card' && $require3DSecure) {
                     $causes[] = '3D Secure authentication was not completed';
                 }
@@ -444,15 +444,15 @@ class PaymentController extends Controller
                 $causes[] = 'Insufficient funds';
                 $causes[] = 'Card details are incorrect or card is expired';
                 $causes[] = 'Bank security restrictions blocked the transaction';
-                
+
                 $message .= implode(', ', $causes) . '. ';
                 $message .= 'Please verify your card details, ensure sufficient funds, and try again. If the issue persists, contact your bank.';
-                
+
                 $analysis['inferred_reason'] = $message;
                 $analysis['confidence'] = 'high';
             } elseif ($paymentStatus === 'UNPAID' && !$is3DSecure && $require3DSecure) {
                 // UNPAID with missing 3D Secure (when required)
-                $analysis['inferred_reason'] = 'Payment failed. The transaction was not completed. Likely causes: ' . 
+                $analysis['inferred_reason'] = 'Payment failed. The transaction was not completed. Likely causes: ' .
                     '1) 3D Secure authentication was not completed, ' .
                     '2) Insufficient funds, ' .
                     '3) Card declined by bank, or ' .
@@ -474,7 +474,7 @@ class PaymentController extends Controller
                     'If the problem persists, contact support with transaction ID: ' . ($transactionDetails['id'] ?? 'N/A');
                 $analysis['confidence'] = 'low';
             }
-            
+
             // Add all indicators to the analysis
             if (!empty($reasons)) {
                 $analysis['indicators'] = array_merge($analysis['indicators'], $reasons);
@@ -493,10 +493,10 @@ class PaymentController extends Controller
         if ($fallbackMessage && strlen($fallbackMessage) <= 150) {
             return $fallbackMessage;
         }
-        
+
         // Priority 2: Extract concise message from error_details
         $errorMessage = $errorDetails['error_message'] ?? null;
-        
+
         if ($errorMessage) {
             // If message is too long, extract the first sentence or truncate
             if (strlen($errorMessage) > 150) {
@@ -510,7 +510,7 @@ class PaymentController extends Controller
             }
             return $errorMessage;
         }
-        
+
         // Priority 3: Use inferred reason from analysis if available
         $inferredReason = $errorDetails['analysis']['inferred_reason'] ?? null;
         if ($inferredReason) {
@@ -524,7 +524,7 @@ class PaymentController extends Controller
             }
             return $inferredReason;
         }
-        
+
         // Priority 4: Build message based on error type
         if ($errorDetails['error_occurred'] ?? false) {
             if ($errorDetails['error_type'] === 'declined') {
@@ -535,13 +535,13 @@ class PaymentController extends Controller
                 return 'Payment failed. Please try again or contact support.';
             }
         }
-        
+
         // Priority 5: Check response codes
         $responseCodes = $errorDetails['response_codes'] ?? [];
         if (!empty($responseCodes['response_code_message'])) {
             return $responseCodes['response_code_message'];
         }
-        
+
         // Default fallback
         return $fallbackMessage ?? 'Payment failed. Please try again.';
     }
@@ -556,7 +556,7 @@ class PaymentController extends Controller
             // Approved
             'APPROVED' => 'Payment approved',
             '00' => 'Payment approved',
-            
+
             // Declined codes
             '05' => 'Payment declined - Do not honor',
             '14' => 'Payment declined - Invalid card number',
@@ -568,23 +568,23 @@ class PaymentController extends Controller
             '65' => 'Payment declined - Exceeds withdrawal frequency',
             '91' => 'Payment declined - Issuer or switch is inoperative',
             '96' => 'Payment declined - System malfunction',
-            
+
             // 3D Secure related
             'AUTHENTICATION_FAILED' => '3D Secure authentication failed',
             'AUTHENTICATION_CANCELLED' => '3D Secure authentication was cancelled',
-            
+
             // General errors
             'INVALID_CARD' => 'Invalid card number',
             'INSUFFICIENT_FUNDS' => 'Insufficient funds',
             'CARD_EXPIRED' => 'Card expired',
             'CARD_DECLINED' => 'Card declined by bank',
         ];
-        
+
         // Check exact match first
         if (isset($codeMessages[$code])) {
             return $codeMessages[$code];
         }
-        
+
         // Check if code contains known patterns
         $codeUpper = strtoupper($code);
         foreach ($codeMessages as $pattern => $message) {
@@ -592,7 +592,7 @@ class PaymentController extends Controller
                 return $message;
             }
         }
-        
+
         // Return null if no match found
         return null;
     }
@@ -677,13 +677,13 @@ class PaymentController extends Controller
         // Paymob can return data via query params (redirect) or POST body
         $successValue = $paymentData['success'] ?? $request->get('success');
         $errorOccurred = $paymentData['error_occured'] ?? $paymentData['error_occurred'] ?? $request->get('error_occured') ?? $request->get('error_occurred');
-        
+
         // Check for various possible success indicators
         $success = $successValue === 'true'
             || $successValue === true
             || $successValue === '1'
             || $request->get('txn_response_code') === 'APPROVED';
-        
+
         // If error_occured is true, payment definitely failed
         if ($errorOccurred === 'true' || $errorOccurred === true || $errorOccurred === '1') {
             $success = false;
@@ -691,7 +691,7 @@ class PaymentController extends Controller
 
         if ($gateway === 'paymob') {
             // Get transaction ID from various possible fields
-            $transactionId = $paymentData['id'] 
+            $transactionId = $paymentData['id']
                 ?? $paymentData['transaction_id']
                 ?? $request->get('id')
                 ?? $request->get('transaction_id')
@@ -764,7 +764,7 @@ class PaymentController extends Controller
 
             // If payment failed, extract error details and restore stock
             $errorDetails = $this->extractPaymentError($paymentData, $gatewayInstance);
-            
+
             // Log comprehensive error details for debugging
             Log::error('Payment failed (order)', [
                 'order_id' => $order->id,
@@ -777,10 +777,10 @@ class PaymentController extends Controller
                     'amount_cents' => $paymentData['amount_cents'] ?? null,
                 ],
             ]);
-            
+
             // Build user-friendly error message for toast (concise)
             $errorMessage = $this->buildUserFriendlyErrorMessage($errorDetails);
-            
+
             $order->update([
                 'payment_status' => 'failed',
             ]);
@@ -814,7 +814,7 @@ class PaymentController extends Controller
 
         // Extract error details for logging
         $errorDetails = $this->extractPaymentError($paymentData, $gatewayInstance);
-        
+
         // Log comprehensive error details
         Log::error('Payment failed (order - other gateway)', [
             'order_id' => $order->id,
@@ -827,10 +827,10 @@ class PaymentController extends Controller
                 'transaction_id' => $paymentResponse->transactionId,
             ],
         ]);
-        
+
         // Build user-friendly error message for toast (concise)
         $errorMessage = $this->buildUserFriendlyErrorMessage($errorDetails, $paymentResponse->message);
-        
+
         $order->update([
             'payment_status' => 'failed',
         ]);
@@ -854,7 +854,7 @@ class PaymentController extends Controller
             return redirect()->route('clinic.requests.index')
                 ->with('error', 'Invalid order number format');
         }
-        
+
         $offerId = $parts[1]; // The offer ID is the second part
         $offer = Offer::find($offerId);
 
@@ -880,13 +880,13 @@ class PaymentController extends Controller
         // Paymob can return data via query params (redirect) or POST body
         $successValue = $paymentData['success'] ?? $request->get('success');
         $errorOccurred = $paymentData['error_occured'] ?? $paymentData['error_occurred'] ?? $request->get('error_occured') ?? $request->get('error_occurred');
-        
+
         // Check for various possible success indicators
         $success = $successValue === 'true'
             || $successValue === true
             || $successValue === '1'
             || $request->get('txn_response_code') === 'APPROVED';
-        
+
         // If error_occured is true, payment definitely failed
         if ($errorOccurred === 'true' || $errorOccurred === true || $errorOccurred === '1') {
             $success = false;
@@ -894,7 +894,7 @@ class PaymentController extends Controller
 
         if ($gateway === 'paymob') {
             // Get transaction ID from various possible fields
-            $transactionId = $paymentData['id'] 
+            $transactionId = $paymentData['id']
                 ?? $paymentData['transaction_id']
                 ?? $request->get('id')
                 ?? $request->get('transaction_id')
@@ -970,7 +970,7 @@ class PaymentController extends Controller
 
             // If payment failed, extract error details and mark offer payment as failed
             $errorDetails = $this->extractPaymentError($paymentData, $gatewayInstance);
-            
+
             // Log comprehensive error details for debugging with analysis prominently displayed
             Log::error('Payment failed (offer)', [
                 'offer_id' => $offerId,
@@ -992,10 +992,10 @@ class PaymentController extends Controller
                     'amount_cents' => $paymentData['amount_cents'] ?? null,
                 ],
             ]);
-            
+
             // Build user-friendly error message for toast (concise)
             $errorMessage = $this->buildUserFriendlyErrorMessage($errorDetails);
-            
+
             $offer->update([
                 'payment_status' => 'failed',
             ]);
@@ -1040,7 +1040,7 @@ class PaymentController extends Controller
 
         // If payment failed, extract error details
         $errorDetails = $this->extractPaymentError($paymentData, $gatewayInstance);
-        
+
         // Log comprehensive error details
         Log::error('Payment failed (offer - other gateway)', [
             'offer_id' => $offerId,
@@ -1053,10 +1053,10 @@ class PaymentController extends Controller
                 'transaction_id' => $paymentResponse->transactionId,
             ],
         ]);
-        
+
         // Build user-friendly error message for toast (concise)
         $errorMessage = $this->buildUserFriendlyErrorMessage($errorDetails, $paymentResponse->message);
-        
+
         // Mark offer payment as failed
         $offer->update([
             'payment_status' => 'failed',
@@ -1082,12 +1082,12 @@ class PaymentController extends Controller
     {
         // Get pending subscription data from session
         $pendingSubscription = session()->get('pending_subscription');
-        
+
         if (!$pendingSubscription) {
             Log::error('Pending subscription data not found in session', [
                 'subscription_number' => $subscriptionNumber,
             ]);
-            return redirect()->route('subscriptions.plans', ['type' => 'doctor'])
+            return redirect()->route('home', ['type' => 'doctor'])
                 ->with('error', 'Subscription session expired. Please try again.');
         }
 
@@ -1097,7 +1097,7 @@ class PaymentController extends Controller
                 'session_number' => $pendingSubscription['subscription_number'],
                 'request_number' => $subscriptionNumber,
             ]);
-            return redirect()->route('subscriptions.plans', ['type' => 'doctor'])
+            return redirect()->route('home', ['type' => 'doctor'])
                 ->with('error', 'Invalid subscription request.');
         }
 
@@ -1107,12 +1107,12 @@ class PaymentController extends Controller
         // For Paymob, check if payment was successful
         $successValue = $paymentData['success'] ?? $request->get('success');
         $errorOccurred = $paymentData['error_occured'] ?? $paymentData['error_occurred'] ?? $request->get('error_occured') ?? $request->get('error_occurred');
-        
+
         $success = $successValue === 'true'
             || $successValue === true
             || $successValue === '1'
             || $request->get('txn_response_code') === 'APPROVED';
-        
+
         if ($errorOccurred === 'true' || $errorOccurred === true || $errorOccurred === '1') {
             $success = false;
         }
@@ -1161,7 +1161,7 @@ class PaymentController extends Controller
                         'payment_subscription_number',
                     ]);
 
-                    return redirect()->route('subscriptions.plans', ['type' => $planType])
+                    return redirect()->route('home', ['type' => $planType])
                         ->with('success', 'Payment processed successfully and subscription activated');
                 } catch (\Exception $e) {
                     DB::rollBack();
@@ -1170,7 +1170,7 @@ class PaymentController extends Controller
                         'pending_subscription' => $pendingSubscription,
                     ]);
 
-                    return redirect()->route('subscriptions.plans', ['type' => $planType])
+                    return redirect()->route('home', ['type' => $planType])
                         ->with('error', 'Payment successful but subscription creation failed. Please contact support.');
                 }
             }
@@ -1178,7 +1178,7 @@ class PaymentController extends Controller
             // If payment failed
             $errorDetails = $this->extractPaymentError($paymentData, $gatewayInstance);
             $errorMessage = $this->buildUserFriendlyErrorMessage($errorDetails);
-            
+
             Log::error('Payment failed (subscription)', [
                 'subscription_number' => $subscriptionNumber,
                 'error_details' => $errorDetails,
@@ -1189,7 +1189,7 @@ class PaymentController extends Controller
                 'payment_subscription_number',
             ]);
 
-            return redirect()->route('subscriptions.plans', ['type' => $planType])
+            return redirect()->route('home', ['type' => $planType])
                 ->with('error', $errorMessage);
         }
 
@@ -1232,7 +1232,7 @@ class PaymentController extends Controller
                     'payment_subscription_number',
                 ]);
 
-                return redirect()->route('subscriptions.plans', ['type' => $planType])
+                return redirect()->route('home', ['type' => $planType])
                     ->with('success', 'Payment processed successfully and subscription activated');
             } catch (\Exception $e) {
                 DB::rollBack();
@@ -1241,7 +1241,7 @@ class PaymentController extends Controller
                     'pending_subscription' => $pendingSubscription,
                 ]);
 
-                return redirect()->route('subscriptions.plans', ['type' => $planType])
+                return redirect()->route('home', ['type' => $planType])
                     ->with('error', 'Payment successful but subscription creation failed. Please contact support.');
             }
         }
@@ -1249,7 +1249,7 @@ class PaymentController extends Controller
         // If payment failed
         $errorDetails = $this->extractPaymentError($paymentData, $gatewayInstance);
         $errorMessage = $this->buildUserFriendlyErrorMessage($errorDetails, $paymentResponse->message);
-        
+
         Log::error('Payment failed (subscription - other gateway)', [
             'subscription_number' => $subscriptionNumber,
             'gateway' => $gateway,
@@ -1261,7 +1261,7 @@ class PaymentController extends Controller
             'payment_subscription_number',
         ]);
 
-        return redirect()->route('subscriptions.plans', ['type' => $planType])
+        return redirect()->route('home', ['type' => $planType])
             ->with('error', $errorMessage);
     }
 
@@ -1273,7 +1273,7 @@ class PaymentController extends Controller
         try {
             // Get the requesting user based on subscribable type or pending data
             $requestingUser = null;
-            
+
             if ($pendingData) {
                 // Use pending data to get requesting user
                 $requestingUserClass = $pendingData['requesting_user_type'] ?? null;
@@ -1282,7 +1282,7 @@ class PaymentController extends Controller
                     $requestingUser = $requestingUserClass::find($requestingUserId);
                 }
             }
-            
+
             // Fallback to entity-based lookup
             if (!$requestingUser) {
                 if ($subscription->subscribable_type === \App\Models\ClinicUser::class) {
@@ -1338,12 +1338,12 @@ class PaymentController extends Controller
             // Find order or subscription by transaction ID
             $order = null;
             $subscription = null;
-            
+
             if ($paymentResponse->transactionId) {
                 $order = Order::where('transaction_id', $paymentResponse->transactionId)
                     ->orWhere('payment_gateway', $gateway)
                     ->first();
-                    
+
                 $subscription = Subscription::where('transaction_id', $paymentResponse->transactionId)
                     ->orWhere('payment_gateway', $gateway)
                     ->first();
