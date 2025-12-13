@@ -74,23 +74,6 @@ class SubscriptionController extends Controller
             ], 400);
         }
 
-        // Validate payment gateway
-        $request->validate([
-            'payment_gateway' => 'required|string|in:'.implode(',', PaymentGateway::values()),
-            'pay_method' => 'nullable|string|in:card,wallet',
-            'wallet_phone' => 'nullable|string|regex:/^01[0-9]{9}$/',
-        ]);
-
-        // Additional validation: wallet phone required when paymob wallet is selected
-        if ($request->payment_gateway === 'paymob' && $request->pay_method === 'wallet') {
-            $request->validate([
-                'wallet_phone' => 'required|string|regex:/^01[0-9]{9}$/',
-            ], [
-                'wallet_phone.required' => __('Wallet phone is required for wallet payments'),
-                'wallet_phone.regex' => __('Wallet phone must be a valid Egyptian mobile number (01XXXXXXXXX)'),
-            ]);
-        }
-
         try {
             $plan = Plan::findOrFail($planId);
         } catch (\Exception $e) {
@@ -98,6 +81,28 @@ class SubscriptionController extends Controller
                 'status' => 'error',
                 'message' => __('Plan not found')
             ], 404);
+        }
+
+        // For free plans, payment gateway validation is not required (will use online gateway)
+        $isFreePlan = $plan->price <= 0;
+
+        if (!$isFreePlan) {
+            // Validate payment gateway for paid plans
+            $request->validate([
+                'payment_gateway' => 'required|string|in:'.implode(',', PaymentGateway::values()),
+                'pay_method' => 'nullable|string|in:card,wallet',
+                'wallet_phone' => 'nullable|string|regex:/^01[0-9]{9}$/',
+            ]);
+
+            // Additional validation: wallet phone required when paymob wallet is selected
+            if ($request->payment_gateway === 'paymob' && $request->pay_method === 'wallet') {
+                $request->validate([
+                    'wallet_phone' => 'required|string|regex:/^01[0-9]{9}$/',
+                ], [
+                    'wallet_phone.required' => __('Wallet phone is required for wallet payments'),
+                    'wallet_phone.regex' => __('Wallet phone must be a valid Egyptian mobile number (01XXXXXXXXX)'),
+                ]);
+            }
         }
 
         // Determine entity based on plan type and auth
@@ -157,8 +162,20 @@ class SubscriptionController extends Controller
         try {
             DB::beginTransaction();
 
-            // Get payment gateway
-            $gatewayName = $request->payment_gateway;
+            // Check if plan is free (price = 0)
+            $isFreePlan = $plan->price <= 0;
+
+            // For free plans, use first available online gateway (paymob) but skip payment processing
+            if ($isFreePlan) {
+                // Get first available online gateway (excluding COD)
+                $availableGateways = $this->paymentGatewayManager->getAvailableGateways();
+                $onlineGateway = collect($availableGateways)->firstWhere('name', '!=', 'cod');
+                $gatewayName = $onlineGateway ? $onlineGateway['name'] : 'paymob';
+            } else {
+                // Get payment gateway from request
+                $gatewayName = $request->payment_gateway;
+            }
+
             $gateway = $this->paymentGatewayManager->gateway($gatewayName);
             $payMethod = $request->input('pay_method', 'card');
             $walletPhone = $request->input('wallet_phone');
@@ -174,9 +191,10 @@ class SubscriptionController extends Controller
             // Generate subscription number (SUB-XXXXXX)
             $subscriptionNumber = 'SUB-' . strtoupper(uniqid());
 
-            // For online payment gateways, don't create subscription until payment is confirmed
-            // For COD, create subscription immediately
-            $isOnlinePayment = $gatewayName !== 'cod';
+            // For free plans, create subscription immediately (skip payment API call)
+            // For paid COD, create subscription immediately
+            // For paid online payment gateways, don't create subscription until payment is confirmed
+            $isOnlinePayment = !$isFreePlan && $gatewayName !== 'cod';
             $paymentResponse = null;
 
             if ($isOnlinePayment) {
@@ -252,52 +270,58 @@ class SubscriptionController extends Controller
                     'requires_payment' => true,
                 ]);
             } else {
-                // For COD, create subscription immediately
+                // For COD or free plans, create subscription immediately
+                // For free plans: use online gateway but skip payment API call
+                // For COD: process payment normally
                 $subscription = $this->subscriptionService->subscribe($entity, $plan, [
                     'status' => 'active',
                     'auto_renew' => $request->boolean('auto_renew', false),
                     'preserve_dates' => true,
-                    'payment_method' => 0, // COD
+                    'payment_method' => $isFreePlan ? 1 : 0, // Online payment for free plans, COD for paid
                     'payment_status' => 'paid',
-                    'payment_gateway' => 'cod',
-                    'transaction_id' => null,
+                    'payment_gateway' => $gatewayName,
+                    'transaction_id' => $isFreePlan ? 'FREE-' . $subscriptionNumber : null,
                 ]);
 
-                // Process COD payment
-                $nameParts = explode(' ', $requestingUser->name ?? 'Customer', 2);
-                $firstName = $nameParts[0] ?? 'Customer';
-                $lastName = $nameParts[1] ?? 'Name';
+                // Only process payment if plan is not free (for COD)
+                if (!$isFreePlan && $gatewayName === 'cod') {
+                    // Process COD payment
+                    $nameParts = explode(' ', $requestingUser->name ?? 'Customer', 2);
+                    $firstName = $nameParts[0] ?? 'Customer';
+                    $lastName = $nameParts[1] ?? 'Name';
 
-                $paymentData = [
-                    'amount' => $plan->price,
-                    'order_id' => $subscription->id,
-                    'order_number' => $subscriptionNumber,
-                    'currency' => 'EGP',
-                    'customer' => [
-                        'first_name' => $firstName,
-                        'last_name' => $lastName,
-                        'email' => $requestingUser->email ?? 'customer@example.com',
-                        'phone' => $requestingUser->phone ?? '01000000000',
-                        'city' => 'Cairo',
-                        'country' => 'EG',
-                        'street' => ($entity instanceof \App\Models\Clinic ? $entity->address : 'NA') ?? 'NA',
-                        'building' => 'NA',
-                        'apartment' => 'NA',
-                        'floor' => 'NA',
-                        'postal_code' => 'NA',
-                        'state' => 'NA',
-                    ],
-                ];
+                    $paymentData = [
+                        'amount' => $plan->price,
+                        'order_id' => $subscription->id,
+                        'order_number' => $subscriptionNumber,
+                        'currency' => 'EGP',
+                        'customer' => [
+                            'first_name' => $firstName,
+                            'last_name' => $lastName,
+                            'email' => $requestingUser->email ?? 'customer@example.com',
+                            'phone' => $requestingUser->phone ?? '01000000000',
+                            'city' => 'Cairo',
+                            'country' => 'EG',
+                            'street' => ($entity instanceof \App\Models\Clinic ? $entity->address : 'NA') ?? 'NA',
+                            'building' => 'NA',
+                            'apartment' => 'NA',
+                            'floor' => 'NA',
+                            'postal_code' => 'NA',
+                            'state' => 'NA',
+                        ],
+                    ];
 
-                $paymentResponse = $gateway->processPayment($paymentData);
+                    $paymentResponse = $gateway->processPayment($paymentData);
 
-                if (!$paymentResponse->success) {
-                    throw new \Exception($paymentResponse->message);
+                    if (!$paymentResponse->success) {
+                        throw new \Exception($paymentResponse->message);
+                    }
                 }
+                // For free plans: skip payment API call (amount is 0, payment gateway doesn't allow 0 cost orders)
 
                 DB::commit();
 
-                // Send notifications for COD (paid immediately)
+                // Send notifications (paid immediately for COD and free plans)
                 if ($requestingUser && !empty($requestingUser->email)) {
                     Mail::to($requestingUser->email)->send(new SubscriptionCreatedUserMail($subscription));
                 }
@@ -314,7 +338,7 @@ class SubscriptionController extends Controller
                     Notification::send($admins, new SubscriptionCreatedNotification($subscription, true));
 
                     Log::info('subscription.db_notification.admin', [
-                        'context' => 'frontend_subscribe_cod',
+                        'context' => $isFreePlan ? 'frontend_subscribe_free' : 'frontend_subscribe_cod',
                         'subscription_id' => $subscription->id,
                         'plan_id' => $plan->id,
                         'admin_ids' => $admins->pluck('id')->all(),
