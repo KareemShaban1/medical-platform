@@ -91,6 +91,30 @@ const LEVEL_WEIGHTS = {
 };
 
 function subscribeToPlan(planId, planLevel, planPrice, btn) {
+	const planPriceNum = Number(planPrice || 0);
+	const isFreePlan = planPriceNum <= 0;
+
+	// For free plans, skip payment modal and directly subscribe (backend will handle as online payment)
+	if (isFreePlan) {
+		Swal.fire({
+			title: "{{ __('Subscribe to Plan ? ') }}",
+			text: "{{ __('Are you sure you want to subscribe to this free plan ? ') }}",
+			icon: 'question',
+			showCancelButton: true,
+			confirmButtonText: "{{ __('Yes, Subscribe ') }}",
+			cancelButtonText: "{{ __('Cancel') }}",
+			confirmButtonColor: '#079184',
+		}).then((result) => {
+			if (result.isConfirmed) {
+				// For free plans, use first available online gateway (paymob) but backend will handle it without API call
+				const availableGateways = @json($availableGateways ?? []);
+				const onlineGateway = availableGateways.find(g => g.name !== 'cod')?.name || 'paymob';
+				performSubscriptionRequest(planId, btn, onlineGateway, 'card', '');
+			}
+		});
+		return;
+	}
+
 	const hasCurrent = currentPlan.hasActive && currentPlan.level && LEVEL_WEIGHTS[currentPlan.level];
 	const newRank = LEVEL_WEIGHTS[planLevel] || null;
 
@@ -111,6 +135,29 @@ function subscribeToPlan(planId, planLevel, planPrice, btn) {
 			const currentPrice = Number(currentPlan.price || 0);
 			const targetPrice = Number(planPrice || 0);
 			const diff = Math.max(0, targetPrice - currentPrice);
+
+			// If difference is 0 (e.g., upgrading to free plan), skip payment
+			if (diff <= 0) {
+				Swal.fire({
+					title: "{{ __('Upgrade Plan ') }}",
+					html: `{{ __('Current plan price') }}: <strong>${currentPrice.toFixed(2)} {{ __('EGP') }}</strong><br>` +
+						`{{ __('New plan price') }}: <strong>${targetPrice.toFixed(2)} {{ __('EGP') }}</strong><br>` +
+						`<strong>{{ __('No payment required for this upgrade.') }}</strong>`,
+					icon: 'info',
+					showCancelButton: true,
+					confirmButtonText: "{{ __('Confirm Upgrade ') }}",
+					cancelButtonText: "{{ __('Cancel ') }}",
+					confirmButtonColor: '#079184',
+				}).then((result) => {
+					if (result.isConfirmed) {
+						// For free upgrades, use first available online gateway (paymob) but backend will handle it without API call
+						const availableGateways = @json($availableGateways ?? []);
+						const onlineGateway = availableGateways.find(g => g.name !== 'cod')?.name || 'paymob';
+						performSubscriptionRequest(planId, btn, onlineGateway, 'card', '');
+					}
+				});
+				return;
+			}
 
 			Swal.fire({
 				title: "{{ __('Upgrade Plan ') }}",
@@ -133,8 +180,8 @@ function subscribeToPlan(planId, planLevel, planPrice, btn) {
 
 	Swal.fire({
 		title: "{{ __('Subscribe to Plan ? ') }}",
-		text : "{{ __('Are you sure you want to subscribe to this plan ? ') }}",
-		icon : 'question',
+		text: "{{ __('Are you sure you want to subscribe to this plan ? ') }}",
+		icon: 'question',
 		showCancelButton: true,
 		confirmButtonText: "{{ __('Yes, Subscribe ') }}",
 		cancelButtonText: "{{ __('Cancel') }}",
@@ -167,7 +214,7 @@ function showPaymentModal(planId, planPrice, btn) {
                 <input type="radio" name="payment_gateway" value="${gateway.name}" class="w-4 h-4 text-blue-600" ${isChecked}>
                 <div class="mx-3 text-right">
                     <div class="font-semibold text-gray-900">${gateway.display_name}</div>
-                    
+
                 </div>
             </label>
         `;
@@ -222,27 +269,29 @@ function showPaymentModal(planId, planPrice, btn) {
 			setTimeout(() => {
 				// Function to toggle Paymob options
 				const togglePaymobOptions =
-				() => {
+					() => {
 						const selectedGateway =
 							document
 							.querySelector(
 								'input[name="payment_gateway"]:checked'
-								)
+							)
 							?.value;
 						const paymobOptions =
 							document
 							.getElementById(
 								'paymob-options'
-								);
+							);
 						if (
-							paymobOptions) {
+							paymobOptions
+							) {
 							if (selectedGateway ===
 								'paymob'
-								) {
+							) {
 								paymobOptions
 									.classList
 									.remove(
-										'hidden');
+										'hidden'
+										);
 								paymobOptions
 									.style
 									.display =
@@ -251,7 +300,8 @@ function showPaymentModal(planId, planPrice, btn) {
 								paymobOptions
 									.classList
 									.add(
-										'hidden');
+										'hidden'
+										);
 								paymobOptions
 									.style
 									.display =
@@ -262,27 +312,29 @@ function showPaymentModal(planId, planPrice, btn) {
 
 				// Function to toggle wallet phone input
 				const toggleWalletPhone =
-				() => {
+					() => {
 						const selectedMethod =
 							document
 							.querySelector(
 								'input[name="pay_method"]:checked'
-								)
+							)
 							?.value;
 						const walletWrapper =
 							document
 							.getElementById(
 								'wallet-phone-wrapper'
-								);
+							);
 						if (
-							walletWrapper) {
+							walletWrapper
+							) {
 							if (selectedMethod ===
 								'wallet'
-								) {
+							) {
 								walletWrapper
 									.classList
 									.remove(
-										'hidden');
+										'hidden'
+										);
 								walletWrapper
 									.style
 									.display =
@@ -291,7 +343,8 @@ function showPaymentModal(planId, planPrice, btn) {
 								walletWrapper
 									.classList
 									.add(
-										'hidden');
+										'hidden'
+										);
 								walletWrapper
 									.style
 									.display =
@@ -304,36 +357,36 @@ function showPaymentModal(planId, planPrice, btn) {
 				const gatewayRadios = document
 					.querySelectorAll(
 						'input[name="payment_gateway"]'
-						);
+					);
 				gatewayRadios.forEach(
-				radio => {
-					radio.addEventListener(
-						'change',
-						togglePaymobOptions
+					radio => {
+						radio.addEventListener(
+							'change',
+							togglePaymobOptions
 						);
-					// Also trigger on click for immediate feedback
-					radio.addEventListener(
-						'click',
-						togglePaymobOptions
+						// Also trigger on click for immediate feedback
+						radio.addEventListener(
+							'click',
+							togglePaymobOptions
 						);
-				});
+					});
 
 				// Show/hide wallet phone input based on payment method
 				const methodRadios = document
 					.querySelectorAll(
 						'input[name="pay_method"]'
-						);
+					);
 				methodRadios.forEach(
-				radio => {
-					radio.addEventListener(
-						'change',
-						toggleWalletPhone
+					radio => {
+						radio.addEventListener(
+							'change',
+							toggleWalletPhone
 						);
-					radio.addEventListener(
-						'click',
-						toggleWalletPhone
+						radio.addEventListener(
+							'click',
+							toggleWalletPhone
 						);
-				});
+					});
 
 				// Initialize on open (check current selection)
 				togglePaymobOptions();
@@ -439,7 +492,8 @@ function performSubscriptionRequest(planId, btn, paymentGateway = 'cod', payMeth
 
 				Swal.fire({
 					title: "{{ __('Success!') }}",
-					text: data.message || "{{ __('Subscribed successfully ') }}",
+					text: data.message ||
+						"{{ __('Subscribed successfully ') }}",
 					icon: 'success',
 					confirmButtonColor: '#079184',
 				}).then(() => {
@@ -448,7 +502,8 @@ function performSubscriptionRequest(planId, btn, paymentGateway = 'cod', payMeth
 			} else {
 				Swal.fire({
 					title: "{{ __('Error ') }}",
-					text: data.message || "{{ __('Failed to subscribe ') }}",
+					text: data.message ||
+						"{{ __('Failed to subscribe ') }}",
 					icon: 'error',
 					confirmButtonColor: '#079184',
 				});
@@ -462,7 +517,8 @@ function performSubscriptionRequest(planId, btn, paymentGateway = 'cod', payMeth
 			console.error('Subscription error:', error);
 			Swal.fire({
 				title: "{{ __('Error ') }}",
-				text: error.message || "{{ __('Something went wrong.Please try again.') }}",
+				text: error.message ||
+					"{{ __('Something went wrong.Please try again.') }}",
 				icon: 'error',
 				confirmButtonColor: '#079184',
 			});
