@@ -230,26 +230,23 @@ class UsersManagementController extends Controller
         $request->validate([
             'user_id' => 'required|integer',
             'user_type' => 'required|in:clinic_user,supplier_user,user',
-            'status' => 'required|boolean',
+            'status' => 'required|in:0,1',
         ]);
 
         try {
             $userType = $request->user_type;
             $userId = $request->user_id;
-            $newStatus = $request->status;
+            $newStatus = (int) $request->status;
 
             // Get the user based on type
             if ($userType === 'clinic_user') {
                 $user = \App\Models\ClinicUser::findOrFail($userId);
             } elseif ($userType === 'supplier_user') {
                 $user = \App\Models\SupplierUser::findOrFail($userId);
-            } else {
-                // Regular user (patient account)
-                $user = \App\Models\User::findOrFail($userId);
             }
 
             // Update status
-            $user->is_active = $newStatus;
+            $user->status = $newStatus;
             $user->save();
 
             $statusText = $newStatus ? __('activated') : __('deactivated');
