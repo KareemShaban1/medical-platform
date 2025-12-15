@@ -1163,9 +1163,12 @@ class PaymentController extends Controller
                         'payment_subscription_number',
                     ]);
 
+                    $successMessage = __('Subscription activated successfully.');
+
                     return redirect()->route('home' , ['plan_type' => $planType])
                         ->withFragment('subscriptions-plans')
-                        ->with(['success' => true , 'message' => 'Payment processed successfully and subscription activated']);
+                        ->with('success', $successMessage)
+                        ->with('message', $successMessage);
                 } catch (\Exception $e) {
                     DB::rollBack();
                     Log::error('Failed to create subscription after payment', [
@@ -1237,9 +1240,12 @@ class PaymentController extends Controller
                     'payment_subscription_number',
                 ]);
 
+                $successMessage = __('Subscription activated successfully.');
+
                 return redirect()->route('home' , ['plan_type' => $planType])
                     ->withFragment('subscriptions-plans')
-                    ->with(['success' => true, 'message' => 'Payment processed successfully and subscription activated']);
+                    ->with('success', $successMessage)
+                    ->with('message', $successMessage);
             } catch (\Exception $e) {
                 DB::rollBack();
                 Log::error('Failed to create subscription after payment', [

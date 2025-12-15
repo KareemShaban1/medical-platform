@@ -35,23 +35,19 @@ $(document).ready(function() {
 
 	// Handle Laravel session messages
 	@if(session('success'))
-	toastr.success('{{ session('
-		success ') }}');
+	toastr.success(@json(session('success')));
 	@endif
 
 	@if(session('error'))
-	toastr.error('{{ session('
-		error ') }}');
+	toastr.error(@json(session('error')));
 	@endif
 
 	@if(session('warning'))
-	toastr.warning('{{ session('
-		warning ') }}');
+	toastr.warning(@json(session('warning')));
 	@endif
 
 	@if(session('info'))
-	toastr.info('{{ session('
-		info ') }}');
+	toastr.info(@json(session('info')));
 	@endif
 
 	// Handle validation errors
