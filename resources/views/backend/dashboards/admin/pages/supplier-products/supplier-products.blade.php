@@ -98,7 +98,7 @@
                                                             class="btn btn-sm btn-info">
                                                             <i class="fa fa-eye"></i>
                                                         </a>
-                                                        <button onclick="updateApprovalStatus({{ $product->id }})"
+                                                        <button onclick="updateApprovalStatus({{ $product->id }}, {!! json_encode(optional($product->approvement)->action ?? 'under_review') !!}, {!! json_encode(optional($product->approvement)->notes ?? '') !!})"
                                                             class="btn btn-sm btn-primary">
                                                             <i class="fa fa-check"></i>
                                                         </button>
@@ -137,17 +137,21 @@
 
                         <div class="mb-3">
                             <label for="action" class="form-label">Status</label>
+                            @php
+                                $approvalAction = optional($product->approvement)->action ?? 'under_review';
+                                $approvalNotes = optional($product->approvement)->notes ?? '';
+                            @endphp
                             <select name="action" id="action" class="form-select" required>
-                                <option value="under_review" {{ $product->approvement->action == 'under_review' ? 'selected' : '' }}>Under Review</option>
-                                <option value="approved" {{ $product->approvement->action == 'approved' ? 'selected' : '' }}>Approved</option>
-                                <option value="rejected" {{ $product->approvement->action == 'rejected' ? 'selected' : '' }}>Rejected</option>
+                                <option value="under_review" {{ $approvalAction == 'under_review' ? 'selected' : '' }}>Under Review</option>
+                                <option value="approved" {{ $approvalAction == 'approved' ? 'selected' : '' }}>Approved</option>
+                                <option value="rejected" {{ $approvalAction == 'rejected' ? 'selected' : '' }}>Rejected</option>
                             </select>
                         </div>
 
                         <div class="mb-3">
                             <label for="notes" class="form-label">Notes</label>
                             <textarea name="notes" id="notes" class="form-control" rows="3"
-                                placeholder="Add notes (required for rejection)">{{ $product->approvement->notes }}</textarea>
+                                placeholder="Add notes (required for rejection)">{{ $approvalNotes }}</textarea>
                         </div>
                     </form>
                 </div>
@@ -161,8 +165,10 @@
 
     @push('scripts')
         <script>
-            function updateApprovalStatus(productId) {
+            function updateApprovalStatus(productId, action = 'under_review', notes = '') {
                 $('#productId').val(productId);
+                $('#action').val(action);
+                $('#notes').val(notes);
                 $('#approvalModal').modal('show');
             }
 

@@ -183,13 +183,14 @@
 
         // Edit
         function editSupplier(id) {
-            $.get('{{ route('admin.suppliers.index') }}/' + id, function(data) {
+            const url = '{{ route('admin.suppliers.show', ':id') }}'.replace(':id', id);
+            $.get(url, function(data) {
                 $('#supplierId').val(data.id);
                 $('#name').val(data.name);
                 $('#phone').val(data.phone);
                 $('#address').val(data.address);
-                $('#isAllowedToggle').prop('checked', data.is_allowed);
-                $('#statusToggle').prop('checked', data.status);
+                $('#isAllowedToggle').prop('checked', !!data.is_allowed);
+                $('#statusToggle').prop('checked', !!data.status);
 
                 $('#suppliersForm').attr('action',
                     '{{ route('admin.suppliers.update', ':id') }}'.replace(
@@ -198,7 +199,6 @@
                 $('#suppliersModal').modal('show');
             });
         }
-
 
         // Delete
         function deleteSupplier(id) {
@@ -213,8 +213,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
-                        url: '{{ route('admin.suppliers.index') }}/' +
-                            id,
+                        url: '{{ route('admin.suppliers.destroy', ':id') }}'.replace(':id', id),
                         method: 'DELETE',
                         headers: {
                             'X-CSRF-TOKEN': $(
@@ -232,7 +231,8 @@
         }
 
         function showSupplier(id) {
-            $.get('{{ route('admin.suppliers.index') }}/' + id, function(data) {
+            const url = '{{ route('admin.suppliers.show', ':id') }}'.replace(':id', id);
+            $.get(url, function(data) {
                 $('#showSupplierModal').modal('show');
                 $('#showName').text(data.name);
                 $('#showPhone').text(data.phone);
@@ -245,13 +245,26 @@
                     data.status == 1 ? "<span class='badge bg-success'>{{ __('Active') }}</span>" :
                     "<span class='badge bg-danger'>{{ __('Inactive') }}</span>"
                 );
-                $('#showUsers').text(data.supplierUsers);
-                $('#showImages').html(data.images.map(function(image) {
-                    return '<img src="' + image + '" width="100" height="100">';
-                }));
+                const usersCount = data.supplier_users_count ?? data.supplierUsers ?? 0;
+                $('#showUsers').text(usersCount);
+                const images = Array.isArray(data.images) ? data.images : [];
+                $('#showImages').html(images.map(function(image) {
+                    return '<img src="' + image + '" width="100" height="100" class="me-2 mb-2 rounded">';
+                }).join(''));
 
             });
         }
+
+        // action buttons inside datatable rows
+        $(document).on('click', '.btn-show-supplier', function() {
+            showSupplier($(this).data('id'));
+        });
+        $(document).on('click', '.btn-edit-supplier', function() {
+            editSupplier($(this).data('id'));
+        });
+        $(document).on('click', '.btn-delete-supplier', function() {
+            deleteSupplier($(this).data('id'));
+        });
 
 
         function changeApproval(rentalSpaceId, approvementId) {

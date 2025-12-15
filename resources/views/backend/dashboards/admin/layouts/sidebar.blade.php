@@ -91,7 +91,7 @@
 							</a>
 						</li>
 						@endhasPermission
-						@hasPermission('view system doctor profiles')
+						{{-- @hasPermission('view system doctor profiles')
 						<li>
 							<a
 								href="{{ route('admin.users-management.doctor-profiles') }}">
@@ -99,7 +99,7 @@
 								</span>
 							</a>
 						</li>
-						@endhasPermission
+						@endhasPermission --}}
 
 						@hasPermission('view clinics')
 						<li>

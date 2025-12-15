@@ -16,7 +16,7 @@ class SupplierRepository implements SupplierRepositoryInterface
 
     public function data()
     {
-        $suppliers = Supplier::query();
+        $suppliers = Supplier::query()->withCount('supplierUsers');
 
         return datatables()->of($suppliers)
             ->addColumn('supplier_users', fn($item) => $item->supplierUsers->count())
@@ -36,7 +36,7 @@ class SupplierRepository implements SupplierRepositoryInterface
 
     public function show($id)
     {
-        return Supplier::findOrFail($id);
+        return Supplier::withCount('supplierUsers')->findOrFail($id);
     }
 
     public function update($request, $id)
@@ -215,10 +215,10 @@ class SupplierRepository implements SupplierRepositoryInterface
         $productsUrl = route('admin.supplier-products.by-supplier', $item->id);
         return <<<HTML
         <div class="d-flex gap-2">
-            <button onclick="showSupplier({$item->id})" class="btn btn-sm btn-info" title="View Details"><i class="fa fa-eye"></i></button>
+            <button data-id="{$item->id}" class="btn btn-sm btn-info btn-show-supplier" title="View Details"><i class="fa fa-eye"></i></button>
             <a href="{$productsUrl}" class="btn btn-sm btn-success" title="View Products"><i class="fa fa-box"></i></a>
-            <button onclick="editSupplier({$item->id})" class="btn btn-sm btn-warning" title="Edit"><i class="fa fa-edit"></i></button>
-            <button onclick="deleteSupplier({$item->id})" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>
+            <button data-id="{$item->id}" class="btn btn-sm btn-warning btn-edit-supplier" title="Edit"><i class="fa fa-edit"></i></button>
+            <button data-id="{$item->id}" class="btn btn-sm btn-danger btn-delete-supplier" title="Delete"><i class="fa fa-trash"></i></button>
         </div>
         HTML;
     }
