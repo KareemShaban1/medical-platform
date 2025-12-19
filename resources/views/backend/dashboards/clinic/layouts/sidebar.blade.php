@@ -90,7 +90,8 @@
   			@endhasPermission
 
 
-  			@hasAnyPermission('view users', 'view doctor profiles')
+  			@hasAnyPermission('view users', 'view doctor profiles','view payslips','view salary
+  			contracts','view working hours','view attendance')
   			<!-- HR Management -->
   			<li class="side-nav-item">
   				<a data-bs-toggle="collapse" href="#sidebarUsers" aria-expanded="false"
