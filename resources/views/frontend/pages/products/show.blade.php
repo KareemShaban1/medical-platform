@@ -108,24 +108,30 @@
 					@endif
 				</div> -->
 
-				<div class="quantity-selector">
-					<label for="quantity"
-						class="text-sm font-medium text-gray-700">{{ __('quantity') }}:</label>
-					<button class="quantity-btn" onclick="decreaseQuantity()">-</button>
-					<input type="number" id="quantity" class="quantity-input" value="1"
-						min="1" max="{{ $product->stock }}">
-					<button class="quantity-btn" onclick="increaseQuantity()">+</button>
-				</div>
+				@if($product->stock > 0)
+					<div class="quantity-selector">
+						<label for="quantity"
+							class="text-sm font-medium text-gray-700">{{ __('quantity') }}:</label>
+						<button class="quantity-btn" onclick="decreaseQuantity()">-</button>
+						<input type="number" id="quantity" class="quantity-input" value="1"
+							min="1" max="{{ $product->stock }}">
+						<button class="quantity-btn" onclick="increaseQuantity()">+</button>
+					</div>
 
-				<div class="action-buttons">
-					<button data-add-to-cart data-product-id="{{ $product->id }}"
-						data-supplier-id="{{ $product->supplier_id }}"
-						data-quantity="1"
-						class="bg-primary-gradient text-white px-4 py-2 rounded-full hover:bg-blue-700 transition">
-						{{ __('add to cart') }}
-						<i class="fas fa-cart-plus"></i>
-					</button>
-				</div>
+					<div class="action-buttons">
+						<button data-add-to-cart data-product-id="{{ $product->id }}"
+							data-supplier-id="{{ $product->supplier_id }}"
+							data-quantity="1"
+							class="bg-primary-gradient text-white px-4 py-2 rounded-full hover:bg-blue-700 transition">
+							{{ __('add to cart') }}
+							<i class="fas fa-cart-plus"></i>
+						</button>
+					</div>
+				@else
+					<div class="action-buttons">
+						<span class="text-lg font-semibold text-red-600">{{ __('out_of_stock') }}</span>
+					</div>
+				@endif
 
 			</div>
 		</div>

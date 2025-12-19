@@ -43,13 +43,16 @@
 					class="text-sm text-red-500 line-through">{{ __('EGP') }} {{ number_format($product->price_before, 2) }}</span>
 				@endif
 			</div>
-			<button data-add-to-cart data-product-id="{{ $product->id }}"
-				data-supplier-id="{{ $product->supplier_id }}" data-quantity="1"
-				class="bg-primary-gradient text-white px-4 py-2 rounded-full hover:bg-blue-700 transition">
-
-				{{ __('add to cart') }}
-				<i class="fas fa-cart-plus"></i>
-			</button>
+			@if($product->stock > 0)
+				<button data-add-to-cart data-product-id="{{ $product->id }}"
+					data-supplier-id="{{ $product->supplier_id }}" data-quantity="1"
+					class="bg-primary-gradient text-white px-4 py-2 rounded-full hover:bg-blue-700 transition">
+					{{ __('add to cart') }}
+					<i class="fas fa-cart-plus"></i>
+				</button>
+			@else
+				<span class="text-sm font-semibold text-red-600">{{ __('out_of_stock') }}</span>
+			@endif
 		</div>
 	</div>
 </div>

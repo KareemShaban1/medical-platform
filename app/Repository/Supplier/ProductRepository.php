@@ -49,13 +49,16 @@ class ProductRepository implements ProductRepositoryInterface
                 }
             }
 
-            ModuleApprovement::create([
-                'module_type' => Product::class,
-                'module_id' => $product->id,
-                'action' => 'under_review',
-                'action_by' => auth('supplier')->user()->supplier_id,
-                'notes' => 'New product submitted for review'
-            ]);
+            $adminId = Admin::query()->value('id');
+            if ($adminId) {
+                ModuleApprovement::create([
+                    'module_type' => Product::class,
+                    'module_id' => $product->id,
+                    'action' => 'under_review',
+                    'action_by' => $adminId,
+                    'notes' => 'New product submitted for review'
+                ]);
+            }
 
             $adminUsers = Admin::all();
             foreach ($adminUsers as $admin) {
@@ -87,7 +90,7 @@ class ProductRepository implements ProductRepositoryInterface
             if ($product->approvement) {
                 $product->approvement->update([
                     'action' => 'under_review',
-                    'action_by' => auth('supplier')->user()->supplier_id,
+                    'action_by' => Admin::query()->value('id'),
                     'notes' => 'Product updated for review'
                 ]);
                 $adminUsers = Admin::all();

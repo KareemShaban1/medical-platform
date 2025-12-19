@@ -125,12 +125,15 @@ class RentalSpaceRepository implements RentalSpaceRepositoryInterface
             $rentalSpace->fill($request->validated())->save();
 
             if ($action == 'created') {
-                ModuleApprovement::create([
-                    'module_id' => $rentalSpace->id,
-                    'module_type' => RentalSpace::class,
-                    'action' => 'under_review',
-                    'action_by' => auth()->user()->id,
-                ]);
+                $adminId = Admin::query()->value('id');
+                if ($adminId) {
+                    ModuleApprovement::create([
+                        'module_id' => $rentalSpace->id,
+                        'module_type' => RentalSpace::class,
+                        'action' => 'under_review',
+                        'action_by' => $adminId,
+                    ]);
+                }
 
                 // Notify all admins that a new rental space was submitted
                 $admins = Admin::all();
