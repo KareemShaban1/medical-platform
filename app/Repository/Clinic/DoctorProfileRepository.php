@@ -19,7 +19,7 @@ class DoctorProfileRepository implements DoctorProfileRepositoryInterface
     public function data()
     {
         $clinicId = auth('clinic')->user()->clinic_id;
-        
+
         $profiles = DoctorProfile::with(['clinicUser','speciality'])
             ->whereHas('clinicUser', function($query) use ($clinicId) {
                 $query->where('clinic_id', $clinicId);
@@ -60,8 +60,12 @@ class DoctorProfileRepository implements DoctorProfileRepositoryInterface
 
     public function show($id)
     {
+        $clinicId = auth('clinic')->user()->clinic_id;
+
         return DoctorProfile::with(['clinicUser', 'reviewer','speciality'])
-            ->forClinicUser(auth('clinic')->id())
+            ->whereHas('clinicUser', function($query) use ($clinicId) {
+                $query->where('clinic_id', $clinicId);
+            })
             ->findOrFail($id);
     }
 
@@ -214,15 +218,15 @@ class DoctorProfileRepository implements DoctorProfileRepositoryInterface
     private function trashActionButtons($item): string
     {
         $actions = '<div class="d-flex gap-2">';
-        
+
         if (hasPermission('restore doctor profile')) {
             $actions .= '<button onclick="restoreProfile(' . $item->id . ')" class="btn btn-sm btn-success" title="Restore"><i class="fa fa-undo"></i> Restore</button>';
         }
-        
+
         if (hasPermission('force delete doctor profile')) {
             $actions .= '<button onclick="forceDeleteProfile(' . $item->id . ')" class="btn btn-sm btn-danger" title="Delete Forever"><i class="fa fa-trash"></i> Delete Forever</button>';
         }
-        
+
         $actions .= '</div>';
         return $actions;
     }

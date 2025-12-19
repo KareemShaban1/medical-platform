@@ -64,7 +64,7 @@ class PayslipController extends Controller
     public function show($id)
     {
         // apply permissions
-        abort_if(!hasPermission('view payslip'), 403, __('You are not authorized to view payslip'));
+        abort_if(!hasPermission('view payslips'), 403, __('You are not authorized to view payslip'));
 
         $payslip = $this->payslipRepo->show($id);
 

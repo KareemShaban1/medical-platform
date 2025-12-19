@@ -65,7 +65,7 @@ class JobController extends Controller
     public function show($id)
     {
         // apply permissions
-        abort_if(!hasPermission('view job'), 403, __('You are not authorized to view job'));
+        abort_if(!hasPermission('view jobs'), 403, __('You are not authorized to view job'));
 
         $job = $this->jobRepo->show($id);
 

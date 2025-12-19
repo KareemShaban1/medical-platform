@@ -67,7 +67,7 @@ class RoleController extends Controller
     public function show(string $id)
     {
         // apply permissions
-        abort_if(!hasPermission('view role'), 403, __('You are not authorized to view role'));
+        abort_if(!hasPermission('view roles'), 403, __('You are not authorized to view role'));
 
         return $this->roleRepository->show($id);
     }

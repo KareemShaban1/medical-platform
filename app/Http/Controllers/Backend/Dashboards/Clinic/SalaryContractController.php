@@ -55,7 +55,7 @@ class SalaryContractController extends Controller
     public function show($id)
     {
         // apply permissions
-        abort_if(!hasPermission('view salary contract'), 403, __('You are not authorized to view salary contract'));
+        abort_if(!hasPermission('view salary contracts'), 403, __('You are not authorized to view salary contract'));
 
         $salaryContract = $this->salaryContractRepo->show($id);
 

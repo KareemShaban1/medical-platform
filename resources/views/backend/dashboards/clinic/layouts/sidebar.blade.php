@@ -170,21 +170,21 @@
   			@endhasAnyPermission
 
 
-  			@hasAnyPermission('view clinic inventory', 'view rental spaces', 'view jobs', 'view
+  			@hasAnyPermission('view clinic inventories', 'view rental spaces', 'view jobs', 'view
   			purchase requests', 'view orders', 'view course enrollments')
   			<!-- Clinic Management -->
   			<li class="side-nav-item">
-  				<a data-bs-toggle="collapse" href="#sidebarClinicInventory"
-  					aria-expanded="false" aria-controls="sidebarClinicInventory"
+  				<a data-bs-toggle="collapse" href="#sidebarClinicinventories"
+  					aria-expanded="false" aria-controls="sidebarClinicinventories"
   					class="side-nav-link">
-  					<!-- inventory icon -->
+  					<!-- inventories icon -->
   					<i class="uil-file-medical"></i>
   					<span> {{__('Clinic Management')}} </span>
   					<span class=" menu-arrow"></span>
   				</a>
-  				<div class="collapse" id="sidebarClinicInventory">
+  				<div class="collapse" id="sidebarClinicinventories">
   					<ul class="side-nav-second-level">
-  						@hasPermission('view clinic inventory')
+  						@hasPermission('view clinic inventories')
   						<li>
   							<a
   								href="{{ route('clinic.clinic-inventories.index') }}">

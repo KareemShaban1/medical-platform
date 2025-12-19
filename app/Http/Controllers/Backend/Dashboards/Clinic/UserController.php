@@ -46,7 +46,7 @@ class UserController extends Controller
     public function show($id)
     {
         // apply permissions
-        abort_if(!hasPermission('view user'), 403, __('You are not authorized to view user'));
+        abort_if(!hasPermission('view users'), 403, __('You are not authorized to view user'));
 
         $user = $this->userRepo->show($id);
         return request()->ajax()

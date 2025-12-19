@@ -55,7 +55,7 @@ class RentalSpaceController extends Controller
     public function show($id)
     {
         // apply permissions
-        abort_if(!hasPermission('view rental space'), 403, __('You are not authorized to view rental space'));
+        abort_if(!hasPermission('view rental spaces'), 403, __('You are not authorized to view rental space'));
 
         $rentalSpace = $this->rentalSpaceRepo->show($id);
 

@@ -27,7 +27,7 @@ class OrderController extends Controller
     public function show($id)
     {
         // apply permissions
-        abort_if(!hasPermission('view order'), 403, __('You are not authorized to view order'));
+        abort_if(!hasPermission('view orders'), 403, __('You are not authorized to view orders'));
 
         $user = Auth::guard('clinic')->user();
 

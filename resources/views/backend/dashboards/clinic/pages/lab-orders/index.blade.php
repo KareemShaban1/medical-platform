@@ -118,8 +118,7 @@ function openUpload(id) {
 			form.append('results[]', f);
 		}
 		form.append('_token', '{{ csrf_token() }}');
-		fetch('{{ route('clinic.lab-orders.upload', ': id ') }}'.replace(':id',
-					id), {
+		fetch("{{ route("clinic.lab-orders.upload", ": id ") }}".replace(":id",id), {
 					method: 'POST',
 					body: form
 				})

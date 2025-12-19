@@ -203,7 +203,7 @@ class RequestController extends Controller
     {
 
         // apply permissions
-        abort_if(!hasPermission('view invoice'), 403, __('You are not authorized to view invoice'));
+        abort_if(!hasPermission('view invoices'), 403, __('You are not authorized to view invoice'));
 
         try {
             $offer = \App\Models\Offer::with(['request.clinic', 'supplier'])

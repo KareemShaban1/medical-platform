@@ -35,7 +35,7 @@ class OrderController extends Controller
     public function show($id)
     {
         // apply permissions
-        abort_if(!hasPermission('view order'), 403, __('You are not authorized to view order'));
+        abort_if(!hasPermission('view orders'), 403, __('You are not authorized to view orders'));
         $order = $this->orderRepo->show($id);
         return request()->ajax()
             ? response()->json($order)
@@ -45,7 +45,7 @@ class OrderController extends Controller
     public function getOrderSuppliers($orderId)
     {
         // apply permissions
-        abort_if(!hasPermission('view order'), 403, __('You are not authorized to view order'));
+        abort_if(!hasPermission('view orders'), 403, __('You are not authorized to view orders'));
         $suppliers = $this->orderRepo->getOrderSuppliers($orderId);
         return response()->json($suppliers);
     }
@@ -53,7 +53,7 @@ class OrderController extends Controller
     public function getOrderItems($orderId)
     {
         // apply permissions
-        abort_if(!hasPermission('view order'), 403, __('You are not authorized to view order'));
+        abort_if(!hasPermission('view orders'), 403, __('You are not authorized to view orders'));
         $items = $this->orderRepo->getOrderItems($orderId);
         return response()->json($items);
     }

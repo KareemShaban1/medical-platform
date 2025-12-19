@@ -165,7 +165,7 @@ class AppointmentController extends Controller
     public function show($id)
     {
         // apply permissions
-        abort_if(!hasPermission('view appointment'), 403, __('You are not authorized to view appointment'));
+        abort_if(!hasPermission('view appointments'), 403, __('You are not authorized to view appointment'));
 
         $appointment = $this->repo->find($id);
 

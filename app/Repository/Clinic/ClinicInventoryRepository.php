@@ -132,33 +132,53 @@ class ClinicInventoryRepository implements ClinicInventoryRepositoryInterface
 
     private function clinicInventoryActions($item): string
     {
-        $editUrl = route('clinic.clinic-inventories.edit', $item->id);
-        $showUrl = route('clinic.clinic-inventories.show', $item->id);
+        $html = '<div class="d-flex gap-2">';
 
-        return <<<HTML
-        <div class="d-flex gap-2">
-           <a href="{$showUrl}" class="btn btn-sm btn-info"><i class="fa fa-eye"></i></a>
-           <a href="{$editUrl}" class="btn btn-sm btn-warning text-white"><i class="fa fa-edit"></i></a>
-           <button onclick="deleteClinicInventory({$item->id})" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>
-        </div>
-        HTML;
+        if (hasPermission('view clinic inventory')) {
+            $showUrl = route('clinic.clinic-inventories.show', $item->id);
+            $html .= '<a href="' . $showUrl . '" class="btn btn-sm btn-info"><i class="fa fa-eye"></i></a>';
+        }
+
+        if (hasPermission('update clinic inventory')) {
+            $editUrl = route('clinic.clinic-inventories.edit', $item->id);
+            $html .= '<a href="' . $editUrl . '" class="btn btn-sm btn-warning text-white"><i class="fa fa-edit"></i></a>';
+        }
+
+        if (hasPermission('delete clinic inventory')) {
+            $html .= '<button onclick="deleteClinicInventory(' . $item->id . ')" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>';
+        }
+
+        $html .= '</div>';
+
+        return $html;
     }
 
     private function clinicInventoryMovements($item): string
     {
-        return '<a href="' . route('clinic.clinic-inventory-movements.index', $item->id) . '" class="btn btn-sm btn-info">
-        ' . __('Movements') . '
-        </a>';
+        if (hasPermission('view clinic inventory movements')) {
+            return '<a href="' . route('clinic.clinic-inventory-movements.index', $item->id) . '" class="btn btn-sm btn-info">
+            ' . __('Movements') . '
+            </a>';
+        }
+
+        return '';
     }
 
     private function clinicInventoryTrashActions($item): string
     {
-        return <<<HTML
-        <div class="d-flex gap-2">
-           <button onclick="restore({$item->id})" class="btn btn-sm btn-info" title="Restore"><i class="fa fa-undo"></i></button>
-           <button onclick="forceDelete({$item->id})" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>
-        </div>
-        HTML;
+        $html = '<div class="d-flex gap-2">';
+
+        if (hasPermission('restore clinic inventory')) {
+            $html .= '<button onclick="restore(' . $item->id . ')" class="btn btn-sm btn-info" title="Restore"><i class="fa fa-undo"></i></button>';
+        }
+
+        if (hasPermission('force delete clinic inventory')) {
+            $html .= '<button onclick="forceDelete(' . $item->id . ')" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>';
+        }
+
+        $html .= '</div>';
+
+        return $html;
     }
 
 

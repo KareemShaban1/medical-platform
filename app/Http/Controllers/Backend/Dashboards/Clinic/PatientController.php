@@ -102,7 +102,7 @@ class PatientController extends Controller
     public function show($id)
     {
         // apply permissions
-        abort_if(!hasPermission('view patient'), 403, __('You are not authorized to view patient'));
+        abort_if(!hasPermission('view patients'), 403, __('You are not authorized to view patient'));
 
         $clinicUser = auth('clinic')->user();
         $patient = $this->patientRepo->show($id);

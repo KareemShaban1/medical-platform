@@ -167,24 +167,37 @@ class ClinicInventoryMovementRepository implements ClinicInventoryMovementReposi
 
     private function clinicInventoryMovementActions($item): string
     {
-        $editUrl = route('clinic.clinic-inventory-movements.edit', $item->id);
+        $html = '<div class="d-flex gap-2">';
 
-        return <<<HTML
-        <div class="d-flex gap-2">
-           <a href="{$editUrl}" class="btn btn-sm btn-warning text-white"><i class="fa fa-edit"></i></a>
-           <button onclick="deleteClinicInventoryMovement({$item->id})" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>
-        </div>
-        HTML;
+        if (hasPermission('update clinic inventory movement')) {
+            $editUrl = route('clinic.clinic-inventory-movements.edit', $item->id);
+            $html .= '<a href="' . $editUrl . '" class="btn btn-sm btn-warning text-white"><i class="fa fa-edit"></i></a>';
+        }
+
+        if (hasPermission('delete clinic inventory movement')) {
+            $html .= '<button onclick="deleteClinicInventoryMovement(' . $item->id . ')" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>';
+        }
+
+        $html .= '</div>';
+
+        return $html;
     }
 
     private function clinicInventoryMovementTrashActions($item): string
     {
-        return <<<HTML
-        <div class="d-flex gap-2">
-           <button onclick="restore({$item->id})" class="btn btn-sm btn-info" title="Restore"><i class="fa fa-undo"></i></button>
-           <button onclick="forceDelete({$item->id})" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>
-        </div>
-        HTML;
+        $html = '<div class="d-flex gap-2">';
+
+        if (hasPermission('restore clinic inventory movement')) {
+            $html .= '<button onclick="restore(' . $item->id . ')" class="btn btn-sm btn-info" title="Restore"><i class="fa fa-undo"></i></button>';
+        }
+
+        if (hasPermission('force delete clinic inventory movement')) {
+            $html .= '<button onclick="forceDelete(' . $item->id . ')" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>';
+        }
+
+        $html .= '</div>';
+
+        return $html;
     }
 
 
