@@ -12,7 +12,7 @@
 			<div class="bg-white rounded-lg shadow-md overflow-hidden">
 				@foreach($cart->items as $item)
 				<div class="cart-item p-4 border-b border-gray-200"
-					data-item-id="{{ $item->id }}">
+					data-item-id="{{ $item->id }}" data-stock="{{ $item->product->stock ?? 0 }}">
 					<div class="flex items-center gap-4">
 						<!-- Product Image -->
 						<div class="w-20 h-20 flex-shrink-0">
@@ -169,6 +169,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			);
 			const itemId = cartItem
 				.dataset.itemId;
+			const stock = parseInt(cartItem.dataset.stock || '0');
 			const qtyInput = cartItem
 				.querySelector(
 					'.item-quantity'
@@ -189,6 +190,15 @@ document.addEventListener('DOMContentLoaded', function() {
 				quantity--;
 			}
 
+			if (stock && quantity > stock) {
+				quantity = stock;
+				Swal.fire({
+					icon: 'error',
+					title: @json(__('Error')),
+					text: @json(__('Requested quantity exceeds available stock.')),
+				});
+			}
+
 			qtyInput.value = quantity;
 			updateCartItem(itemId,
 				quantity,
@@ -204,11 +214,20 @@ document.addEventListener('DOMContentLoaded', function() {
 			);
 			const itemId = cartItem
 				.dataset.itemId;
+			const stock = parseInt(cartItem.dataset.stock || '0');
 			let quantity = parseInt(this
 				.value);
 
 			if (quantity < 1) quantity =
 				1;
+			if (stock && quantity > stock) {
+				quantity = stock;
+				Swal.fire({
+					icon: 'error',
+					title: @json(__('Error')),
+					text: @json(__('Requested quantity exceeds available stock.')),
+				});
+			}
 			this.value = quantity;
 
 			updateCartItem(itemId,
@@ -217,33 +236,29 @@ document.addEventListener('DOMContentLoaded', function() {
 		});
 	});
 
-	// Remove item
+	// Remove item (no browser confirm)
 	document.querySelectorAll('.remove-item').forEach(button => {
 		button.addEventListener('click', function() {
-			if (confirm(
-					'Are you sure you want to remove this item?'
-				)) {
-				const cartItem =
-					this
-					.closest(
-						'.cart-item'
-					);
-				const itemId =
-					cartItem
-					.dataset
-					.itemId;
-				removeCartItem(itemId,
-					cartItem
-				);
-			}
+			const cartItem = this.closest('.cart-item');
+			const itemId = cartItem.dataset.itemId;
+			removeCartItem(itemId, cartItem);
 		});
 	});
 
-	// Clear cart
+	// Clear cart with SweetAlert confirm
 	document.getElementById('clear-cart')?.addEventListener('click', function() {
-		if (confirm('Are you sure you want to clear your cart?')) {
-			clearCart();
-		}
+		Swal.fire({
+			title: @json(__('Are you sure?')),
+			text: @json(__('This will remove all items from your cart.')),
+			icon: 'warning',
+			showCancelButton: true,
+			confirmButtonText: @json(__('Yes, clear it')),
+			cancelButtonText: @json(__('Cancel')),
+		}).then((result) => {
+			if (result.isConfirmed) {
+				clearCart();
+			}
+		});
 	});
 
 	function updateCartItem(itemId, quantity, cartItem) {
@@ -271,10 +286,21 @@ document.addEventListener('DOMContentLoaded', function() {
 					location
 						.reload(); // Reload to update all totals
 				} else {
-					alert(data.message);
+					Swal.fire({
+						icon: 'error',
+						title: @json(__('Error')),
+						text: data.message || @json(__('An error occurred')),
+					});
 				}
 			})
-			.catch(error => console.error('Error:', error));
+			.catch(error => {
+				console.error('Error:', error);
+				Swal.fire({
+					icon: 'error',
+					title: @json(__('Error')),
+					text: @json(__('An error occurred')),
+				});
+			});
 	}
 
 	function removeCartItem(itemId, cartItem) {
@@ -290,10 +316,21 @@ document.addEventListener('DOMContentLoaded', function() {
 					cartItem.remove();
 					location.reload();
 				} else {
-					alert(data.message);
+					Swal.fire({
+						icon: 'error',
+						title: @json(__('Error')),
+						text: data.message || @json(__('An error occurred')),
+					});
 				}
 			})
-			.catch(error => console.error('Error:', error));
+			.catch(error => {
+				console.error('Error:', error);
+				Swal.fire({
+					icon: 'error',
+					title: @json(__('Error')),
+					text: @json(__('An error occurred')),
+				});
+			});
 	}
 
 	function clearCart() {
@@ -308,10 +345,21 @@ document.addEventListener('DOMContentLoaded', function() {
 				if (data.success) {
 					location.reload();
 				} else {
-					alert(data.message);
+					Swal.fire({
+						icon: 'error',
+						title: @json(__('Error')),
+						text: data.message || @json(__('An error occurred')),
+					});
 				}
 			})
-			.catch(error => console.error('Error:', error));
+			.catch(error => {
+				console.error('Error:', error);
+				Swal.fire({
+					icon: 'error',
+					title: @json(__('Error')),
+					text: @json(__('An error occurred')),
+				});
+			});
 	}
 });
 </script>

@@ -26,6 +26,20 @@ class DoctorProfileRepository implements DoctorProfileRepositoryInterface
             });
 
         return datatables()->of($profiles)
+            ->filter(function($query) {
+                $search = request('search.value');
+                if ($search) {
+                    $query->where(function($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%")
+                            ->orWhere('email', 'like', "%{$search}%")
+                            ->orWhere('phone', 'like', "%{$search}%")
+                            ->orWhereHas('speciality', function($sq) use ($search) {
+                                $sq->where('name_en', 'like', "%{$search}%")
+                                   ->orWhere('name_ar', 'like', "%{$search}%");
+                            });
+                    });
+                }
+            })
             ->addColumn('profile_photo', fn($item) => $this->profilePhoto($item))
             ->addColumn('name', fn($item) => $item->name)
             ->addColumn('email', fn($item) => $item->email)

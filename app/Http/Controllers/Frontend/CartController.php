@@ -127,6 +127,15 @@ class CartController extends Controller
 
             $cart = $this->getOrCreateCart();
             $cartItem = $cart->items()->findOrFail($itemId);
+            $product = $cartItem->product()->lockForUpdate()->first();
+
+            if (!$product) {
+                throw new \Exception(__('Product not found'));
+            }
+
+            if ($request->quantity > $product->stock) {
+                throw new \Exception(__('Requested quantity exceeds available stock.'));
+            }
 
             $cartItem->quantity = $request->quantity;
             $cartItem->save();
