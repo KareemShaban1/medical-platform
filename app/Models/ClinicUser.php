@@ -97,6 +97,11 @@ class ClinicUser extends Authenticatable
         return $this->morphOne(Subscription::class, 'subscribable');
     }
 
+    public function affiliateCode()
+    {
+        return $this->morphOne(AffiliateCode::class, 'affiliateable');
+    }
+
     // ------- helper methods -------
 
     /**

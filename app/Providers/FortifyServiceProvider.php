@@ -49,6 +49,12 @@ class FortifyServiceProvider extends ServiceProvider
             Config::set('fortify.prefix', 'supplier');
         }
 
+        if ($request->is('affiliate/*')) {
+            Config::set('fortify.guard', 'affiliate');
+            Config::set('fortify.password', 'affiliates');
+            Config::set('fortify.prefix', 'affiliate');
+        }
+
         if ($request->is('patient/*')) {
             Config::set('fortify.guard', 'patient');
             Config::set('fortify.password', 'patients');
@@ -93,6 +99,10 @@ class FortifyServiceProvider extends ServiceProvider
                 if ($request->user('admin')) {
                     // dd("admin");
                     return redirect('/admin/dashboard');
+                }
+
+                if ($request->user('affiliate')) {
+                    return redirect('/affiliate/dashboard');
                 }
 
                 if ($request->user('patient')) {
@@ -165,6 +175,9 @@ class FortifyServiceProvider extends ServiceProvider
             Fortify::authenticateUsing([new CustomAuthentication, 'authenticateClinicUser']);
             //// point to clinic auth folder [views/clinic/auth]
             Fortify::viewPrefix('backend.dashboards.clinic.auth.');
+        } elseif (Config::get('fortify.guard') == 'affiliate') {
+            Fortify::authenticateUsing([new CustomAuthentication, 'authenticateAffiliateUser']);
+            Fortify::viewPrefix('backend.dashboards.affiliate.auth.');
         } elseif (Config::get('fortify.guard') == 'patient') {
             //// this method will be used for patient authentication
             Fortify::authenticateUsing([new CustomAuthentication, 'authenticatePatient']);

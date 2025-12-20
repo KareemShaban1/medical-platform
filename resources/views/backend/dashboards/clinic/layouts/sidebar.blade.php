@@ -410,6 +410,12 @@
   				</a>
   			</li>
   			@endhasPermission
+			<li class="side-nav-item">
+				<a href="{{ route('clinic.affiliate.index') }}" class="side-nav-link">
+					<i class="uil-user-check"></i>
+					<span> {{ __('Affiliate Program') }} </span>
+				</a>
+			</li>
   			<!-- Notifications -->
   			@hasPermission('view notifications')
   			<li class="side-nav-item">

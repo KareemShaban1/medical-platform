@@ -21,11 +21,12 @@ use App\Models\City;
 use App\Models\Area;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Log;
+use App\Services\Affiliate\AffiliateService;
 
 class ClinicController extends Controller
 {
 
-    public function registerClinic(Request $request)
+    public function registerClinic(Request $request, AffiliateService $affiliateService)
     {
         // Check if email is already verified first
         $verifiedUser = ClinicUser::where('email', $request->user_email)
@@ -117,6 +118,7 @@ class ClinicController extends Controller
                 // Continue with existing user - send OTP
                 $clinic = $existingUser->clinic;
                 $user = $existingUser;
+                $affiliateService->ensureCode($user);
             } else {
                 // Create new clinic and user
                 $clinic = Clinic::create([
@@ -146,6 +148,8 @@ class ClinicController extends Controller
                     'clinic_id' => $clinic->id,
                     'status' => false
                 ]);
+
+                $affiliateService->ensureCode($user);
 
                 // Create role
                 $role = Role::firstOrCreate([

@@ -1153,6 +1153,21 @@ class PaymentController extends Controller
                         'transaction_id' => $transactionId,
                     ]);
 
+                    if (!empty($pendingSubscription['affiliate_code_id']) && !empty($pendingSubscription['affiliate_amount'])) {
+                        $affiliateService = app(\App\Services\Affiliate\AffiliateService::class);
+                        $affiliateCode = \App\Models\AffiliateCode::find($pendingSubscription['affiliate_code_id']);
+                        if ($affiliateCode) {
+                            $affiliateService->recordSubscriptionCommission(
+                                $subscription,
+                                $affiliateCode,
+                                (float) $pendingSubscription['affiliate_amount'],
+                                $pendingSubscription['discount_percent'] ?? null,
+                                $pendingSubscription['discount_amount'] ?? null,
+                                (float) ($pendingSubscription['commission_percent'] ?? 0)
+                            );
+                        }
+                    }
+
                     DB::commit();
 
                     // Send notifications
@@ -1229,6 +1244,21 @@ class PaymentController extends Controller
                     'payment_gateway' => $gateway,
                     'transaction_id' => $paymentResponse->transactionId,
                 ]);
+
+                if (!empty($pendingSubscription['affiliate_code_id']) && !empty($pendingSubscription['affiliate_amount'])) {
+                    $affiliateService = app(\App\Services\Affiliate\AffiliateService::class);
+                    $affiliateCode = \App\Models\AffiliateCode::find($pendingSubscription['affiliate_code_id']);
+                    if ($affiliateCode) {
+                        $affiliateService->recordSubscriptionCommission(
+                            $subscription,
+                            $affiliateCode,
+                            (float) $pendingSubscription['affiliate_amount'],
+                            $pendingSubscription['discount_percent'] ?? null,
+                            $pendingSubscription['discount_amount'] ?? null,
+                            (float) ($pendingSubscription['commission_percent'] ?? 0)
+                        );
+                    }
+                }
 
                 DB::commit();
 
