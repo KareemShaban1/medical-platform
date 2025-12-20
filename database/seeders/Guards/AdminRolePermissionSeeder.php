@@ -14,8 +14,14 @@ class AdminRolePermissionSeeder extends Seeder
     {
 
         // Clear permission cache
-        //app()[PermissionRegistrar::class]->forgetCachedPermissions();
+        app()[PermissionRegistrar::class]->forgetCachedPermissions();
         //$this->command->info('Clearing existing roles and permissions...');
+
+        // Clear roles (this will also clear role_permissions pivot table)
+        Role::query()->delete();
+
+        // Clear permissions
+        Permission::query()->delete();
 
         $teamId = Admin::TeamId;
 

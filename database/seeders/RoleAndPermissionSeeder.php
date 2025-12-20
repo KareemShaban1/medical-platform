@@ -19,11 +19,7 @@ class RoleAndPermissionSeeder extends Seeder
 
         $this->command->info('Starting roles and permissions seeding...');
 
-        // Clear roles (this will also clear role_permissions pivot table)
-        Role::query()->delete();
 
-        // Clear permissions
-        Permission::query()->delete();
 
         $this->command->info('Existing roles and permissions cleared.');
 
