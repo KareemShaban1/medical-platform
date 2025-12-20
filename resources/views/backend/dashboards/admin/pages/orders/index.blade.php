@@ -104,8 +104,7 @@ $(document).ready(function() {
 	let ordersTable = $('#orders-table').DataTable({
 		processing: true,
 		serverSide: true,
-		ajax: '{{ route('
-		admin.orders.data ') }}',
+		ajax: '{{ route('admin.orders.data') }}',
 		columns: [{
 				data: 'number',
 				name: 'number'
@@ -199,9 +198,7 @@ $(document).ready(function() {
 					xhr
 					.responseJSON
 					.message :
-					'{{ __('
-				An error occurred
-					') }}';
+					'{{ __('An error occurred') }}';
 				if (window
 					.toastr
 				) {

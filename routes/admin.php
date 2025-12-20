@@ -343,12 +343,15 @@ Route::group(
 
 Route::group(
     [
-        'prefix' => 'admin',
+        'prefix' => LaravelLocalization::setLocale() . '/admin',
         'as' => 'admin.',
         'namespace' => 'App\Http\Controllers\Backend\Dashboards\Admin',
         'middleware' => [
             'auth:admin',
             'verified',
+            'localeCookieRedirect',
+            'localizationRedirect',
+            'localeViewPath'
         ]
     ],
     function () {

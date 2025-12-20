@@ -76,8 +76,7 @@ function refreshTable() {
 }
 
 function deleteAnnouncement(id) {
-	if (!confirm('{{ __('
-			Are you sure ? ') }}')) return;
+	if (!confirm('{{ __('Are you sure ? ') }}')) return;
 	$.ajax({
 		url: "{{ route('admin.announcements.destroy', ':id') }}".replace(':id', id),
 		type: 'POST',
