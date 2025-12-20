@@ -40,7 +40,7 @@ class AuthController extends Controller
             'is_active' => true,
         ]);
 
-        $loginUrl = LaravelLocalization::getLocalizedURL(null, 'affiliate/login');
-        return redirect()->to($loginUrl)->with('status', __('Affiliate account created. Please login.'));
+        return redirect()->to(url('/affiliate/login'))
+            ->with('status', __('Affiliate account created. Please login.'));
     }
 }
