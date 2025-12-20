@@ -14,13 +14,10 @@ class RoleAndPermissionSeeder extends Seeder
 {
     public function run(): void
     {
-        $this->command->info('Starting roles and permissions seeding...');
-
-        // Clear permission cache
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
-
-        // Clear existing roles and permissions
         $this->command->info('Clearing existing roles and permissions...');
+
+        $this->command->info('Starting roles and permissions seeding...');
 
         // Clear roles (this will also clear role_permissions pivot table)
         Role::query()->delete();
@@ -39,9 +36,6 @@ class RoleAndPermissionSeeder extends Seeder
         $this->command->info('Seeding Supplier roles and permissions...');
         $this->call(SupplierRolePermissionSeeder::class);
         $this->call(SupplierUserSeeder::class);
-
-        // Clear permission cache again after seeding
-        app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
         $this->command->info('All roles and permissions seeded successfully!');
     }

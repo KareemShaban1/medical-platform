@@ -37,13 +37,24 @@ class PeriodGeneratorService
      */
     public function generatePeriodsForDoctor(int $doctorProfileId, int $daysAhead = 30): int
     {
+        $startDate = Carbon::today();
+        $endDate = Carbon::today()->addDays($daysAhead);
+
+        return $this->generatePeriodsForDoctorInRange($doctorProfileId, $startDate, $endDate);
+    }
+
+    /**
+     * Generate daily periods for a specific doctor in a date range (inclusive)
+     */
+    public function generatePeriodsForDoctorInRange(int $doctorProfileId, Carbon $startDate, Carbon $endDate): int
+    {
         $doctor = DoctorProfile::findOrFail($doctorProfileId);
 
         // Get clinic_user_id from doctor profile
         $clinicUserId = $doctor->clinic_user_id;
 
-        $startDate = Carbon::today();
-        $endDate = Carbon::today()->addDays($daysAhead);
+        $startDate = $startDate->copy()->startOfDay();
+        $endDate = $endDate->copy()->startOfDay();
 
         $periodsCreated = 0;
 
@@ -172,4 +183,3 @@ class PeriodGeneratorService
         return $this->generatePeriodsForDoctor($doctorProfileId, $daysAhead);
     }
 }
-

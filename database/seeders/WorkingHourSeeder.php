@@ -7,6 +7,7 @@ use App\Models\WorkingHour;
 use App\Models\DoctorProfile;
 use App\Models\ClinicUser;
 use App\Services\Appointment\PeriodGeneratorService;
+use Carbon\Carbon;
 
 class WorkingHourSeeder extends Seeder
 {
@@ -67,7 +68,11 @@ class WorkingHourSeeder extends Seeder
 
             // Generate daily periods for the next 60 days
             try {
-                $periodsCount = $periodGenerator->generatePeriodsForDoctor($doctor->id, 60);
+                $periodsCount = $periodGenerator->generatePeriodsForDoctorInRange(
+                    $doctor->id,
+                    Carbon::today()->subDays(30),
+                    Carbon::today()->addDays(60)
+                );
                 $totalPeriods += $periodsCount;
                 $this->command->info("  ✓ Generated {$periodsCount} periods for {$doctor->name}");
             } catch (\Exception $e) {
