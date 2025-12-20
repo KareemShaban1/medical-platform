@@ -27,6 +27,9 @@ class AffiliateController extends Controller
         $pendingPayout = $code
             ? AffiliatePayoutRequest::where('affiliate_code_id', $code->id)->where('status', 'pending')->latest()->first()
             : null;
+        $payoutRequests = $code
+            ? AffiliatePayoutRequest::where('affiliate_code_id', $code->id)->latest()->limit(10)->get()
+            : collect();
 
         return view('backend.dashboards.clinic.pages.affiliate.index', [
             'code' => $code,
@@ -35,6 +38,7 @@ class AffiliateController extends Controller
             'transactions' => $transactions,
             'payoutProfile' => $payoutProfile,
             'pendingPayout' => $pendingPayout,
+            'payoutRequests' => $payoutRequests,
         ]);
     }
 }
