@@ -64,25 +64,79 @@
                                         <td>
                                             @if($request->status === 'pending')
                                                 @hasPermission('update affiliate payouts')
-                                                <form method="POST" action="{{ route('admin.affiliates.payouts.mark-paid', $request->id) }}">
-                                                    @csrf
-                                                    <button type="submit" class="btn btn-sm btn-success">
-                                                        {{ __('Mark Paid') }}
-                                                    </button>
-                                                </form>
+                                                <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#markPaidModal-{{ $request->id }}">
+                                                    {{ __('Mark Paid') }}
+                                                </button>
                                                 @else
                                                 <span class="text-muted">{{ __('No access') }}</span>
                                                 @endhasPermission
                                             @else
-                                                <span class="text-muted">
-                                                    {{ __('Paid') }}
-                                                    @if($request->paid_at)
-                                                        ({{ $request->paid_at->format('M d, Y') }})
-                                                    @endif
-                                                </span>
+                                                <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#payoutProofModal-{{ $request->id }}">
+                                                    {{ __('View Proof') }}
+                                                </button>
                                             @endif
                                         </td>
                                     </tr>
+                                    @if($request->status === 'pending')
+                                    <div class="modal fade" id="markPaidModal-{{ $request->id }}" tabindex="-1" aria-labelledby="markPaidModalLabel-{{ $request->id }}" aria-hidden="true">
+                                        <div class="modal-dialog modal-lg modal-dialog-centered">
+                                            <div class="modal-content">
+                                                <form method="POST" action="{{ route('admin.affiliates.payouts.mark-paid', $request->id) }}" enctype="multipart/form-data">
+                                                    @csrf
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="markPaidModalLabel-{{ $request->id }}">{{ __('Mark Payout as Paid') }}</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ __('Close') }}"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="mb-3">
+                                                            <label class="form-label">{{ __('Upload Proof Images') }}</label>
+                                                            <input type="file" class="form-control" name="proof_images[]" multiple accept="image/*">
+                                                            <small class="text-muted">{{ __('Upload screenshots or receipts (optional).') }}</small>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label class="form-label">{{ __('Admin Note') }}</label>
+                                                            <textarea class="form-control" name="admin_note" rows="3" placeholder="{{ __('Add a note for the affiliate (optional).') }}"></textarea>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
+                                                        <button type="submit" class="btn btn-success">{{ __('Mark Paid') }}</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @else
+                                    <div class="modal fade" id="payoutProofModal-{{ $request->id }}" tabindex="-1" aria-labelledby="payoutProofModalLabel-{{ $request->id }}" aria-hidden="true">
+                                        <div class="modal-dialog modal-lg modal-dialog-centered">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="payoutProofModalLabel-{{ $request->id }}">{{ __('Payout Proof') }}</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ __('Close') }}"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    @if($request->admin_note)
+                                                        <div class="mb-3">
+                                                            <div class="text-muted">{{ __('Admin Note') }}</div>
+                                                            <div class="fw-bold" style="white-space: pre-wrap;">{{ $request->admin_note }}</div>
+                                                        </div>
+                                                    @endif
+                                                    <div class="row g-3">
+                                                        @forelse($request->getMedia('affiliate_payout_proofs') as $media)
+                                                            <div class="col-md-4">
+                                                                <a href="{{ $media->getUrl() }}" target="_blank">
+                                                                    <img src="{{ $media->getUrl() }}" class="img-fluid rounded border" alt="{{ $media->name }}">
+                                                                </a>
+                                                            </div>
+                                                        @empty
+                                                            <p class="text-muted mb-0">{{ __('No proof images uploaded.') }}</p>
+                                                        @endforelse
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @endif
                                 @empty
                                     <tr>
                                         <td colspan="10" class="text-center text-muted py-4">

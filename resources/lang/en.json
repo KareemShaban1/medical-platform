@@ -2526,5 +2526,14 @@
     "Discount %": "Discount %",
     "Commission %": "Commission %",
     "Owner": "Owner",
-    "Affiliate User" : "Affiliate User"
+    "Affiliate User": "Affiliate User",
+    "View Proof": "View Proof",
+    "Payout Proof": "Payout Proof",
+    "Proof": "Proof",
+    "Admin Note": "Admin Note",
+    "Upload Proof Images": "Upload Proof Images",
+    "Upload screenshots or receipts (optional).": "Upload screenshots or receipts (optional).",
+    "Add a note for the affiliate (optional).": "Add a note for the affiliate (optional).",
+    "Mark Payout as Paid": "Mark Payout as Paid",
+    "No proof images uploaded.": "No proof images uploaded."
 }
