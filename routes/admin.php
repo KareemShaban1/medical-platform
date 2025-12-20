@@ -318,6 +318,34 @@ Route::group(
             Route::delete('subscriptions/{id}', [\App\Http\Controllers\Backend\Dashboards\Admin\SubscriptionManagementController::class, 'destroy'])->name('subscriptions.destroy');
             Route::get('subscriptions', [\App\Http\Controllers\Backend\Dashboards\Admin\SubscriptionManagementController::class, 'index'])->name('subscriptions.index');
         });
+
+        // Affiliate Management
+        Route::group(['prefix' => 'affiliates'], function () {
+            Route::get('/', [\App\Http\Controllers\Backend\Dashboards\Admin\AffiliateCodeController::class, 'index'])->name('affiliates.index');
+            Route::get('/settings', [\App\Http\Controllers\Backend\Dashboards\Admin\AffiliateSettingsController::class, 'index'])->name('affiliates.settings');
+            Route::post('/settings', [\App\Http\Controllers\Backend\Dashboards\Admin\AffiliateSettingsController::class, 'update'])->name('affiliates.settings.update');
+            Route::post('/{id}', [\App\Http\Controllers\Backend\Dashboards\Admin\AffiliateCodeController::class, 'update'])
+                ->whereNumber('id')
+                ->name('affiliates.update');
+        });
+    }
+);
+
+Route::group(
+    [
+        'prefix' => 'admin',
+        'as' => 'admin.',
+        'namespace' => 'App\Http\Controllers\Backend\Dashboards\Admin',
+        'middleware' => [
+            'auth:admin',
+            'verified',
+        ]
+    ],
+    function () {
+        Route::get('/affiliates/settings', [\App\Http\Controllers\Backend\Dashboards\Admin\AffiliateSettingsController::class, 'index'])
+            ->name('affiliates.settings');
+        Route::post('/affiliates/settings', [\App\Http\Controllers\Backend\Dashboards\Admin\AffiliateSettingsController::class, 'update'])
+            ->name('affiliates.settings.update');
     }
 );
 

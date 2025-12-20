@@ -22,12 +22,21 @@ class Subscription extends Model
         'payment_status',
         'payment_gateway',
         'transaction_id',
+        'affiliate_code_id',
+        'discount_percent',
+        'discount_amount',
+        'commission_percent',
+        'commission_amount',
     ];
 
     protected $casts = [
         'start_date' => 'date',
         'end_date' => 'date',
         'auto_renew' => 'boolean',
+        'discount_percent' => 'decimal:2',
+        'discount_amount' => 'decimal:2',
+        'commission_percent' => 'decimal:2',
+        'commission_amount' => 'decimal:2',
     ];
 
     public function subscribable()
@@ -38,6 +47,11 @@ class Subscription extends Model
     public function plan()
     {
         return $this->belongsTo(Plan::class);
+    }
+
+    public function affiliateCode()
+    {
+        return $this->belongsTo(AffiliateCode::class);
     }
 
     public function featureUsages()
@@ -85,4 +99,3 @@ class Subscription extends Model
         return !$this->isActive();
     }
 }
-

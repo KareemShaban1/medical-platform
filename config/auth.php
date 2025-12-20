@@ -56,6 +56,10 @@ return [
             'driver' => 'session',
             'provider' => 'patients',
         ],
+        'affiliate' => [
+            'driver' => 'session',
+            'provider' => 'affiliates',
+        ],
     ],
 
     /*
@@ -96,6 +100,10 @@ return [
             'driver' => 'eloquent',
             'model' => App\Models\Patient::class,
         ],
+        'affiliates' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\AffiliateUser::class,
+        ],
         // 'users' => [
         //     'driver' => 'database',
         //     'table' => 'users',
@@ -130,6 +138,12 @@ return [
         ],
         'patients' => [
             'provider' => 'patients',
+            'table' => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'password_reset_tokens'),
+            'expire' => 60,
+            'throttle' => 60,
+        ],
+        'affiliates' => [
+            'provider' => 'affiliates',
             'table' => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'password_reset_tokens'),
             'expire' => 60,
             'throttle' => 60,

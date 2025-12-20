@@ -160,6 +160,68 @@
 <!-- Registration Section -->
 @include('frontend.pages.home.partials.registration-section')
 
+<!-- Affiliate Program Section -->
+@php
+	$affiliateRegisterUrl = url('/affiliate/register');
+	$affiliateLoginUrl = url('/affiliate/login');
+	$affiliateDiscount = $affiliateSettings?->default_discount_percent ?? 5;
+	$affiliateCommission = $affiliateSettings?->default_commission_percent ?? 5;
+@endphp
+<section class="relative overflow-hidden bg-white py-16">
+	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+		<div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+			<div>
+				<p class="text-sm uppercase tracking-widest text-primary-600 font-semibold mb-3">{{ __('Affiliate Program') }}</p>
+				<h2 class="text-4xl font-bold text-gray-900 mb-4">
+					{{ __('Share. Save. Earn.') }}
+				</h2>
+				<p class="text-lg text-gray-600 mb-6">
+					{{ __('Invite clinics, suppliers, and doctors to subscribe and earn commission on every paid plan. Your discount code helps them save, and you build steady income.') }}
+				</p>
+				<div class="flex flex-wrap gap-3">
+					<a href="{{ $affiliateRegisterUrl }}"
+						class="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-primary-gradient text-white font-semibold hover:opacity-90 transition">
+						<i class="fas fa-user-plus mr-2"></i>{{ __('Join as Affiliate') }}
+					</a>
+					<a href="{{ $affiliateLoginUrl }}"
+						class="inline-flex items-center justify-center px-6 py-3 rounded-lg border border-gray-300 text-gray-700 font-semibold hover:bg-gray-50 transition">
+						<i class="fas fa-sign-in-alt mr-2"></i>{{ __('Affiliate Login') }}
+					</a>
+				</div>
+			</div>
+			<div class="relative">
+				<div class="rounded-3xl bg-gradient-to-br from-amber-50 via-white to-emerald-50 border border-amber-100 p-8 shadow-xl">
+					<div class="flex items-center justify-between mb-6">
+						<div class="flex items-center gap-3">
+							<div class="h-12 w-12 rounded-full bg-amber-100 flex items-center justify-center text-amber-600">
+								<i class="fas fa-gift"></i>
+							</div>
+							<div>
+								<p class="text-sm text-gray-500">{{ __('Your Discount Code') }}</p>
+							<p class="text-xl font-bold text-gray-900">XXX-XXXX</p>
+							</div>
+						</div>
+						<span class="text-xs px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 font-semibold">{{ __('Live') }}</span>
+					</div>
+					<div class="grid grid-cols-2 gap-4">
+						<div class="rounded-xl bg-white border border-gray-100 p-4">
+							<p class="text-sm text-gray-500">{{ __('Discount') }}</p>
+							<p class="text-2xl font-bold text-gray-900">{{ rtrim(rtrim(number_format($affiliateDiscount, 2, '.', ''), '0'), '.') }}%</p>
+						</div>
+						<div class="rounded-xl bg-white border border-gray-100 p-4">
+							<p class="text-sm text-gray-500">{{ __('Commission') }}</p>
+							<p class="text-2xl font-bold text-gray-900">{{ rtrim(rtrim(number_format($affiliateCommission, 2, '.', ''), '0'), '.') }}%</p>
+						</div>
+					</div>
+					<p class="text-sm text-gray-500 mt-6">
+						{{ __('Track your earnings in the affiliate dashboard and grow your balance with every subscription.') }}
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+
 <!-- Subscription Plans Section -->
 <section id="subscriptions-plans" class="py-16 bg-gray-50 scroll-mt-20">
 	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

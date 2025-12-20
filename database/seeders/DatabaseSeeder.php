@@ -49,6 +49,7 @@ class DatabaseSeeder extends Seeder
             GovernorateSeeder::class,
             CitySeeder::class,
             AreaSeeder::class,
+            SubscriptionSeeder::class,
         ]);
 
         $this->command->newLine();

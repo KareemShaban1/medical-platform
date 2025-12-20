@@ -81,6 +81,10 @@ Route::group(
             Route::get('/usage', [\App\Http\Controllers\Backend\Dashboards\Clinic\SubscriptionController::class, 'usage'])->name('subscriptions.usage');
         });
 
+        // Affiliate
+        Route::get('/affiliate', [\App\Http\Controllers\Backend\Dashboards\Clinic\AffiliateController::class, 'index'])
+            ->name('affiliate.index');
+
         // Users Management
         Route::group(['prefix' => 'users'], function () {
             Route::get('/roles', [\App\Http\Controllers\Backend\Dashboards\Clinic\UserController::class, 'roles'])->name('users.roles');

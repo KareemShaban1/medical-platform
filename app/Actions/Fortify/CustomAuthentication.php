@@ -6,6 +6,7 @@ use App\Models\Admin;
 use App\Models\ClinicUser;
 use App\Models\SupplierUser;
 use App\Models\Patient;
+use App\Models\AffiliateUser;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
@@ -131,6 +132,22 @@ class CustomAuthentication
         if ($admin && Hash::check($password, $admin->password)) {
             return $admin;
         }
+        return false;
+    }
+
+    public function authenticateAffiliateUser($request)
+    {
+        $email = $request->email;
+        $password = $request->password;
+
+        $user = AffiliateUser::where('email', '=', $email)
+            ->where('status', true)
+            ->first();
+
+        if ($user && Hash::check($password, $user->password)) {
+            return $user;
+        }
+
         return false;
     }
 }

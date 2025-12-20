@@ -541,6 +541,35 @@
 			</li>
 			@endhasAnyPermission
 
+			@hasAnyPermission('view affiliates', 'view affiliate settings')
+			<li class="side-nav-item">
+				<a data-bs-toggle="collapse" href="#sidebarAffiliates" aria-expanded="false"
+					aria-controls="sidebarAffiliates" class="side-nav-link">
+					<i class="uil-user-check"></i>
+					<span> {{ __('Affiliates') }} </span>
+					<span class="menu-arrow"></span>
+				</a>
+				<div class="collapse" id="sidebarAffiliates">
+					<ul class="side-nav-second-level">
+						@hasPermission('view affiliates')
+						<li>
+							<a href="{{ route('admin.affiliates.index') }}">
+								<span> {{ __('Affiliate Codes') }} </span>
+							</a>
+						</li>
+						@endhasPermission
+						@hasPermission('view affiliate settings')
+						<li>
+							<a href="{{ route('admin.affiliates.settings') }}">
+								<span> {{ __('Affiliate Settings') }} </span>
+							</a>
+						</li>
+						@endhasPermission
+					</ul>
+				</div>
+			</li>
+			@endhasAnyPermission
+
 
 		</ul>
 

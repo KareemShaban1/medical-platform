@@ -13,6 +13,7 @@ use App\Models\Clinic;
 use App\Models\Governorate;
 use App\Models\City;
 use App\Models\Area;
+use App\Models\AffiliateSetting;
 use App\Services\Subscription\PlanService;
 use App\Services\Subscription\SubscriptionService;
 use App\PaymentGateways\PaymentGatewayManager;
@@ -69,6 +70,8 @@ class HomeController extends Controller
             ->values()
             ->toArray();
 
+        $affiliateSettings = AffiliateSetting::first();
+
         // If AJAX request, return only the plans grid
         if ($request->ajax() || $request->wantsJson()) {
             $plans = match($planType) {
@@ -85,7 +88,8 @@ class HomeController extends Controller
 
 		return view('frontend.pages.home.index', compact(
             'jobs', 'suppliers', 'rentalSpaces', 'courses', 'products', 'clinics',
-            'doctorPlans', 'clinicPlans', 'supplierPlans', 'planType', 'currentSubscription', 'availableGateways'
+            'doctorPlans', 'clinicPlans', 'supplierPlans', 'planType', 'currentSubscription', 'availableGateways',
+            'affiliateSettings'
         ));
     }
 

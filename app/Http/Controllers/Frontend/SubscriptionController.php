@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
 use App\Mail\SubscriptionCreatedUserMail;
 use App\Mail\SubscriptionCreatedAdminMail;
+use App\Services\Affiliate\AffiliateService;
 
 class SubscriptionController extends Controller
 {
@@ -162,6 +163,17 @@ class SubscriptionController extends Controller
         try {
             DB::beginTransaction();
 
+            $affiliateService = app(AffiliateService::class);
+            $affiliateCodeValue = trim((string) $request->input('affiliate_code', ''));
+            $affiliateCode = $affiliateCodeValue ? $affiliateService->resolveCode($affiliateCodeValue) : null;
+            if ($affiliateCodeValue && !$affiliateCode) {
+                DB::rollBack();
+                return response()->json([
+                    'status' => 'error',
+                    'message' => __('Invalid discount code'),
+                ], 422);
+            }
+
             // Get current active subscription to calculate upgrade difference
             $currentSubscription = $this->subscriptionService->getActiveSubscription($entity);
             $currentPlanPrice = 0;
@@ -177,6 +189,17 @@ class SubscriptionController extends Controller
 
             // Calculate payment amount: difference for upgrades, full price for new subscriptions
             $paymentAmount = $isUpgrade ? max(0, $plan->price - $currentPlanPrice) : $plan->price;
+
+            $discountPercent = null;
+            $discountAmount = null;
+            $commissionPercent = null;
+
+            if ($affiliateCode && $paymentAmount > 0) {
+                $discountPercent = $affiliateService->getDiscountPercent($affiliateCode);
+                $commissionPercent = $affiliateService->getCommissionPercent($affiliateCode);
+                $discountAmount = $affiliateService->calculateDiscount($paymentAmount, $discountPercent);
+                $paymentAmount = max(0, $paymentAmount - $discountAmount);
+            }
 
             // Check if plan is free (price = 0) or upgrade difference is 0
             $isFreePlan = $plan->price <= 0 || $paymentAmount <= 0;
@@ -273,6 +296,11 @@ class SubscriptionController extends Controller
                     'subscription_number' => $subscriptionNumber,
                     'payment_gateway' => $gatewayName,
                     'transaction_id' => $paymentResponse->transactionId,
+                    'affiliate_code_id' => $affiliateCode?->id,
+                    'discount_percent' => $discountPercent,
+                    'discount_amount' => $discountAmount,
+                    'commission_percent' => $commissionPercent,
+                    'affiliate_amount' => $paymentAmount,
                 ]);
                 session()->put('payment_subscription_number', $subscriptionNumber);
 
@@ -298,6 +326,17 @@ class SubscriptionController extends Controller
                     'payment_gateway' => $gatewayName,
                     'transaction_id' => $isFreePlan ? 'FREE-' . $subscriptionNumber : null,
                 ]);
+
+                if ($affiliateCode && $paymentAmount > 0) {
+                    $affiliateService->recordSubscriptionCommission(
+                        $subscription,
+                        $affiliateCode,
+                        $paymentAmount,
+                        $discountPercent,
+                        $discountAmount,
+                        $commissionPercent ?? 0
+                    );
+                }
 
                 // Only process payment if plan is not free (for COD)
                 if (!$isFreePlan && $gatewayName === 'cod') {

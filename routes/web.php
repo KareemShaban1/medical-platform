@@ -244,3 +244,4 @@ Route::post('/register', [PatientAuthController::class, 'register'])->name('regi
 require __DIR__ . '/admin.php';
 require __DIR__.'/clinic.php';
 require __DIR__.'/supplier.php';
+require __DIR__.'/affiliate.php';
