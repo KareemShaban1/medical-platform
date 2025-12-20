@@ -322,8 +322,18 @@ Route::group(
         // Affiliate Management
         Route::group(['prefix' => 'affiliates'], function () {
             Route::get('/', [\App\Http\Controllers\Backend\Dashboards\Admin\AffiliateCodeController::class, 'index'])->name('affiliates.index');
+            Route::get('/users', [\App\Http\Controllers\Backend\Dashboards\Admin\AffiliateUserController::class, 'index'])
+                ->name('affiliates.users.index');
+            Route::get('/users/{affiliateCode}', [\App\Http\Controllers\Backend\Dashboards\Admin\AffiliateUserController::class, 'show'])
+                ->whereNumber('affiliateCode')
+                ->name('affiliates.users.show');
             Route::get('/settings', [\App\Http\Controllers\Backend\Dashboards\Admin\AffiliateSettingsController::class, 'index'])->name('affiliates.settings');
             Route::post('/settings', [\App\Http\Controllers\Backend\Dashboards\Admin\AffiliateSettingsController::class, 'update'])->name('affiliates.settings.update');
+            Route::get('/payouts', [\App\Http\Controllers\Backend\Dashboards\Admin\AffiliatePayoutController::class, 'index'])
+                ->name('affiliates.payouts');
+            Route::post('/payouts/{payoutRequest}/mark-paid', [\App\Http\Controllers\Backend\Dashboards\Admin\AffiliatePayoutController::class, 'markPaid'])
+                ->whereNumber('payoutRequest')
+                ->name('affiliates.payouts.mark-paid');
             Route::post('/{id}', [\App\Http\Controllers\Backend\Dashboards\Admin\AffiliateCodeController::class, 'update'])
                 ->whereNumber('id')
                 ->name('affiliates.update');
@@ -342,10 +352,20 @@ Route::group(
         ]
     ],
     function () {
+        Route::get('/affiliates/users', [\App\Http\Controllers\Backend\Dashboards\Admin\AffiliateUserController::class, 'index'])
+            ->name('affiliates.users.index');
+        Route::get('/affiliates/users/{affiliateCode}', [\App\Http\Controllers\Backend\Dashboards\Admin\AffiliateUserController::class, 'show'])
+            ->whereNumber('affiliateCode')
+            ->name('affiliates.users.show');
         Route::get('/affiliates/settings', [\App\Http\Controllers\Backend\Dashboards\Admin\AffiliateSettingsController::class, 'index'])
             ->name('affiliates.settings');
         Route::post('/affiliates/settings', [\App\Http\Controllers\Backend\Dashboards\Admin\AffiliateSettingsController::class, 'update'])
             ->name('affiliates.settings.update');
+        Route::get('/affiliates/payouts', [\App\Http\Controllers\Backend\Dashboards\Admin\AffiliatePayoutController::class, 'index'])
+            ->name('affiliates.payouts');
+        Route::post('/affiliates/payouts/{payoutRequest}/mark-paid', [\App\Http\Controllers\Backend\Dashboards\Admin\AffiliatePayoutController::class, 'markPaid'])
+            ->whereNumber('payoutRequest')
+            ->name('affiliates.payouts.mark-paid');
     }
 );
 

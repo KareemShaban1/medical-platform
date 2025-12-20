@@ -21,6 +21,8 @@ Route::group(
     ],
     function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        Route::post('/payout-requests', [\App\Http\Controllers\Backend\Dashboards\Affiliate\PayoutRequestController::class, 'store'])
+            ->name('payouts.store');
     }
 );
 
