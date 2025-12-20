@@ -1,5 +1,8 @@
-@if($plans->count() > 0)
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+@php
+    $plansCount = $plans->count();
+@endphp
+@if($plansCount > 0)
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-{{ $plansCount == 4 ? '4' : '3' }} gap-8">
 	@foreach($plans as $plan)
 	<div
 		class="plan-card {{ $plan->level === 'advanced' ? 'featured' : '' }} bg-white rounded-2xl p-8 shadow-lg flex flex-col h-full">

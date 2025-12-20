@@ -101,6 +101,44 @@
                     </div>
                 </div>
             </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ __('Payout Requests') }}</h5>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-nowrap align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>{{ __('Amount') }}</th>
+                                    <th>{{ __('Payment Method') }}</th>
+                                    <th>{{ __('Status') }}</th>
+                                    <th>{{ __('Requested At') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($payoutRequests as $payout)
+                                    <tr>
+                                        <td>{{ number_format($payout->amount, 2) }}</td>
+                                        <td>{{ $payout->payout_method }}</td>
+                                        <td>
+                                            <span class="badge bg-{{ $payout->status === 'paid' ? 'success' : 'warning' }}">
+                                                {{ ucfirst($payout->status) }}
+                                            </span>
+                                        </td>
+                                        <td>{{ $payout->created_at?->format('M d, Y') }}</td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="4" class="text-center text-muted py-3">
+                                            {{ __('No payout requests found.') }}
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
