@@ -118,7 +118,7 @@ function openUpload(id) {
 			form.append('results[]', f);
 		}
 		form.append('_token', '{{ csrf_token() }}');
-		fetch("{{ route("clinic.lab-orders.upload", ": id ") }}".replace(":id",id), {
+		fetch("{{ route('clinic.lab-orders.upload', ':id') }}".replace(":id",id), {
 					method: 'POST',
 					body: form
 				})
@@ -128,7 +128,7 @@ function openUpload(id) {
 }
 
 function markCompleted(id) {
-	fetch('{{ route('clinic.lab-orders.complete', ': id ') }}'.replace(':id', id), {
+	fetch('{{ route('clinic.lab-orders.complete', ':id') }}'.replace(':id', id), {
 			method: 'POST',
 			headers: {
 				'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -138,3 +138,4 @@ function markCompleted(id) {
 </script>
 @endpush
 @endsection
+
