@@ -30,11 +30,6 @@ class RoleAndPermissionSeeder extends Seeder
 
         $this->command->info('Existing roles and permissions cleared.');
 
-        // Seed Admin roles and permissions
-        $this->command->info('Seeding Admin roles and permissions...');
-        $this->call(AdminRolePermissionSeeder::class);
-        $this->call(SystemAdminSeeder::class);
-
         // Seed Clinic roles and permissions
         $this->command->info('Seeding Clinic roles and permissions...');
         $this->call(ClinicRolePermissionSeeder::class);

@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Database\Seeders\SystemAdminSeeder;
+use Database\Seeders\Guards\AdminRolePermissionSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -24,20 +26,23 @@ class DatabaseSeeder extends Seeder
         $this->command->info('───────────────────────────────────────────────────────────');
 
         $this->call([
-            AdminSeeder::class,               // Create base admin user
-            SystemAdminSeeder::class,         // Create system admin (separate account)
-            RoleAndPermissionSeeder::class,   // Create roles and permissions (guards/teams)
+
+            // Seed Admin roles and permissions
+            AdminRolePermissionSeeder::class,
+            SystemAdminSeeder::class,
 
             // Core domain dictionaries
             SpecialitySeeder::class,          // Medical specialities
             CategorySeeder::class,            // Product categories
 
-            // Core organizations/entities
+
             ClinicSeeder::class,              // Clinics
             SupplierSeeder::class,            // Suppliers
 
+            RoleAndPermissionSeeder::class,   // Create roles and permissions (guards/teams)
+
             // Users for suppliers and initial content
-            SupplierUserSeeder::class,        // Supplier users + roles
+            //SupplierUserSeeder::class,        // Supplier users + roles
             ProductSeeder::class,             // Products
             BlogCategorySeeder::class,
             BlogPostSeeder::class,
@@ -52,20 +57,11 @@ class DatabaseSeeder extends Seeder
             SubscriptionSeeder::class,
         ]);
 
-        $this->command->newLine();
-
-        // Step 2: Clinic Staff & Doctors
-        $this->command->info('👨‍⚕️ STEP 2: Creating clinic staff and doctors...');
-        $this->command->info('───────────────────────────────────────────────────────────');
-
-        $this->call([
-            ClinicUserSeeder::class,          // Create clinic users and doctor profiles
-        ]);
 
         $this->command->newLine();
 
         // Step 3: Working Hours & Availability
-        $this->command->info('📅 STEP 3: Setting up working hours and availability...');
+        $this->command->info('📅 STEP 2: Setting up working hours and availability...');
         $this->command->info('───────────────────────────────────────────────────────────');
 
         $this->call([
@@ -75,7 +71,7 @@ class DatabaseSeeder extends Seeder
         $this->command->newLine();
 
         // Step 4: Patients
-        $this->command->info('🧑‍🤝‍🧑 STEP 4: Creating patients and assignments...');
+        $this->command->info('🧑‍🤝‍🧑 STEP 3: Creating patients and assignments...');
         $this->command->info('───────────────────────────────────────────────────────────');
 
         $this->call([
@@ -85,7 +81,7 @@ class DatabaseSeeder extends Seeder
         $this->command->newLine();
 
         // Step 5: Appointments
-        $this->command->info('📋 STEP 5: Creating appointments...');
+        $this->command->info('📋 STEP 4: Creating appointments...');
         $this->command->info('───────────────────────────────────────────────────────────');
 
         $this->call([
@@ -95,7 +91,7 @@ class DatabaseSeeder extends Seeder
         $this->command->newLine();
 
         // Step 6: Medical Records & Prescriptions
-        $this->command->info('📄 STEP 6: Creating medical records and prescriptions...');
+        $this->command->info('📄 STEP 5: Creating medical records and prescriptions...');
         $this->command->info('───────────────────────────────────────────────────────────');
 
         $this->call([
@@ -106,7 +102,7 @@ class DatabaseSeeder extends Seeder
         $this->command->newLine();
 
         // Step 7: Lab Orders
-        $this->command->info('🧪 STEP 7: Creating lab orders...');
+        $this->command->info('🧪 STEP 6: Creating lab orders...');
         $this->command->info('───────────────────────────────────────────────────────────');
 
         $this->call([
@@ -124,8 +120,8 @@ class DatabaseSeeder extends Seeder
 
         $this->command->newLine();
 
-        // Step 8: Invoices (based on completed appointments)
-    $this->command->info('💳 STEP 8: Generating invoices...');
+    // Step 7: Invoices (based on completed appointments)
+    $this->command->info('💳 STEP 7: Generating invoices...');
     $this->command->info('───────────────────────────────────────────────────────────');
 
         $this->call([
