@@ -37,4 +37,14 @@ class AffiliateCode extends Model
     {
         return $this->hasMany(AffiliateTransaction::class);
     }
+
+    public function payoutProfile()
+    {
+        return $this->hasOne(AffiliatePayoutProfile::class);
+    }
+
+    public function payoutRequests()
+    {
+        return $this->hasMany(AffiliatePayoutRequest::class);
+    }
 }

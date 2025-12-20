@@ -322,6 +322,7 @@ function subscribeToPlan(planId, planLevel, planPrice, btn) {
 				title: "{{ __('Not Allowed') }}",
 				message: "{{ __('You cannot subscribe to a lower plan while you have an active subscription.') }}",
 				showConfirm: false,
+				showDiscount: false,
 				requiresPayment: false,
 			});
 			return;

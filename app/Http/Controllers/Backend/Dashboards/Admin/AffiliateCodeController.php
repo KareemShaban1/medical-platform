@@ -4,7 +4,10 @@ namespace App\Http\Controllers\Backend\Dashboards\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\AffiliateCode;
+use App\Models\AffiliateUser;
+use App\Models\ClinicUser;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class AffiliateCodeController extends Controller
 {
@@ -12,7 +15,17 @@ class AffiliateCodeController extends Controller
     {
         abort_if(!hasPermission('view affiliates'), 403, __('You are not authorized to view affiliates'));
 
-        $query = AffiliateCode::with('affiliateable');
+        $query = AffiliateCode::with(['affiliateable' => function ($morphTo) {
+            $morphTo->morphWith([
+                \App\Models\ClinicUser::class => [],
+                \App\Models\AffiliateUser::class => [],
+            ]);
+            if (method_exists($morphTo, 'morphWithTrashed')) {
+                $morphTo->morphWithTrashed([
+                    \App\Models\ClinicUser::class => [],
+                ]);
+            }
+        }]);
 
         if ($request->filled('type') && $request->type !== 'all') {
             $type = $request->type;
@@ -27,7 +40,41 @@ class AffiliateCodeController extends Controller
 
         $codes = $query->latest()->paginate(20);
 
-        return view('backend.dashboards.admin.pages.affiliates.index', compact('codes'));
+        $clinicIds = $codes->getCollection()
+            ->where('affiliateable_type', ClinicUser::class)
+            ->pluck('affiliateable_id')
+            ->unique()
+            ->values();
+        $affiliateIds = $codes->getCollection()
+            ->where('affiliateable_type', AffiliateUser::class)
+            ->pluck('affiliateable_id')
+            ->unique()
+            ->values();
+
+        $clinicUsersById = ClinicUser::withTrashed()
+            ->whereIn('id', $clinicIds)
+            ->get()
+            ->keyBy('id');
+        $affiliateUsersById = AffiliateUser::whereIn('id', $affiliateIds)
+            ->get()
+            ->keyBy('id');
+        $clinicUsersByCodePrefix = ClinicUser::withTrashed()
+            ->get()
+            ->mapWithKeys(function ($user) {
+                $prefix = strtoupper(Str::slug($user->name ?? '', ''));
+                if ($prefix === '') {
+                    return [];
+                }
+                $prefix = substr($prefix, 0, 8);
+                return [$prefix => $user];
+            });
+
+        return view('backend.dashboards.admin.pages.affiliates.index', compact(
+            'codes',
+            'clinicUsersById',
+            'affiliateUsersById',
+            'clinicUsersByCodePrefix'
+        ));
     }
 
     public function update(Request $request, $id)
