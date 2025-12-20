@@ -541,7 +541,7 @@
 			</li>
 			@endhasAnyPermission
 
-			@hasAnyPermission('view affiliates', 'view affiliate settings')
+			@hasAnyPermission('view affiliates', 'view affiliate settings', 'view affiliate payouts', 'view affiliate users')
 			<li class="side-nav-item">
 				<a data-bs-toggle="collapse" href="#sidebarAffiliates" aria-expanded="false"
 					aria-controls="sidebarAffiliates" class="side-nav-link">
@@ -558,10 +558,24 @@
 							</a>
 						</li>
 						@endhasPermission
+						@hasPermission('view affiliate users')
+						<li>
+							<a href="{{ route('admin.affiliates.users.index') }}">
+								<span> {{ __('Affiliate Users') }} </span>
+							</a>
+						</li>
+						@endhasPermission
 						@hasPermission('view affiliate settings')
 						<li>
 							<a href="{{ route('admin.affiliates.settings') }}">
 								<span> {{ __('Affiliate Settings') }} </span>
+							</a>
+						</li>
+						@endhasPermission
+						@hasPermission('view affiliate payouts')
+						<li>
+							<a href="{{ route('admin.affiliates.payouts') }}">
+								<span> {{ __('Payout Requests') }} </span>
 							</a>
 						</li>
 						@endhasPermission

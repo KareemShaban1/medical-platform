@@ -63,6 +63,8 @@ class AdminRolePermissionSeeder extends Seeder
             'Affiliates' => [
                 'view affiliates', 'update affiliates',
                 'view affiliate settings', 'update affiliate settings',
+                'view affiliate payouts', 'update affiliate payouts',
+                'view affiliate users',
             ],
             'Doctor Profiles' => ['view doctor profiles', 'approve doctor profile', 'reject doctor profile', 'toggle featured doctor profile', 'toggle lock doctor profile'],
             'Notifications' => ['view notifications','view trash notifications', 'mark notification as read', 'mark all notifications as read'],
@@ -120,6 +122,8 @@ class AdminRolePermissionSeeder extends Seeder
                 'view plans', 'create plan', 'update plan', 'delete plan', 'manage plan features',
                 'view features', 'create feature', 'update feature', 'delete feature',
                 'view subscriptions', 'create subscription', 'update subscription', 'delete subscription', 'extend subscription', 'cancel subscription',
+                'view affiliates', 'update affiliates', 'view affiliate settings', 'update affiliate settings', 'view affiliate payouts', 'update affiliate payouts',
+                'view affiliate users',
                 'view affiliates', 'update affiliates', 'view affiliate settings', 'update affiliate settings',
                 'view doctor profiles', 'approve doctor profile', 'reject doctor profile', 'toggle featured doctor profile', 'toggle lock doctor profile',
                 'view contact messages', 'update contact message', 'delete contact message', 'update contact message status', 'add contact message notes',
@@ -192,8 +196,6 @@ class AdminRolePermissionSeeder extends Seeder
         $this->command->info('Admin roles and permissions seeded successfully!');
     }
 }
-
-
 
 
 

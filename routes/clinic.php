@@ -84,6 +84,8 @@ Route::group(
         // Affiliate
         Route::get('/affiliate', [\App\Http\Controllers\Backend\Dashboards\Clinic\AffiliateController::class, 'index'])
             ->name('affiliate.index');
+        Route::post('/affiliate/payout-requests', [\App\Http\Controllers\Backend\Dashboards\Clinic\AffiliatePayoutController::class, 'store'])
+            ->name('affiliate.payouts.store');
 
         // Users Management
         Route::group(['prefix' => 'users'], function () {

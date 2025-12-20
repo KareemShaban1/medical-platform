@@ -40,6 +40,26 @@
                             <div class="fw-bold">{{ number_format($code?->total_earned ?? 0, 2) }}</div>
                         </div>
                     </div>
+                    <div class="mt-3">
+                        @if($pendingPayout)
+                            <div class="alert alert-warning mb-2">
+                                {{ __('You already have a pending payout request.') }}
+                            </div>
+                            <button class="btn btn-outline-secondary w-100" disabled>
+                                {{ __('Request Payout') }}
+                            </button>
+                        @else
+                            <button class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#affiliatePayoutModal"
+                                @disabled(($code?->balance ?? 0) <= 0)>
+                                {{ __('Request Payout') }}
+                            </button>
+                            @if(($code?->balance ?? 0) <= 0)
+                                <small class="text-muted d-block mt-2">
+                                    {{ __('Your balance is not eligible for payout yet.') }}
+                                </small>
+                            @endif
+                        @endif
+                    </div>
                     <p class="text-muted mt-3 mb-0">
                         {{ __('Share your code with subscribers to earn commission on each paid subscription.') }}
                     </p>
@@ -81,6 +101,50 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="affiliatePayoutModal" tabindex="-1" aria-labelledby="affiliatePayoutModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <form method="POST" action="{{ route('clinic.affiliate.payouts.store') }}">
+                @csrf
+                <div class="modal-header">
+                    <h5 class="modal-title" id="affiliatePayoutModalLabel">{{ __('Request Payout') }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ __('Close') }}"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        {{ __('Your payout amount will be your available balance.') }}
+                        <strong>{{ number_format($code?->balance ?? 0, 2) }}</strong>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">{{ __('Payment Method') }}</label>
+                        <select class="form-select" name="payout_method" required>
+                            @php($selectedMethod = old('payout_method', $payoutProfile?->payout_method))
+                            <option value="Instapay" @selected($selectedMethod === 'Instapay')>{{ __('Instapay') }}</option>
+                            <option value="Mobile Wallet" @selected($selectedMethod === 'Mobile Wallet')>{{ __('Mobile Wallet') }}</option>
+                            <option value="IBAN" @selected($selectedMethod === 'IBAN')>{{ __('IBAN') }}</option>
+                            <option value="Other" @selected($selectedMethod === 'Other')>{{ __('Other') }}</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{{ __('Payment Details') }}</label>
+                        <textarea class="form-control" name="payout_details" rows="3" required>{{ old('payout_details', $payoutProfile?->payout_details) }}</textarea>
+                        <small class="text-muted">{{ __('Enter phone number, wallet ID, IBAN, or any payout details.') }}</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{{ __('Notes') }}</label>
+                        <textarea class="form-control" name="notes" rows="3">{{ old('notes', $payoutProfile?->notes) }}</textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
+                    <button type="submit" class="btn btn-primary">{{ __('Submit Request') }}</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
