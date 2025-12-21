@@ -226,13 +226,27 @@
 											</div>
 										</div>
 									</div>
+									<div class="row mb-3">
+										<div class="col-6">
+											<small class="text-muted">{{ __('Shipping') }}</small>
+											<div class="fw-bold">
+												${{ number_format($offer->shipping ?? 0, 2) }}
+											</div>
+										</div>
+										<div class="col-6">
+											<small class="text-muted">{{ __('Tax') }}</small>
+											<div class="fw-bold">
+												${{ number_format($offer->tax ?? 0, 2) }}
+											</div>
+										</div>
+									</div>
 
 									<div class="mb-3">
 										<small
-											class="text-muted">{{ __('Final Price') }}</small>
+											class="text-muted">{{ __('Final Price (incl. shipping)') }}</small>
 										<div
 											class="h5 text-primary mb-0">
-											${{ number_format($offer->final_price, 2) }}
+											${{ number_format($offer->price - ($offer->discount ?? 0) + ($offer->shipping ?? 0) + ($offer->tax ?? 0), 2) }}
 										</div>
 										@if($index === 0)
 										<small
@@ -706,8 +720,14 @@ function viewOfferDetails(offerId) {
 		return;
 	}
 
-	const finalPrice = offer.price - (offer.discount || 0);
+	const priceValue = parseFloat(offer.price || 0);
+	const discountValue = parseFloat(offer.discount || 0);
+	const shippingValue = parseFloat(offer.shipping || 0);
+	const taxValue = parseFloat(offer.tax || 0);
+	const finalPrice = priceValue - discountValue;
+	const totalPrice = finalPrice + shippingValue + taxValue;
 	const statusBadge = getStatusBadge(offer.status);
+	const canAccept = offer.status === 'pending' && '{{ $request->status }}' === 'open';
 
 	const content = `
         <div class="row">
@@ -774,9 +794,18 @@ function viewOfferDetails(offerId) {
                     </div>
                     <hr class="my-2">
                     ` : ''}
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>{{ __('Shipping:') }}</span>
+                        <strong>$${parseFloat(offer.shipping || 0).toFixed(2)}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>{{ __('Tax:') }}</span>
+                        <strong>$${parseFloat(offer.tax || 0).toFixed(2)}</strong>
+                    </div>
+                    <hr class="my-2">
                     <div class="d-flex justify-content-between">
-                        <span class="fw-bold">{{ __('Final Price:') }}</span>
-                        <strong class="text-success fs-5">$${finalPrice.toFixed(2)}</strong>
+                        <span class="fw-bold">{{ __('Total:') }}</span>
+                        <strong class="text-success fs-5">$${totalPrice.toFixed(2)}</strong>
                     </div>
                 </div>
             </div>
@@ -808,25 +837,15 @@ function viewOfferDetails(offerId) {
             </div>
         </div>
 
-        ${offer.status === 'pending' && '{{ $request->status }}' === 'open' ? ` <
-		hr >
-		<
-		div class = "text-center" >
-		<
-		button class = "btn btn-success me-2"
-	onclick = "acceptOfferFromModal(${offer.id})" >
-		<
-		i class = "mdi mdi-check me-1" > < /i> {{ __('Accept This Offer') }} < /
-	button > <
-		button class = "btn btn-secondary"
-	data - bs - dismiss = "modal" > {
-			{
-				__('Close')
-			}
-		} <
-		/button> < /
-	div >
-		` : ''}
+        ${canAccept ? `
+        <hr>
+        <div class="text-center">
+            <button class="btn btn-success me-2" onclick="acceptOfferFromModal(${offer.id})">
+                <i class="mdi mdi-check me-1"></i> {{ __('Accept This Offer') }}
+            </button>
+            <button class="btn btn-secondary" data-bs-dismiss="modal">{{ __('Close') }}</button>
+        </div>
+        ` : ''}
     `;
 
 	$('#offerDetailsContent').html(content);
