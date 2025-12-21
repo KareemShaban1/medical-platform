@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\Backend\Dashboards\Supplier;
 
 use App\Http\Controllers\Controller;
+use App\Models\Admin;
+use App\Notifications\Admin\ApprovalDocumentsSubmittedNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
 
 class ApprovalController extends Controller
 {
@@ -72,6 +75,14 @@ class ApprovalController extends Controller
             ]);
 
             DB::commit();
+
+            $admins = Admin::where('status', true)->get();
+            if ($admins->count()) {
+                Notification::send(
+                    $admins,
+                    new ApprovalDocumentsSubmittedNotification('Supplier', $supplier->id, $supplier->name)
+                );
+            }
 
             return response()->json([
                 'success' => true,
