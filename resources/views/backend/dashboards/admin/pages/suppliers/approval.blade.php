@@ -64,6 +64,20 @@
                             </div>
                         </div>
 
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="alert alert-warning mb-0">
+                                    <h5 class="mb-2">Action Required: Please upload the following documents:</h5>
+                                    <ul class="mb-0">
+                                        <li>Commercial Register</li>
+                                        <li>Tax Card</li>
+                                        <li>National ID (front &amp; back)</li>
+                                        <li>Bank Account / IBAN</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Current Documents -->
                         @if ($currentDocuments->count() > 0)
                             <div class="row mt-4">
