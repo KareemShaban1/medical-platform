@@ -778,7 +778,11 @@ function showToast() {
 					</div>
 					<div class="doctor-specialization">
 						<i class="fas fa-user-md"></i>
-						{{ $doctor->speciality->name ?? __('General Practice') }}
+						@if($doctor->speciality)
+							{{ App::getLocale() == 'ar' ? $doctor->speciality->name_ar : $doctor->speciality->name_en }}
+						@else
+							{{ __('General Practice') }}
+						@endif
 					</div>
 
 					<!-- Stats -->
@@ -796,27 +800,6 @@ function showToast() {
 						</div>
 						@endif
 
-						<div class="stat-item">
-							<div class="stat-icon">
-								<i class="fas fa-hospital"></i>
-							</div>
-							<div class="stat-details">
-								<h4>{{ $doctor->clinicUser->clinic->name ?? __('Clinic') }}
-								</h4>
-								<p>{{ __('Working At') }}</p>
-							</div>
-						</div>
-
-						<div class="stat-item">
-							<div class="stat-icon">
-								<i class="fas fa-calendar-check"></i>
-							</div>
-							<div class="stat-details">
-								<h4>{{ $doctor->appointments()->where('status', 'completed')->count() }}+
-								</h4>
-								<p>{{ __('Patients Treated') }}</p>
-							</div>
-						</div>
 					</div>
 
 					<!-- Contact -->
