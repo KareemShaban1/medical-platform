@@ -68,7 +68,7 @@ class OfferController extends Controller
     public function show($id)
     {
         // apply permissions
-        abort_if(!hasPermission('view offer'), 403, __('You are not authorized to view offer'));
+        abort_if(!hasPermission('view offers'), 403, __('You are not authorized to view offer'));
 
         try {
             $offer = $this->offerRepository->show($id);

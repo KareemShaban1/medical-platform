@@ -40,16 +40,20 @@ class SupplierController extends Controller
             ], 422);
         }
 
-        // Check if email exists but is unverified (allow re-registration)
-        $unverifiedUser = SupplierUser::where('email', $request->user_email)
-            ->whereHas('supplier', function($query) {
+        // Check if email or phone exists but is unverified (allow re-registration)
+        $unverifiedUser = SupplierUser::whereHas('supplier', function($query) {
                 $query->where(['status' => 0, 'is_allowed' => 0]);
-            })->first();
+            })
+            ->where(function($query) use ($request) {
+                $query->where('email', $request->user_email)
+                    ->orWhere('phone', $request->phone);
+            })
+            ->first();
 
         // Custom validation with field-specific error handling
         $validationRules = [
             'supplier_name' => 'required|string|min:2',
-            'phone' => 'required|string|max:255|unique:suppliers,phone',
+            'phone' => 'required|string|max:255',
             'address' => 'required|string|min:10',
             'user_name' => 'required|string|min:2',
             'user_email' => 'required|email',
@@ -61,7 +65,7 @@ class SupplierController extends Controller
             'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
         ];
 
-        // Only add unique validation for email if user is not unverified
+        // Only add unique validation for email/phone if user is not unverified
         if (!$unverifiedUser) {
             $validationRules['user_email'] .= '|unique:supplier_users,email';
             $validationRules['phone'] .= '|unique:suppliers,phone';
@@ -104,10 +108,14 @@ class SupplierController extends Controller
             DB::beginTransaction();
 
             // Check if supplier user exists but not verified
-            $existingUser = SupplierUser::where('email', $request->user_email)
-                ->whereHas('supplier', function($query) {
+            $existingUser = SupplierUser::whereHas('supplier', function($query) {
                     $query->where(['status' => 0, 'is_allowed' => 0]);
-                })->first();
+                })
+                ->where(function($query) use ($request) {
+                    $query->where('email', $request->user_email)
+                        ->orWhere('phone', $request->phone);
+                })
+                ->first();
 
             if ($existingUser) {
                 // Continue with existing user - send OTP

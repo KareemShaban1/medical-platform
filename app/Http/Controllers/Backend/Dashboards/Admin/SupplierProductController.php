@@ -37,7 +37,7 @@ class SupplierProductController extends Controller
     public function show($id)
     {
         // apply permissions
-        $canView = hasPermission('view supplier product') || hasPermission('view supplier products');
+        $canView = hasPermission('view supplier products');
         abort_if(!$canView, 403, __('You are not authorized to view supplier product'));
         $product = $this->supplierProductRepository->show($id);
         return view('backend.dashboards.admin.pages.supplier-products.show', compact('product'));

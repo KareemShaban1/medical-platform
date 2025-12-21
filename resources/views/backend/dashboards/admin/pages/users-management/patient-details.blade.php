@@ -82,7 +82,7 @@
                                 <th width="40%">{{ __('Email') }}:</th>
                                 <td>{{ $patient->user->email }}</td>
                             </tr>
-                            <tr>
+                            {{-- <tr>
                                 <th>{{ __('Account Status') }}:</th>
                                 <td>
                                     <div class="d-flex align-items-center">
@@ -99,7 +99,7 @@
                                         </button>
                                     </div>
                                 </td>
-                            </tr>
+                            </tr> --}}
                         </table>
                     </div>
                 </div>
@@ -298,7 +298,7 @@
         </div>
     </div>
 </div>
-@endif
+{{-- @endif --}}
 
 <script>
 $(document).ready(function() {
