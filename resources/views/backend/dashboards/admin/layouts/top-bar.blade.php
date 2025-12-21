@@ -33,12 +33,12 @@
 
            <!-- Notifications -->
            <li class="dropdown notification-list">
-               <a class="nav-link dropdown-toggle arrow-none" data-bs-toggle="dropdown" href="#"
+               <a class="nav-link dropdown-toggle arrow-none notification-bell" data-bs-toggle="dropdown" href="#"
                    role="button" aria-haspopup="false" aria-expanded="false" id="notification-bell">
                    <i class="dripicons-bell noti-icon"></i>
                    <span class="noti-icon-badge" id="notification-count" style="display: none;">0</span>
                </a>
-               <div class="dropdown-menu dropdown-menu-end dropdown-menu-animated dropdown-lg">
+               <div class="dropdown-menu dropdown-menu-end dropdown-menu-animated dropdown-lg notification-dropdown">
 
                    <div class="dropdown-item noti-title">
                        <h5 class="m-0">
@@ -50,10 +50,16 @@
                        </h5>
                    </div>
 
-                   <div id="notifications-list" style="max-height: 230px;" data-simplebar="">
+                   <div id="notifications-list" class="notification-list-scroll" data-simplebar="">
                        <div class="text-center p-3" id="loading-state">
                            <i class="mdi mdi-loading mdi-spin"></i> {{ __('Loading notifications...') }}
                        </div>
+                   </div>
+
+                   <div class="notification-footer px-2 pb-2">
+                       <button type="button" class="btn btn-sm btn-light w-100" id="notifications-load-more" style="display: none;">
+                           {{ __('Load more') }}
+                       </button>
                    </div>
 
                    <a href="{{ route('admin.notifications.index') }}" class="dropdown-item text-center text-primary notify-item notify-all">
@@ -125,19 +131,323 @@
    </div>
    <!-- end Topbar -->
 
+<style>
+.notification-dropdown {
+    min-width: 380px;
+    max-width: 420px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    border: none;
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.notification-list-scroll {
+    max-height: 420px;
+    overflow-y: auto;
+    background: #ffffff;
+}
+
+/* Scrollbar styling */
+.notification-list-scroll::-webkit-scrollbar {
+    width: 6px;
+}
+
+.notification-list-scroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.notification-list-scroll::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+
+.notification-list-scroll::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+.notification-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 20px;
+    border: none;
+    border-bottom: 1px solid #f1f5f9;
+    transition: all 0.2s ease;
+    position: relative;
+    cursor: pointer;
+    background: #ffffff;
+}
+
+.notification-item:hover {
+    background-color: #f8fafc;
+}
+
+.notification-item:last-child {
+    border-bottom: none;
+}
+
+.notification-item .notify-details {
+    flex: 1;
+    min-width: 0;
+    padding-right: 24px;
+}
+
+.notification-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: #f1f5f9;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.notification-unread {
+    background: #f8fafc;
+}
+
+.notification-unread .notification-icon {
+    background: #dbeafe;
+    color: #2563eb;
+}
+
+.notification-title {
+    font-weight: 600;
+    color: #0f172a;
+    line-height: 1.5;
+    margin-bottom: 4px;
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.notification-message {
+    color: #64748b;
+    font-size: 13px;
+    line-height: 1.5;
+    margin-bottom: 4px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.notification-time {
+    color: #94a3b8;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.notification-time::before {
+    content: '•';
+    font-size: 8px;
+}
+
+.notification-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #3b82f6;
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.dropdown-item.noti-title {
+    background: #ffffff;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 16px 20px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.dropdown-item.noti-title h5 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0;
+}
+
+.dropdown-item.noti-title .float-end a {
+    color: #3b82f6;
+    font-weight: 600;
+    font-size: 13px;
+    text-decoration: none;
+}
+
+.dropdown-item.noti-title .float-end a:hover {
+    color: #2563eb;
+}
+
+.notification-footer {
+    border-top: 1px solid #e2e8f0;
+    background: #ffffff;
+    padding: 12px 16px;
+}
+
+.notification-footer .btn {
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 14px;
+    padding: 10px 16px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    color: #475569;
+}
+
+.notification-footer .btn:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+}
+
+.dropdown-item.notify-all {
+    background: #3b82f6;
+    color: white !important;
+    text-align: center;
+    font-weight: 600;
+    font-size: 14px;
+    padding: 14px;
+    border: none;
+    margin: 0;
+}
+
+.dropdown-item.notify-all:hover {
+    background: #2563eb;
+}
+
+/* Empty state styling */
+.text-center.p-3.text-muted {
+    padding: 48px 24px !important;
+}
+
+.text-center.p-3.text-muted i.display-4 {
+    font-size: 3rem;
+    color: #cbd5e1;
+    margin-bottom: 12px;
+}
+
+.text-center.p-3.text-muted p {
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Loading state */
+#loading-state {
+    padding: 48px 24px !important;
+    color: #64748b;
+}
+
+#loading-state i {
+    font-size: 2rem;
+    color: #3b82f6;
+}
+
+/* Badge styling */
+.noti-icon-badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    background: #e11d48;
+    color: #0f172a;
+    font-size: 12px;
+    font-weight: 800;
+    padding: 0 6px;
+    height: 20px;
+    min-width: 20px;
+    line-height: 1;
+    border-radius: 999px;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(225, 29, 72, 0.45);
+    border: 2px solid #ffffff;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transform: translate(50%, -50%);
+}
+
+.notification-bell {
+    position: relative;
+}
+
+.notification-bell .noti-icon {
+    position: relative;
+    z-index: 1;
+}
+
+/* Icon color variations */
+.mdi-account-plus.text-warning {
+    color: #f59e0b !important;
+}
+
+.mdi-check-circle.text-success {
+    color: #10b981 !important;
+}
+
+.mdi-close-circle.text-danger {
+    color: #ef4444 !important;
+}
+
+.mdi-information.text-info {
+    color: #3b82f6 !important;
+}
+
+.mdi-bell.text-secondary {
+    color: #64748b !important;
+}
+
+/* Responsive design */
+@media (max-width: 576px) {
+    .notification-dropdown {
+        min-width: 100vw;
+        width: 100vw;
+        left: 0 !important;
+        right: 0 !important;
+        margin: 0;
+        border-radius: 0;
+    }
+
+    .notification-list-scroll {
+        max-height: 60vh;
+    }
+
+    .notification-item {
+        padding: 14px 16px;
+    }
+
+    .notification-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+    }
+}
+</style>
    <script>
    // Notification functionality
    let notificationDropdownOpen = false;
    let notificationsLoaded = false;
+   let notificationsPage = 1;
+   let notificationsPerPage = 8;
+   let notificationsHasMore = true;
+   let notificationsLoading = false;
 
    $(document).ready(function() {
        // Load notifications only once on page load
-       loadNotifications();
+       loadNotifications({ reset: true });
 
        // Load notifications when dropdown is opened for the first time
        $('#notification-bell').on('click', function() {
            if (!notificationDropdownOpen && !notificationsLoaded) {
-               loadNotifications();
+               loadNotifications({ reset: true });
                notificationDropdownOpen = true;
            }
        });
@@ -148,26 +458,76 @@
                notificationDropdownOpen = false;
            }
        });
+
+       $('#notifications-load-more').on('click', function() {
+           if (!notificationsHasMore || notificationsLoading) {
+               return;
+           }
+           loadNotifications({ append: true });
+       });
    });
 
-   function loadNotifications() {
+   function loadNotifications(options) {
+       const settings = options || {};
+       const reset = !!settings.reset;
+       const append = !!settings.append;
+
+       if (notificationsLoading) {
+           return;
+       }
+       notificationsLoading = true;
+
        console.log('Loading notifications...');
-       $.get('{{ route("admin.notifications.latest") }}')
+       if (reset) {
+           notificationsPage = 1;
+           notificationsHasMore = true;
+           $('#notifications-load-more').hide();
+           $('#notifications-list').html(`
+               <div class="text-center p-3" id="loading-state">
+                   <i class="mdi mdi-loading mdi-spin"></i> {{ __('Loading notifications...') }}
+               </div>
+           `);
+       }
+
+       if (append) {
+           setLoadMoreState(true);
+       }
+
+       $.get('{{ route("admin.notifications.latest") }}', {
+               page: notificationsPage,
+               per_page: notificationsPerPage
+           })
            .done(function(response) {
                console.log('Notifications loaded:', response);
                updateNotificationBadge(response.unread_count);
-               displayNotifications(response.notifications);
+               displayNotifications(response.notifications, {
+                   append: append && !reset
+               });
+               notificationsHasMore = !!response.has_more;
+               if (response.next_page) {
+                   notificationsPage = response.next_page;
+               }
+               toggleLoadMore();
                notificationsLoaded = true;
            })
            .fail(function(xhr) {
                console.error('Failed to load notifications:', xhr.status, xhr.responseText);
-               $('#notifications-list').html(`
-                   <div class="text-center p-3 text-muted">
-                       <i class="mdi mdi-alert-circle display-4"></i>
-                       <p class="mt-2 mb-0">{{ __('Failed to load notifications') }}</p>
-                       <small class="d-block">Error: ${xhr.status}</small>
-                   </div>
-               `);
+               if (!append) {
+                   $('#notifications-list').html(`
+                       <div class="text-center p-3 text-muted">
+                           <i class="mdi mdi-alert-circle display-4"></i>
+                           <p class="mt-2 mb-0">{{ __('Failed to load notifications') }}</p>
+                           <small class="d-block">Error: ${xhr.status}</small>
+                       </div>
+                   `);
+               }
+               toggleLoadMore();
+           })
+           .always(function() {
+               if (append) {
+                   setLoadMoreState(false);
+               }
+               notificationsLoading = false;
            });
    }
 
@@ -185,17 +545,21 @@
        }
    }
 
-   function displayNotifications(notifications) {
+   function displayNotifications(notifications, options) {
        const container = $('#notifications-list');
        console.log('Displaying notifications:', notifications);
+       const settings = options || {};
+       const append = !!settings.append;
 
        if (!notifications || notifications.length === 0) {
-           container.html(`
-               <div class="text-center p-3 text-muted">
-                   <i class="mdi mdi-bell-off display-4"></i>
-                   <p class="mt-2 mb-0">{{ __('No notifications') }}</p>
-               </div>
-           `);
+           if (!append) {
+               container.html(`
+                   <div class="text-center p-3 text-muted">
+                       <i class="mdi mdi-bell-off display-4"></i>
+                       <p class="mt-2 mb-0">{{ __('No notifications') }}</p>
+                   </div>
+               `);
+           }
            return;
        }
 
@@ -211,40 +575,58 @@
            };
 
            const icon = typeIcons[notification.type] || 'mdi-bell text-secondary';
-           const readClass = notification.read_at ? 'text-muted' : '';
+           const isUnread = !notification.read_at;
            const actionUrl = notification.action_url || '#';
+           const encodedActionUrl = encodeURIComponent(actionUrl);
+           const title = escapeHtml(notification.title || 'Notification');
+           const message = escapeHtml(notification.message || '');
+           const createdAt = escapeHtml(notification.created_at || '');
 
            html += `
-               <div class="dropdown-item notify-item ${readClass}" style="cursor: pointer;"
-                    onclick="handleNotificationClick('${notification.id}', '${actionUrl}')">
-                   <div class="notify-icon bg-light rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+               <div class="dropdown-item notify-item notification-item ${isUnread ? 'notification-unread' : ''}"
+                    role="button"
+                    onclick="handleNotificationClick('${notification.id}', '${encodedActionUrl}')">
+                   <div class="notification-icon">
                        <i class="mdi ${icon}"></i>
                    </div>
                    <div class="notify-details">
-                       <strong>${notification.title || 'Notification'}</strong><br>
-                       <small class="text-muted">${notification.message || ''}</small><br>
-                       <small class="text-muted">${notification.created_at || ''}</small>
+                       <div class="notification-title">${title}</div>
+                       ${message ? `<div class="notification-message">${message}</div>` : ''}
+                       <div class="notification-time">${createdAt}</div>
                    </div>
+                   ${isUnread ? '<span class="notification-dot"></span>' : ''}
                </div>
            `;
        });
 
-       container.html(html);
+       if (append) {
+           container.append(html);
+       } else {
+           container.html(html);
+       }
    }
 
    function handleNotificationClick(notificationId, actionUrl) {
+       const decodedUrl = decodeURIComponent(actionUrl || '');
+       let redirected = false;
        // Mark notification as read
        $.post('{{ route("admin.notifications.mark-as-read", ":id") }}'.replace(':id', notificationId), {
            _token: '{{ csrf_token() }}'
        }).done(function(response) {
-           if (response.status === 'success') {
+           if (response && response.status === 'success') {
                // Refresh notifications to update the badge
-               loadNotifications();
+               loadNotifications({ reset: true });
+           }
 
-               // Redirect to the action URL
-               if (actionUrl && actionUrl !== '#') {
-                   window.location.href = actionUrl;
-               }
+           const targetUrl = (response && response.action_url) ? response.action_url : decodedUrl;
+           if (!redirected && targetUrl && targetUrl !== '#') {
+               redirected = true;
+               window.location.href = targetUrl;
+           }
+       }).fail(function() {
+           if (!redirected && decodedUrl && decodedUrl !== '#') {
+               redirected = true;
+               window.location.href = decodedUrl;
            }
        });
    }
@@ -254,7 +636,7 @@
            _token: '{{ csrf_token() }}'
        }).done(function(response) {
            if (response.status === 'success') {
-               loadNotifications();
+               loadNotifications({ reset: true });
                Swal.fire({
                    icon: 'success',
                    title: '{{ __("Success") }}',
@@ -264,5 +646,32 @@
                });
            }
        });
+   }
+
+   function toggleLoadMore() {
+       const button = $('#notifications-load-more');
+       if (notificationsHasMore) {
+           button.show();
+       } else {
+           button.hide();
+       }
+   }
+
+   function setLoadMoreState(isLoading) {
+       const button = $('#notifications-load-more');
+       if (isLoading) {
+           button.prop('disabled', true).text('{{ __("Loading...") }}');
+       } else {
+           button.prop('disabled', false).text('{{ __("Load more") }}');
+       }
+   }
+
+   function escapeHtml(value) {
+       return String(value)
+           .replace(/&/g, '&amp;')
+           .replace(/</g, '&lt;')
+           .replace(/>/g, '&gt;')
+           .replace(/"/g, '&quot;')
+           .replace(/'/g, '&#39;');
    }
    </script>
