@@ -56,7 +56,7 @@ class ProductController extends Controller
     public function show($id)
     {
         // apply permissions
-        abort_if(!hasPermission('view product'), 403, __('You are not authorized to view product'));
+        abort_if(!hasPermission('view products'), 403, __('You are not authorized to view product'));
 
         $product = $this->productRepo->show($id);
         return request()->ajax()
@@ -97,7 +97,7 @@ class ProductController extends Controller
          // apply permissions
          abort_if(!hasPermission('view trash products'), 403, __('You are not authorized to view trash products'));
 
-        
+
         return view('backend.dashboards.supplier.pages.products.trash');
     }
 

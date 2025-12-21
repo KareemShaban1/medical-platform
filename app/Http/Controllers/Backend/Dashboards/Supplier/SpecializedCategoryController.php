@@ -54,7 +54,7 @@ class SpecializedCategoryController extends Controller
     public function show($id)
     {
         // apply permissions
-        abort_if(!hasPermission('view specialized category'), 403, __('You are not authorized to view specialized category'));
+        abort_if(!hasPermission('view specialized categories'), 403, __('You are not authorized to view specialized category'));
 
         try {
             $category = $this->categoryRepository->show($id);

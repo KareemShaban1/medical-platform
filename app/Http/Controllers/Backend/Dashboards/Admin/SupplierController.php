@@ -43,7 +43,7 @@ class SupplierController extends Controller
     public function show($id)
     {
         // apply permissions
-        $canView = hasPermission('view supplier') || hasPermission('view suppliers');
+        $canView = hasPermission('view suppliers');
         abort_if(!$canView, 403, __('You are not authorized to view supplier'));
         $supplier = $this->supplierRepo->show($id);
 

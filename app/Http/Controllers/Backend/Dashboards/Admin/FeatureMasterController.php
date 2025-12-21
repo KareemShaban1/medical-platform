@@ -128,7 +128,7 @@ class FeatureMasterController extends Controller
     public function show($id)
     {
         // apply permissions
-        abort_if(!hasPermission('view feature'), 403, __('You are not authorized to view feature'));
+        abort_if(!hasPermission('view features'), 403, __('You are not authorized to view feature'));
         $feature = FeatureMaster::findOrFail($id);
         return response()->json([
             'success' => true,
