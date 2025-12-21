@@ -89,6 +89,12 @@
                     <div class="row justify-content-end">
                         <div class="col-md-6">
                             <div class="border rounded p-3">
+                                @php
+                                    $totalAmount = $offer->price
+                                        - ($offer->discount ?? 0)
+                                        + ($offer->shipping ?? 0)
+                                        + ($offer->tax ?? 0);
+                                @endphp
                                 <div class="d-flex justify-content-between mb-2">
                                     <span>{{ __('Subtotal') }}</span>
                                     <span>{{ number_format($offer->price, 2) }}</span>
@@ -97,10 +103,18 @@
                                     <span>{{ __('Discount') }}</span>
                                     <span>{{ $offer->discount ? number_format($offer->discount, 2) : '0.00' }}</span>
                                 </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>{{ __('Shipping') }}</span>
+                                    <span>{{ number_format($offer->shipping ?? 0, 2) }}</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>{{ __('Tax') }}</span>
+                                    <span>{{ number_format($offer->tax ?? 0, 2) }}</span>
+                                </div>
                                 <hr>
                                 <div class="d-flex justify-content-between fw-bold">
                                     <span>{{ __('Total') }}</span>
-                                    <span>{{ number_format($offer->final_price, 2) }}</span>
+                                    <span>{{ number_format($totalAmount, 2) }}</span>
                                 </div>
                             </div>
                         </div>
@@ -125,4 +139,3 @@
 }
 </style>
 @endsection
-
