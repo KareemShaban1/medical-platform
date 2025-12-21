@@ -112,6 +112,7 @@
                                     <th>{{ __('Amount') }}</th>
                                     <th>{{ __('Payment Method') }}</th>
                                     <th>{{ __('Status') }}</th>
+                                    <th>{{ __('Proof') }}</th>
                                     <th>{{ __('Requested At') }}</th>
                                 </tr>
                             </thead>
@@ -125,11 +126,51 @@
                                                 {{ ucfirst($payout->status) }}
                                             </span>
                                         </td>
+                                        <td>
+                                            @if($payout->status === 'paid')
+                                                <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#payoutProofModal-{{ $payout->id }}">
+                                                    {{ __('View Proof') }}
+                                                </button>
+                                            @else
+                                                <span class="text-muted">-</span>
+                                            @endif
+                                        </td>
                                         <td>{{ $payout->created_at?->format('M d, Y') }}</td>
                                     </tr>
+                                    @if($payout->status === 'paid')
+                                    <div class="modal fade" id="payoutProofModal-{{ $payout->id }}" tabindex="-1" aria-labelledby="payoutProofModalLabel-{{ $payout->id }}" aria-hidden="true">
+                                        <div class="modal-dialog modal-lg modal-dialog-centered">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="payoutProofModalLabel-{{ $payout->id }}">{{ __('Payout Proof') }}</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ __('Close') }}"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    @if($payout->admin_note)
+                                                        <div class="mb-3">
+                                                            <div class="text-muted">{{ __('Admin Note') }}</div>
+                                                            <div class="fw-bold" style="white-space: pre-wrap;">{{ $payout->admin_note }}</div>
+                                                        </div>
+                                                    @endif
+                                                    <div class="row g-3">
+                                                        @forelse($payout->getMedia('affiliate_payout_proofs') as $media)
+                                                            <div class="col-md-4">
+                                                                <a href="{{ $media->getUrl() }}" target="_blank">
+                                                                    <img src="{{ $media->getUrl() }}" class="img-fluid rounded border" alt="{{ $media->name }}">
+                                                                </a>
+                                                            </div>
+                                                        @empty
+                                                            <p class="text-muted mb-0">{{ __('No proof images uploaded.') }}</p>
+                                                        @endforelse
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @endif
                                 @empty
                                     <tr>
-                                        <td colspan="4" class="text-center text-muted py-3">
+                                        <td colspan="5" class="text-center text-muted py-3">
                                             {{ __('No payout requests found.') }}
                                         </td>
                                     </tr>

@@ -2552,5 +2552,14 @@
     "Discount %": "نسبة الخصم %",
     "Commission %": "نسبة العمولة %",
     "Owner": "المالك",
-    "Affiliate User" : "مستخدم الشريك"
+    "Affiliate User": "مستخدم الشريك",
+    "View Proof": "عرض الإثبات",
+    "Payout Proof": "إثبات السحب",
+    "Proof": "إثبات",
+    "Admin Note": "ملاحظة المسؤول",
+    "Upload Proof Images": "رفع صور الإثبات",
+    "Upload screenshots or receipts (optional).": "ارفع لقطات شاشة أو إيصالات (اختياري).",
+    "Add a note for the affiliate (optional).": "أضف ملاحظة للشريك (اختياري).",
+    "Mark Payout as Paid": "تحديد كمُسدَّد",
+    "No proof images uploaded.": "لا توجد صور إثبات تم رفعها."
 }
