@@ -36,11 +36,15 @@
                                         </tr>
                                         <tr>
                                             <th scope="row">{{ __('Price Before') }}:</th>
-                                            <td>${{ number_format($product->price_before, 2) }}</td>
+                                            <td>{{ __('EGP') }} {{ number_format($product->price_before, 2) }}</td>
                                         </tr>
                                         <tr>
                                             <th scope="row">{{ __('Price After') }}:</th>
-                                            <td>${{ number_format($product->price_after, 2) }}</td>
+                                            <td>{{ __('EGP') }} {{ number_format($product->price_after, 2) }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">{{ __('Final Price') }}:</th>
+                                            <td>{{ __('EGP') }} {{ number_format($product->final_price ?? $product->price_after, 2) }}</td>
                                         </tr>
                                         <tr>
                                             <th scope="row">{{ __('Discount Value') }}:</th>

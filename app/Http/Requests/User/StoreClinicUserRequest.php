@@ -29,7 +29,7 @@ class StoreClinicUserRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'position_title' => [$guard === 'clinic' ? 'required' : 'nullable', 'string', 'max:255'],
-            'email' => ['required', 'email:rfc,dns,spoof', 'max:255', Rule::unique('users', 'email')],
+            'email' => ['required', 'email:rfc,dns,spoof', 'max:255', Rule::unique($table, 'email')],
             'phone' => ['required', 'string', 'max:20',  'phone:EG'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'role' => ['required', 'exists:roles,name'],
@@ -50,6 +50,16 @@ class StoreClinicUserRequest extends FormRequest
             'password' => 'Password',
             'role' => 'Role',
             'status' => 'Status',
+        ];
+    }
+
+    /**
+     * Get custom error messages for validator errors.
+     */
+    public function messages(): array
+    {
+        return [
+            'email.unique' => __('This email is already in use.'),
         ];
     }
 }

@@ -58,8 +58,8 @@ class DoctorProfileRepository implements DoctorProfileRepositoryInterface
         return DB::transaction(function () use ($id) {
             $profile = DoctorProfile::findOrFail($id);
 
-            if ($profile->status !== DoctorProfile::STATUS_PENDING) {
-                throw new \Exception('Only pending profiles can be approved');
+            if (!in_array($profile->status, [DoctorProfile::STATUS_PENDING, DoctorProfile::STATUS_DRAFT], true)) {
+                throw new \Exception('Only pending or draft profiles can be approved');
             }
 
             $profile->approve(auth('admin')->id());
@@ -76,8 +76,8 @@ class DoctorProfileRepository implements DoctorProfileRepositoryInterface
         return DB::transaction(function () use ($id, $reason) {
             $profile = DoctorProfile::findOrFail($id);
 
-            if ($profile->status !== DoctorProfile::STATUS_PENDING) {
-                throw new \Exception('Only pending profiles can be rejected');
+            if (!in_array($profile->status, [DoctorProfile::STATUS_PENDING, DoctorProfile::STATUS_APPROVED], true)) {
+                throw new \Exception('Only pending or approved profiles can be rejected');
             }
 
             $profile->reject(auth('admin')->id(), $reason);
@@ -161,7 +161,7 @@ class DoctorProfileRepository implements DoctorProfileRepositoryInterface
 
         $actions .= '<a href="' . $showUrl . '" class="btn btn-sm btn-info" title="View"><i class="fa fa-eye"></i></a>';
 
-        if ($item->status === DoctorProfile::STATUS_PENDING) {
+        if (in_array($item->status, [DoctorProfile::STATUS_PENDING, DoctorProfile::STATUS_DRAFT], true)) {
             $actions .= '<button onclick="approveProfile(' . $item->id . ')" class="btn btn-sm btn-success" title="Approve"><i class="fa fa-check"></i></button>';
             $actions .= '<button onclick="rejectProfile(' . $item->id . ')" class="btn btn-sm btn-danger" title="Reject"><i class="fa fa-times"></i></button>';
         }
@@ -178,6 +178,7 @@ class DoctorProfileRepository implements DoctorProfileRepositoryInterface
             $lockIcon = $item->locked_for_edit ? 'fa-lock' : 'fa-unlock';
             $lockTitle = $item->locked_for_edit ? 'Unlock for Edit' : 'Lock for Edit';
             $actions .= '<button onclick="toggleLockForEdit(' . $item->id . ')" class="btn btn-sm ' . $lockClass . '" title="' . $lockTitle . '"><i class="fa ' . $lockIcon . '"></i></button>';
+            $actions .= '<button onclick="rejectProfile(' . $item->id . ')" class="btn btn-sm btn-danger" title="Reject"><i class="fa fa-times"></i></button>';
         }
 
         $actions .= '</div>';

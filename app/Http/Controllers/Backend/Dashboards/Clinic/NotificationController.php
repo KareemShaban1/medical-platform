@@ -21,21 +21,24 @@ class NotificationController extends Controller
         return view('backend.dashboards.clinic.pages.notifications.index', compact('notifications'));
     }
 
-    public function getLatest()
+    public function getLatest(Request $request)
     {
         // apply permissions
         abort_if(!hasPermission('view notifications'), 403, __('You are not authorized to view notifications'));
 
+        $perPage = (int) $request->get('per_page', 10);
+        $perPage = max(1, min(20, $perPage));
+        $page = max(1, (int) $request->get('page', 1));
+
         $notifications = auth('clinic')->user()
             ->unreadNotifications()
             ->latest()
-            ->take(10)
-            ->get();
+            ->paginate($perPage, ['*'], 'page', $page);
 
         $unreadCount = auth('clinic')->user()->unreadNotifications()->count();
 
         return response()->json([
-            'notifications' => $notifications->map(function ($notification) {
+            'notifications' => $notifications->getCollection()->map(function ($notification) {
                 return [
                     'id' => $notification->id,
                     'title' => $notification->data['title'] ?? 'Notification',
@@ -46,7 +49,9 @@ class NotificationController extends Controller
                     'read_at' => $notification->read_at,
                 ];
             }),
-            'unread_count' => $unreadCount
+            'unread_count' => $unreadCount,
+            'has_more' => $notifications->hasMorePages(),
+            'next_page' => $notifications->currentPage() + 1
         ]);
     }
 

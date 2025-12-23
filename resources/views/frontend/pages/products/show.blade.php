@@ -63,15 +63,26 @@
 				<h1 class="product-title">{{ $product->name }}</h1>
 
 				<div class="product-price">
-					<span class="current-price">{{ __('EGP') }} {{ number_format($product->price_after, 2) }}</span>
-					@if($product->price_before > $product->price_after)
-					<span class="original-price">{{ __('EGP') }} {{ number_format($product->price_before, 2) }}</span>
-					@php
-					$discountPercentage = round((($product->price_before -
-					$product->price_after) / $product->price_before) * 100);
-					@endphp
-					<span class="discount-badge">-{{ $discountPercentage }}%</span>
-					@endif
+					<div class="flex flex-wrap items-center gap-2">
+						{{-- <span class="text-sm text-gray-600">{{ __('Price After') }}:</span>
+						<span class="current-price">{{ __('EGP') }} {{ number_format($product->price_after, 2) }}</span> --}}
+						{{-- <span class="text-sm text-gray-600 ms-2">{{ __('Final Price') }}:</span> --}}
+						@php
+						$finalPrice = $product->final_price ?? $product->price_after;
+						$beforeBase = $product->price_before ?? $product->price_after;
+						$paymobFixed = config('payment_gateways.paymob.fee_fixed', 0);
+						$paymobPercent = config('payment_gateways.paymob.fee_percent', 0);
+						$beforeWithFees = $beforeBase + $paymobFixed + ($beforeBase * ($paymobPercent / 100));
+						@endphp
+						<span class="current-price text-green-700">{{ __('EGP') }} {{ number_format($finalPrice, 2) }}</span>
+						@if($beforeWithFees > $finalPrice)
+						<span class="original-price">{{ __('EGP') }} {{ number_format($beforeWithFees, 2) }}</span>
+						@php
+						$discountPercentage = round((($beforeWithFees - $finalPrice) / $beforeWithFees) * 100);
+						@endphp
+						<span class="discount-badge">-{{ $discountPercentage }}%</span>
+						@endif
+					</div>
 				</div>
 
 
@@ -153,12 +164,18 @@
 				<div class="product-card-content">
 					<h3 class="product-card-title">{{ $relatedProduct->name }}</h3>
 					<div class="product-card-price">
+						@php
+							$relatedFinal = $relatedProduct->final_price ?? $relatedProduct->price_after;
+							$relatedBeforeBase = $relatedProduct->price_before ?? $relatedProduct->price_after;
+							$relatedPaymobFixed = config('payment_gateways.paymob.fee_fixed', 0);
+							$relatedPaymobPercent = config('payment_gateways.paymob.fee_percent', 0);
+							$relatedBeforeWithFees = $relatedBeforeBase + $relatedPaymobFixed + ($relatedBeforeBase * ($relatedPaymobPercent / 100));
+						@endphp
 						<span
-							class="product-card-current">{{ __('EGP') }} {{ number_format($relatedProduct->price_after, 2) }}</span>
-						@if($relatedProduct->price_before >
-						$relatedProduct->price_after)
+							class="product-card-current">{{ __('EGP') }} {{ number_format($relatedFinal, 2) }}</span>
+						@if($relatedBeforeWithFees > $relatedFinal)
 						<span
-							class="product-card-original">{{ __('EGP') }} {{ number_format($relatedProduct->price_before, 2) }}</span>
+							class="product-card-original">{{ __('EGP') }} {{ number_format($relatedBeforeWithFees, 2) }}</span>
 						@endif
 					</div>
 					<button class="product-card-btn">{{ __('view details') }}</button>

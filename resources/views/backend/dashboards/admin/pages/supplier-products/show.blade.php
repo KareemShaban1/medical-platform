@@ -37,11 +37,15 @@
                                     </tr>
                                     <tr>
                                         <th>Price Before:</th>
-                                        <td>${{ number_format($product->price_before, 2) }}</td>
+                                        <td>{{ __('EGP') }} {{ number_format($product->price_before, 2) }}</td>
                                     </tr>
                                     <tr>
                                         <th>Price After:</th>
-                                        <td>${{ number_format($product->price_after, 2) }}</td>
+                                        <td>{{ __('EGP') }} {{ number_format($product->price_after, 2) }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Final Price:</th>
+                                        <td>{{ __('EGP') }} {{ number_format($product->final_price ?? $product->price_after, 2) }}</td>
                                     </tr>
                                     <tr>
                                         <th>Stock:</th>

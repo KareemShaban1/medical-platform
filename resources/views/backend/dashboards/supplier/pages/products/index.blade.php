@@ -39,6 +39,7 @@
 								<th>{{ __('SKU') }}</th>
 								<th>{{ __('Price Before') }}</th>
 								<th>{{ __('Price After') }}</th>
+								<th>{{ __('Final Price') }}</th>
 								<th>{{ __('Stock') }}</th>
 								<th>{{ __('Categories') }}</th>
 								<th>{{ __('Approval') }}</th>
@@ -64,7 +65,11 @@
 					aria-label="Close"></button>
 			</div>
 			<div class="modal-body">
-				<form id="productsForm" method="POST" enctype="multipart/form-data">
+				@php
+					$paymobFixed = (float) config('payment_gateways.paymob.fee_fixed', 3);
+					$paymobPercent = (float) config('payment_gateways.paymob.fee_percent', 5);
+				@endphp
+				<form id="productsForm" method="POST" enctype="multipart/form-data" data-paymob-fixed="{{ $paymobFixed }}" data-paymob-percent="{{ $paymobPercent }}">
 					@csrf
 					<input type="hidden" id="productsId">
 					<div class="row">
@@ -126,6 +131,18 @@
 								step="0.01" id="price_after"
 								name="price_after" required>
 							<div class="invalid-feedback"></div>
+							<small class="text-muted d-block mt-1">
+								{{ __('Final price includes +:fixed and :percent% gateway fee.', ['fixed' => number_format($paymobFixed, 2), 'percent' => $paymobPercent]) }}
+							</small>
+						</div>
+
+						<div class="col-12 col-md-6 mb-3">
+							<label for="final_price" class="form-label">{{ __('Final Price') }}</label>
+							<input type="text" class="form-control" id="final_price"
+								readonly>
+							<small class="text-muted d-block mt-1">
+								{{ __('Final price = price after + :fixed + :percent% of price after', ['fixed' => number_format($paymobFixed, 2), 'percent' => $paymobPercent]) }}
+							</small>
 						</div>
 
 						<div class="col-12 col-md-6 mb-3">
@@ -235,6 +252,10 @@ let table = $('#products-table').DataTable({
 		{
 			data: 'price_after',
 			name: 'price_after'
+		},
+		{
+			data: 'final_price',
+			name: 'final_price'
 		},
 		{
 			data: 'stock',
@@ -528,6 +549,7 @@ function editProduct(id) {
 		$('#sku').val(data.sku);
 		$('#price_before').val(data.price_before);
 		$('#price_after').val(data.price_after);
+		updateFinalPrice();
 		$('#discount_value').val(data.discount_value);
 		$('#stock').val(data.stock);
 		$('#statusToggle').prop('checked', data.status);
@@ -591,6 +613,10 @@ $('#statusToggle').on('change', function() {
 	$('#statusHidden').val($(this).is(':checked') ? 1 : 0);
 });
 
+$('#productsModal').on('shown.bs.modal', function() {
+	updateFinalPrice();
+});
+
 // Handle status toggle in DataTable
 $(document).on('change', '.toggle-status', function() {
 	let productId = $(this).data('id');
@@ -643,5 +669,28 @@ $(document).on('change', '.toggle-status', function() {
 $(document).ready(function() {
 	loadCategories();
 });
+
+function updateFinalPrice() {
+	const priceInput = document.getElementById('price_after');
+	const finalInput = document.getElementById('final_price');
+	const form = document.getElementById('productsForm');
+	if (!priceInput || !finalInput || !form) return;
+
+	const fixedFee = parseFloat(form.dataset.paymobFixed || '0');
+	const percentFee = parseFloat(form.dataset.paymobPercent || '0');
+	const basePrice = parseFloat(priceInput.value || '0');
+	const gatewayFee = (basePrice * (percentFee / 100));
+	const finalPrice = basePrice + fixedFee + gatewayFee;
+
+	if (isNaN(finalPrice) || basePrice <= 0) {
+		finalInput.value = '';
+		return;
+	}
+
+	finalInput.value = finalPrice.toFixed(2);
+}
+
+document.getElementById('price_after')?.addEventListener('input', updateFinalPrice);
+document.getElementById('price_after')?.addEventListener('change', updateFinalPrice);
 </script>
 @endpush

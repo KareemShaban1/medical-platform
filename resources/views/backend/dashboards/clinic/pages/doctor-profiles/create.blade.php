@@ -28,19 +28,22 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="name" class="form-label">{{ __('Full Name') }} <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="name" name="name" required>
+                                <input type="text" class="form-control" id="name" name="name"
+                                    value="{{ old('name', $user->name ?? '') }}" required>
                                 <div class="invalid-feedback"></div>
                             </div>
 
                             <div class="col-md-6 mb-3">
                                 <label for="email" class="form-label">{{ __('Email') }} <span class="text-danger">*</span></label>
-                                <input type="email" class="form-control" id="email" name="email" required>
+                                <input type="email" class="form-control" id="email" name="email"
+                                    value="{{ old('email', $user->email ?? '') }}" required>
                                 <div class="invalid-feedback"></div>
                             </div>
 
                             <div class="col-md-6 mb-3">
                                 <label for="phone" class="form-label">{{ __('Phone') }}</label>
-                                <input type="text" class="form-control" id="phone" name="phone">
+                                <input type="text" class="form-control" id="phone" name="phone"
+                                    value="{{ old('phone', $user->phone ?? '') }}">
                                 <div class="invalid-feedback"></div>
                             </div>
 

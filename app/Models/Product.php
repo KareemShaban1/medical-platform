@@ -25,6 +25,7 @@ class Product extends Model implements HasMedia
         'sku',
         'price_before',
         'price_after',
+        'final_price',
         'discount_value',
         'stock',
         'reason',
@@ -34,6 +35,12 @@ class Product extends Model implements HasMedia
     ];
 
     public $appends = ['images', 'first_image' , 'name'];
+
+    protected $casts = [
+        'price_before' => 'decimal:2',
+        'price_after' => 'decimal:2',
+        'final_price' => 'decimal:2',
+    ];
 
     public function getImagesAttribute()
     {
@@ -70,6 +77,14 @@ class Product extends Model implements HasMedia
         return app()->getLocale() == 'ar' ? $this->description_ar : $this->description_en;
     }
 
+    public static function calculateFinalPrice(float $basePrice): float
+    {
+        $fixedFee = (float) config('payment_gateways.paymob.fee_fixed', 3);
+        $percentFee = (float) config('payment_gateways.paymob.fee_percent', 5);
+
+        return $basePrice + $fixedFee + ($basePrice * $percentFee / 100);
+    }
+
     public function supplier()
     {
         return $this->belongsTo(Supplier::class);
@@ -78,6 +93,11 @@ class Product extends Model implements HasMedia
     public function categories()
     {
         return $this->belongsToMany(Category::class, 'product_categories');
+    }
+
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class);
     }
 
     public function approvement()

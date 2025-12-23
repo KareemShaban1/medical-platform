@@ -60,7 +60,9 @@ class Cart extends Model
     {
         $this->items->load(['product', 'supplier']);
         
-        $subtotal = $this->items->sum('total');
+        $subtotal = $this->items->sum(function ($item) {
+            return ($item->price * $item->quantity) - ($item->discount ?? 0);
+        });
         $shipping = 0; // Can be calculated based on business logic
         $tax = $subtotal * 0.14; // 14% tax rate - adjust as needed
         $discount = $this->discount ?? 0;

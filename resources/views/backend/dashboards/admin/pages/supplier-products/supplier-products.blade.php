@@ -60,7 +60,9 @@
                                                         <span class="badge bg-secondary">No Categories</span>
                                                     @endif
                                                 </td>
-                                                <td>${{ number_format($product->price_after ?? $product->price_before, 2) }}
+                                                <td>
+                                                    <div class="text-muted">{{ __('Price After') }}: {{ __('EGP') }} {{ number_format($product->price_after ?? $product->price_before, 2) }}</div>
+                                                    <div class="fw-bold">{{ __('Final Price') }}: {{ __('EGP') }} {{ number_format($product->final_price ?? $product->price_after ?? $product->price_before, 2) }}</div>
                                                 </td>
                                                 <td>
                                                     @php

@@ -2,7 +2,7 @@
 <div class="product-card bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
 	data-category-ids="{{ $product->categories->pluck('id')->implode(',') }}"
 	data-categories="{{ $product->categories->map(function($cat) { return app()->getLocale() == 'ar' ? $cat->name_ar : $cat->name_en; })->implode(',') }}"
-	data-price="{{ $product->price_after }}" data-name="{{ $product->name }}">
+	data-price="{{ $product->final_price ?? $product->price_after }}" data-name="{{ $product->name }}">
 	<div class="h-48 bg-gray-200 flex items-center justify-center">
 		<img src="{{ $product->first_image }}" alt="Product Image" class="w-full h-full object-cover">
 	</div>
@@ -35,13 +35,21 @@
 			<span class="text-sm text-gray-500 ml-2">({{ $product->stock }})</span>
 		</div> -->
 		<div class="flex justify-between items-start flex-col gap-3">
-			<div class="flex items-center gap-2">
-				<span class="text-md text-blue-600">{{ __('EGP') }} {{ number_format($product->price_after, 2) }}</span>
-				<!-- price before -->
-				@if($product->price_before > $product->price_after)
-				<span
-					class="text-sm text-red-500 line-through">{{ __('EGP') }} {{ number_format($product->price_before, 2) }}</span>
-				@endif
+			<div class="flex items-center gap-2 flex-wrap">
+				{{-- <span class="text-sm text-gray-600">{{ __('Price After') }}:</span>
+				<span class="text-md text-blue-600">{{ __('EGP') }} {{ number_format($product->price_after, 2) }}</span> --}}
+				{{-- <span class="text-sm text-gray-600 ms-2">{{ __('Final Price') }}:</span> --}}
+			@php
+				$finalPrice = $product->final_price ?? $product->price_after;
+				$beforeBase = $product->price_before ?? $product->price_after;
+				$paymobFixed = config('payment_gateways.paymob.fee_fixed', 0);
+				$paymobPercent = config('payment_gateways.paymob.fee_percent', 0);
+				$beforeWithFees = $beforeBase + $paymobFixed + ($beforeBase * ($paymobPercent / 100));
+			@endphp
+			<span class="text-md text-green-700 font-semibold">{{ __('EGP') }} {{ number_format($finalPrice, 2) }}</span>
+			@if($beforeWithFees > $finalPrice)
+			<span class="text-sm text-red-500 line-through">{{ __('EGP') }} {{ number_format($beforeWithFees, 2) }}</span>
+			@endif
 			</div>
 			@if($product->stock > 0)
 				<button data-add-to-cart data-product-id="{{ $product->id }}"

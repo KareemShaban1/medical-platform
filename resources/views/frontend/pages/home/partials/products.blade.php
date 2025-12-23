@@ -33,15 +33,21 @@
 							<p class="text-gray-600 text-sm mb-3 truncate">
 								{{ $product->description }}
 							</p>
-							<div class="flex justify-start items-center gap-2">
-								<span
-									class="text-md text-primary">{{ __('EGP') }} {{ number_format($product->price_after, 2) }}</span>
-								<!-- price before -->
-								@if($product->price_before > $product->price_after)
-								<span
-									class="text-md text-red-500 line-through">{{ __('EGP') }} {{ number_format($product->price_before, 2) }}</span>
+							<div class="flex justify-start items-center gap-2 flex-wrap">
+								{{-- <span class="text-sm text-gray-600">{{ __(key: 'Price After') }}:</span>
+								<span class="text-md text-primary">{{ __('EGP') }} {{ number_format($product->price_after, 2) }}</span> --}}
+								<span class="text-sm text-gray-600 ms-2">{{ __('Final Price') }}:</span>
+								@php
+									$finalPrice = $product->final_price ?? $product->price_after;
+									$beforeBase = $product->price_before ?? $product->price_after;
+									$paymobFixed = config('payment_gateways.paymob.fee_fixed', 0);
+									$paymobPercent = config('payment_gateways.paymob.fee_percent', 0);
+									$beforeWithFees = $beforeBase + $paymobFixed + ($beforeBase * ($paymobPercent / 100));
+								@endphp
+								<span class="text-md text-green-700 font-semibold">{{ __('EGP') }} {{ number_format($finalPrice, 2) }}</span>
+								@if($beforeWithFees > $finalPrice)
+								<span class="text-md text-red-500 line-through">{{ __('EGP') }} {{ number_format($beforeWithFees, 2) }}</span>
 								@endif
-
 							</div>
 							<!-- <button
 							class="btn-primary rounded-full mt-2 flex items-center gap-2">Add
