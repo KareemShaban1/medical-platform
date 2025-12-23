@@ -59,8 +59,11 @@ class SupplierProductRepository implements SupplierProductRepositoryInterface
                 $class = $badges[$approval->action] ?? 'secondary';
                 return '<span class="badge bg-' . $class . '">' . ucfirst(str_replace('_', ' ', $approval->action)) . '</span>';
             })
-            ->addColumn('price', function ($product) {
-                return '$' . number_format($product->price_after ?? $product->price_before, 2);
+            ->addColumn('price_after', function ($product) {
+                return __('EGP') . ' ' . number_format($product->price_after ?? $product->price_before, 2);
+            })
+            ->addColumn('final_price', function ($product) {
+                return __('EGP') . ' ' . number_format($product->final_price ?? $product->price_after ?? $product->price_before, 2);
             })
             ->addColumn('stock', function ($product) {
                 $class = $product->stock > 10 ? 'success' : ($product->stock > 0 ? 'warning' : 'danger');

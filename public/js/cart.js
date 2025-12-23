@@ -3,16 +3,15 @@
  * Usage: Add data-product-id and data-supplier-id attributes to "Add to Cart" buttons
  */
 
-function addToCart(productId, supplierId = null, quantity = 1) {
+function addToCart(productId, supplierId = null, quantity = 1, button = null) {
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
-    
+
     if (!csrfToken) {
         console.error('CSRF token not found');
         return;
     }
 
     // Show loading state if button exists
-    const button = event?.target;
     const originalText = button?.textContent;
     if (button) {
         button.disabled = true;
@@ -31,21 +30,21 @@ function addToCart(productId, supplierId = null, quantity = 1) {
             quantity: quantity
         })
     })
-    .then(response => response.json())
+    .then(response => response.json().then(data => ({ ok: response.ok, data })))
     .then(data => {
-        if (data.success) {
+        if (data.ok && data.data.success) {
             // Update cart count badge
             const cartBadge = document.getElementById('cart-count-badge');
             if (cartBadge) {
-                cartBadge.textContent = data.cart_count;
-                cartBadge.style.display = data.cart_count > 0 ? 'flex' : 'none';
+                cartBadge.textContent = data.data.cart_count;
+                cartBadge.style.display = data.data.cart_count > 0 ? 'flex' : 'none';
             }
 
             // Show success message
             if (typeof toast_success === 'function') {
-                toast_success(data.message);
+                toast_success(data.data.message);
             } else {
-                alert(data.message);
+                alert(data.data.message);
             }
 
             // Reload cart dropdown data if function exists
@@ -54,9 +53,9 @@ function addToCart(productId, supplierId = null, quantity = 1) {
             }
         } else {
             if (typeof toast_error === 'function') {
-                toast_error(data.message);
+                toast_error(data.data?.message || 'Failed to add product to cart');
             } else {
-                alert(data.message);
+                alert(data.data?.message || 'Failed to add product to cart');
             }
         }
     })
@@ -78,18 +77,19 @@ function addToCart(productId, supplierId = null, quantity = 1) {
     });
 }
 
-// Auto-bind click events to buttons with data-add-to-cart attribute
-document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('[data-add-to-cart]').forEach(button => {
-        button.addEventListener('click', function(e) {
-            e.preventDefault();
-            const productId = this.dataset.productId;
-            const supplierId = this.dataset.supplierId || null;
-            const quantity = parseInt(this.dataset.quantity) || 1;
-            
-            if (productId) {
-                addToCart(productId, supplierId, quantity);
-            }
-        });
-    });
+// Delegate click events for dynamically loaded product cards
+document.addEventListener('click', function(e) {
+    const button = e.target.closest('[data-add-to-cart]');
+    if (!button) {
+        return;
+    }
+    e.preventDefault();
+
+    const productId = button.dataset.productId;
+    const supplierId = button.dataset.supplierId || null;
+    const quantity = parseInt(button.dataset.quantity) || 1;
+
+    if (productId) {
+        addToCart(productId, supplierId, quantity, button);
+    }
 });

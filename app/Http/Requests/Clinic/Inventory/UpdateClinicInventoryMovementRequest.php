@@ -4,6 +4,7 @@ namespace App\Http\Requests\Clinic\Inventory;
 
 use Illuminate\Foundation\Http\FormRequest;
 use App\Models\ClinicInventory;
+use App\Models\ClinicInventoryMovement;
 
 class UpdateClinicInventoryMovementRequest extends FormRequest
 {
@@ -37,11 +38,25 @@ class UpdateClinicInventoryMovementRequest extends FormRequest
             $type = $this->input('type');
             $quantity = (int) $this->input('quantity');
             $inventoryId = $this->input('clinic_inventory_id');
+            $movementId = $this->route('id');
 
             if ($type === 'out' && $inventoryId && $quantity > 0) {
                 $inventory = ClinicInventory::find($inventoryId);
-                if ($inventory && $quantity > (int) $inventory->quantity) {
-                    $validator->errors()->add('quantity', __('The out quantity exceeds current stock (available: :available).', ['available' => $inventory->quantity]));
+                $available = $inventory ? (int) $inventory->quantity : 0;
+
+                if ($movementId && $inventory) {
+                    $movement = ClinicInventoryMovement::find($movementId);
+                    if ($movement && (int) $movement->clinic_inventory_id === (int) $inventoryId) {
+                        if ($movement->type === 'out') {
+                            $available += (int) $movement->quantity;
+                        } elseif ($movement->type === 'in') {
+                            $available -= (int) $movement->quantity;
+                        }
+                    }
+                }
+
+                if ($inventory && $quantity > $available) {
+                    $validator->errors()->add('quantity', __('The out quantity exceeds current stock (available: :available).', ['available' => max(0, $available)]));
                 }
             }
         });

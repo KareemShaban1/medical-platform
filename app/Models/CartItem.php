@@ -59,12 +59,12 @@ class CartItem extends Model
     public function calculateTotal(): void
     {
         $itemSubtotal = $this->price * $this->quantity;
-        $itemTax = $itemSubtotal * 0.14; // 14% tax - adjust as needed
+        $itemTax = 0; // Tax is calculated at cart level
         $itemDiscount = $this->discount ?? 0;
         
         $this->update([
             'tax' => $itemTax,
-            'total' => $itemSubtotal + $itemTax - $itemDiscount,
+            'total' => $itemSubtotal - $itemDiscount,
         ]);
     }
 }

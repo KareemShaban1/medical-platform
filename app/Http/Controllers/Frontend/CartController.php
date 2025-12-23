@@ -19,6 +19,7 @@ class CartController extends Controller
     {
         $cart = $this->getOrCreateCart();
         $cart->load(['items.product', 'items.supplier']);
+        $this->refreshCartTotals($cart);
         
         return view('frontend.pages.cart.index', compact('cart'));
     }
@@ -30,6 +31,7 @@ class CartController extends Controller
     {
         $cart = $this->getOrCreateCart();
         $cart->load(['items.product', 'items.supplier']);
+        $this->refreshCartTotals($cart);
         
         return response()->json([
             'success' => true,
@@ -88,7 +90,7 @@ class CartController extends Controller
                     'product_id' => $request->product_id,
                     'supplier_id' => $request->supplier_id,
                     'quantity' => $request->quantity,
-                    'price' => $product->price_after,
+                    'price' => $product->final_price ?? $product->price_after,
                     'tax' => $product->tax,
                     'shipping' => $product->shipping,
                 ]);
@@ -137,6 +139,7 @@ class CartController extends Controller
                 throw new \Exception(__('Requested quantity exceeds available stock.'));
             }
 
+            $cartItem->price = $product->final_price ?? $product->price_after;
             $cartItem->quantity = $request->quantity;
             $cartItem->save();
             $cartItem->calculateTotal();
@@ -233,5 +236,13 @@ class CartController extends Controller
                 'total' => 0,
             ]
         );
+    }
+
+    private function refreshCartTotals(Cart $cart): void
+    {
+        foreach ($cart->items as $item) {
+            $item->calculateTotal();
+        }
+        $cart->calculateTotals();
     }
 }

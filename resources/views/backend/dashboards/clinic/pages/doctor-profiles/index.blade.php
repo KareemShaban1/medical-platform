@@ -6,6 +6,12 @@
 		<div class="col-12">
 			<div class="page-title-box">
 				<div class="page-title-right">
+					@hasPermission('view doctor profiles')
+					<a href="{{ route('clinic.doctor-profiles.my-profile') }}"
+						class="btn btn-outline-primary">
+						<i class="mdi mdi-account"></i> {{ __('My Doctor Profile') }}
+					</a>
+					@endhasPermission
 					@hasPermission('create doctor profiles')
 					<a href="{{ route('clinic.doctor-profiles.create') }}"
 						class="btn btn-primary">

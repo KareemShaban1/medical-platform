@@ -25,6 +25,9 @@ class ProductRepository implements ProductRepositoryInterface
         return datatables()->of($products)
             ->addColumn('images', fn($item) => $this->productImage($item))
             ->addColumn('name', fn($item) => $item->name)
+            ->editColumn('price_before', fn($item) => __('EGP') . ' ' . number_format($item->price_before, 2))
+            ->editColumn('price_after', fn($item) => __('EGP') . ' ' . number_format($item->price_after, 2))
+            ->addColumn('final_price', fn($item) => __('EGP') . ' ' . number_format($item->final_price ?? $item->price_after, 2))
             ->editColumn('status', fn($item) => $this->productStatus($item))
             // ->editColumn('approved', fn($item) => $this->productApproved($item))
             ->addColumn('approval_status', fn($item) => $this->productApprovalStatus($item))
@@ -39,6 +42,7 @@ class ProductRepository implements ProductRepositoryInterface
         return DB::transaction(function () use ($request) {
             $data = $request;
             $data['supplier_id'] = auth('supplier')->user()->supplier_id;
+            $data['final_price'] = Product::calculateFinalPrice((float) $data['price_after']);
 
             $product = Product::create($data);
             $product->categories()->sync($data['categories']);
@@ -79,6 +83,7 @@ class ProductRepository implements ProductRepositoryInterface
         return DB::transaction(function () use ($request, $id) {
             $product = Product::findOrFail($id);
             $data = $request;
+            $data['final_price'] = Product::calculateFinalPrice((float) $data['price_after']);
             $product->update($data);
             $product->categories()->sync($data['categories']);
 
@@ -134,6 +139,9 @@ class ProductRepository implements ProductRepositoryInterface
         return datatables()->of($products)
             ->addColumn('image', fn($item) => $this->productImage($item))
             ->addColumn('name', fn($item) => $item->name)
+            ->editColumn('price_before', fn($item) => __('EGP') . ' ' . number_format($item->price_before, 2))
+            ->editColumn('price_after', fn($item) => __('EGP') . ' ' . number_format($item->price_after, 2))
+            ->addColumn('final_price', fn($item) => __('EGP') . ' ' . number_format($item->final_price ?? $item->price_after, 2))
             ->addColumn('status', fn() => '<span class="badge bg-secondary">Trashed</span>')
             ->editColumn('deleted_at', fn($item) => $item->deleted_at->format('Y-m-d H:i:s'))
             ->addColumn('action', fn($item) => $this->trashActions($item))

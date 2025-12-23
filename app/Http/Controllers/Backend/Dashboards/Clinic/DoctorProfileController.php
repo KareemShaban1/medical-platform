@@ -50,7 +50,8 @@ class DoctorProfileController extends Controller
         abort_if(!hasPermission('create doctor profile'), 403, __('You are not authorized to create doctor profile'));
 
         $specialities = Speciality::orderBy('name_en')->get();
-        return view('backend.dashboards.clinic.pages.doctor-profiles.create', compact('specialities'));
+        $user = auth('clinic')->user();
+        return view('backend.dashboards.clinic.pages.doctor-profiles.create', compact('specialities', 'user'));
     }
 
     public function store(DoctorProfileStoreRequest $request)

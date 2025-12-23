@@ -22,7 +22,8 @@
                                     <th>{{ __('Product Name') }}</th>
                                     <th>{{ __('Supplier') }}</th>
                                     <th>{{ __('Categories') }}</th>
-                                    <th>{{ __('Price') }}</th>
+                                    <th>{{ __('Price After') }}</th>
+                                    <th>{{ __('Final Price') }}</th>
                                     <th>{{ __('Stock') }}</th>
                                     <th>{{ __('Approval Status') }}</th>
                                     <th>{{ __('Actions') }}</th>
@@ -105,8 +106,12 @@
                         searchable: false
                     },
                     {
-                        data: 'price',
+                        data: 'price_after',
                         name: 'price_after'
+                    },
+                    {
+                        data: 'final_price',
+                        name: 'final_price'
                     },
                     {
                         data: 'stock',
@@ -134,13 +139,13 @@
                 buttons: [{
                         extend: 'print',
                         exportOptions: {
-                            columns: [0, 2, 3, 5, 6, 7]
+                            columns: [0, 2, 3, 5, 6, 7, 8]
                         }
                     },
                     {
                         extend: 'excel',
                         exportOptions: {
-                            columns: [0, 2, 3, 5, 6, 7]
+                            columns: [0, 2, 3, 5, 6, 7, 8]
                         }
                     },
                     {

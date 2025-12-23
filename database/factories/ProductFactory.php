@@ -17,6 +17,8 @@ class ProductFactory extends Factory
      */
     public function definition(): array
     {
+        $priceAfter = fake()->randomFloat(2, 10, 100);
+
         return [
             //
             'supplier_id' => Supplier::inRandomOrder()->first()->id,
@@ -26,7 +28,8 @@ class ProductFactory extends Factory
             'description_ar' => fake()->text(),
             'sku' => fake()->unique()->word(),
             'price_before' => fake()->randomFloat(2, 10, 100),
-            'price_after' => fake()->randomFloat(2, 10, 100),
+            'price_after' => $priceAfter,
+            'final_price' => \App\Models\Product::calculateFinalPrice($priceAfter),
             'discount_value' => fake()->randomFloat(2, 10, 100),
             'stock' => fake()->randomNumber(2),
             // 'approved' => true,

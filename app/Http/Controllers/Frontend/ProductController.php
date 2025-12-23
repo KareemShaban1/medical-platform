@@ -12,7 +12,13 @@ class ProductController extends Controller
     //
     public function index()
     {
-        $products = Product::approved()->active()->with('categories')->paginate(20);
+        $products = Product::approved()
+            ->active()
+            ->with('categories')
+            ->withSum('orderItems as total_sold', 'quantity')
+            ->orderByDesc('total_sold')
+            ->orderByDesc('created_at')
+            ->paginate(20);
         $categories = Category::active()->select('id', 'name_ar', 'name_en')->get();
         return view('frontend.pages.products.index', compact('products', 'categories'));
     }
@@ -20,7 +26,10 @@ class ProductController extends Controller
     public function filter(Request $request)
     {
         try {
-            $query = Product::approved()->active()->with('categories');
+            $query = Product::approved()
+                ->active()
+                ->with('categories')
+                ->withSum('orderItems as total_sold', 'quantity');
 
             // Search filter - search in name and description
             if ($request->filled('search')) {
@@ -46,16 +55,16 @@ class ProductController extends Controller
                 $priceRange = $request->price;
                 switch ($priceRange) {
                     case '0-50':
-                        $query->whereBetween('price_after', [0, 50]);
+                        $query->whereBetween('final_price', [0, 50]);
                         break;
                     case '50-100':
-                        $query->whereBetween('price_after', [50, 100]);
+                        $query->whereBetween('final_price', [50, 100]);
                         break;
                     case '100-200':
-                        $query->whereBetween('price_after', [100, 200]);
+                        $query->whereBetween('final_price', [100, 200]);
                         break;
                     case '200+':
-                        $query->where('price_after', '>=', 200);
+                        $query->where('final_price', '>=', 200);
                         break;
                 }
             }
@@ -80,45 +89,49 @@ class ProductController extends Controller
 
             // Sort filter with proper column mapping
             // If priceRange is set and sort is not explicitly set to price, use priceRange
-            $sortBy = $request->get('sort', 'name');
+            $sortBy = $request->get('sort');
             $priceRange = $request->get('priceRange');
             
             // If priceRange is set and sort doesn't explicitly handle price, use priceRange for sorting
             if ($priceRange && !in_array($sortBy, ['price', 'price-desc'])) {
                 if ($priceRange === 'highest') {
-                    $query->orderBy('price_after', 'desc');
+                    $query->orderBy('final_price', 'desc');
                 } elseif ($priceRange === 'lowest') {
-                    $query->orderBy('price_after', 'asc');
+                    $query->orderBy('final_price', 'asc');
                 }
             } else {
                 // Apply sort filter
-                switch ($sortBy) {
-                    case 'name':
-                        $query->orderBy('name_en', 'asc');
-                        break;
-                    case 'name-desc':
-                        $query->orderBy('name_en', 'desc');
-                        break;
-                    case 'price':
-                        $query->orderBy('price_after', 'asc');
-                        break;
-                    case 'price-desc':
-                        $query->orderBy('price_after', 'desc');
-                        break;
-                    case 'newest':
-                        $query->orderBy('created_at', 'desc');
-                        break;
-                    case 'oldest':
-                        $query->orderBy('created_at', 'asc');
-                        break;
-                    case 'stock':
-                        $query->orderBy('stock', 'desc');
-                        break;
-                    case 'discount':
-                        $query->orderBy('discount_value', 'desc');
-                        break;
-                    default:
-                        $query->orderBy('name_en', 'asc');
+                if ($sortBy) {
+                    switch ($sortBy) {
+                        case 'name':
+                            $query->orderBy('name_en', 'asc');
+                            break;
+                        case 'name-desc':
+                            $query->orderBy('name_en', 'desc');
+                            break;
+                        case 'price':
+                            $query->orderBy('final_price', 'asc');
+                            break;
+                        case 'price-desc':
+                            $query->orderBy('final_price', 'desc');
+                            break;
+                        case 'newest':
+                            $query->orderBy('created_at', 'desc');
+                            break;
+                        case 'oldest':
+                            $query->orderBy('created_at', 'asc');
+                            break;
+                        case 'stock':
+                            $query->orderBy('stock', 'desc');
+                            break;
+                        case 'discount':
+                            $query->orderBy('discount_value', 'desc');
+                            break;
+                        default:
+                            $query->orderByDesc('total_sold')->orderByDesc('created_at');
+                    }
+                } else {
+                    $query->orderByDesc('total_sold')->orderByDesc('created_at');
                 }
             }
 

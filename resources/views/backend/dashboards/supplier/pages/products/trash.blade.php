@@ -28,6 +28,7 @@
                                 <th>{{ __('SKU') }}</th>
                                 <th>{{ __('Price Before') }}</th>
                                 <th>{{ __('Price After') }}</th>
+                                <th>{{ __('Final Price') }}</th>
                                 <th>{{ __('Stock') }}</th>
                                 <th>{{ __('Status') }}</th>
                                 <th>{{ __('Deleted At') }}</th>
@@ -71,6 +72,10 @@
             {
                 data: 'price_after',
                 name: 'price_after'
+            },
+            {
+                data: 'final_price',
+                name: 'final_price'
             },
             {
                 data: 'stock',

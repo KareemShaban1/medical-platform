@@ -25,5 +25,7 @@ return [
         'currency' => env('PAYMOB_CURRENCY', 'EGP'),
         'return_url' => env('PAYMOB_RETURN_URL', null), // Configure in Paymob dashboard instead
         'require_3d_secure' => env('PAYMOB_REQUIRE_3D_SECURE', true), // Set to false to allow non-3D Secure payments (less secure)
+        'fee_fixed' => env('PAYMOB_FEE_FIXED', 3),
+        'fee_percent' => env('PAYMOB_FEE_PERCENT', 5),
     ],
 ];
