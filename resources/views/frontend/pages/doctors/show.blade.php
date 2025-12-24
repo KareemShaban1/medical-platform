@@ -152,6 +152,7 @@
 	display: flex;
 	gap: 12px;
 	margin-top: 20px;
+	flex-wrap: wrap;
 }
 
 .social-link {
@@ -633,6 +634,16 @@
 	border-top: 2px solid #e5e7eb;
 }
 
+.doctor-main-grid {
+	display: grid;
+	grid-template-columns: 2fr 1fr;
+	gap: 32px;
+}
+
+.contact-actions a {
+	word-break: break-word;
+}
+
 .form-group {
 	margin-bottom: 20px;
 }
@@ -662,7 +673,13 @@
 @media (max-width: 768px) {
 	.doctor-profile-card {
 		flex-direction: column;
-		padding: 24px;
+		padding: 20px;
+		gap: 20px;
+		margin-top: -40px;
+	}
+
+	.doctor-hero {
+		padding: 40px 0;
 	}
 
 	.doctor-avatar,
@@ -678,6 +695,21 @@
 
 	.doctor-stats {
 		gap: 20px;
+	}
+
+	.doctor-main-grid {
+		grid-template-columns: 1fr;
+	}
+
+	.contact-actions {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 10px;
+	}
+
+	.share-pill {
+		width: 100%;
+		justify-content: center;
 	}
 
 	.days-slider-container {
@@ -864,7 +896,7 @@ function showToast() {
 <!-- Main Content -->
 <section style="padding: 60px 0; background: #f9fafb;">
 	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-		<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 32px;">
+		<div class="doctor-main-grid">
 			<!-- Left Column -->
 			<div>
 				<!-- About -->
