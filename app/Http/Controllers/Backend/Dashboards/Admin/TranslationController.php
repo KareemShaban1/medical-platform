@@ -98,7 +98,7 @@ class TranslationController extends Controller
     public function update(Request $request)
     {
         // apply permissions
-        abort_if(!hasPermission('update translations'), 403, __('You are not authorized to update translations'));
+        abort_if(!hasPermission('update translation'), 403, __('You are not authorized to update translations'));
         $request->validate([
             'locale' => 'required|string',
             'key' => 'required|string',
@@ -129,7 +129,7 @@ class TranslationController extends Controller
     public function store(Request $request)
     {
         // apply permissions
-        abort_if(!hasPermission('create translations'), 403, __('You are not authorized to add translations'));
+        abort_if(!hasPermission('create translation'), 403, __('You are not authorized to add translations'));
         $request->validate([
             'locale' => 'required|string',
             'key' => 'required|string',
@@ -160,7 +160,7 @@ class TranslationController extends Controller
     public function destroy(Request $request)
     {
         // apply permissions
-        abort_if(!hasPermission('delete translations'), 403, __('You are not authorized to delete translations'));
+        abort_if(!hasPermission('delete translation'), 403, __('You are not authorized to delete translations'));
         $request->validate([
             'locale' => 'required|string',
             'key' => 'required|string',

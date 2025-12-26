@@ -97,7 +97,7 @@ class BlogPostController extends Controller
     public function updateStatus(Request $request)
     {
         // apply permissions
-        abort_if(!hasPermission('update blog post status'), 403, __('You are not authorized to update blog post status'));
+        abort_if(!hasPermission('toggle blog post status'), 403, __('You are not authorized to update blog post status'));
         return $this->blogPostRepo->updateStatus($request);
     }
 

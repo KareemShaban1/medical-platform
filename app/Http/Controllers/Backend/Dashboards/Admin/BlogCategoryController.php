@@ -60,7 +60,7 @@ class BlogCategoryController extends Controller
     public function updateStatus(Request $request)
     {
         // apply permissions
-        abort_if(!hasPermission('update blog category status'), 403, __('You are not authorized to update blog category status'));
+        abort_if(!hasPermission('toggle blog category status'), 403, __('You are not authorized to update blog category status'));
         return $this->blogCategoryRepo->updateStatus($request);
     }
 

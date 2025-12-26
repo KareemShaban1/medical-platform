@@ -94,7 +94,7 @@ class DoctorProfileController extends Controller
     public function toggleLockForEdit($id)
     {
         // apply permissions
-        abort_if(!hasPermission('toggle lock for edit doctor profile'), 403, __('You are not authorized to toggle lock for edit doctor profile'));
+        abort_if(!hasPermission('toggle lock doctor profile'), 403, __('You are not authorized to toggle lock for edit doctor profile'));
         try {
             $profile = $this->profileRepo->toggleLockForEdit($id);
             $message = $profile->locked_for_edit
