@@ -97,19 +97,19 @@ class PaymobGateway extends BasePaymentGateway
                     'state' => !empty($customerInfo['state']) ? $customerInfo['state'] : 'NA',
                 ],
             ];
-            
+
             // Force 3D Secure if configured (some Paymob integrations support this)
             // Note: 3D Secure is usually controlled by Paymob dashboard integration settings
             // If your integration requires 3D Secure, it should trigger automatically
             // If it's not appearing, check Paymob dashboard → Integrations → Your Integration → 3D Secure settings
-            
+
             Log::info('Creating Paymob payment key', [
                 'integration_id' => $integrationId,
                 'amount_cents' => $paymentKeyData['amount_cents'],
                 'order_id' => $paymobOrder['id'],
                 'note' => '3D Secure is controlled by Paymob integration settings. Check dashboard if 3D Secure not appearing.',
             ]);
-            
+
             $paymentKey = $this->createPaymentKey($authToken, $paymentKeyData);
 
             if (!$paymentKey) {
@@ -119,7 +119,7 @@ class PaymobGateway extends BasePaymentGateway
                 );
             }
 
-            // Step 4: Depending on method, either use iframe (card) or wallet flow
+            // Step 4: Depending on method, either use redirect URL (card) or wallet flow
             if ($method === 'wallet') {
                 if (empty($walletPhone)) {
                     return PaymentResponse::failure('Wallet phone is required', gateway: $this->getName());
@@ -141,15 +141,18 @@ class PaymobGateway extends BasePaymentGateway
                     gateway: $this->getName()
                 );
             } else {
-                // Card - Use iframe
-                $iframeId = $this->getConfigValue('iframe_id', $this->getConfigValue('integration_id'));
+                // Card - Use redirect URL (iframe deprecated by Paymob)
+                // Even though iframes are deprecated, the iframe URL still works as a redirect URL
+                // The URL format: /api/acceptance/iframes/{iframeId}?payment_token={token}
+                // We use integration_id as iframe_id (they're usually the same)
+                $iframeId = $this->getConfigValue('iframe_id', $integrationId);
                 $redirectUrl = "https://accept.paymob.com/api/acceptance/iframes/{$iframeId}?payment_token={$paymentKey}";
 
-                Log::info('Paymob iframe URL generated', [
-                    'iframe_id' => $iframeId,
+                Log::info('Paymob card payment redirect URL generated', [
                     'integration_id' => $integrationId,
+                    'iframe_id' => $iframeId,
                     'redirect_url' => $redirectUrl,
-                    'note' => 'If 3D Secure not appearing, check Paymob dashboard integration settings for 3D Secure configuration',
+                    'note' => 'Iframe embedding deprecated, but URL still works for redirects.',
                 ]);
 
                 return PaymentResponse::success(
@@ -370,6 +373,7 @@ class PaymobGateway extends BasePaymentGateway
         }
     }
 
+
     /**
      * Get transaction details from Paymob API
      * This can provide detailed error information that's not in the redirect response
@@ -392,12 +396,12 @@ class PaymobGateway extends BasePaymentGateway
 
             if ($response->successful()) {
                 $transactionData = $response->json();
-                
+
                 Log::info('Paymob transaction details retrieved', [
                     'transaction_id' => $transactionId,
                     'has_data' => !empty($transactionData),
                 ]);
-                
+
                 return $transactionData;
             }
 
