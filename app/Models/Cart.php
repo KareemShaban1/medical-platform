@@ -64,14 +64,14 @@ class Cart extends Model
             return ($item->price * $item->quantity) - ($item->discount ?? 0);
         });
         $shipping = 0; // Can be calculated based on business logic
-        $tax = $subtotal * 0.14; // 14% tax rate - adjust as needed
+        $tax = 0;
         $discount = $this->discount ?? 0;
         
         $this->update([
             'subtotal' => $subtotal,
             'shipping' => $shipping,
             'tax' => $tax,
-            'total' => $subtotal + $shipping + $tax - $discount,
+            'total' => $subtotal + $shipping - $discount,
         ]);
     }
 

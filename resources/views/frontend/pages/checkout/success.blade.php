@@ -100,15 +100,11 @@
 				<div class="space-y-2">
 					<div class="flex justify-between text-gray-700">
 						<span>{{__('subtotal')}}:</span>
-						<span>{{ __('EGP') }} {{ number_format($order->total - $order->shipping - $order->tax + $order->discount, 2) }}</span>
+						<span>{{ __('EGP') }} {{ number_format($order->total - $order->shipping + $order->discount, 2) }}</span>
 					</div>
 					<div class="flex justify-between text-gray-700">
 						<span>{{__('shipping')}}:</span>
 						<span>{{ __('EGP') }} {{ number_format($order->shipping, 2) }}</span>
-					</div>
-					<div class="flex justify-between text-gray-700">
-						<span>{{__('tax')}}:</span>
-						<span>{{ __('EGP') }} {{ number_format($order->tax, 2) }}</span>
 					</div>
 					@if($order->discount > 0)
 					<div class="flex justify-between text-gray-700">

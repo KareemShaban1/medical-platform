@@ -108,11 +108,11 @@
 						<span
 							id="cart-shipping">{{ __('EGP') }} {{ number_format($cart->shipping, 2) }}</span>
 					</div>
-					<div class="flex justify-between text-gray-700">
+					{{-- <div class="flex justify-between text-gray-700">
 						<span>{{ __('tax') }}:</span>
 						<span
 							id="cart-tax">{{ __('EGP') }} {{ number_format($cart->tax, 2) }}</span>
-					</div>
+					</div> --}}
 					<div class="flex justify-between text-gray-700">
 						<span>{{ __('discount') }}:</span>
 						<span
