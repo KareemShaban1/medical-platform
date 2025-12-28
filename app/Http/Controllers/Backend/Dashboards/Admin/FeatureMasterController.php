@@ -49,9 +49,9 @@ class FeatureMasterController extends Controller
                         <a href="javascript:void(0)" onclick="editFeature({$id})" class="btn btn-sm btn-outline-primary">
                             <i class="fa fa-edit"></i>
                         </a>
-                        <a href="javascript:void(0)" onclick="deleteFeature({$id})" class="btn btn-sm btn-outline-danger">
+                        <!-- <a href="javascript:void(0)" onclick="deleteFeature({$id})" class="btn btn-sm btn-outline-danger">
                             <i class="fa fa-trash"></i>
-                        </a>
+                        </a> -->
                     </div>
                 HTML;
             })

@@ -8,7 +8,7 @@
             <div class="modal-body">
                 <div class="mb-3">
                     <label class="form-label">{{ __('Code') }} <span class="text-danger">*</span></label>
-                    <input type="text" name="code" class="form-control" value="{{ $feature->code }}" required>
+                    <input type="text" name="code" class="form-control" value="{{ $feature->code }}" readonly>
                     <small class="text-muted">{{ __('Unique identifier for the feature') }}</small>
                 </div>
                 <div class="mb-3">
@@ -91,4 +91,3 @@ $(document).ready(function() {
     });
 });
 </script>
-
