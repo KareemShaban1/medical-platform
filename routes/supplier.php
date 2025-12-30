@@ -190,5 +190,5 @@ Route::post('/supplier/logout', function (Request $request) {
     $request->session()->invalidate();
     $request->session()->regenerateToken();
 
-    return redirect()->to('/');
+    return redirect()->to('/supplier/login');
 })->name('supplier.logout');

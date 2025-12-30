@@ -71,9 +71,6 @@ class FortifyServiceProvider extends ServiceProvider
         }
 
 
-
-
-
         //// login response
         // redirect user (admin/clinic/supplier) after login
         $this->app->instance(LoginResponse::class, new class implements LoginResponse {
@@ -119,8 +116,19 @@ class FortifyServiceProvider extends ServiceProvider
         $this->app->instance(LogoutResponse::class, new class implements LogoutResponse {
             public function toResponse($request)
             {
+                // Determine which guard the user was logged in with before logout
+                $loggedInGuard = null;
+                $guards = ['admin', 'clinic', 'supplier', 'affiliate', 'patient', 'web'];
+
+                foreach ($guards as $guard) {
+                    if (Auth::guard($guard)->check()) {
+                        $loggedInGuard = $guard;
+                        break;
+                    }
+                }
+
                 // logout from all guards to ensure full logout
-                foreach (['admin', 'clinic', 'supplier', 'patient', 'web'] as $guard) {
+                foreach ($guards as $guard) {
                     if (Auth::guard($guard)->check()) {
                         Auth::guard($guard)->logout();
                     }
@@ -130,7 +138,31 @@ class FortifyServiceProvider extends ServiceProvider
                 $request->session()->invalidate();
                 $request->session()->regenerateToken();
 
-                // ✅ redirect to home instead of login
+                // Redirect to the appropriate login page based on the guard
+                if ($loggedInGuard === 'admin') {
+                    return redirect('/admin/login');
+                } elseif ($loggedInGuard === 'clinic') {
+                    return redirect('/clinic/login');
+                } elseif ($loggedInGuard === 'supplier') {
+                    return redirect('/supplier/login');
+                } elseif ($loggedInGuard === 'affiliate') {
+                    return redirect('/affiliate/login');
+                } elseif ($loggedInGuard === 'patient') {
+                    return redirect('/login');
+                }
+
+                // Fallback: redirect based on request path
+                if ($request->is('admin/*')) {
+                    return redirect('/admin/login');
+                } elseif ($request->is('clinic/*')) {
+                    return redirect('/clinic/login');
+                } elseif ($request->is('supplier/*')) {
+                    return redirect('/supplier/login');
+                } elseif ($request->is('affiliate/*')) {
+                    return redirect('/affiliate/login');
+                }
+
+                // Default redirect to home
                 return redirect('/');
             }
         });
@@ -157,8 +189,6 @@ class FortifyServiceProvider extends ServiceProvider
         RateLimiter::for('two-factor', function (Request $request) {
             return Limit::perMinute(5)->by($request->session()->get('login.id'));
         });
-
-
 
         if (Config::get('fortify.guard') == 'admin') {
             //// this method will be used in "web" guard only

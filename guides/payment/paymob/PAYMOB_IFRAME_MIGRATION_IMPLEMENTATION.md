@@ -66,9 +66,12 @@ This document provides the exact code changes needed to migrate from Paymob's de
 ```
 
 **Important Note:** 
-- Paymob deprecated **iframe embedding** (you can't use `<iframe>` tag), but the URL itself still works for **redirects**
-- The `/acceptance/payments/pay` endpoint requires card details (POST with source), so it's not suitable for hosted payment pages
-- The solution is to use the old iframe URL format but redirect to it instead of embedding it
+- Paymob deprecated **iframe embedding** (you can't use `<iframe>` tag in HTML)
+- However, **redirecting** to the iframe URL still works (using `window.location.href`)
+- The URL path still contains "/iframes/" but this is Paymob's Hosted Payment Page (HPP) format for redirects
+- The `/acceptance/payments/pay` endpoint requires card details (POST with source), so it's not suitable for hosted payment pages where users enter card details
+- **Current Solution**: Use the iframe URL format for redirects (not embedding)
+- **Future Update**: If Paymob provides a newer redirect URL format without "iframes" in the path, update the code accordingly
 
 ### Change 2: Update Comment (Line 122)
 

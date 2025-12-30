@@ -135,6 +135,9 @@ class RepositoryServiceProvider extends ServiceProvider
         // Announcements
         $this->app->bind('App\\Interfaces\\Admin\\AnnouncementRepositoryInterface', 'App\\Repository\\Admin\\AnnouncementRepository');
 
+        // Banners
+        $this->app->bind('App\\Interfaces\\Admin\\BannerRepositoryInterface', 'App\\Repository\\Admin\\BannerRepository');
+
 
         // Tickets System Repositories
 

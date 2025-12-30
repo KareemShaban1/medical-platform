@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Backend\Dashboards\Admin\AnnouncementController;
+use App\Http\Controllers\Backend\Dashboards\Admin\BannerController;
 use App\Http\Controllers\Backend\Dashboards\Admin\BlogCategoryController;
 use App\Http\Controllers\Backend\Dashboards\Admin\ContactMessageController;
 use App\Http\Controllers\Backend\Dashboards\Admin\DashboardController;
@@ -338,6 +339,22 @@ Route::group(
                 ->whereNumber('id')
                 ->name('affiliates.update');
         });
+
+        // Banners Management   
+        Route::group(['prefix' => 'banners'], function () {
+            Route::get('/', [BannerController::class, 'index'])->name('banners.index');
+            Route::get('/data', [BannerController::class, 'data'])->name('banners.data');
+            Route::get('/create', [ BannerController::class, 'create'])->name('banners.create');
+            Route::post('/store', [ BannerController::class, 'store'])->name('banners.store');
+            Route::get('/{id}/edit', [ BannerController::class, 'edit'])->name('banners.edit');
+            Route::put('/{id}/update', [ BannerController::class, 'update'])->name('banners.update');
+            Route::delete('/{id}/destroy', [ BannerController::class, 'destroy'])->name('banners.destroy');
+            Route::get('/trash', [ BannerController::class, 'trash'])->name('banners.trash');
+            Route::get('/trash/data', [ BannerController::class, 'trashData'])->name('banners.trash.data');
+            Route::post('/{id}/restore', [ BannerController::class, 'restore'])->name('banners.restore');
+            Route::delete('/{id}/force-delete', [ BannerController::class, 'forceDelete'])->name('banners.force-delete');
+            Route::post('/{id}/toggle-status', [ BannerController::class, 'toggleStatus'])->name('banners.toggle-status');
+        });
     }
 );
 
@@ -379,5 +396,5 @@ Route::post('/admin/logout', function (Request $request) {
     $request->session()->invalidate();
     $request->session()->regenerateToken();
 
-    return redirect()->to('/');
+    return redirect()->to('/admin/login');
 })->name('admin.logout');

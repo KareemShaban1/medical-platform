@@ -47,6 +47,7 @@ class AdminRolePermissionSeeder extends Seeder
             'Supplier Products' => ['view supplier products','view trash supplier products', 'approve supplier product', 'reject supplier product'],
             'Categories' => ['view categories','view trash categories', 'create category', 'update category', 'delete category', 'restore category', 'force delete category', 'toggle category status'],
             'Announcements' => ['view announcements','view trash announcements', 'create announcement', 'update announcement', 'delete announcement'],
+            'Banners' => ['view banners','view trash banners', 'create banner', 'update banner', 'delete banner'],
             'Translations' => ['view translations','view trash translations', 'create translation', 'update translation', 'delete translation'],
             'Admin Users' => ['view admin users','view trash admin users', 'create admin user', 'update admin user', 'delete admin user', 'restore admin user', 'force delete admin user', 'toggle admin user status'],
             'Roles' => ['view roles','view trash roles', 'create role', 'update role', 'delete role', 'restore role', 'force delete role'],

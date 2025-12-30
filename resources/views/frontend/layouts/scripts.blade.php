@@ -227,3 +227,34 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 @stack('scripts')
+
+<!-- Banner Click Tracking -->
+<script>
+function trackBannerClick(bannerId, event, linkUrl, openInNewTab) {
+	const url = '{{ url('/api/banners') }}/' + bannerId + '/track-click';
+	const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+	
+	// Use fetch with keepalive for reliable tracking (works even if page navigates)
+	// keepalive ensures the request completes even if the page unloads
+	fetch(url, {
+		method: 'POST',
+		headers: {
+			'X-CSRF-TOKEN': csrfToken,
+			'Content-Type': 'application/json',
+		},
+		keepalive: true // Critical: keeps request alive even if page navigates away
+	}).catch(err => {
+		console.log('Click tracking failed', err);
+	});
+	
+	// If opening in new tab, don't prevent default - let browser handle it
+	// If opening in same tab, prevent default and navigate manually after a short delay
+	if (!openInNewTab && event && linkUrl) {
+		event.preventDefault();
+		// Small delay to ensure tracking request is sent
+		setTimeout(() => {
+			window.location.href = linkUrl;
+		}, 100);
+	}
+}
+</script>

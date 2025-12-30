@@ -29,5 +29,26 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        // Handle unauthenticated redirects based on route prefix
+        $exceptions->render(function (\Illuminate\Auth\AuthenticationException $e, \Illuminate\Http\Request $request) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Unauthenticated.'], 401);
+            }
+
+            // Redirect to appropriate login page based on route prefix
+            if ($request->is('admin/*')) {
+                return redirect()->guest('/admin/login');
+            } elseif ($request->is('clinic/*')) {
+                return redirect()->guest('/clinic/login');
+            } elseif ($request->is('supplier/*')) {
+                return redirect()->guest('/supplier/login');
+            } elseif ($request->is('affiliate/*')) {
+                return redirect()->guest('/affiliate/login');
+            } elseif ($request->is('user/*') || $request->is('user')) {
+                return redirect()->guest('/login');
+            }
+
+            // Default redirect to home login
+            return redirect()->guest('/login');
+        });
     })->create();

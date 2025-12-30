@@ -47,5 +47,5 @@ Route::post('/affiliate/logout', function (Request $request) {
     Auth::guard('affiliate')->logout();
     $request->session()->invalidate();
     $request->session()->regenerateToken();
-    return redirect('/');
+    return redirect('/affiliate/login');
 })->name('affiliate.logout');

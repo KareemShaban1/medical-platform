@@ -6,8 +6,16 @@
 @section('content')
 
 
+
+<!-- Ad before hero section -->
+<x-section-ad position="before_hero" />
+
 <!-- hero2 -->
 @include('frontend.pages.home.partials.hero')
+
+<!-- Ad after hero section -->
+<x-section-ad position="after_hero" />
+
 
 
 <section class="relative overflow-hidden bg-primary-gradient py-16 px-8">
@@ -108,26 +116,26 @@
 </section>
 
 
+<!-- Ad before about section -->
+<x-section-ad position="before_about" />
+
 <!-- about -->
 @include('frontend.pages.home.partials.about')
+
+<!-- Ad after about section -->
+<x-section-ad position="after_about" />
+
+
+<!-- Ad before features section -->
+<x-section-ad position="before_features" />
 
 <!-- features -->
 @include('frontend.pages.home.partials.features')
 
-<!-- Featured Products Section -->
+<!-- Ad after features section -->
+<x-section-ad position="after_features" />
 
 
-
-<!-- Suppliers Section -->
-
-
-
-
-<!-- Clinics Section -->
-
-<!-- Jobs Section -->
-
-<!-- Rental Space Section -->
 
 <section class="bg-primary-gradient w-full">
 	<div class="relative lg:flex items-center space-y-16 max-w-7xl mx-auto px-8 py-24 lg:space-y-0 lg:space-x-16">
@@ -155,23 +163,37 @@
 
 	</div>
 </section>
-<!-- Courses Section -->
+
+
+
+<!-- Ad before registration section -->
+<x-section-ad position="before_registration" />
 
 <!-- Registration Section -->
 @include('frontend.pages.home.partials.registration-section')
 
+<!-- Ad after registration section -->
+<x-section-ad position="after_registration" />
+
+
+<!-- Ad before affiliate section -->
+<x-section-ad position="before_affiliate" />
+
+
 <!-- Affiliate Program Section -->
 @php
-	$affiliateRegisterUrl = url('/affiliate/register');
-	$affiliateLoginUrl = url('/affiliate/login');
-	$affiliateDiscount = $affiliateSettings?->default_discount_percent ?? 5;
-	$affiliateCommission = $affiliateSettings?->default_commission_percent ?? 5;
+$affiliateRegisterUrl = url('/affiliate/register');
+$affiliateLoginUrl = url('/affiliate/login');
+$affiliateDiscount = $affiliateSettings?->default_discount_percent ?? 5;
+$affiliateCommission = $affiliateSettings?->default_commission_percent ?? 5;
 @endphp
 <section class="relative overflow-hidden bg-white py-16">
 	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 		<div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
 			<div>
-				<p class="text-sm uppercase tracking-widest text-primary-600 font-semibold mb-3">{{ __('Affiliate Program') }}</p>
+				<p
+					class="text-sm uppercase tracking-widest text-primary-600 font-semibold mb-3">
+					{{ __('Affiliate Program') }}</p>
 				<h2 class="text-4xl font-bold text-gray-900 mb-4">
 					{{ __('Share. Save. Earn.') }}
 				</h2>
@@ -181,36 +203,51 @@
 				<div class="flex flex-wrap gap-3">
 					<a href="{{ $affiliateRegisterUrl }}"
 						class="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-primary-gradient text-white font-semibold hover:opacity-90 transition">
-						<i class="fas fa-user-plus mr-2"></i>{{ __('Join as Affiliate') }}
+						<i
+							class="fas fa-user-plus mr-2"></i>{{ __('Join as Affiliate') }}
 					</a>
 					<a href="{{ $affiliateLoginUrl }}"
 						class="inline-flex items-center justify-center px-6 py-3 rounded-lg border border-gray-300 text-gray-700 font-semibold hover:bg-gray-50 transition">
-						<i class="fas fa-sign-in-alt mr-2"></i>{{ __('Affiliate Login') }}
+						<i
+							class="fas fa-sign-in-alt mr-2"></i>{{ __('Affiliate Login') }}
 					</a>
 				</div>
 			</div>
 			<div class="relative">
-				<div class="rounded-3xl bg-gradient-to-br from-amber-50 via-white to-emerald-50 border border-amber-100 p-8 shadow-xl">
+				<div
+					class="rounded-3xl bg-gradient-to-br from-amber-50 via-white to-emerald-50 border border-amber-100 p-8 shadow-xl">
 					<div class="flex items-center justify-between mb-6">
 						<div class="flex items-center gap-3">
-							<div class="h-12 w-12 rounded-full bg-amber-100 flex items-center justify-center text-amber-600">
+							<div
+								class="h-12 w-12 rounded-full bg-amber-100 flex items-center justify-center text-amber-600">
 								<i class="fas fa-gift"></i>
 							</div>
 							<div>
-								<p class="text-sm text-gray-500">{{ __('Your Discount Code') }}</p>
-							<p class="text-xl font-bold text-gray-900">XXX-XXXX</p>
+								<p class="text-sm text-gray-500">
+									{{ __('Your Discount Code') }}
+								</p>
+								<p
+									class="text-xl font-bold text-gray-900">
+									XXX-XXXX</p>
 							</div>
 						</div>
-						<span class="text-xs px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 font-semibold">{{ __('Live') }}</span>
+						<span
+							class="text-xs px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 font-semibold">{{ __('Live') }}</span>
 					</div>
 					<div class="grid grid-cols-2 gap-4">
 						<div class="rounded-xl bg-white border border-gray-100 p-4">
-							<p class="text-sm text-gray-500">{{ __('Discount') }}</p>
-							<p class="text-2xl font-bold text-gray-900">{{ rtrim(rtrim(number_format($affiliateDiscount, 2, '.', ''), '0'), '.') }}%</p>
+							<p class="text-sm text-gray-500">
+								{{ __('Discount') }}</p>
+							<p class="text-2xl font-bold text-gray-900">
+								{{ rtrim(rtrim(number_format($affiliateDiscount, 2, '.', ''), '0'), '.') }}%
+							</p>
 						</div>
 						<div class="rounded-xl bg-white border border-gray-100 p-4">
-							<p class="text-sm text-gray-500">{{ __('Commission') }}</p>
-							<p class="text-2xl font-bold text-gray-900">{{ rtrim(rtrim(number_format($affiliateCommission, 2, '.', ''), '0'), '.') }}%</p>
+							<p class="text-sm text-gray-500">
+								{{ __('Commission') }}</p>
+							<p class="text-2xl font-bold text-gray-900">
+								{{ rtrim(rtrim(number_format($affiliateCommission, 2, '.', ''), '0'), '.') }}%
+							</p>
 						</div>
 					</div>
 					<p class="text-sm text-gray-500 mt-6">
@@ -221,6 +258,16 @@
 		</div>
 	</div>
 </section>
+
+
+<!-- Ad after affiliate section -->
+<x-section-ad position="after_affiliate" />
+
+
+
+
+<!-- Ad before subscription plans section -->
+<x-section-ad position="before_subscription_plans" />
 
 <!-- Subscription Plans Section -->
 <section id="subscriptions-plans" class="py-16 bg-gray-50 scroll-mt-20">
@@ -240,23 +287,26 @@
 					</p>
 					@if(session('usage'))
 					@php
-						$usage = session('usage');
-						$used = $usage['used'] ?? 0;
-						$limit = $usage['limit'] ?? null;
-						$remaining = $usage['remaining'] ?? 0;
-						$percentage = $limit ? round(($used / $limit) * 100, 1) : 0;
+					$usage = session('usage');
+					$used = $usage['used'] ?? 0;
+					$limit = $usage['limit'] ?? null;
+					$remaining = $usage['remaining'] ?? 0;
+					$percentage = $limit ? round(($used / $limit) * 100, 1) : 0;
 					@endphp
 					<div class="bg-white rounded-md p-3 mb-3 border border-red-200">
 						<div class="flex items-center justify-between mb-2">
-							<span class="text-sm font-medium text-gray-700">{{ __('Usage') }}</span>
+							<span
+								class="text-sm font-medium text-gray-700">{{ __('Usage') }}</span>
 							<span class="text-sm text-gray-600">
-								{{ $used }} / {{ $limit ?? __('unlimited') }}
+								{{ $used }} /
+								{{ $limit ?? __('unlimited') }}
 							</span>
 						</div>
 						@if($limit)
 						<div class="w-full bg-gray-200 rounded-full h-2 mb-2">
 							<div class="bg-red-500 h-2 rounded-full"
-								 style="width: {{ min(100, $percentage) }}%"></div>
+								style="width: {{ min(100, $percentage) }}%">
+							</div>
 						</div>
 						<p class="text-xs text-gray-600">
 							{{ __('Remaining') }}: {{ $remaining }}
@@ -271,7 +321,8 @@
 
 		<div class="text-center mb-12">
 			<h2 class="text-4xl font-bold text-gray-900 mb-4">{{ __('Choose Your Plan') }}</h2>
-			<p class="text-xl text-gray-600">{{ __('Select the perfect subscription plan for your needs') }}</p>
+			<p class="text-xl text-gray-600">
+				{{ __('Select the perfect subscription plan for your needs') }}</p>
 		</div>
 
 		<!-- Plan Type Selector -->
@@ -293,63 +344,86 @@
 		<!-- Plans Grid -->
 		<div id="plans-container">
 			@if($planType === 'doctor')
-				@include('frontend.pages.home.partials.plans-grid', ['plans' => $doctorPlans, 'type' => 'doctor', 'currentSubscription' => $currentSubscription, 'availableGateways' => $availableGateways ?? []])
+			@include('frontend.pages.home.partials.plans-grid', ['plans' => $doctorPlans, 'type' =>
+			'doctor', 'currentSubscription' => $currentSubscription, 'availableGateways' =>
+			$availableGateways ?? []])
 			@elseif($planType === 'clinic')
-				@include('frontend.pages.home.partials.plans-grid', ['plans' => $clinicPlans, 'type' => 'clinic', 'currentSubscription' => $currentSubscription, 'availableGateways' => $availableGateways ?? []])
+			@include('frontend.pages.home.partials.plans-grid', ['plans' => $clinicPlans, 'type' =>
+			'clinic', 'currentSubscription' => $currentSubscription, 'availableGateways' =>
+			$availableGateways ?? []])
 			@else
-				@include('frontend.pages.home.partials.plans-grid', ['plans' => $supplierPlans, 'type' => 'supplier', 'currentSubscription' => $currentSubscription, 'availableGateways' => $availableGateways ?? []])
+			@include('frontend.pages.home.partials.plans-grid', ['plans' => $supplierPlans, 'type' =>
+			'supplier', 'currentSubscription' => $currentSubscription, 'availableGateways' =>
+			$availableGateways ?? []])
 			@endif
 		</div>
 	</div>
 </section>
 
+<!-- Ad after subscription plans section -->
+<x-section-ad position="after_subscription_plans" />
+
+
+
+
+<!-- Ad before contact section -->
+<x-section-ad position="before_contact" />
+
+<!-- contact -->
+@include('frontend.pages.home.partials.contact')
+
+<!-- Ad after contact section -->
+<x-section-ad position="after_contact" />
+
+
+
 @push('styles')
 <style>
 .plan-card {
-    transition: all 0.3s ease;
-    border: 2px solid #e5e7eb;
+	transition: all 0.3s ease;
+	border: 2px solid #e5e7eb;
 }
 
 .plan-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+	transform: translateY(-8px);
+	box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
 }
 
 .plan-card.featured {
-    border-color: #079184;
-    border-width: 3px;
-    position: relative;
+	border-color: #079184;
+	border-width: 3px;
+	position: relative;
 }
 
 .plan-card.featured::before {
-    content: '{{ __('Most Popular') }}';
-    position: absolute;
-    top: -15px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #079184;
-    color: white;
-    padding: 4px 16px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
+	content: '{{ __('Most Popular') }}';
+	position: absolute;
+	top: -15px;
+	left: 50%;
+	transform: translateX(-50%);
+	background: #079184;
+	color: white;
+	padding: 4px 16px;
+	border-radius: 20px;
+	font-size: 12px;
+	font-weight: 600;
 }
 
 .price-tag {
-    font-size: 3rem;
-    font-weight: 700;
-    color: #079184;
+	font-size: 3rem;
+	font-weight: 700;
+	color: #079184;
 }
 
 .feature-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 0;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 0;
 }
 
 .feature-item i {
-    color: #10b981;
+	color: #10b981;
 }
 </style>
 @endpush
@@ -358,41 +432,45 @@
 <script>
 // Scroll to subscriptions section if hash is present
 document.addEventListener('DOMContentLoaded', function() {
-    if (window.location.hash === '#subscriptions-plans') {
-        setTimeout(() => {
-            const element = document.getElementById('subscriptions-plans');
-            if (element) {
-                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-        }, 100);
-    }
+	if (window.location.hash === '#subscriptions-plans') {
+		setTimeout(() => {
+			const element = document.getElementById(
+				'subscriptions-plans');
+			if (element) {
+				element.scrollIntoView({
+					behavior: 'smooth',
+					block: 'start'
+				});
+			}
+		}, 100);
+	}
 });
 
 function showPlans(type) {
-    // Update active button
-    document.querySelectorAll('.plan-type-btn').forEach(btn => {
-        btn.classList.remove('bg-primary-gradient', 'text-white');
-        btn.classList.add('bg-white', 'text-gray-700');
-    });
-    event.target.closest('button').classList.add('bg-primary-gradient', 'text-white');
-    event.target.closest('button').classList.remove('bg-white', 'text-gray-700');
+	// Update active button
+	document.querySelectorAll('.plan-type-btn').forEach(btn => {
+		btn.classList.remove('bg-primary-gradient', 'text-white');
+		btn.classList.add('bg-white', 'text-gray-700');
+	});
+	event.target.closest('button').classList.add('bg-primary-gradient', 'text-white');
+	event.target.closest('button').classList.remove('bg-white', 'text-gray-700');
 
-    // Load plans via AJAX
-    fetch(`{{ route('home') }}?plan_type=${type}`, {
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest',
-            'Accept': 'application/json'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success && data.html) {
-            document.getElementById('plans-container').innerHTML = data.html;
-        }
-    })
-    .catch(error => {
-        console.error('Error loading plans:', error);
-    });
+	// Load plans via AJAX
+	fetch(`{{ route('home') }}?plan_type=${type}`, {
+			headers: {
+				'X-Requested-With': 'XMLHttpRequest',
+				'Accept': 'application/json'
+			}
+		})
+		.then(response => response.json())
+		.then(data => {
+			if (data.success && data.html) {
+				document.getElementById('plans-container').innerHTML = data.html;
+			}
+		})
+		.catch(error => {
+			console.error('Error loading plans:', error);
+		});
 }
 </script>
 @endpush
@@ -418,8 +496,8 @@ function showPlans(type) {
 					to fine-tune and test an
 					idea.</p>
 				<p class="mt-8">
-					<span
-						class="text-4xl font-bold text-slate-900 tracking-tighter">{{ __('EGP') }} 0</span>
+					<span class="text-4xl font-bold text-slate-900 tracking-tighter">{{ __('EGP') }}
+						0</span>
 
 					<span class="text-base font-medium text-slate-500">/mo</span>
 				</p><a href="/sign-up"
@@ -524,8 +602,8 @@ function showPlans(type) {
 					multiple ideas who want to
 					efficiently test and refine them.</p>
 				<p class="mt-8">
-					<span
-						class="text-4xl font-bold text-slate-900 tracking-tighter">{{ __('EGP') }} 8</span>
+					<span class="text-4xl font-bold text-slate-900 tracking-tighter">{{ __('EGP') }}
+						8</span>
 
 					<span class="text-base font-medium text-slate-500">/mo</span>
 				</p><a href="/sign-up"
@@ -616,8 +694,8 @@ function showPlans(type) {
 					who want to work more
 					efficiently.</p>
 				<p class="mt-8">
-					<span
-						class="text-4xl font-bold text-slate-900 tracking-tighter">{{ __('EGP') }} 15</span>
+					<span class="text-4xl font-bold text-slate-900 tracking-tighter">{{ __('EGP') }}
+						15</span>
 
 					<span class="text-base font-medium text-slate-500">/mo</span>
 				</p><a href="/sign-up"

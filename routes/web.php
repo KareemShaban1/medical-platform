@@ -233,13 +233,19 @@ Route::post('/user/logout', function (\Illuminate\Http\Request $request) {
     \Illuminate\Support\Facades\Auth::guard('patient')->logout();
     $request->session()->invalidate();
     $request->session()->regenerateToken();
-    return redirect()->to('/');
+    return redirect()->to('/login');
 })->name('user.logout');
 
 
 
 Route::post('/register', [PatientAuthController::class, 'register'])->name('register');
 
+// Public banner endpoints
+Route::prefix('api/banners')->name('api.banners.')->group(function () {
+    Route::get('/{position?}', [\App\Http\Controllers\Backend\Dashboards\Admin\BannerController::class, 'getBanners'])->name('get');
+    Route::post('/{id}/track-view', [\App\Http\Controllers\Backend\Dashboards\Admin\BannerController::class, 'trackView'])->name('track-view');
+    Route::post('/{id}/track-click', [\App\Http\Controllers\Backend\Dashboards\Admin\BannerController::class, 'trackClick'])->name('track-click');
+});
 
 require __DIR__ . '/admin.php';
 require __DIR__.'/clinic.php';
