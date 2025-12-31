@@ -104,7 +104,7 @@
 							<div class="text-center mt-4">
 								<p class="register-link">
 									{{ __('Already have an account?') }}
-									<a href="{{ route('login') }}">{{ __('Login here') }}</a>
+									<a href="{{ url('affiliate/login') }}">{{ __('Login here') }}</a>
 								</p>
 							</div>
 							<div class="back-to-home text-center">
