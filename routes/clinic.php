@@ -22,6 +22,7 @@ use App\Http\Controllers\Backend\Dashboards\Clinic\ClinicInfoController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Backend\Dashboards\Clinic\CourseEnrollmentController as ClinicCourseEnrollmentController;
 use App\Http\Controllers\Backend\Dashboards\Clinic\OrderController as ClinicOrderController;
+use App\Http\Controllers\Backend\Dashboards\Clinic\ForgotPasswordController;
 
 Route::group(
     [
@@ -138,10 +139,22 @@ Route::group(
         Route::post('/verify-otp', [ClinicController::class, 'verifyOtp'])
             ->name('verify-otp')->withoutMiddleware(['auth:clinic', 'check.clinic.approval']);
         //->middleware('throttle:2,5');
-
+    
         Route::post('/resend-otp', [ClinicController::class, 'resendOtp'])
             ->name('resend-otp')->withoutMiddleware(['auth:clinic', 'check.clinic.approval']);
         // ->middleware('throttle:1,1');
+    
+        // Forgot Password Routes
+        Route::get('/forgot-password', [ForgotPasswordController::class, 'showForgotPassword'])
+            ->name('forgot-password')->withoutMiddleware(['auth:clinic', 'check.clinic.approval']);
+        Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetOtp'])
+            ->name('forgot-password.send')->withoutMiddleware(['auth:clinic', 'check.clinic.approval']);
+        Route::post('/forgot-password/verify', [ForgotPasswordController::class, 'verifyOtp'])
+            ->name('forgot-password.verify')->withoutMiddleware(['auth:clinic', 'check.clinic.approval']);
+        Route::post('/forgot-password/reset', [ForgotPasswordController::class, 'resetPassword'])
+            ->name('forgot-password.reset')->withoutMiddleware(['auth:clinic', 'check.clinic.approval']);
+        Route::post('/forgot-password/resend', [ForgotPasswordController::class, 'resendOtp'])
+            ->name('forgot-password.resend')->withoutMiddleware(['auth:clinic', 'check.clinic.approval']);
 
         // Location dropdowns endpoints
         Route::get('/governorates', [ClinicController::class, 'getGovernorates'])
@@ -203,22 +216,22 @@ Route::group(
 
         // Requests Management (feature: purchase_requests)
         Route::middleware('check.subscription:purchase_requests')->group(function () {
-        Route::group(['prefix' => 'requests'], function () {
-            Route::get('/data', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'data'])->name('requests.data');
-            Route::get('/categories', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'getCategories'])->name('requests.categories');
-            Route::post('/{id}/accept-offer', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'acceptOffer'])->name('requests.accept-offer');
-            Route::post('/{id}/process-offer-payment', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'processOfferPayment'])->name('requests.process-offer-payment');
-            Route::get('/{id}/payment-return/{gateway}', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'offerPaymentReturn'])->name('requests.payment-return');
-            Route::post('/{id}/payment-callback/{gateway}', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'offerPaymentCallback'])->name('requests.payment-callback');
-            Route::post('/{id}/cancel', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'cancel'])->name('requests.cancel');
-            Route::get('/', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'index'])->name('requests.index');
-            Route::get('/create', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'create'])->name('requests.create');
-            Route::post('/', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'store'])->name('requests.store');
-            Route::get('/{id}', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'show'])->name('requests.show');
-            Route::get('/{id}/edit', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'edit'])->name('requests.edit');
-            Route::put('/{id}', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'update'])->name('requests.update');
-            Route::delete('/{id}', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'destroy'])->name('requests.destroy');
-        });
+            Route::group(['prefix' => 'requests'], function () {
+                Route::get('/data', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'data'])->name('requests.data');
+                Route::get('/categories', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'getCategories'])->name('requests.categories');
+                Route::post('/{id}/accept-offer', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'acceptOffer'])->name('requests.accept-offer');
+                Route::post('/{id}/process-offer-payment', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'processOfferPayment'])->name('requests.process-offer-payment');
+                Route::get('/{id}/payment-return/{gateway}', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'offerPaymentReturn'])->name('requests.payment-return');
+                Route::post('/{id}/payment-callback/{gateway}', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'offerPaymentCallback'])->name('requests.payment-callback');
+                Route::post('/{id}/cancel', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'cancel'])->name('requests.cancel');
+                Route::get('/', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'index'])->name('requests.index');
+                Route::get('/create', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'create'])->name('requests.create');
+                Route::post('/', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'store'])->name('requests.store');
+                Route::get('/{id}', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'show'])->name('requests.show');
+                Route::get('/{id}/edit', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'edit'])->name('requests.edit');
+                Route::put('/{id}', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'update'])->name('requests.update');
+                Route::delete('/{id}', [\App\Http\Controllers\Backend\Dashboards\Clinic\RequestController::class, 'destroy'])->name('requests.destroy');
+            });
         });
 
         // Accepted Offer Invoice
@@ -248,15 +261,15 @@ Route::group(
         Route::get('job-application-fields/{id}/show', [JobApplicationFieldController::class, 'show'])->name('job-application-fields.show');
 
         // Clinic Inventory Management
-            Route::get('clinic-inventories/data', [ClinicInventoryController::class, 'data'])->name('clinic-inventories.data');
-            Route::get('clinic-inventories/trash', [ClinicInventoryController::class, 'trash'])->name('clinic-inventories.trash');
-            Route::get('clinic-inventories/trash/data', [ClinicInventoryController::class, 'trashData'])->name('clinic-inventories.trash.data');
-            Route::post('clinic-inventories/{id}/restore', [ClinicInventoryController::class, 'restore'])->name('clinic-inventories.restore');
-            Route::delete('clinic-inventories/{id}/force-delete', [ClinicInventoryController::class, 'forceDelete'])->name('clinic-inventories.force-delete');
-            Route::resource('clinic-inventories', ClinicInventoryController::class)->except(['store']);
-            Route::post('clinic-inventories', [ClinicInventoryController::class, 'store'])
-                ->middleware('check.subscription:inventory_module')
-                ->name('clinic-inventories.store');
+        Route::get('clinic-inventories/data', [ClinicInventoryController::class, 'data'])->name('clinic-inventories.data');
+        Route::get('clinic-inventories/trash', [ClinicInventoryController::class, 'trash'])->name('clinic-inventories.trash');
+        Route::get('clinic-inventories/trash/data', [ClinicInventoryController::class, 'trashData'])->name('clinic-inventories.trash.data');
+        Route::post('clinic-inventories/{id}/restore', [ClinicInventoryController::class, 'restore'])->name('clinic-inventories.restore');
+        Route::delete('clinic-inventories/{id}/force-delete', [ClinicInventoryController::class, 'forceDelete'])->name('clinic-inventories.force-delete');
+        Route::resource('clinic-inventories', ClinicInventoryController::class)->except(['store']);
+        Route::post('clinic-inventories', [ClinicInventoryController::class, 'store'])
+            ->middleware('check.subscription:inventory_module')
+            ->name('clinic-inventories.store');
 
         // Clinic Inventory Movement Management
         Route::group(['middleware' => 'check.subscription:inventory_module'], function () {
@@ -367,7 +380,7 @@ Route::group(
         });
 
         // Medical Records
-
+    
         // Invoices
         Route::get('invoices', [\App\Http\Controllers\Backend\Dashboards\Clinic\InvoiceController::class, 'index'])->name('invoices.index');
         Route::get('invoices/data', [\App\Http\Controllers\Backend\Dashboards\Clinic\InvoiceController::class, 'data'])->name('invoices.data');

@@ -28,64 +28,65 @@ Route::group(
     ],
     function () {
         Route::get('/', [HomeController::class, 'index'])->name('home');
-		Route::get('/terms-of-use', [HomeController::class, 'termsOfUse'])->name('terms');
-		Route::get('/privacy-policy', [HomeController::class, 'privacyPolicy'])->name('privacy');
-		Route::get('/return-policy', [HomeController::class, 'returnPolicy'])->name('return-policy');
-		Route::get('/shipping-policy', [HomeController::class, 'shippingPolicy'])->name('shipping-policy');
-		Route::get('/about-us', [HomeController::class, 'aboutUs'])->name('about');
+        Route::get('/terms-of-use', [HomeController::class, 'termsOfUse'])->name('terms');
+        Route::get('/privacy-policy', [HomeController::class, 'privacyPolicy'])->name('privacy');
+        Route::get('/return-policy', [HomeController::class, 'returnPolicy'])->name('return-policy');
+        Route::get('/shipping-policy', [HomeController::class, 'shippingPolicy'])->name('shipping-policy');
+        Route::get('/about-us', [HomeController::class, 'aboutUs'])->name('about');
 
-		// Contact Form
-		Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
+        // Contact Form
+        Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
 
-		Route::get('/products', [ProductController::class, 'index'])->name('products');
-		Route::get('/products/{id}', [ProductController::class, 'show'])->name('products.show');
-		Route::post('/products/filter', [ProductController::class, 'filter'])->name('products.filter');
-		Route::get('/products/category/{categoryId}', [ProductController::class, 'category'])->name('products.category');
-		Route::get('/products/supplier/{supplierId}', [ProductController::class, 'supplier'])->name('products.supplier');
-		Route::get('/products/on-sale', [ProductController::class, 'onSale'])->name('products.on-sale');
-		Route::get('/products/in-stock', [ProductController::class, 'inStock'])->name('products.in-stock');
-		Route::get('/products/recent', [ProductController::class, 'recent'])->name('products.recent');
+        Route::get('/products', [ProductController::class, 'index'])->name('products');
+        Route::get('/products/{id}', [ProductController::class, 'show'])->name('products.show');
+        Route::post('/products/filter', [ProductController::class, 'filter'])->name('products.filter');
+        Route::get('/products/category/{categoryId}', [ProductController::class, 'category'])->name('products.category');
+        Route::get('/products/supplier/{supplierId}', [ProductController::class, 'supplier'])->name('products.supplier');
+        Route::get('/products/on-sale', [ProductController::class, 'onSale'])->name('products.on-sale');
+        Route::get('/products/in-stock', [ProductController::class, 'inStock'])->name('products.in-stock');
+        Route::get('/products/recent', [ProductController::class, 'recent'])->name('products.recent');
 
-		// Rental Spaces (Frontend)
-		Route::get('/rental-spaces', [FrontendRentalSpaceController::class, 'index'])->name('rental-spaces');
-		Route::get('/rental-spaces/{id}', [FrontendRentalSpaceController::class, 'show'])->name('rental-spaces.show');
-		Route::post('/rental-spaces/filter', [FrontendRentalSpaceController::class, 'filter'])->name('rental-spaces.filter');
+        // Rental Spaces (Frontend)
+        Route::get('/rental-spaces', [FrontendRentalSpaceController::class, 'index'])->name('rental-spaces');
+        Route::get('/rental-spaces/{id}', [FrontendRentalSpaceController::class, 'show'])->name('rental-spaces.show');
+        Route::post('/rental-spaces/filter', [FrontendRentalSpaceController::class, 'filter'])->name('rental-spaces.filter');
 
-		Route::get('/clinics', [ClinicController::class, 'index'])->name('clinics');
-		Route::get('/clinics/{id}', [ClinicController::class, 'show'])->name('clinics.show');
-		Route::post('/clinics/filter', [ClinicController::class, 'filter'])->name('clinics.filter');
+        Route::get('/clinics', [ClinicController::class, 'index'])->name('clinics');
+        Route::get('/clinics/{id}', [ClinicController::class, 'show'])->name('clinics.show');
+        Route::post('/clinics/filter', [ClinicController::class, 'filter'])->name('clinics.filter');
 
-		Route::get('/suppliers', [SupplierController::class, 'index'])->name('suppliers');
-		Route::get('/suppliers/{id}', [SupplierController::class, 'show'])->name('suppliers.show');
-		Route::post('/suppliers/filter', [SupplierController::class, 'filter'])->name('suppliers.filter');
+        Route::get('/suppliers', [SupplierController::class, 'index'])->name('suppliers');
+        Route::get('/suppliers/{id}', [SupplierController::class, 'show'])->name('suppliers.show');
+        Route::post('/suppliers/filter', [SupplierController::class, 'filter'])->name('suppliers.filter');
 
-		Route::get('/jobs', [JobController::class, 'index'])->name('jobs');
-		Route::get('/jobs/{id}', [JobController::class, 'show'])->name('jobs.show');
-		Route::post('/jobs/filter', [JobController::class, 'filter'])->name('jobs.filter');
-		Route::get('/jobs/{id}/apply', [JobController::class, 'application'])->name('jobs.application');
-		Route::post('/jobs/{id}/apply', [JobController::class, 'submitApplication'])->name('jobs.submit-application');
-		Route::get('/blogs', [BlogController::class, 'index'])->name('blogs');
-		Route::get('/blogs/{id}', [BlogController::class, 'show'])->name('blogs.show');
-		Route::post('/blogs/filter', [BlogController::class, 'filter'])->name('blogs.filter');
+        Route::get('/jobs', [JobController::class, 'index'])->name('jobs');
+        Route::get('/jobs/{id}', [JobController::class, 'show'])->name('jobs.show');
+        Route::post('/jobs/filter', [JobController::class, 'filter'])->name('jobs.filter');
+        Route::get('/jobs/{id}/apply', [JobController::class, 'application'])->name('jobs.application');
+        Route::post('/jobs/{id}/apply', [JobController::class, 'submitApplication'])->name('jobs.submit-application');
+        Route::get('/blogs', [BlogController::class, 'index'])->name('blogs');
+        Route::get('/blogs/{id}', [BlogController::class, 'show'])->name('blogs.show');
+        Route::post('/blogs/filter', [BlogController::class, 'filter'])->name('blogs.filter');
 
-		Route::get('/courses', [CourseController::class, 'index'])->name('courses');
-		Route::get('/courses/{id}', [CourseController::class, 'show'])->name('courses.show');
+        Route::get('/courses', [CourseController::class, 'index'])->name('courses');
+        Route::get('/courses/{id}', [CourseController::class, 'show'])->name('courses.show');
         Route::post('/courses/filter', [CourseController::class, 'filter'])->name('courses.filter');
 
-		// Subscription Plans (Public)
-		// Route::get('/subscriptions/plans', [\App\Http\Controllers\Frontend\SubscriptionController::class, 'plans'])->name('subscriptions.plans');
+        // Subscription Plans (Public)
+        // Route::get('/subscriptions/plans', [\App\Http\Controllers\Frontend\SubscriptionController::class, 'plans'])->name('subscriptions.plans');
+    
+        // Doctor Profile Routes
+        Route::get('/doctors', [\App\Http\Controllers\Frontend\DoctorController::class, 'index'])->name('doctors.index');
+        Route::post('/doctors/filter', [\App\Http\Controllers\Frontend\DoctorController::class, 'filter'])->name('doctors.filter');
+        Route::get('/doctors/{id}', [\App\Http\Controllers\Frontend\DoctorProfileController::class, 'show'])->name('doctors.show');
+        Route::get('/doctors/{id}/available-days', [\App\Http\Controllers\Frontend\DoctorProfileController::class, 'getAvailableDays'])->name('doctors.available-days');
+        Route::get('/doctors/{id}/available-periods', [\App\Http\Controllers\Frontend\DoctorProfileController::class, 'getAvailablePeriods'])->name('doctors.available-periods');
 
-		// Doctor Profile Routes
-		Route::get('/doctors', [\App\Http\Controllers\Frontend\DoctorController::class, 'index'])->name('doctors.index');
-		Route::post('/doctors/filter', [\App\Http\Controllers\Frontend\DoctorController::class, 'filter'])->name('doctors.filter');
-		Route::get('/doctors/{id}', [\App\Http\Controllers\Frontend\DoctorProfileController::class, 'show'])->name('doctors.show');
-		Route::get('/doctors/{id}/available-days', [\App\Http\Controllers\Frontend\DoctorProfileController::class, 'getAvailableDays'])->name('doctors.available-days');
-		Route::get('/doctors/{id}/available-periods', [\App\Http\Controllers\Frontend\DoctorProfileController::class, 'getAvailablePeriods'])->name('doctors.available-periods');
-
-		// Appointment Routes (public for booking, authenticated for managing)
-		Route::post('/appointments/book', [\App\Http\Controllers\Frontend\AppointmentController::class, 'book'])->name('appointments.book');
-		Route::post('/appointments/confirm', [\App\Http\Controllers\Frontend\AppointmentController::class, 'confirm'])->name('appointments.confirm');
-    });
+        // Appointment Routes (public for booking, authenticated for managing)
+        Route::post('/appointments/book', [\App\Http\Controllers\Frontend\AppointmentController::class, 'book'])->name('appointments.book');
+        Route::post('/appointments/confirm', [\App\Http\Controllers\Frontend\AppointmentController::class, 'confirm'])->name('appointments.confirm');
+    }
+);
 
 // Course enrollment (Clinic users only)
 Route::group([
@@ -219,8 +220,8 @@ Route::group([
     Route::put('profile/password', [\App\Http\Controllers\Frontend\Patient\ProfileController::class, 'updatePassword'])->name('profile.password.update');
 });
 
-    // Location dropdowns endpoints
-    Route::get('/governorates', [HomeController::class, 'getGovernorates'])
+// Location dropdowns endpoints
+Route::get('/governorates', [HomeController::class, 'getGovernorates'])
     ->name('getGovernorates');
 Route::get('/cities', [HomeController::class, 'getCities'])
     ->name('getCities');
@@ -240,6 +241,28 @@ Route::post('/user/logout', function (\Illuminate\Http\Request $request) {
 
 Route::post('/register', [PatientAuthController::class, 'register'])->name('register');
 
+// Patient Forgot Password Routes
+Route::group([
+    'prefix' => LaravelLocalization::setLocale() . '/patient',
+    'as' => 'patient.',
+    'middleware' => [
+        'localeCookieRedirect',
+        'localizationRedirect',
+        'localeViewPath'
+    ]
+], function () {
+    Route::get('/forgot-password', [\App\Http\Controllers\Frontend\Auth\ForgotPasswordController::class, 'showForgotPassword'])
+        ->name('forgot-password');
+    Route::post('/forgot-password', [\App\Http\Controllers\Frontend\Auth\ForgotPasswordController::class, 'sendResetOtp'])
+        ->name('forgot-password.send');
+    Route::post('/forgot-password/verify', [\App\Http\Controllers\Frontend\Auth\ForgotPasswordController::class, 'verifyOtp'])
+        ->name('forgot-password.verify');
+    Route::post('/forgot-password/reset', [\App\Http\Controllers\Frontend\Auth\ForgotPasswordController::class, 'resetPassword'])
+        ->name('forgot-password.reset');
+    Route::post('/forgot-password/resend', [\App\Http\Controllers\Frontend\Auth\ForgotPasswordController::class, 'resendOtp'])
+        ->name('forgot-password.resend');
+});
+
 // Public banner endpoints
 Route::prefix('api/banners')->name('api.banners.')->group(function () {
     Route::get('/{position?}', [\App\Http\Controllers\Backend\Dashboards\Admin\BannerController::class, 'getBanners'])->name('get');
@@ -248,6 +271,6 @@ Route::prefix('api/banners')->name('api.banners.')->group(function () {
 });
 
 require __DIR__ . '/admin.php';
-require __DIR__.'/clinic.php';
-require __DIR__.'/supplier.php';
-require __DIR__.'/affiliate.php';
+require __DIR__ . '/clinic.php';
+require __DIR__ . '/supplier.php';
+require __DIR__ . '/affiliate.php';

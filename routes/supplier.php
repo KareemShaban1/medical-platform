@@ -10,6 +10,7 @@ use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Backend\Dashboards\Supplier\ForgotPasswordController;
 
 Route::group(
     [
@@ -53,6 +54,18 @@ Route::group(
             ->name('resend-otp')->withoutMiddleware(['auth:supplier', 'check.supplier.approval'])
             ->middleware('throttle:1,1');
 
+        // Forgot Password Routes
+        Route::get('/forgot-password', [ForgotPasswordController::class, 'showForgotPassword'])
+            ->name('forgot-password')->withoutMiddleware(['auth:supplier', 'check.supplier.approval']);
+        Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetOtp'])
+            ->name('forgot-password.send')->withoutMiddleware(['auth:supplier', 'check.supplier.approval']);
+        Route::post('/forgot-password/verify', [ForgotPasswordController::class, 'verifyOtp'])
+            ->name('forgot-password.verify')->withoutMiddleware(['auth:supplier', 'check.supplier.approval']);
+        Route::post('/forgot-password/reset', [ForgotPasswordController::class, 'resetPassword'])
+            ->name('forgot-password.reset')->withoutMiddleware(['auth:supplier', 'check.supplier.approval']);
+        Route::post('/forgot-password/resend', [ForgotPasswordController::class, 'resendOtp'])
+            ->name('forgot-password.resend')->withoutMiddleware(['auth:supplier', 'check.supplier.approval']);
+
 
         // Approval routes (without approval middleware)
         Route::get('/approval', [ApprovalController::class, 'show'])
@@ -76,7 +89,7 @@ Route::group(
 
             // Alternative: Without middleware (check is done in controller - see ProductController::store)
             // Route::post('/', [ProductController::class, 'store'])->name('products.store');
-
+    
             Route::get('/{id}', [ProductController::class, 'show'])->name('products.show');
             Route::put('/{id}', [ProductController::class, 'update'])->name('products.update');
             Route::patch('/{id}/toggle-status', [ProductController::class, 'toggleStatus'])->name('products.toggle.status');

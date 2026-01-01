@@ -57,6 +57,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the OTPs for the user
+     */
+    public function otps()
+    {
+        return $this->morphMany(UserOtp::class, 'otpable');
+    }
+
+    /**
      * Get the tickets for the user
      */
     public function tickets()

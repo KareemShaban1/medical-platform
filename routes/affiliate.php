@@ -40,6 +40,18 @@ Route::group(
     function () {
         Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
         Route::post('/register', [AuthController::class, 'register'])->name('register.store');
+
+        // Forgot Password Routes
+        Route::get('/forgot-password', [\App\Http\Controllers\Backend\Dashboards\Affiliate\ForgotPasswordController::class, 'showForgotPassword'])
+            ->name('forgot-password');
+        Route::post('/forgot-password', [\App\Http\Controllers\Backend\Dashboards\Affiliate\ForgotPasswordController::class, 'sendResetOtp'])
+            ->name('forgot-password.send');
+        Route::post('/forgot-password/verify', [\App\Http\Controllers\Backend\Dashboards\Affiliate\ForgotPasswordController::class, 'verifyOtp'])
+            ->name('forgot-password.verify');
+        Route::post('/forgot-password/reset', [\App\Http\Controllers\Backend\Dashboards\Affiliate\ForgotPasswordController::class, 'resetPassword'])
+            ->name('forgot-password.reset');
+        Route::post('/forgot-password/resend', [\App\Http\Controllers\Backend\Dashboards\Affiliate\ForgotPasswordController::class, 'resendOtp'])
+            ->name('forgot-password.resend');
     }
 );
 

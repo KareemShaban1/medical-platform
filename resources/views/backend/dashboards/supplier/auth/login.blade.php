@@ -8,17 +8,16 @@
 	<meta name="csrf-token" content="{{ csrf_token() }}">
 	<link rel="icon" type="image/png" href="{{asset('frontend/images/favicon/favicon-96x96.png')}}" />
 	<link rel="stylesheet" type="text/css" href="{{asset('auth/vendor/bootstrap/css/bootstrap.min.css')}}">
-	<link rel="stylesheet" type="text/css"
-		href="{{asset('auth/fonts/font-awesome-4.7.0/css/font-awesome.min.css')}}">
+	<link rel="stylesheet" type="text/css" href="{{asset('auth/fonts/font-awesome-4.7.0/css/font-awesome.min.css')}}">
 	<link rel="stylesheet" type="text/css"
 		href="{{asset('auth/fonts/iconic/css/material-design-iconic-font.min.css')}}">
 	<link rel="stylesheet" type="text/css" href="{{asset('auth/vendor/animate/animate.css')}}">
 	<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
 
 	@if (app()->getLocale() == 'ar')
-	<link rel="stylesheet" type="text/css" href="{{asset('auth/css/ar_style.css')}}">
+		<link rel="stylesheet" type="text/css" href="{{asset('auth/css/ar_style.css')}}">
 	@else
-	<link rel="stylesheet" type="text/css" href="{{asset('auth/css/en_style.css')}}">
+		<link rel="stylesheet" type="text/css" href="{{asset('auth/css/en_style.css')}}">
 	@endif
 </head>
 
@@ -51,14 +50,14 @@
 							<div class="form-group">
 								<label class="form-label required">{{ __('Email') }}</label>
 								<input type="email" name="email" id="email"
-									class="form-control @error('email') is-invalid @enderror"
-									value="{{ old('email') }}" required>
+									class="form-control @error('email') is-invalid @enderror" value="{{ old('email') }}"
+									required>
 								<div class="validation-feedback" id="email_feedback"></div>
 								@error('email')
-								<div class="validation-feedback invalid">
-									<i class="fa fa-exclamation-circle"></i>
-									{{ $message }}
-								</div>
+									<div class="validation-feedback invalid">
+										<i class="fa fa-exclamation-circle"></i>
+										{{ $message }}
+									</div>
 								@enderror
 							</div>
 
@@ -75,22 +74,23 @@
 								</div>
 								<div class="validation-feedback" id="password_feedback"></div>
 								@error('password')
-								<div class="validation-feedback invalid">
-									<i class="fa fa-exclamation-circle"></i>
-									{{ $message }}
-								</div>
+									<div class="validation-feedback invalid">
+										<i class="fa fa-exclamation-circle"></i>
+										{{ $message }}
+									</div>
 								@enderror
 							</div>
 
 							<div class="form-group">
 								<div class="d-flex justify-content-between align-items-center">
 									<div class="form-check">
-										<input type="checkbox" class="form-check-input ml-0" id="remember" name="remember">
+										<input type="checkbox" class="form-check-input ml-0" id="remember"
+											name="remember">
 										<label class="form-check-label" for="remember">
 											{{ __('Remember me') }}
 										</label>
 									</div>
-									<a href="#" class="forgot-password-link">
+									<a href="{{ route('supplier.forgot-password') }}" class="forgot-password-link">
 										{{ __('Forgot Password?') }}
 									</a>
 								</div>
@@ -107,12 +107,12 @@
 									<a href="{{ route('supplier.register-supplier') }}">{{ __('Register here') }}</a>
 								</p>
 							</div>
-                            <div class="back-to-home text-center">
-                                <a href="{{ route('home') }}" class="btn btn-link">
-                                    <i class="fa fa-arrow-left"></i>
-                                    {{ __('Back to Home') }}
-                                </a>
-                            </div>
+							<div class="back-to-home text-center">
+								<a href="{{ route('home') }}" class="btn btn-link">
+									<i class="fa fa-arrow-left"></i>
+									{{ __('Back to Home') }}
+								</a>
+							</div>
 						</form>
 					</div>
 				</div>
@@ -129,20 +129,20 @@
 	<script>
 		// Show server-side validation errors as toastr
 		@if($errors->any())
-		@foreach($errors->all() as $error)
-		toastr.error("{{ $error }}");
-		@endforeach
+			@foreach($errors->all() as $error)
+				toastr.error("{{ $error }}");
+			@endforeach
 		@endif
 		@if(session('success'))
-		toastr.success("{{ session('success') }}");
+			toastr.success("{{ session('success') }}");
 		@endif
 		@if(session('error'))
-		toastr.error("{{ session('error') }}");
+			toastr.error("{{ session('error') }}");
 		@endif
 
-		$(document).ready(function() {
+		$(document).ready(function () {
 			// Password toggle functionality with enhanced styling
-			$('#passwordToggle').on('click', function() {
+			$('#passwordToggle').on('click', function () {
 				const passwordField = $('#password');
 				const icon = $(this).find('i');
 
@@ -159,11 +159,11 @@
 
 			// Add hover effects for password toggle
 			$('#passwordToggle').hover(
-				function() {
+				function () {
 					$(this).css('color', '#007bff');
 					$(this).css('cursor', 'pointer');
 				},
-				function() {
+				function () {
 					if ($('#password').attr('type') === 'password') {
 						$(this).css('color', '#6c757d');
 					}
@@ -227,7 +227,7 @@
 				let firstErrorField = null;
 
 				// Display each field error
-				Object.keys(errors).forEach(function(fieldName) {
+				Object.keys(errors).forEach(function (fieldName) {
 					const messages = errors[fieldName];
 					if (messages && messages.length > 0) {
 						// Mark this field as having server error
@@ -262,7 +262,7 @@
 			}
 
 			// Real-time validation on input
-			$('input[type="email"], input[type="password"]').on('input blur', function() {
+			$('input[type="email"], input[type="password"]').on('input blur', function () {
 				const fieldName = $(this).attr('id');
 				const value = $(this).val();
 
@@ -282,12 +282,12 @@
 			});
 
 			// Track when user starts typing to clear server errors
-			$('input[type="email"], input[type="password"]').on('input', function() {
+			$('input[type="email"], input[type="password"]').on('input', function () {
 				$(this).data('user-typed', true);
 			});
 
 			// Enhanced form submission with AJAX
-			$('#supplierLoginForm').on('submit', function(e) {
+			$('#supplierLoginForm').on('submit', function (e) {
 				e.preventDefault();
 
 				const email = $('#email').val();
@@ -319,14 +319,14 @@
 						remember: $('#remember').is(':checked'),
 						_token: $('meta[name="csrf-token"]').attr('content')
 					},
-					success: function(response) {
+					success: function (response) {
 						// Login successful - redirect to intended location
 						toastr.success('Login successful! Redirecting...');
 						setTimeout(() => {
 							window.location.href = '/supplier/dashboard';
 						}, 1500);
 					},
-					error: function(xhr) {
+					error: function (xhr) {
 						if (xhr.status === 422) {
 							// Validation errors from backend
 							const response = xhr.responseJSON;
@@ -350,7 +350,7 @@
 							toastr.error('Login failed. Please try again.');
 						}
 					},
-					complete: function() {
+					complete: function () {
 						submitBtn.prop('disabled', false).html(originalText);
 					}
 				});

@@ -25,4 +25,9 @@ class AffiliateUser extends Authenticatable
     {
         return $this->morphOne(AffiliateCode::class, 'affiliateable');
     }
+
+    public function otps()
+    {
+        return $this->morphMany(UserOtp::class, 'otpable');
+    }
 }

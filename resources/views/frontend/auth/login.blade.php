@@ -8,17 +8,16 @@
 	<meta name="csrf-token" content="{{ csrf_token() }}">
 	<link rel="icon" type="image/png" href="{{asset('frontend/images/favicon/favicon-96x96.png')}}" />
 	<link rel="stylesheet" type="text/css" href="{{asset('auth/vendor/bootstrap/css/bootstrap.min.css')}}">
-	<link rel="stylesheet" type="text/css"
-		href="{{asset('auth/fonts/font-awesome-4.7.0/css/font-awesome.min.css')}}">
+	<link rel="stylesheet" type="text/css" href="{{asset('auth/fonts/font-awesome-4.7.0/css/font-awesome.min.css')}}">
 	<link rel="stylesheet" type="text/css"
 		href="{{asset('auth/fonts/iconic/css/material-design-iconic-font.min.css')}}">
 	<link rel="stylesheet" type="text/css" href="{{asset('auth/vendor/animate/animate.css')}}">
 	<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
 
 	@if (app()->getLocale() == 'ar')
-	<link rel="stylesheet" type="text/css" href="{{asset('auth/css/ar_style.css')}}">
+		<link rel="stylesheet" type="text/css" href="{{asset('auth/css/ar_style.css')}}">
 	@else
-	<link rel="stylesheet" type="text/css" href="{{asset('auth/css/en_style.css')}}">
+		<link rel="stylesheet" type="text/css" href="{{asset('auth/css/en_style.css')}}">
 	@endif
 </head>
 
@@ -41,8 +40,7 @@
 				<!-- Form Section -->
 				<div class="col-lg-7">
 					<div class="form-content">
-						<form method="POST" action="{{ route('login') }}"
-							id="patientLoginForm">
+						<form method="POST" action="{{ route('login') }}" id="patientLoginForm">
 							@csrf
 
 							<div class="login-header">
@@ -52,78 +50,55 @@
 							</div>
 
 							<div class="form-group">
-								<label
-									class="form-label required">{{ __('Email') }}</label>
-								<input type="email" name="email"
-									id="email"
-									class="form-control @error('email') is-invalid @enderror"
-									value="{{ old('email') }}"
+								<label class="form-label required">{{ __('Email') }}</label>
+								<input type="email" name="email" id="email"
+									class="form-control @error('email') is-invalid @enderror" value="{{ old('email') }}"
 									required>
-								<div class="validation-feedback"
-									id="email_feedback"></div>
+								<div class="validation-feedback" id="email_feedback"></div>
 								@error('email')
-								<div
-									class="validation-feedback invalid">
-									<i
-										class="fa fa-exclamation-circle"></i>
-									{{ $message }}
-								</div>
+									<div class="validation-feedback invalid">
+										<i class="fa fa-exclamation-circle"></i>
+										{{ $message }}
+									</div>
 								@enderror
 							</div>
 
 							<div class="form-group">
-								<label
-									class="form-label required">{{ __('Password') }}</label>
-								<div
-									class="input-group position-relative">
-									<input type="password"
-										name="password"
-										id="password"
+								<label class="form-label required">{{ __('Password') }}</label>
+								<div class="input-group position-relative">
+									<input type="password" name="password" id="password"
 										class="form-control @error('password') is-invalid @enderror"
-										style="padding-right: 45px; border-radius: 0.375rem;"
-										required>
-									<button type="button"
-										id="passwordToggle"
+										style="padding-right: 45px; border-radius: 0.375rem;" required>
+									<button type="button" id="passwordToggle"
 										style="position: absolute; top: 50%; right: 12px; transform: translateY(-50%); border: none; background: transparent; color: #6c757d; z-index: 1000; padding: 4px; display: flex; align-items: center; justify-content: center; width: 24px; height: 24px;">
-										<i class="fa fa-eye"
-											style="font-size: 14px;"></i>
+										<i class="fa fa-eye" style="font-size: 14px;"></i>
 									</button>
 								</div>
-								<div class="validation-feedback"
-									id="password_feedback"></div>
+								<div class="validation-feedback" id="password_feedback"></div>
 								@error('password')
-								<div
-									class="validation-feedback invalid">
-									<i
-										class="fa fa-exclamation-circle"></i>
-									{{ $message }}
-								</div>
+									<div class="validation-feedback invalid">
+										<i class="fa fa-exclamation-circle"></i>
+										{{ $message }}
+									</div>
 								@enderror
 							</div>
 
 							<div class="form-group">
-								<div
-									class="d-flex justify-content-between align-items-center">
+								<div class="d-flex justify-content-between align-items-center">
 									{{-- <div class="form-check">
-										<input type="checkbox"
-											class="form-check-input ml-0"
-											id="remember"
+										<input type="checkbox" class="form-check-input ml-0" id="remember"
 											name="remember">
-										<label class="form-check-label"
-											for="remember">
+										<label class="form-check-label" for="remember">
 											{{ __('Remember me') }}
 										</label>
 									</div> --}}
-									<a href="#"
-										class="forgot-password-link">
+									<a href="{{ route('patient.forgot-password') }}" class="forgot-password-link">
 										{{ __('Forgot Password?') }}
 									</a>
 								</div>
 							</div>
 
-							<button type="submit"
-								class="btn btn-primary btn-block"
-								id="loginBtn">
+							<button type="submit" class="btn btn-primary btn-block" id="loginBtn">
 								{{ __('Sign In') }}
 								<i class="fa fa-sign-in"></i>
 							</button>
@@ -131,17 +106,14 @@
 							<div class="text-center mt-4">
 								<div class="register-link">
 									<p>{{ __("Don't have an account?") }}
-										<a
-											href="{{ url('/patient/register') }}">{{ __('Register here') }}</a>
+										<a href="{{ url('/patient/register') }}">{{ __('Register here') }}</a>
 									</p>
 								</div>
 							</div>
 
 							<div class="back-to-home text-center">
-								<a href="{{ route('home') }}"
-									class="btn btn-link">
-									<i
-										class="fa fa-arrow-left"></i>
+								<a href="{{ route('home') }}" class="btn btn-link">
+									<i class="fa fa-arrow-left"></i>
 									{{ __('Back to Home') }}
 								</a>
 							</div>
@@ -159,91 +131,91 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
 	<script>
-	$(document).ready(function() {
-		// Password toggle functionality
-		$('#passwordToggle').on('click', function() {
-			const passwordField = $('#password');
-			const icon = $(this).find('i');
+		$(document).ready(function () {
+			// Password toggle functionality
+			$('#passwordToggle').on('click', function () {
+				const passwordField = $('#password');
+				const icon = $(this).find('i');
 
-			if (passwordField.attr('type') === 'password') {
-				passwordField.attr('type', 'text');
-				icon.removeClass('fa-eye').addClass(
-					'fa-eye-slash');
-			} else {
-				passwordField.attr('type', 'password');
-				icon.removeClass('fa-eye-slash').addClass(
-					'fa-eye');
+				if (passwordField.attr('type') === 'password') {
+					passwordField.attr('type', 'text');
+					icon.removeClass('fa-eye').addClass(
+						'fa-eye-slash');
+				} else {
+					passwordField.attr('type', 'password');
+					icon.removeClass('fa-eye-slash').addClass(
+						'fa-eye');
+				}
+			});
+
+			// Form validation
+			$('#patientLoginForm').on('submit', function (e) {
+				let isValid = true;
+
+				// Clear previous feedback
+				$('.validation-feedback').removeClass('invalid valid')
+					.text('');
+
+				// Email validation
+				const email = $('#email').val();
+				if (!email) {
+					showFieldError('email',
+						'{{ __("Email is required") }}'
+					);
+					isValid = false;
+				} else if (!isValidEmail(email)) {
+					showFieldError('email',
+						'{{ __("Please enter a valid email address") }}'
+					);
+					isValid = false;
+				}
+
+				// Password validation
+				const password = $('#password').val();
+				if (!password) {
+					showFieldError('password',
+						'{{ __("Password is required") }}'
+					);
+					isValid = false;
+				}
+
+				if (!isValid) {
+					e.preventDefault();
+				}
+			});
+
+			function showFieldError(fieldName, message) {
+				const feedback = $(`#${fieldName}_feedback`);
+				feedback.addClass('invalid').text(message);
+				$(`#${fieldName}`).addClass('is-invalid');
+			}
+
+			function isValidEmail(email) {
+				const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+				return emailRegex.test(email);
 			}
 		});
 
-		// Form validation
-		$('#patientLoginForm').on('submit', function(e) {
-			let isValid = true;
+		// Display toastr notifications for Laravel session messages
+		@if(session('success'))
+			toastr.success('{{ session('
+			success ') }}');
+		@endif
 
-			// Clear previous feedback
-			$('.validation-feedback').removeClass('invalid valid')
-				.text('');
+		@if(session('error'))
+			toastr.error('{{ session('
+			error ') }}');
+		@endif
 
-			// Email validation
-			const email = $('#email').val();
-			if (!email) {
-				showFieldError('email',
-					'{{ __("Email is required") }}'
-				);
-				isValid = false;
-			} else if (!isValidEmail(email)) {
-				showFieldError('email',
-					'{{ __("Please enter a valid email address") }}'
-				);
-				isValid = false;
-			}
+		@if(session('warning'))
+			toastr.warning('{{ session('
+			warning ') }}');
+		@endif
 
-			// Password validation
-			const password = $('#password').val();
-			if (!password) {
-				showFieldError('password',
-					'{{ __("Password is required") }}'
-				);
-				isValid = false;
-			}
-
-			if (!isValid) {
-				e.preventDefault();
-			}
-		});
-
-		function showFieldError(fieldName, message) {
-			const feedback = $(`#${fieldName}_feedback`);
-			feedback.addClass('invalid').text(message);
-			$(`#${fieldName}`).addClass('is-invalid');
-		}
-
-		function isValidEmail(email) {
-			const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-			return emailRegex.test(email);
-		}
-	});
-
-	// Display toastr notifications for Laravel session messages
-	@if(session('success'))
-	toastr.success('{{ session('
-		success ') }}');
-	@endif
-
-	@if(session('error'))
-	toastr.error('{{ session('
-		error ') }}');
-	@endif
-
-	@if(session('warning'))
-	toastr.warning('{{ session('
-		warning ') }}');
-	@endif
-
-	@if(session('info'))
-	toastr.info('{{ session('
-		info ') }}');
-	@endif
+		@if(session('info'))
+			toastr.info('{{ session('
+			info ') }}');
+		@endif
 	</script>
 </body>
 

@@ -9,14 +9,15 @@
 	<link rel="icon" type="image/png" href="{{asset('frontend/images/favicon/favicon-96x96.png')}}" />
 	<link rel="stylesheet" type="text/css" href="{{asset('auth/vendor/bootstrap/css/bootstrap.min.css')}}">
 	<link rel="stylesheet" type="text/css" href="{{asset('auth/fonts/font-awesome-4.7.0/css/font-awesome.min.css')}}">
-	<link rel="stylesheet" type="text/css" href="{{asset('auth/fonts/iconic/css/material-design-iconic-font.min.css')}}">
+	<link rel="stylesheet" type="text/css"
+		href="{{asset('auth/fonts/iconic/css/material-design-iconic-font.min.css')}}">
 	<link rel="stylesheet" type="text/css" href="{{asset('auth/vendor/animate/animate.css')}}">
 	<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
 
 	@if (app()->getLocale() == 'ar')
-	<link rel="stylesheet" type="text/css" href="{{asset('auth/css/ar_style.css')}}">
+		<link rel="stylesheet" type="text/css" href="{{asset('auth/css/ar_style.css')}}">
 	@else
-	<link rel="stylesheet" type="text/css" href="{{asset('auth/css/en_style.css')}}">
+		<link rel="stylesheet" type="text/css" href="{{asset('auth/css/en_style.css')}}">
 	@endif
 </head>
 
@@ -46,28 +47,38 @@
 
 							<div class="form-group">
 								<label class="form-label required">{{ __('Email') }}</label>
-								<input type="email" name="email" class="form-control @error('email') is-invalid @enderror"
-									value="{{ old('email') }}" required>
+								<input type="email" name="email"
+									class="form-control @error('email') is-invalid @enderror" value="{{ old('email') }}"
+									required>
 								@error('email')
-								<div class="validation-feedback invalid">
-									<i class="fa fa-exclamation-circle"></i>
-									{{ $message }}
-								</div>
+									<div class="validation-feedback invalid">
+										<i class="fa fa-exclamation-circle"></i>
+										{{ $message }}
+									</div>
 								@enderror
 							</div>
 
 							<div class="form-group">
 								<label class="form-label required">{{ __('Password') }}</label>
-								<input type="password" name="password" class="form-control @error('password') is-invalid @enderror" required>
+								<input type="password" name="password"
+									class="form-control @error('password') is-invalid @enderror" required>
 								@error('password')
-								<div class="validation-feedback invalid">
-									<i class="fa fa-exclamation-circle"></i>
-									{{ $message }}
-								</div>
+									<div class="validation-feedback invalid">
+										<i class="fa fa-exclamation-circle"></i>
+										{{ $message }}
+									</div>
 								@enderror
 							</div>
 
-							<button type="submit" class="btn btn-primary w-100">
+							<div class="form-group">
+							<div class="d-flex justify-content-end align-items-center">
+								<a href="{{ route('affiliate.forgot-password') }}" class="forgot-password-link">
+									{{ __('Forgot Password?') }}
+								</a>
+							</div>
+						</div>
+
+						<button type="submit" class="btn btn-primary w-100">
 								{{ __('Sign In') }}
 								<i class="fa fa-sign-in"></i>
 							</button>
@@ -98,15 +109,15 @@
 
 	<script>
 		@if($errors->any())
-		@foreach($errors->all() as $error)
-		toastr.error("{{ $error }}");
-		@endforeach
+			@foreach($errors->all() as $error)
+				toastr.error("{{ $error }}");
+			@endforeach
 		@endif
 		@if(session('success'))
-		toastr.success("{{ session('success') }}");
+			toastr.success("{{ session('success') }}");
 		@endif
 		@if(session('error'))
-		toastr.error("{{ session('error') }}");
+			toastr.error("{{ session('error') }}");
 		@endif
 	</script>
 </body>
