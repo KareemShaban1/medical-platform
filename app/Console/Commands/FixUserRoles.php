@@ -5,8 +5,11 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\Models\ClinicUser;
 use App\Models\SupplierUser;
-use App\Models\Role;
+use App\Models\Clinic;
+use App\Models\Supplier;
+use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
+use App\Services\RolePermissionService;
 
 class FixUserRoles extends Command
 {
@@ -37,7 +40,7 @@ class FixUserRoles extends Command
     protected function fixClinicUsers(?string $email = null)
     {
         $query = ClinicUser::query();
-        
+
         if ($email) {
             $query->where('email', $email);
         }
@@ -72,9 +75,16 @@ class FixUserRoles extends Command
                 ->first();
 
             if (!$adminRole) {
-                $this->warn("  ⚠️  'clinic-admin' role not found for clinic ID {$user->clinic_id}");
-                $this->info("  💡 Run: php artisan db:seed --class=RoleAndPermissionSeeder");
-                continue;
+                // Create role if it doesn't exist using service
+                $clinic = Clinic::find($user->clinic_id);
+                if ($clinic) {
+                    $this->info("  🔧 Creating 'clinic-admin' role for clinic ID {$user->clinic_id}...");
+                    $rolePermissionService = app(RolePermissionService::class);
+                    $adminRole = $rolePermissionService->createClinicRolesAndPermissions($clinic);
+                } else {
+                    $this->warn("  ⚠️  Clinic ID {$user->clinic_id} not found, skipping...");
+                    continue;
+                }
             }
 
             // Re-assign role
@@ -101,7 +111,7 @@ class FixUserRoles extends Command
     protected function fixSupplierUsers(?string $email = null)
     {
         $query = SupplierUser::query();
-        
+
         if ($email) {
             $query->where('email', $email);
         }
@@ -136,9 +146,16 @@ class FixUserRoles extends Command
                 ->first();
 
             if (!$adminRole) {
-                $this->warn("  ⚠️  'supplier-admin' role not found for supplier ID {$user->supplier_id}");
-                $this->info("  💡 Run: php artisan db:seed --class=RoleAndPermissionSeeder");
-                continue;
+                // Create role if it doesn't exist using service
+                $supplier = Supplier::find($user->supplier_id);
+                if ($supplier) {
+                    $this->info("  🔧 Creating 'supplier-admin' role for supplier ID {$user->supplier_id}...");
+                    $rolePermissionService = app(RolePermissionService::class);
+                    $adminRole = $rolePermissionService->createSupplierRolesAndPermissions($supplier);
+                } else {
+                    $this->warn("  ⚠️  Supplier ID {$user->supplier_id} not found, skipping...");
+                    continue;
+                }
             }
 
             // Re-assign role
@@ -162,13 +179,3 @@ class FixUserRoles extends Command
         }
     }
 }
-
-
-
-
-
-
-
-
-
-

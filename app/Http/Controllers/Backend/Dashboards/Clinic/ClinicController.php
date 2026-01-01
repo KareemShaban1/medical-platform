@@ -22,6 +22,7 @@ use App\Models\Area;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Log;
 use App\Services\Affiliate\AffiliateService;
+use App\Services\RolePermissionService;
 
 class ClinicController extends Controller
 {
@@ -30,7 +31,7 @@ class ClinicController extends Controller
     {
         // Check if email is already verified first
         $verifiedUser = ClinicUser::where('email', $request->user_email)
-            ->whereHas('clinic', function($query) {
+            ->whereHas('clinic', function ($query) {
                 $query->where(['status' => 1, 'is_allowed' => 1]);
             })->first();
 
@@ -46,7 +47,7 @@ class ClinicController extends Controller
 
         // Check if email exists but is unverified (allow re-registration)
         $unverifiedUser = ClinicUser::where('email', $request->user_email)
-            ->whereHas('clinic', function($query) {
+            ->whereHas('clinic', function ($query) {
                 $query->where(['status' => 0, 'is_allowed' => 0]);
             })->first();
 
@@ -110,7 +111,7 @@ class ClinicController extends Controller
 
             // Check if clinic user exists but not verified
             $existingUser = ClinicUser::where('email', $request->user_email)
-                ->whereHas('clinic', function($query) {
+                ->whereHas('clinic', function ($query) {
                     $query->where(['status' => 0, 'is_allowed' => 0]);
                 })->first();
 
@@ -151,11 +152,9 @@ class ClinicController extends Controller
 
                 $affiliateService->ensureCode($user);
 
-                // Create role
-                $role = Role::firstOrCreate([
-                    'name' => 'clinic-admin-' . $clinic->id,
-                    'guard_name' => 'clinic',
-                ], ['team_id' => $clinic->id]);
+                // Create role and permissions using service
+                $rolePermissionService = app(RolePermissionService::class);
+                $role = $rolePermissionService->createClinicRolesAndPermissions($clinic);
 
                 setPermissionsTeamId($clinic->id);
                 $user->assignRole($role);
@@ -172,7 +171,6 @@ class ClinicController extends Controller
                 'message' => 'Registration data saved! Please check your email for verification code.',
                 'clinic_id' => $clinic->id
             ]);
-
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
@@ -254,8 +252,7 @@ class ClinicController extends Controller
                 'success' => true,
                 'message' => 'Email verified successfully! Your clinic is now active.',
                 'redirect_url' => url('/clinic/login')
-                ]);
-
+            ]);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
@@ -301,7 +298,6 @@ class ClinicController extends Controller
                 'success' => true,
                 'message' => 'OTP resent successfully! Check your email.'
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,

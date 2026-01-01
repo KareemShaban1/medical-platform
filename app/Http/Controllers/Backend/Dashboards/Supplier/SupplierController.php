@@ -19,6 +19,7 @@ use App\Models\City;
 use App\Models\Area;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Log;
+use App\Services\RolePermissionService;
 
 class SupplierController extends Controller
 {
@@ -26,7 +27,7 @@ class SupplierController extends Controller
     {
         // Check if email is already verified first
         $verifiedUser = SupplierUser::where('email', $request->user_email)
-            ->whereHas('supplier', function($query) {
+            ->whereHas('supplier', function ($query) {
                 $query->where(['status' => 1, 'is_allowed' => 1]);
             })->first();
 
@@ -41,10 +42,10 @@ class SupplierController extends Controller
         }
 
         // Check if email or phone exists but is unverified (allow re-registration)
-        $unverifiedUser = SupplierUser::whereHas('supplier', function($query) {
-                $query->where(['status' => 0, 'is_allowed' => 0]);
-            })
-            ->where(function($query) use ($request) {
+        $unverifiedUser = SupplierUser::whereHas('supplier', function ($query) {
+            $query->where(['status' => 0, 'is_allowed' => 0]);
+        })
+            ->where(function ($query) use ($request) {
                 $query->where('email', $request->user_email)
                     ->orWhere('phone', $request->phone);
             })
@@ -108,10 +109,10 @@ class SupplierController extends Controller
             DB::beginTransaction();
 
             // Check if supplier user exists but not verified
-            $existingUser = SupplierUser::whereHas('supplier', function($query) {
-                    $query->where(['status' => 0, 'is_allowed' => 0]);
-                })
-                ->where(function($query) use ($request) {
+            $existingUser = SupplierUser::whereHas('supplier', function ($query) {
+                $query->where(['status' => 0, 'is_allowed' => 0]);
+            })
+                ->where(function ($query) use ($request) {
                     $query->where('email', $request->user_email)
                         ->orWhere('phone', $request->phone);
                 })
@@ -151,11 +152,9 @@ class SupplierController extends Controller
                     'status' => false
                 ]);
 
-                // Create role
-                $role = Role::firstOrCreate([
-                    'name' => 'supplier-admin-' . $supplier->id,
-                    'guard_name' => 'supplier',
-                ], ['team_id' => $supplier->id]);
+                // Create role and permissions using service
+                $rolePermissionService = app(RolePermissionService::class);
+                $role = $rolePermissionService->createSupplierRolesAndPermissions($supplier);
 
                 setPermissionsTeamId($supplier->id);
                 $user->assignRole($role);
@@ -172,7 +171,6 @@ class SupplierController extends Controller
                 'message' => 'Registration data saved! Please check your email for verification code.',
                 'supplier_id' => $supplier->id
             ]);
-
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
@@ -255,7 +253,6 @@ class SupplierController extends Controller
                 'message' => 'Email verified successfully! Your supplier account is now active.',
                 'redirect_url' => url('/supplier/login')
             ]);
-
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
@@ -300,7 +297,6 @@ class SupplierController extends Controller
                 'success' => true,
                 'message' => 'OTP resent successfully! Check your email.'
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
