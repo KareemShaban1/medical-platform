@@ -263,11 +263,16 @@ $affiliateCommission = $affiliateSettings?->default_commission_percent ?? 5;
 <!-- Ad after affiliate section -->
 <x-section-ad position="after_affiliate" />
 
+<x-section-ad position="after_subscription_plans" />
 
+<!-- Ad before contact section -->
+<x-section-ad position="before_contact" />
 
+<!-- contact -->
+{{-- @include('frontend.pages.home.partials.contact') --}}
 
-<!-- Ad before subscription plans section -->
-<x-section-ad position="before_subscription_plans" />
+<!-- Ad after contact section -->
+<x-section-ad position="after_contact" />
 
 <!-- Subscription Plans Section -->
 <section id="subscriptions-plans" class="py-16 bg-gray-50 scroll-mt-20">
