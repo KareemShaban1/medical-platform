@@ -89,7 +89,7 @@ Route::group(
 
             // Alternative: Without middleware (check is done in controller - see ProductController::store)
             // Route::post('/', [ProductController::class, 'store'])->name('products.store');
-    
+
             Route::get('/{id}', [ProductController::class, 'show'])->name('products.show');
             Route::put('/{id}', [ProductController::class, 'update'])->name('products.update');
             Route::patch('/{id}/toggle-status', [ProductController::class, 'toggleStatus'])->name('products.toggle.status');
@@ -182,6 +182,14 @@ Route::group(
             Route::post('/mark-all-as-read', [\App\Http\Controllers\Backend\Dashboards\Supplier\NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-as-read');
         });
 
+        // Payout Management
+        Route::group(['prefix' => 'payouts'], function () {
+            Route::get('/', [\App\Http\Controllers\Backend\Dashboards\Supplier\PayoutController::class, 'index'])->name('payouts.index');
+            Route::post('/profile', [\App\Http\Controllers\Backend\Dashboards\Supplier\PayoutController::class, 'storeProfile'])->name('payouts.profile.store');
+            Route::post('/request', [\App\Http\Controllers\Backend\Dashboards\Supplier\PayoutController::class, 'requestPayout'])->name('payouts.request');
+            Route::get('/{id}', [\App\Http\Controllers\Backend\Dashboards\Supplier\PayoutController::class, 'show'])->name('payouts.show');
+        });
+
         // Location dropdowns endpoints
         Route::get('/governorates', [SupplierController::class, 'getGovernorates'])
             ->name('governorates')->withoutMiddleware(['auth:supplier', 'check.supplier.approval']);
@@ -189,7 +197,6 @@ Route::group(
             ->name('cities')->withoutMiddleware(['auth:supplier', 'check.supplier.approval']);
         Route::get('/areas', [SupplierController::class, 'getAreas'])
             ->name('areas')->withoutMiddleware(['auth:supplier', 'check.supplier.approval']);
-
     }
 );
 

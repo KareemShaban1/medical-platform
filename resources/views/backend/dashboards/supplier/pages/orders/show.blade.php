@@ -165,12 +165,16 @@
                                 <td><strong>{{ __('Status') }}:</strong></td>
                                 <td>
                                     @php
-                                        $supplierId = auth('supplier')->user()->supplier_id;
-                                        $orderSupplier = $order
-                                            ->suppliers()
-                                            ->where('supplier_id', $supplierId)
-                                            ->first();
-                                        $status = $orderSupplier ? $orderSupplier->status : 'pending';
+                                        // User requested to show the main order status, not the supplier-item status
+                                        // $supplierId = auth('supplier')->user()->supplier_id;
+                                        // $orderSupplier = $order
+                                        //     ->suppliers()
+                                        //     ->where('supplier_id', $supplierId)
+                                        //     ->first();
+                                        // $status = $orderSupplier ? $orderSupplier->status : 'pending';
+
+                                        $status = $order->status;
+
                                         $statusClass =
                                             [
                                                 'pending' => 'warning',
@@ -242,11 +246,11 @@
                             <button class="btn btn-warning" onclick="createRefund({{ $order->id }})">
                                 <i class="fa fa-undo"></i> {{ __('Create Refund') }}
                             </button>
-                            {{-- @if ($order->payment_method == 0)
+                            @if ($order->payment_method == 0)
                                 <button class="btn btn-primary" onclick="updatePaymentStatus({{ $order->id }})">
                                     <i class="fa fa-credit-card"></i> {{ __('Update Payment') }}
                                 </button>
-                            @endif --}}
+                            @endif
                             <a href="{{ route('supplier.orders.index') }}" class="btn btn-secondary">
                                 <i class="fa fa-arrow-left"></i> {{ __('Back to Orders') }}
                             </a>

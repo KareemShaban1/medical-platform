@@ -114,6 +114,7 @@ class AdminRolePermissionSeeder extends Seeder
             'Doctor Profiles' => ['view doctor profiles', 'approve doctor profile', 'reject doctor profile', 'toggle featured doctor profile', 'toggle lock doctor profile'],
             'Notifications' => ['view notifications', 'view trash notifications', 'mark notification as read', 'mark all notifications as read'],
             'Supplier Products' => ['view supplier products', 'view trash supplier products', 'approve supplier product', 'reject supplier product', 'delete supplier product', 'restore supplier product', 'force delete supplier product', 'toggle supplier product status', 'toggle supplier product allowed'],
+            'Supplier Payouts' => ['view supplier payouts', 'update supplier payouts'],
         ];
 
         $permissions = [];
@@ -277,6 +278,8 @@ class AdminRolePermissionSeeder extends Seeder
                 'delete admin user',
                 'toggle admin user status',
                 'view notifications',
+                'view supplier payouts',
+                'update supplier payouts',
             ],
             'moderator' => [
                 'view dashboard',
