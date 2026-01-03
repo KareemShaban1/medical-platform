@@ -73,7 +73,7 @@ class Supplier extends Model implements HasMedia
     public function specializedCategories()
     {
         return $this->belongsToMany(SupplierSpecializedCategory::class, 'supplier_category_pivot')
-                    ->withTimestamps();
+            ->withTimestamps();
     }
 
     public function offers()
@@ -90,7 +90,7 @@ class Supplier extends Model implements HasMedia
     {
         return $this->status == 1;
     }
-     public function subscription()
+    public function subscription()
     {
         return $this->morphOne(Subscription::class, 'subscribable');
     }
@@ -100,7 +100,7 @@ class Supplier extends Model implements HasMedia
         return $this->supplierUsers();
     }
 
-     // Governorate relation
+    // Governorate relation
     public function governorate()
     {
         return $this->belongsTo(Governorate::class);
@@ -110,5 +110,51 @@ class Supplier extends Model implements HasMedia
     public function city()
     {
         return $this->belongsTo(City::class);
+    }
+
+    // Payout profile relation
+    public function payoutProfile()
+    {
+        return $this->hasOne(SupplierPayoutProfile::class);
+    }
+
+    // Payout requests relation
+    public function payoutRequests()
+    {
+        return $this->hasMany(SupplierPayoutRequest::class);
+    }
+
+    // Order suppliers relation (orders this supplier is part of)
+    public function orderSuppliers()
+    {
+        return $this->hasMany(OrderSupplier::class);
+    }
+
+    /**
+     * Get eligible orders for payout (completed/shipped, not already in a payout request)
+     */
+    public function getEligibleOrdersForPayout()
+    {
+        return $this->orderSuppliers()
+            ->select('order_suppliers.*')
+            ->join('orders', 'order_suppliers.order_id', '=', 'orders.id')
+            ->where(function ($query) {
+                $statuses = ['completed', 'shipped', 'delivered', 'Completed', 'Shipped', 'Delivered'];
+                $query->whereIn('order_suppliers.status', $statuses)
+                    ->orWhereIn('orders.status', $statuses);
+            })
+            ->whereDoesntHave('payoutRequests', function ($query) {
+                $query->whereIn('status', ['pending', 'approved', 'paid']);
+            })
+            ->with('order')
+            ->get();
+    }
+
+    /**
+     * Get total eligible amount for payout
+     */
+    public function getEligiblePayoutAmount(): float
+    {
+        return (float) $this->getEligibleOrdersForPayout()->sum('subtotal');
     }
 }
