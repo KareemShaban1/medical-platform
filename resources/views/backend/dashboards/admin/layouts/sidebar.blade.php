@@ -211,6 +211,13 @@
 					</a>
 				</li>
 				@endhasPermission
+				@hasPermission('view trash users')
+				<li>
+					<a href="{{ route('admin.users-management.supplier-users.trash') }}">
+						<span> {{__('Trash Supplier Users')}} </span>
+					</a>
+				</li>
+				@endhasPermission
 				@hasPermission('view suppliers')
 				<li>
 					<a href="{{ route('admin.suppliers.index') }}">
@@ -223,6 +230,14 @@
 				<li>
 					<a href="{{ route('admin.supplier-products.index') }}">
 						<span> {{ __('Supplier Products') }}
+						</span>
+					</a>
+				</li>
+				@endhasPermission
+				@hasPermission('view trash supplier products')
+				<li>
+					<a href="{{ route('admin.supplier-products.trash') }}">
+						<span> {{ __('Trash Supplier Products') }}
 						</span>
 					</a>
 				</li>

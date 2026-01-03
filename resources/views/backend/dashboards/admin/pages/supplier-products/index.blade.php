@@ -74,14 +74,14 @@
         </div>
     </div>
 
-@push('scripts')
-    <script>
-        $(document).ready(function() {
-            let table = $('#supplier-products-table').DataTable({
-                processing: true,
-                serverSide: true,
-                ajax: '{{ route('admin.supplier-products.data') }}',
-                columns: [{
+    @push('scripts')
+        <script>
+            $(document).ready(function () {
+                let table = $('#supplier-products-table').DataTable({
+                    processing: true,
+                    serverSide: true,
+                    ajax: '{{ route('admin.supplier-products.data') }}',
+                    columns: [{
                         data: 'id',
                         name: 'id'
                     },
@@ -128,15 +128,15 @@
                         orderable: false,
                         searchable: false
                     }
-                ],
-                order: [
-                    [0, 'desc']
-                ],
-                dom: '<"d-flex justify-content-between align-items-center mb-3"lfB>rtip',
-                pageLength: 10,
-                responsive: true,
-                language: languages[language],
-                buttons: [{
+                    ],
+                    order: [
+                        [0, 'desc']
+                    ],
+                    dom: '<"d-flex justify-content-between align-items-center mb-3"lfB>rtip',
+                    pageLength: 10,
+                    responsive: true,
+                    language: languages[language],
+                    buttons: [{
                         extend: 'print',
                         exportOptions: {
                             columns: [0, 2, 3, 5, 6, 7, 8]
@@ -154,48 +154,75 @@
                             columns: [0, 2, 3, 5, 6, 7]
                         }
                     }
-                ]
+                    ]
+                });
             });
-        });
 
-        function updateApprovalStatus(productId) {
-            $('#productId').val(productId);
-            $('#approvalModal').modal('show');
-        }
-
-
-        function submitApproval() {
-            const productId = $('#productId').val();
-            const action = $('#action').val();
-            const notes = $('#notes').val();
-
-            if (action === 'rejected' && !notes.trim()) {
-                alert('Notes are required when rejecting a product.');
-                return;
+            function updateApprovalStatus(productId) {
+                $('#productId').val(productId);
+                $('#approvalModal').modal('show');
             }
 
-            $.ajax({
-                url: `{{ route('admin.supplier-products.update-approval-status', ':id') }}`.replace(':id', productId),
-                method: 'PUT',
-                data: {
-                    _token: '{{ csrf_token() }}',
-                    action: action,
-                    notes: notes
-                },
-                success: function(response) {
-                    if (response.success) {
-                        $('#approvalModal').modal('hide');
-                        $('#supplier-products-table').DataTable().ajax.reload();
-                        Swal.fire('Success!', response.message, 'success');
-                    } else {
-                        Swal.fire('Error!', response.message, 'error');
-                    }
-                },
-                error: function() {
-                    Swal.fire('Error!', 'Something went wrong', 'error');
+
+            function submitApproval() {
+                const productId = $('#productId').val();
+                const action = $('#action').val();
+                const notes = $('#notes').val();
+
+                if (action === 'rejected' && !notes.trim()) {
+                    alert('Notes are required when rejecting a product.');
+                    return;
                 }
-            });
-        }
-    </script>
-@endpush
+
+                $.ajax({
+                    url: `{{ route('admin.supplier-products.update-approval-status', ':id') }}`.replace(':id', productId),
+                    method: 'PUT',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        action: action,
+                        notes: notes
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            $('#approvalModal').modal('hide');
+                            $('#supplier-products-table').DataTable().ajax.reload();
+                            Swal.fire('Success!', response.message, 'success');
+                        } else {
+                            Swal.fire('Error!', response.message, 'error');
+                        }
+                    },
+                    error: function () {
+                        Swal.fire('Error!', 'Something went wrong', 'error');
+                    }
+                });
+            }
+
+            function deleteProduct(id) {
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: '{{ route("admin.supplier-products.destroy", ":id") }}'.replace(':id', id),
+                            method: 'DELETE',
+                            headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+                            success: function (response) {
+                                $('#supplier-products-table').DataTable().ajax.reload();
+                                Swal.fire('Deleted!', response.message, 'success');
+                            },
+                            error: function () {
+                                Swal.fire('Error!', 'Something went wrong', 'error');
+                            }
+                        });
+                    }
+                });
+            }
+        </script>
+    @endpush
 @endsection

@@ -63,4 +63,39 @@ class SupplierProductController extends Controller
         $data = $this->supplierProductRepository->supplierProducts($supplierId);
         return view('backend.dashboards.admin.pages.supplier-products.supplier-products', $data);
     }
+
+    public function destroy($id)
+    {
+        // apply permissions
+        abort_if(!hasPermission('delete supplier product'), 403, __('You are not authorized to delete supplier product'));
+        return $this->supplierProductRepository->destroy($id);
+    }
+
+    public function trash()
+    {
+        // apply permissions
+        abort_if(!hasPermission('view trash supplier products'), 403, __('You are not authorized to view trash'));
+        return $this->supplierProductRepository->trash();
+    }
+
+    public function trashData()
+    {
+        // apply permissions
+        abort_if(!hasPermission('view trash supplier products'), 403, __('You are not authorized to view trash'));
+        return $this->supplierProductRepository->trashData();
+    }
+
+    public function restore($id)
+    {
+        // apply permissions
+        abort_if(!hasPermission('restore supplier product'), 403, __('You are not authorized to restore supplier product'));
+        return $this->supplierProductRepository->restore($id);
+    }
+
+    public function forceDelete($id)
+    {
+        // apply permissions
+        abort_if(!hasPermission('force delete supplier product'), 403, __('You are not authorized to force delete supplier product'));
+        return $this->supplierProductRepository->forceDelete($id);
+    }
 }

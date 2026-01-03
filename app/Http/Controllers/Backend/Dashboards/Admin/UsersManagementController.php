@@ -162,6 +162,44 @@ class UsersManagementController extends Controller
         return view('backend.dashboards.admin.pages.users-management.supplier-user-details', compact('supplierUser'));
     }
 
+    public function supplierUsersTrash()
+    {
+        // apply permissions
+        abort_if(!hasPermission('view trash users'), 403, __('You are not authorized to view trash users'));
+        return view('backend.dashboards.admin.pages.users-management.supplier-users-trash');
+    }
+
+    public function supplierUsersTrashData()
+    {
+        // apply permissions
+        abort_if(!hasPermission('view trash users'), 403, __('You are not authorized to view trash users'));
+        return $this->repo->getSupplierUsersTrashData();
+    }
+
+    public function destroySupplierUser($id)
+    {
+        // apply permissions
+        abort_if(!hasPermission('delete user'), 403, __('You are not authorized to delete user'));
+        return $this->repo->destroySupplierUser($id);
+    }
+
+    public function restoreSupplierUser($id)
+    {
+        // apply permissions
+        // using delete user as restore permission if no specific restore available, or assuming admins have broad access
+        // checking seeder: 'restore admin user' exists, but generic 'restore user' doesn't.
+        // using 'update user' or 'delete user' logic. Let's stick with 'delete user' for consistency with soft deletes
+        abort_if(!hasPermission('delete user'), 403, __('You are not authorized to restore user'));
+        return $this->repo->restoreSupplierUser($id);
+    }
+
+    public function forceDeleteSupplierUser($id)
+    {
+        // apply permissions
+        abort_if(!hasPermission('delete user'), 403, __('You are not authorized to force delete user'));
+        return $this->repo->forceDeleteSupplierUser($id);
+    }
+
     // Password Management
     public function changePassword(\Illuminate\Http\Request $request)
     {
