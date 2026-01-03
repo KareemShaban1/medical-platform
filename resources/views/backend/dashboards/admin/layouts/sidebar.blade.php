@@ -142,10 +142,24 @@
 				</a>
 			</li>
 			@endhasPermission
+			@hasPermission('view trash rental spaces')
+			<li>
+				<a href="{{ route('admin.rental-spaces.trash') }}">
+					<span> {{ __('Trash Rental Spaces') }} </span>
+				</a>
+			</li>
+			@endhasPermission
 			@hasPermission('view jobs')
 			<li>
 				<a href="{{ route('admin.jobs.index') }}">
 					<span> {{ __('Jobs') }} </span>
+				</a>
+			</li>
+			@endhasPermission
+			@hasPermission('view trash jobs')
+			<li>
+				<a href="{{ route('admin.jobs.trash') }}">
+					<span> {{ __('Trash Jobs') }} </span>
 				</a>
 			</li>
 			@endhasPermission
@@ -298,6 +312,13 @@
 					</a>
 				</li>
 				@endhasPermission
+				@hasPermission('view trash governorates')
+				<li>
+					<a href="{{ route('admin.governorates.trash') }}">
+						<span> {{ __('Trash Governorates') }} </span>
+					</a>
+				</li>
+				@endhasPermission
 				@hasPermission('view cities')
 				<li>
 					<a href="{{ route('admin.cities.index') }}">
@@ -305,10 +326,24 @@
 					</a>
 				</li>
 				@endhasPermission
+				@hasPermission('view trash cities')
+				<li>
+					<a href="{{ route('admin.cities.trash') }}">
+						<span> {{ __('Trash Cities') }} </span>
+					</a>
+				</li>
+				@endhasPermission
 				@hasPermission('view areas')
 				<li>
 					<a href="{{ route('admin.areas.index') }}">
 						<span> {{ __('Areas') }} </span>
+					</a>
+				</li>
+				@endhasPermission
+				@hasPermission('view trash areas')
+				<li>
+					<a href="{{ route('admin.areas.trash') }}">
+						<span> {{ __('Trash Areas') }} </span>
 					</a>
 				</li>
 				@endhasPermission
@@ -337,12 +372,13 @@
 					</a>
 				</li>
 				@endhasPermission
-				<!-- <li>
-							<a href="{{ route('admin.admin-users.trash') }}">
-								<span> {{ __('Trash Admin Users') }}
-								</span>
-							</a>
-						</li> -->
+				@hasPermission('view trash admin users')
+				<li>
+					<a href="{{ route('admin.admin-users.trash') }}">
+						<span> {{ __('Trash Admin Users') }} </span>
+					</a>
+				</li>
+				@endhasPermission
 				@hasPermission('view roles')
 				<li>
 					<a href="{{ route('admin.roles.index') }}">
@@ -350,11 +386,13 @@
 					</a>
 				</li>
 				@endhasPermission
-				<!-- <li>
-						<a href="{{ route('admin.roles.trash') }}">
-							<span> {{ __('Trash Roles') }} </span>
-						</a>
-					</li> -->
+				@hasPermission('view trash roles')
+				<li>
+					<a href="{{ route('admin.roles.trash') }}">
+						<span> {{ __('Trash Roles') }} </span>
+					</a>
+				</li>
+				@endhasPermission
 			</ul>
 		</div>
 	</li>
@@ -414,10 +452,15 @@
 			<ul class="side-nav-second-level">
 				@hasPermission('view blog categories')
 				<li>
-
 					<a href="{{ route('admin.blog-categories.index') }}">
-						<span> {{ __('Blog Categories') }}
-						</span>
+						<span> {{ __('Blog Categories') }} </span>
+					</a>
+				</li>
+				@endhasPermission
+				@hasPermission('view trash blog categories')
+				<li>
+					<a href="{{ route('admin.blog-categories.trash') }}">
+						<span> {{ __('Trash Blog Categories') }} </span>
 					</a>
 				</li>
 				@endhasPermission
@@ -456,17 +499,22 @@
 			<ul class="side-nav-second-level">
 				@hasPermission('view courses')
 				<li>
-
 					<a href="{{ route('admin.courses.index') }}">
 						<span> {{ __('Courses') }} </span>
+					</a>
+				</li>
+				@endhasPermission
+				@hasPermission('view trash courses')
+				<li>
+					<a href="{{ route('admin.courses.trash') }}">
+						<span> {{ __('Trash Courses') }} </span>
 					</a>
 				</li>
 				@endhasPermission
 				@hasPermission('view course enrollments')
 				<li>
 					<a href="{{ route('admin.course-enrollments.index') }}">
-						<span> {{ __('Course Enrollments') }}
-						</span>
+						<span> {{ __('Course Enrollments') }} </span>
 					</a>
 				</li>
 				@endhasPermission
@@ -493,6 +541,13 @@
 				<li>
 					<a href="{{ route('admin.tickets.index') }}">
 						<span> {{ __('All Tickets') }} </span>
+					</a>
+				</li>
+				@endhasPermission
+				@hasPermission('view trash tickets')
+				<li>
+					<a href="{{ route('admin.tickets.trash') }}">
+						<span> {{ __('Trash Tickets') }} </span>
 					</a>
 				</li>
 				@endhasPermission

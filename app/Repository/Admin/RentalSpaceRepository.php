@@ -36,7 +36,7 @@ class RentalSpaceRepository implements RentalSpaceRepositoryInterface
 
     public function show($id)
     {
-        return RentalSpace::with(['approvement','availability','pricing','booking'])->findOrFail($id);
+        return RentalSpace::with(['approvement', 'availability', 'pricing', 'booking'])->findOrFail($id);
     }
 
     public function update($request, $id)
@@ -51,7 +51,7 @@ class RentalSpaceRepository implements RentalSpaceRepositoryInterface
 
         // fallback to "status" if field is not sent
         $field = $request->field ?? 'status';
-        $value = (bool)$request->value;
+        $value = (bool) $request->value;
 
         $rentalSpace->{$field} = $value;
         $rentalSpace->save();
@@ -78,7 +78,7 @@ class RentalSpaceRepository implements RentalSpaceRepositoryInterface
 
     public function trash()
     {
-        return [];
+        return view('backend.dashboards.admin.pages.rental-spaces.trash');
     }
 
     public function trashData()
@@ -170,9 +170,9 @@ class RentalSpaceRepository implements RentalSpaceRepositoryInterface
 
         $badgeClass = match ($approved) {
             'under_review' => 'bg-warning',
-            'approved'     => 'bg-success',
-            'rejected'     => 'bg-danger',
-            default        => 'bg-secondary',
+            'approved' => 'bg-success',
+            'rejected' => 'bg-danger',
+            default => 'bg-secondary',
         };
 
         $label = $approved ?? 'pending';
@@ -213,6 +213,7 @@ class RentalSpaceRepository implements RentalSpaceRepositoryInterface
         return <<<HTML
         <div class="d-flex gap-2">
            <a href="{$showUrl}" class="btn btn-sm btn-success"><i class="fa fa-eye"></i></a>
+           <button onclick="deleteRentalSpace({$item->id})" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>
         </div>
         HTML;
     }

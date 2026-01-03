@@ -87,5 +87,31 @@ class RentalSpaceController extends Controller
         return $this->rentalSpaceRepositoryInterface->destroy($id);
     }
 
+    public function trash()
+    {
+        // apply permissions
+        abort_if(!hasPermission('view trash rental spaces'), 403, __('You are not authorized to view trash'));
+        return $this->rentalSpaceRepositoryInterface->trash();
+    }
 
+    public function trashData()
+    {
+        // apply permissions
+        abort_if(!hasPermission('view trash rental spaces'), 403, __('You are not authorized to view trash'));
+        return $this->rentalSpaceRepositoryInterface->trashData();
+    }
+
+    public function restore($id)
+    {
+        // apply permissions
+        abort_if(!hasPermission('restore rental space'), 403, __('You are not authorized to restore rental space'));
+        return $this->rentalSpaceRepositoryInterface->restore($id);
+    }
+
+    public function forceDelete($id)
+    {
+        // apply permissions
+        abort_if(!hasPermission('force delete rental space'), 403, __('You are not authorized to force delete rental space'));
+        return $this->rentalSpaceRepositoryInterface->forceDelete($id);
+    }
 }
