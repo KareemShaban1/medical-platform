@@ -2568,5 +2568,15 @@
     "Your browser does not support the video tag.": "متصفحك لا يدعم عنصر الفيديو.",
     "See how Tebbplus can transform your medical practice": "شاهد كيف يمكن لطب بلس تحويل ممارستك الطبية",
     "to close": "للإغلاق",
-    "Go to Dashboard": "الذهاب إلى لوحة التحكم"
+    "Go to Dashboard": "الذهاب إلى لوحة التحكم",
+    "Real Estate": "شركة عقارات",
+    "Real Estate Company": "شركة عقارات",
+    "Mark as Real Estate Company?": "وضع علامة كشركة عقارات؟",
+    "Remove Real Estate Company flag?": "إزالة علامة شركة العقارات؟",
+    "This clinic will be hidden from public listings and users will only have access to Rental Spaces module.": "سيتم إخفاء هذه العيادة من القوائم العامة وسيتمكن المستخدمون فقط من الوصول إلى وحدة المساحات الإيجارية.",
+    "This clinic will appear on public listings and users will get full access restored.": "ستظهر هذه العيادة في القوائم العامة وسيستعيد المستخدمون الوصول الكامل.",
+    "Yes, proceed": "نعم، تابع",
+    "Clinic marked as Rental Space Company. Users now have limited access.": "تم وضع علامة على العيادة كشركة عقارات. أصبح للمستخدمين الآن وصول محدود.",
+    "Clinic unmarked as Rental Space Company. Users restored to full access.": "تمت إزالة علامة شركة العقارات من العيادة. تم استعادة الوصول الكامل للمستخدمين.",
+    "Clinic status updated successfully": "تم تحديث حالة العيادة بنجاح"
 }

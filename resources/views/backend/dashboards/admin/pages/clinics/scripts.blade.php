@@ -25,6 +25,10 @@
                     name: 'status'
                 },
                 {
+                    data: 'is_rental_space_company',
+                    name: 'is_rental_space_company'
+                },
+                {
                     data: 'clinic_users',
                     name: 'clinic_users'
                 },
@@ -395,6 +399,57 @@
                 },
                 error: function() {
                     Swal.fire('Error!', 'Something went wrong', 'error');
+                }
+            });
+        });
+
+        // Toggle rental space company
+        $(document).on('change', '.toggle-rental-space-company', function(e) {
+            let id = $(this).data('id');
+            let checkbox = $(this);
+            let newValue = checkbox.is(':checked');
+
+            // Show confirmation
+            let confirmTitle = newValue ?
+                '{{ __('Mark as Real Estate Company?') }}' :
+                '{{ __('Remove Real Estate Company flag?') }}';
+            let confirmText = newValue ?
+                '{{ __('This clinic will be hidden from public listings and users will only have access to Rental Spaces module.') }}' :
+                '{{ __('This clinic will appear on public listings and users will get full access restored.') }}';
+
+            Swal.fire({
+                title: confirmTitle,
+                text: confirmText,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: '{{ __('Yes, proceed') }}',
+                cancelButtonText: '{{ __('Cancel') }}'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    let url = '{{ route('admin.clinics.toggle-rental-space-company', ':id') }}'.replace(
+                        ':id', id);
+
+                    $.ajax({
+                        url: url,
+                        method: 'PUT',
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        success: function(response) {
+                            table.ajax.reload(null, false);
+                            Swal.fire('Success!', response.message, 'success');
+                        },
+                        error: function() {
+                            Swal.fire('Error!', 'Something went wrong', 'error');
+                            // Revert checkbox state
+                            checkbox.prop('checked', !newValue);
+                        }
+                    });
+                } else {
+                    // Revert checkbox if cancelled
+                    checkbox.prop('checked', !newValue);
                 }
             });
         });
