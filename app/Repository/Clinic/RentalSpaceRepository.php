@@ -22,12 +22,13 @@ class RentalSpaceRepository implements RentalSpaceRepositoryInterface
 
     public function data()
     {
-        $rentalSpaces = RentalSpace::forCurrentClinic();
+        $rentalSpaces = RentalSpace::forCurrentClinic()->with('approvement');
 
         return datatables()->of($rentalSpaces)
             ->editColumn('status', fn($item) => $this->rentalSpaceStatus($item))
+            ->addColumn('approval', fn($item) => $this->rentalSpaceApproval($item))
             ->addColumn('action', fn($item) => $this->rentalSpaceActions($item))
-            ->rawColumns(['status', 'action'])
+            ->rawColumns(['status', 'approval', 'action'])
             ->make(true);
     }
 
@@ -176,7 +177,6 @@ class RentalSpaceRepository implements RentalSpaceRepositoryInterface
             DB::rollBack();
             return $this->jsonResponse('error', $e->getMessage());
         }
-
     }
 
     private function rentalSpaceStatus($item): string
@@ -193,43 +193,81 @@ class RentalSpaceRepository implements RentalSpaceRepositoryInterface
         HTML;
     }
 
+    private function rentalSpaceApproval($item): string
+    {
+        $approval = $item->approvement;
+
+        if (!$approval) {
+            return '<span class="badge bg-secondary">' . __('Pending') . '</span>';
+        }
+
+        $action = $approval->action;
+        $notes = $approval->notes;
+
+        $badgeClass = match ($action) {
+            'under_review' => 'bg-warning',
+            'approved'     => 'bg-success',
+            'rejected'     => 'bg-danger',
+            default        => 'bg-secondary',
+        };
+
+        $label = match ($action) {
+            'under_review' => __('Under Review'),
+            'approved'     => __('Approved'),
+            'rejected'     => __('Rejected'),
+            default        => __('Pending'),
+        };
+
+        $html = '<span class="badge ' . $badgeClass . '">' . $label . '</span>';
+
+        // Show rejection notes if rejected
+        if ($action === 'rejected' && $notes) {
+            $escapedNotes = htmlspecialchars($notes, ENT_QUOTES);
+            $html .= '<br><small class="text-danger" title="' . $escapedNotes . '">'
+                . '<i class="fa fa-info-circle"></i> ' . mb_substr($notes, 0, 30)
+                . (strlen($notes) > 30 ? '...' : '') . '</small>';
+        }
+
+        return $html;
+    }
+
     private function rentalSpaceActions($item): string
     {
         $html = '<div class="d-flex gap-2">';
-        
+
         if (hasPermission('view rental spaces')) {
             $showUrl = route('clinic.rental-spaces.show', $item->id);
             $html .= '<a href="' . $showUrl . '" class="btn btn-sm btn-info"><i class="fa fa-eye"></i></a>';
         }
-        
+
         if (hasPermission('update rental space')) {
             $editUrl = route('clinic.rental-spaces.edit', $item->id);
             $html .= '<a href="' . $editUrl . '" class="btn btn-sm btn-warning text-white"><i class="fa fa-edit"></i></a>';
         }
-        
+
         if (hasPermission('delete rental space')) {
             $html .= '<button onclick="deleteRentalSpace(' . $item->id . ')" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>';
         }
-        
+
         $html .= '</div>';
-        
+
         return $html;
     }
 
     private function rentalSpaceTrashActions($item): string
     {
         $html = '<div class="d-flex gap-2">';
-        
+
         if (hasPermission('restore rental space')) {
             $html .= '<button onclick="restore(' . $item->id . ')" class="btn btn-sm btn-info" title="Restore"><i class="fa fa-undo"></i></button>';
         }
-        
+
         if (hasPermission('force delete rental space')) {
             $html .= '<button onclick="forceDelete(' . $item->id . ')" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>';
         }
-        
+
         $html .= '</div>';
-        
+
         return $html;
     }
 

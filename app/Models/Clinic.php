@@ -11,13 +11,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Clinic extends Model implements HasMedia
 {
-    use HasFactory , InteractsWithMedia;
+    use HasFactory, InteractsWithMedia;
 
     protected $fillable = [
         'name',
         'phone',
         'address',
         'is_allowed',
+        'is_rental_space_company',
         'status',
         'governorate_id',
         'city_id',
@@ -38,6 +39,7 @@ class Clinic extends Model implements HasMedia
         'has_emergency' => 'boolean',
         'status' => 'boolean',
         'is_allowed' => 'boolean',
+        'is_rental_space_company' => 'boolean',
     ];
 
     public $appends = ['images', 'primary_image'];
@@ -81,6 +83,16 @@ class Clinic extends Model implements HasMedia
     public function scopeActive($query)
     {
         return $query->where('status', true);
+    }
+
+    public function scopeNotRentalSpaceCompany($query)
+    {
+        return $query->where('is_rental_space_company', false);
+    }
+
+    public function scopeRentalSpaceCompany($query)
+    {
+        return $query->where('is_rental_space_company', true);
     }
 
     // ------- relations -------
@@ -152,6 +164,4 @@ class Clinic extends Model implements HasMedia
     {
         return $this->belongsTo(City::class);
     }
-
-
 }

@@ -93,7 +93,7 @@ Route::group(
 
         // Doctor Specialities
         Route::get('specialities/data', [SpecialityController::class, 'data'])->name('specialities.data');
-        Route::resource('specialities', SpecialityController::class)->only(['index','store','show','update','destroy']);
+        Route::resource('specialities', SpecialityController::class)->only(['index', 'store', 'show', 'update', 'destroy']);
 
         // Roles Management
         Route::get('roles/data', [\App\Http\Controllers\Backend\Dashboards\Admin\RoleController::class, 'data'])->name('roles.data');
@@ -110,6 +110,7 @@ Route::group(
         Route::get('clinics/{id}/users/data', [ClinicController::class, 'clinicUsersData'])->name('clinics.users.data');
         Route::put('clinics/{id}/update-status', [ClinicController::class, 'updateStatus'])->name('clinics.update-status');
         Route::put('clinics/{id}/update-is-allowed', [ClinicController::class, 'updateIsAllowed'])->name('clinics.update-is-allowed');
+        Route::put('clinics/{id}/toggle-rental-space-company', [ClinicController::class, 'toggleRentalSpaceCompany'])->name('clinics.toggle-rental-space-company');
         Route::get('clinics/{id}/approval', [ClinicController::class, 'showApproval'])->name('clinics.approval');
         Route::resource('clinics', ClinicController::class);
 
@@ -340,20 +341,20 @@ Route::group(
                 ->name('affiliates.update');
         });
 
-        // Banners Management   
+        // Banners Management
         Route::group(['prefix' => 'banners'], function () {
             Route::get('/', [BannerController::class, 'index'])->name('banners.index');
             Route::get('/data', [BannerController::class, 'data'])->name('banners.data');
-            Route::get('/create', [ BannerController::class, 'create'])->name('banners.create');
-            Route::post('/store', [ BannerController::class, 'store'])->name('banners.store');
-            Route::get('/{id}/edit', [ BannerController::class, 'edit'])->name('banners.edit');
-            Route::put('/{id}/update', [ BannerController::class, 'update'])->name('banners.update');
-            Route::delete('/{id}/destroy', [ BannerController::class, 'destroy'])->name('banners.destroy');
-            Route::get('/trash', [ BannerController::class, 'trash'])->name('banners.trash');
-            Route::get('/trash/data', [ BannerController::class, 'trashData'])->name('banners.trash.data');
-            Route::post('/{id}/restore', [ BannerController::class, 'restore'])->name('banners.restore');
-            Route::delete('/{id}/force-delete', [ BannerController::class, 'forceDelete'])->name('banners.force-delete');
-            Route::post('/{id}/toggle-status', [ BannerController::class, 'toggleStatus'])->name('banners.toggle-status');
+            Route::get('/create', [BannerController::class, 'create'])->name('banners.create');
+            Route::post('/store', [BannerController::class, 'store'])->name('banners.store');
+            Route::get('/{id}/edit', [BannerController::class, 'edit'])->name('banners.edit');
+            Route::put('/{id}/update', [BannerController::class, 'update'])->name('banners.update');
+            Route::delete('/{id}/destroy', [BannerController::class, 'destroy'])->name('banners.destroy');
+            Route::get('/trash', [BannerController::class, 'trash'])->name('banners.trash');
+            Route::get('/trash/data', [BannerController::class, 'trashData'])->name('banners.trash.data');
+            Route::post('/{id}/restore', [BannerController::class, 'restore'])->name('banners.restore');
+            Route::delete('/{id}/force-delete', [BannerController::class, 'forceDelete'])->name('banners.force-delete');
+            Route::post('/{id}/toggle-status', [BannerController::class, 'toggleStatus'])->name('banners.toggle-status');
         });
     }
 );
