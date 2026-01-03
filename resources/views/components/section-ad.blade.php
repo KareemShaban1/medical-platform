@@ -49,7 +49,7 @@ $bannerCount = $banners->count();
 @endphp
 
 @if($bannerCount > 0)
-<div class="section-ad-container my-8">
+<div class="container mx-auto section-ad-container my-8">
 	@if($bannerCount > 1)
 	<!-- Multiple Banners - Use Slider -->
 	<div class="swiper section-ad-swiper" style="width: 100%;">
@@ -81,93 +81,93 @@ $bannerCount = $banners->count();
 </div>
 
 @if($bannerCount > 1)
-	@push('scripts')
-	<script>
-	document.addEventListener('DOMContentLoaded', function() {
-		// Initialize Swiper for section ad slider
-		const sectionAdSwiper = new Swiper('.section-ad-swiper', {
-			slidesPerView: 1,
-			spaceBetween: 0,
-			loop: {{ $bannerCount > 2 ? 'true' : 'false'}},
-			autoplay: {
-				delay: 5000,
-				disableOnInteraction: false,
-			},
-			pagination: {
-				el: '.swiper-pagination',
-				clickable: true,
-				dynamicBullets: true,
-			},
-			navigation: {
-				nextEl: '.swiper-button-next',
-				prevEl: '.swiper-button-prev',
-			},
-			effect: 'fade',
-			fadeEffect: {
-				crossFade: true
-			},
-			autoHeight: true,
-		});
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+	// Initialize Swiper for section ad slider
+	const sectionAdSwiper = new Swiper('.section-ad-swiper', {
+		slidesPerView: 1,
+		spaceBetween: 0,
+		loop: {{$bannerCount > 2 ? 'true' : 'false'}},
+		autoplay: {
+			delay: 5000,
+			disableOnInteraction: false,
+		},
+		pagination: {
+			el: '.swiper-pagination',
+			clickable: true,
+			dynamicBullets: true,
+		},
+		navigation: {
+			nextEl: '.swiper-button-next',
+			prevEl: '.swiper-button-prev',
+		},
+		effect: 'fade',
+		fadeEffect: {
+			crossFade: true
+		},
+		autoHeight: true,
+	});
 
-		// Track banner views
-		@foreach($banners as $banner)
-		@if($loop->first)
-		// Track view for first banner (visible on load)
-		fetch('{{ route('api.banners.track-view', $banner->id) }}', {
-				method: 'POST',
-				headers: {
-					'X-CSRF-TOKEN': document.querySelector(
-							'meta[name="csrf-token"]')
-						.getAttribute('content'),
-					'Content-Type': 'application/json',
-				}
-			}).catch(err => console.log('View tracking failed'));
-		@endif
-		@endforeach
-
-		// Track view when slide changes
-		sectionAdSwiper.on('slideChange', function() {
-			const activeIndex = this.activeIndex;
-			const banners = @json($banners->pluck('id')->toArray());
-			if (banners[activeIndex]) {
-				fetch("{{ url('/api/banners') }}/" + banners[activeIndex] +'/track-view', {
-						method: 'POST',
-						headers: {
-							'X-CSRF-TOKEN': document
-								.querySelector(
-									'meta[name="csrf-token"]'
-									)
-								.getAttribute(
-									'content'
-									),
-							'Content-Type': 'application/json',
-						}
-					}).catch(err => console.log(
-					'View tracking failed'
-					));
+	// Track banner views
+	@foreach($banners as $banner)
+	@if($loop->first)
+	// Track view for first banner (visible on load)
+	fetch("{{ route('api.banners.track - view ', $banner->id) }}", {
+			method: 'POST',
+			headers: {
+				'X-CSRF-TOKEN': document.querySelector(
+						'meta[name="csrf-token"]')
+					.getAttribute('content'),
+				'Content-Type': 'application/json',
 			}
-		});
+		}).catch(err => console.log('View tracking failed'));
+	@endif
+	@endforeach
+
+	// Track view when slide changes
+	sectionAdSwiper.on('slideChange', function() {
+		const activeIndex = this.activeIndex;
+		const banners = @json($banners->pluck('id')->toArray());
+		if (banners[activeIndex]) {
+			fetch("{{ url('/api/banners') }}/" + banners[activeIndex] +'/track-view', {
+					method: 'POST',
+					headers: {
+						'X-CSRF-TOKEN': document
+							.querySelector(
+								'meta[name="csrf-token"]'
+							)
+							.getAttribute(
+								'content'
+							),
+						'Content-Type': 'application/json',
+					}
+				}).catch(err => console.log(
+				'View tracking failed'
+			));
+		}
 	});
-	</script>
-	@endpush
+});
+</script>
+@endpush
 @else
-	@push('scripts')
-	<script>
-	document.addEventListener('DOMContentLoaded', function() {
-		// Track view for single banner
-		@foreach($banners as $banner)
-		fetch("{{ route('api.banners.track-view', $banner->id) }}", {
-				method: 'POST',
-				headers: {
-					'X-CSRF-TOKEN': document.querySelector(
-							'meta[name="csrf-token"]')
-						.getAttribute('content'),
-					'Content-Type': 'application/json',
-				}
-			}).catch(err => console.log('View tracking failed'));
-		@endforeach
-	});
-	</script>
-	@endpush
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+	// Track view for single banner
+	@foreach($banners as $banner)
+	fetch("{{ route('api.banners.track-view', $banner->id) }}", {
+		method: 'POST',
+		headers: {
+			'X-CSRF-TOKEN': document.querySelector(
+					'meta[name="csrf-token"]')
+				.getAttribute('content'),
+			'Content-Type': 'application/json',
+		}
+	}).catch(err => console.log('View tracking failed'));
+	@endforeach
+});
+</script>
+@endpush
 @endif
 @endif

@@ -47,11 +47,10 @@
 						<div class="mb-3">
 							<label class="form-label">{{ __('Content') }}
 								(HTML)</label>
-							<textarea name="content" id="content"
-								class="form-control summernote-editor"
-								rows="10">{{ old('content') }}</textarea>
+							<div id="content" style="min-height: 300px;">{!! old('content') !!}</div>
+							<textarea name="content" id="content-textarea" style="display: none;">{{ old('content') }}</textarea>
 							<small
-								class="text-muted">{{ __('You can use HTML tags for rich content') }}</small>
+								class="text-muted">{{ __('You can use the editor to format your content') }}</small>
 						</div>
 					</div>
 				</div>
@@ -517,41 +516,87 @@
 @endsection
 
 @push('styles')
-<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.css" rel="stylesheet">
+<link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
+<style>
+	.ql-container {
+		min-height: 300px;
+		font-size: 14px;
+	}
+	.ql-editor {
+		min-height: 300px;
+	}
+</style>
 @endpush
 
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.js"></script>
+<script src="https://cdn.quilljs.com/1.3.7/quill.js"></script>
 <script>
 $(document).ready(function() {
-	// Initialize Summernote editor
-	$('#content').summernote({
-		height: 300,
-		toolbar: [
-			['style', ['style']],
-			['font', ['bold', 'italic', 'underline',
-				'clear'
-			]],
-			['fontname', ['fontname']],
-			['fontsize', ['fontsize']],
-			['color', ['color']],
-			['para', ['ul', 'ol', 'paragraph']],
-			['table', ['table']],
-			['insert', ['link', 'picture',
-				'video'
-			]],
-			['view', ['fullscreen', 'codeview',
-				'help'
-			]]
-		],
-		callbacks: {
-			onChange: function(contents, $editable) {
-				updatePreview();
-			},
-			onInit: function() {
-				updatePreview();
+	// Initialize Quill editor
+	window.quill = new Quill('#content', {
+		theme: 'snow',
+		modules: {
+			toolbar: {
+				container: [
+					[{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+					['bold', 'italic', 'underline', 'strike'],
+					[{ 'color': [] }, { 'background': [] }],
+					[{ 'script': 'sub'}, { 'script': 'super' }],
+					[{ 'list': 'ordered'}, { 'list': 'bullet' }],
+					[{ 'indent': '-1'}, { 'indent': '+1' }],
+					[{ 'align': [] }],
+					['blockquote', 'code-block'],
+					['link', 'image', 'video'],
+					['clean']
+				],
+				handlers: {
+					'image': function() {
+						var url = prompt('Enter image URL:');
+						if (url) {
+							var range = window.quill.getSelection();
+							window.quill.insertEmbed(range.index, 'image', url);
+						}
+					}
+				}
+			}
+		},
+		placeholder: 'Enter content here...'
+	});
+
+	// Handle image paste
+	window.quill.root.addEventListener('paste', function(e) {
+		var clipboardData = e.clipboardData;
+		if (clipboardData && clipboardData.items && clipboardData.items.length) {
+			var item = clipboardData.items[0];
+			if (item.type.indexOf('image') !== -1) {
+				e.preventDefault();
+				var file = item.getAsFile();
+				var reader = new FileReader();
+				reader.onload = function(e) {
+					var range = window.quill.getSelection();
+					window.quill.insertEmbed(range.index, 'image', e.target.result);
+				};
+				reader.readAsDataURL(file);
 			}
 		}
+	});
+
+	// Sync Quill content with hidden textarea for form submission
+	window.quill.on('text-change', function() {
+		var content = window.quill.root.innerHTML;
+		$('#content-textarea').val(content);
+		updatePreview();
+	});
+
+	// Initialize with existing content if any
+	var existingContent = $('#content-textarea').val();
+	if (existingContent) {
+		window.quill.root.innerHTML = existingContent;
+	}
+
+	// Update textarea before form submission
+	$('#banner-form').on('submit', function() {
+		$('#content-textarea').val(window.quill.root.innerHTML);
 	});
 
 	// Position mapping function
@@ -640,7 +685,12 @@ $(document).ready(function() {
 		}
 
 		// Update content
-		let content = $('#content').summernote('code');
+		let content = '';
+		if (typeof window.quill !== 'undefined' && window.quill) {
+			content = window.quill.root.innerHTML;
+		} else {
+			content = $('#content-textarea').val();
+		}
 		if (content && content.trim() !== '' && content.trim() !== '<p><br></p>') {
 			$('#preview-html-content').html(content).show().css('color',
 				textColor);
