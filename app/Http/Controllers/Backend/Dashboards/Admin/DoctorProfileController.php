@@ -107,6 +107,36 @@ class DoctorProfileController extends Controller
         }
     }
 
+    public function trash()
+    {
+        abort_if(!hasPermission('view trash doctor profiles'), 403, __('You are not authorized to view trash'));
+        return view('backend.dashboards.admin.pages.doctor-profiles.trash');
+    }
+
+    public function trashData()
+    {
+        abort_if(!hasPermission('view trash doctor profiles'), 403, __('You are not authorized to view trash'));
+        return $this->profileRepo->trashData();
+    }
+
+    public function destroy($id)
+    {
+        abort_if(!hasPermission('delete doctor profile'), 403, __('You are not authorized to delete'));
+        return $this->profileRepo->destroy($id);
+    }
+
+    public function restore($id)
+    {
+        abort_if(!hasPermission('restore doctor profile'), 403, __('You are not authorized to restore'));
+        return $this->profileRepo->restore($id);
+    }
+
+    public function forceDelete($id)
+    {
+        abort_if(!hasPermission('force delete doctor profile'), 403, __('You are not authorized to force delete'));
+        return $this->profileRepo->forceDelete($id);
+    }
+
     private function jsonResponse(string $status, string $message)
     {
         if (request()->ajax()) {

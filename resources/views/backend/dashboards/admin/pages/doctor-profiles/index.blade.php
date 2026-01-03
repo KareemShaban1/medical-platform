@@ -7,8 +7,7 @@
 			<div class="page-title-box">
 				<div class="page-title-right">
 					@hasPermission('view doctor profiles')
-					<a href="{{ route('admin.doctor-profiles.pending') }}"
-						class="btn btn-warning me-2">
+					<a href="{{ route('admin.doctor-profiles.pending') }}" class="btn btn-warning me-2">
 						<i class="mdi mdi-clock-outline"></i>
 						{{ __('Pending Reviews') }}
 					</a>
@@ -53,18 +52,15 @@
 		<div class="modal-content">
 			<div class="modal-header">
 				<h5 class="modal-title" id="rejectModalLabel">{{ __('Reject Profile') }}</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal"
-					aria-label="Close"></button>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
 			<form id="rejectForm">
 				<div class="modal-body">
 					<input type="hidden" id="rejectProfileId">
 					<div class="mb-3">
-						<label for="rejection_reason"
-							class="form-label">{{ __('Rejection Reason') }}
+						<label for="rejection_reason" class="form-label">{{ __('Rejection Reason') }}
 							<span class="text-danger">*</span></label>
-						<textarea class="form-control" id="rejection_reason"
-							name="rejection_reason" rows="4" required
+						<textarea class="form-control" id="rejection_reason" name="rejection_reason" rows="4" required
 							maxlength="1000"></textarea>
 						<div class="invalid-feedback"></div>
 						<small
@@ -72,10 +68,8 @@
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-light"
-						data-bs-dismiss="modal">{{ __('Cancel') }}</button>
-					<button type="submit"
-						class="btn btn-danger">{{ __('Reject Profile') }}</button>
+					<button type="button" class="btn btn-light" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
+					<button type="submit" class="btn btn-danger">{{ __('Reject Profile') }}</button>
 				</div>
 			</form>
 		</div>
@@ -84,301 +78,344 @@
 @endsection
 
 @push('scripts')
-<script>
-let table = $('#profiles-table').DataTable({
-	ajax: '{{ route("admin.doctor-profiles.data") }}',
-	columns: [{
-			data: 'id',
-			name: 'id'
-		},
-		{
-			data: 'profile_photo',
-			name: 'profile_photo',
-			orderable: false,
-			searchable: false
-		},
-		{
-			data: 'doctor_name',
-			name: 'name'
-		},
-		{
-			data: 'clinic_user',
-			name: 'clinicUser.name'
-		},
-		{
-			data: 'email',
-			name: 'email'
-		},
-		{
-			data: 'status',
-			name: 'status'
-		},
-		{
-			data: 'is_featured',
-			name: 'is_featured',
-			orderable: false,
-			searchable: false
-		},
-		{
-			data: 'lock_status',
-			name: 'locked_for_edit',
-			orderable: false,
-			searchable: false
-		},
-		{
-			data: 'reviewed_by',
-			name: 'reviewer.name'
-		},
-		{
-			data: 'created_at',
-			name: 'created_at'
-		},
-		{
-			data: 'action',
-			name: 'action',
-			orderable: false,
-			searchable: false
-		}
-	],
-	order: [
-		[0, 'desc']
-	],
-	dom: '<"d-flex justify-content-between align-items-center mb-3"lfB>rtip',
-	pageLength: 10,
-	responsive: true,
-	language: languages[language],
-	buttons: [{
-			extend: 'print',
-			exportOptions: {
-				columns: [0, 2, 3, 4, 5, 6, 7, 9]
+	<script>
+		let table = $('#profiles-table').DataTable({
+			ajax: '{{ route("admin.doctor-profiles.data") }}',
+			columns: [{
+				data: 'id',
+				name: 'id'
+			},
+			{
+				data: 'profile_photo',
+				name: 'profile_photo',
+				orderable: false,
+				searchable: false
+			},
+			{
+				data: 'doctor_name',
+				name: 'name'
+			},
+			{
+				data: 'clinic_user',
+				name: 'clinicUser.name'
+			},
+			{
+				data: 'email',
+				name: 'email'
+			},
+			{
+				data: 'status',
+				name: 'status'
+			},
+			{
+				data: 'is_featured',
+				name: 'is_featured',
+				orderable: false,
+				searchable: false
+			},
+			{
+				data: 'lock_status',
+				name: 'locked_for_edit',
+				orderable: false,
+				searchable: false
+			},
+			{
+				data: 'reviewed_by',
+				name: 'reviewer.name'
+			},
+			{
+				data: 'created_at',
+				name: 'created_at'
+			},
+			{
+				data: 'action',
+				name: 'action',
+				orderable: false,
+				searchable: false
 			}
-		},
-		{
-			extend: 'excel',
-			text: 'Excel',
-			title: 'Doctor Profiles Data',
-			exportOptions: {
-				columns: [0, 2, 3, 4, 5, 6, 7, 9]
-			}
-		},
-		{
-			extend: 'copy',
-			exportOptions: {
-				columns: [0, 2, 3, 4, 5, 6, 7, 9]
-			}
-		}
-	],
-	drawCallback: function() {
-		$('.dataTables_paginate > .pagination').addClass(
-			'pagination-rounded');
-	}
-});
-
-// Approve profile
-function approveProfile(id) {
-	Swal.fire({
-		title: 'Approve Profile?',
-		text: "This will approve the doctor's profile and make it publicly visible.",
-		icon: 'question',
-		showCancelButton: true,
-		confirmButtonColor: '#28a745',
-		cancelButtonColor: '#d33',
-		confirmButtonText: 'Yes, approve it!'
-	}).then((result) => {
-		if (result.isConfirmed) {
-			$.ajax({
-				url: '{{ route("admin.doctor-profiles.approve", ":id") }}'
-					.replace(':id', id),
-				method: 'POST',
-				headers: {
-					'X-CSRF-TOKEN': $(
-							'meta[name="csrf-token"]'
-						)
-						.attr('content')
-				},
-				success: function(response) {
-					table.ajax.reload();
-					Swal.fire('Approved!',
-						response
-						.message,
-						'success'
-					);
-				},
-				error: function(xhr) {
-					Swal.fire('Error!', xhr
-						.responseJSON
-						?.message ||
-						'Something went wrong',
-						'error'
-					);
+			],
+			order: [
+				[0, 'desc']
+			],
+			dom: '<"d-flex justify-content-between align-items-center mb-3"lfB>rtip',
+			pageLength: 10,
+			responsive: true,
+			language: languages[language],
+			buttons: [{
+				extend: 'print',
+				exportOptions: {
+					columns: [0, 2, 3, 4, 5, 6, 7, 9]
 				}
-			});
-		}
-	});
-}
+			},
+			{
+				extend: 'excel',
+				text: 'Excel',
+				title: 'Doctor Profiles Data',
+				exportOptions: {
+					columns: [0, 2, 3, 4, 5, 6, 7, 9]
+				}
+			},
+			{
+				extend: 'copy',
+				exportOptions: {
+					columns: [0, 2, 3, 4, 5, 6, 7, 9]
+				}
+			}
+			],
+			drawCallback: function () {
+				$('.dataTables_paginate > .pagination').addClass(
+					'pagination-rounded');
+			}
+		});
 
-// Reject profile - show modal
-function rejectProfile(id) {
-	$('#rejectProfileId').val(id);
-	$('#rejection_reason').val('');
-	$('.is-invalid').removeClass('is-invalid');
-	$('.invalid-feedback').text('');
-	$('#rejectModal').modal('show');
-}
-
-// Handle reject form submission
-$('#rejectForm').on('submit', function(e) {
-	e.preventDefault();
-
-	let profileId = $('#rejectProfileId').val();
-	let reason = $('#rejection_reason').val();
-
-	$.ajax({
-		url: '{{ route("admin.doctor-profiles.reject", ":id") }}'
-			.replace(':id', profileId),
-		method: 'POST',
-		data: {
-			rejection_reason: reason,
-			_token: $('meta[name="csrf-token"]').attr(
-				'content')
-		},
-		success: function(response) {
-			$('#rejectModal').modal('hide');
-			table.ajax.reload();
-			Swal.fire('Rejected!', response.message,
-				'success');
-		},
-		error: function(xhr) {
-			if (xhr.status === 422) {
-				let errors = xhr.responseJSON
-					.errors || {};
-				$('.is-invalid').removeClass(
-					'is-invalid'
-				);
-				$('.invalid-feedback').text(
-					'');
-
-				Object.keys(errors).forEach(
-					function(
-						key
-					) {
-						let $input =
-							$('#' +
-								key
+		// Approve profile
+		function approveProfile(id) {
+			Swal.fire({
+				title: 'Approve Profile?',
+				text: "This will approve the doctor's profile and make it publicly visible.",
+				icon: 'question',
+				showCancelButton: true,
+				confirmButtonColor: '#28a745',
+				cancelButtonColor: '#d33',
+				confirmButtonText: 'Yes, approve it!'
+			}).then((result) => {
+				if (result.isConfirmed) {
+					$.ajax({
+						url: '{{ route("admin.doctor-profiles.approve", ":id") }}'
+							.replace(':id', id),
+						method: 'POST',
+						headers: {
+							'X-CSRF-TOKEN': $(
+								'meta[name="csrf-token"]'
+							)
+								.attr('content')
+						},
+						success: function (response) {
+							table.ajax.reload();
+							Swal.fire('Approved!',
+								response
+									.message,
+								'success'
 							);
-						if ($input
-							.length
-						) {
-							$input.addClass(
-								'is-invalid'
+						},
+						error: function (xhr) {
+							Swal.fire('Error!', xhr
+								.responseJSON
+								?.message ||
+								'Something went wrong',
+								'error'
 							);
-							$input.next(
-									'.invalid-feedback'
-								)
-								.text(errors[
-										key
-									]
-									[
-										0
-									]
-								);
 						}
 					});
-			} else {
-				Swal.fire('Error!', xhr
-					.responseJSON
-					?.message ||
-					'Something went wrong',
-					'error');
-			}
-		}
-	});
-});
-
-// Toggle featured status
-function toggleFeatured(id) {
-	Swal.fire({
-		title: 'Toggle Featured Status?',
-		text: "This will change the featured status of the doctor's profile.",
-		icon: 'question',
-		showCancelButton: true,
-		confirmButtonColor: '#ffc107',
-		cancelButtonColor: '#d33',
-		confirmButtonText: 'Yes, toggle it!'
-	}).then((result) => {
-		if (result.isConfirmed) {
-			$.ajax({
-				url: '{{ route("admin.doctor-profiles.toggle-featured", ":id") }}'
-					.replace(':id', id),
-				method: 'POST',
-				headers: {
-					'X-CSRF-TOKEN': $(
-							'meta[name="csrf-token"]'
-						)
-						.attr('content')
-				},
-				success: function(response) {
-					table.ajax.reload();
-					Swal.fire('Success!',
-						response
-						.message,
-						'success'
-					);
-				},
-				error: function(xhr) {
-					Swal.fire('Error!', xhr
-						.responseJSON
-						?.message ||
-						'Something went wrong',
-						'error'
-					);
 				}
 			});
 		}
-	});
-}
 
-// Toggle lock for edit status
-function toggleLockForEdit(id) {
-	Swal.fire({
-		title: 'Toggle Lock Status?',
-		text: "This will change the lock status for editing the doctor's profile.",
-		icon: 'question',
-		showCancelButton: true,
-		confirmButtonColor: '#3085d6',
-		cancelButtonColor: '#d33',
-		confirmButtonText: 'Yes, toggle it!'
-	}).then((result) => {
-		if (result.isConfirmed) {
+		// Reject profile - show modal
+		function rejectProfile(id) {
+			$('#rejectProfileId').val(id);
+			$('#rejection_reason').val('');
+			$('.is-invalid').removeClass('is-invalid');
+			$('.invalid-feedback').text('');
+			$('#rejectModal').modal('show');
+		}
+
+		// Handle reject form submission
+		$('#rejectForm').on('submit', function (e) {
+			e.preventDefault();
+
+			let profileId = $('#rejectProfileId').val();
+			let reason = $('#rejection_reason').val();
+
 			$.ajax({
-				url: '{{ route("admin.doctor-profiles.toggle-lock", ":id") }}'
-					.replace(':id', id),
+				url: '{{ route("admin.doctor-profiles.reject", ":id") }}'
+					.replace(':id', profileId),
 				method: 'POST',
-				headers: {
-					'X-CSRF-TOKEN': $(
-							'meta[name="csrf-token"]'
-						)
-						.attr('content')
+				data: {
+					rejection_reason: reason,
+					_token: $('meta[name="csrf-token"]').attr(
+						'content')
 				},
-				success: function(response) {
+				success: function (response) {
+					$('#rejectModal').modal('hide');
 					table.ajax.reload();
-					Swal.fire('Success!',
-						response
-						.message,
-						'success'
-					);
+					Swal.fire('Rejected!', response.message,
+						'success');
 				},
-				error: function(xhr) {
-					Swal.fire('Error!', xhr
-						.responseJSON
-						?.message ||
-						'Something went wrong',
-						'error'
-					);
+				error: function (xhr) {
+					if (xhr.status === 422) {
+						let errors = xhr.responseJSON
+							.errors || {};
+						$('.is-invalid').removeClass(
+							'is-invalid'
+						);
+						$('.invalid-feedback').text(
+							'');
+
+						Object.keys(errors).forEach(
+							function (
+								key
+							) {
+								let $input =
+									$('#' +
+										key
+									);
+								if ($input
+									.length
+								) {
+									$input.addClass(
+										'is-invalid'
+									);
+									$input.next(
+										'.invalid-feedback'
+									)
+										.text(errors[
+											key
+										]
+										[
+											0
+										]
+										);
+								}
+							});
+					} else {
+						Swal.fire('Error!', xhr
+							.responseJSON
+							?.message ||
+							'Something went wrong',
+							'error');
+					}
+				}
+			});
+		});
+
+		// Toggle featured status
+		function toggleFeatured(id) {
+			Swal.fire({
+				title: 'Toggle Featured Status?',
+				text: "This will change the featured status of the doctor's profile.",
+				icon: 'question',
+				showCancelButton: true,
+				confirmButtonColor: '#ffc107',
+				cancelButtonColor: '#d33',
+				confirmButtonText: 'Yes, toggle it!'
+			}).then((result) => {
+				if (result.isConfirmed) {
+					$.ajax({
+						url: '{{ route("admin.doctor-profiles.toggle-featured", ":id") }}'
+							.replace(':id', id),
+						method: 'POST',
+						headers: {
+							'X-CSRF-TOKEN': $(
+								'meta[name="csrf-token"]'
+							)
+								.attr('content')
+						},
+						success: function (response) {
+							table.ajax.reload();
+							Swal.fire('Success!',
+								response
+									.message,
+								'success'
+							);
+						},
+						error: function (xhr) {
+							Swal.fire('Error!', xhr
+								.responseJSON
+								?.message ||
+								'Something went wrong',
+								'error'
+							);
+						}
+					});
 				}
 			});
 		}
-	});
-}
-</script>
+
+		// Toggle lock for edit status
+		function toggleLockForEdit(id) {
+			Swal.fire({
+				title: 'Toggle Lock Status?',
+				text: "This will change the lock status for editing the doctor's profile.",
+				icon: 'question',
+				showCancelButton: true,
+				confirmButtonColor: '#3085d6',
+				cancelButtonColor: '#d33',
+				confirmButtonText: 'Yes, toggle it!'
+			}).then((result) => {
+				if (result.isConfirmed) {
+					$.ajax({
+						url: '{{ route("admin.doctor-profiles.toggle-lock", ":id") }}'
+							.replace(':id', id),
+						method: 'POST',
+						headers: {
+							'X-CSRF-TOKEN': $(
+								'meta[name="csrf-token"]'
+							)
+								.attr('content')
+						},
+						success: function (response) {
+							table.ajax.reload();
+							Swal.fire('Success!',
+								response
+									.message,
+								'success'
+							);
+						},
+						error: function (xhr) {
+							Swal.fire('Error!', xhr
+								.responseJSON
+								?.message ||
+								'Something went wrong',
+								'error'
+							);
+						}
+					});
+				}
+			});
+		}
+
+		// Delete profile (soft delete)
+		function deleteProfile(id) {
+			Swal.fire({
+				title: 'Delete Profile?',
+				text: "This will soft delete the doctor's profile. You can restore it later from trash.",
+				icon: 'warning',
+				showCancelButton: true,
+				confirmButtonColor: '#dc3545',
+				cancelButtonColor: '#6c757d',
+				confirmButtonText: 'Yes, delete it!'
+			}).then((result) => {
+				if (result.isConfirmed) {
+					$.ajax({
+						url: '{{ route("admin.doctor-profiles.destroy", ":id") }}'
+							.replace(':id', id),
+						method: 'DELETE',
+						headers: {
+							'X-CSRF-TOKEN': $(
+								'meta[name="csrf-token"]'
+							)
+								.attr('content')
+						},
+						success: function (response) {
+							table.ajax.reload();
+							Swal.fire('Deleted!',
+								response
+									.message,
+								'success'
+							);
+						},
+						error: function (xhr) {
+							Swal.fire('Error!', xhr
+								.responseJSON
+								?.message ||
+								'Something went wrong',
+								'error'
+							);
+						}
+					});
+				}
+			});
+		}
+	</script>
 @endpush

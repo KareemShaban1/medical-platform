@@ -235,6 +235,37 @@ class UsersManagementController extends Controller
         return $this->repo->forceDeleteSupplierUser($id);
     }
 
+    // Clinic Users Trash
+    public function clinicUsersTrash()
+    {
+        abort_if(!hasPermission('view trash users'), 403, __('You are not authorized to view trash'));
+        return view('backend.dashboards.admin.pages.users-management.clinic-users-trash');
+    }
+
+    public function clinicUsersTrashData()
+    {
+        abort_if(!hasPermission('view trash users'), 403, __('You are not authorized to view trash'));
+        return $this->repo->getClinicUsersTrashData();
+    }
+
+    public function destroyClinicUser($id)
+    {
+        abort_if(!hasPermission('delete user'), 403, __('You are not authorized to delete'));
+        return $this->repo->destroyClinicUser($id);
+    }
+
+    public function restoreClinicUser($id)
+    {
+        abort_if(!hasPermission('restore user'), 403, __('You are not authorized to restore'));
+        return $this->repo->restoreClinicUser($id);
+    }
+
+    public function forceDeleteClinicUser($id)
+    {
+        abort_if(!hasPermission('force delete user'), 403, __('You are not authorized to force delete'));
+        return $this->repo->forceDeleteClinicUser($id);
+    }
+
     // Password Management
     public function changePassword(\Illuminate\Http\Request $request)
     {

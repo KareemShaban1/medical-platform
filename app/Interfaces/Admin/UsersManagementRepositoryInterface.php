@@ -27,4 +27,10 @@ interface UsersManagementRepositoryInterface
     public function destroyPatient($id);
     public function restorePatient($id);
     public function forceDeletePatient($id);
+
+    // Clinic Users Trash
+    public function getClinicUsersTrashData();
+    public function destroyClinicUser($id);
+    public function restoreClinicUser($id);
+    public function forceDeleteClinicUser($id);
 }

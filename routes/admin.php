@@ -62,6 +62,12 @@ Route::group(
             Route::get('/clinic-users/data', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'clinicUsersData'])->name('clinic-users.data');
             Route::get('/clinic-users/{id}/details', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'clinicUserDetails'])->name('clinic-user-details');
 
+            Route::get('/clinic-users/trash', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'clinicUsersTrash'])->name('clinic-users.trash');
+            Route::get('/clinic-users/trash/data', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'clinicUsersTrashData'])->name('clinic-users.trash.data');
+            Route::post('/clinic-users/{id}/restore', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'restoreClinicUser'])->name('clinic-users.restore');
+            Route::delete('/clinic-users/{id}/force-delete', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'forceDeleteClinicUser'])->name('clinic-users.force-delete');
+            Route::delete('/clinic-users/{id}', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'destroyClinicUser'])->name('clinic-users.destroy');
+
             Route::get('/patients', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'patients'])->name('patients');
             Route::get('/patients/data', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'patientsData'])->name('patients.data');
             Route::get('/patients/{id}/details', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'patientDetails'])->name('patient-details');
@@ -182,6 +188,11 @@ Route::group(
             Route::post('/reject/{id}', [\App\Http\Controllers\Backend\Dashboards\Admin\DoctorProfileController::class, 'reject'])->name('doctor-profiles.reject');
             Route::post('/toggle-featured/{id}', [\App\Http\Controllers\Backend\Dashboards\Admin\DoctorProfileController::class, 'toggleFeatured'])->name('doctor-profiles.toggle-featured');
             Route::post('/toggle-lock/{id}', [\App\Http\Controllers\Backend\Dashboards\Admin\DoctorProfileController::class, 'toggleLockForEdit'])->name('doctor-profiles.toggle-lock');
+            Route::get('/trash', [\App\Http\Controllers\Backend\Dashboards\Admin\DoctorProfileController::class, 'trash'])->name('doctor-profiles.trash');
+            Route::get('/trash/data', [\App\Http\Controllers\Backend\Dashboards\Admin\DoctorProfileController::class, 'trashData'])->name('doctor-profiles.trash.data');
+            Route::post('/{id}/restore', [\App\Http\Controllers\Backend\Dashboards\Admin\DoctorProfileController::class, 'restore'])->name('doctor-profiles.restore');
+            Route::delete('/{id}/force-delete', [\App\Http\Controllers\Backend\Dashboards\Admin\DoctorProfileController::class, 'forceDelete'])->name('doctor-profiles.force-delete');
+            Route::delete('/{id}', [\App\Http\Controllers\Backend\Dashboards\Admin\DoctorProfileController::class, 'destroy'])->name('doctor-profiles.destroy');
             Route::get('/', [\App\Http\Controllers\Backend\Dashboards\Admin\DoctorProfileController::class, 'index'])->name('doctor-profiles.index');
             Route::get('/{id}', [\App\Http\Controllers\Backend\Dashboards\Admin\DoctorProfileController::class, 'show'])->name('doctor-profiles.show');
         });

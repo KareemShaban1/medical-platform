@@ -12,4 +12,8 @@ interface DoctorProfileRepositoryInterface
     public function reject($id, $reason);
     public function toggleFeatured($id);
     public function toggleLockForEdit($id);
+    public function trashData();
+    public function destroy($id);
+    public function restore($id);
+    public function forceDelete($id);
 }

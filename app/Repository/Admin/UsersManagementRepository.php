@@ -103,7 +103,12 @@ class UsersManagementRepository implements UsersManagementRepositoryInterface
                 : '<span class="badge bg-secondary">Inactive</span>')
             ->addColumn('action', function ($item) {
                 $viewUrl = route('admin.users-management.clinic-user-details', $item->id);
-                return '<a href="' . $viewUrl . '" class="btn btn-sm btn-info" title="View Details"><i class="fa fa-eye"></i> Details</a>';
+                return <<<HTML
+                <div class="d-flex gap-2">
+                    <a href="{$viewUrl}" class="btn btn-sm btn-info" title="View Details"><i class="fa fa-eye"></i></a>
+                    <button onclick="deleteClinicUser({$item->id})" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>
+                </div>
+                HTML;
             })
             ->rawColumns(['role', 'status', 'action'])
             ->make(true);
@@ -387,5 +392,51 @@ class UsersManagementRepository implements UsersManagementRepositoryInterface
         $patient->forceDelete();
 
         return response()->json(['status' => 'success', 'message' => __('Patient permanently deleted')]);
+    }
+
+    // Clinic Users Trash Methods
+    public function getClinicUsersTrashData()
+    {
+        $clinicUsers = ClinicUser::onlyTrashed()->with(['clinic'])->get();
+
+        return datatables()->of($clinicUsers)
+            ->addColumn('name', fn($item) => $item->name)
+            ->addColumn('email', fn($item) => $item->email)
+            ->addColumn('phone', fn($item) => $item->phone ?? 'N/A')
+            ->addColumn('clinic_name', fn($item) => $item->clinic ? $item->clinic->name : 'N/A')
+            ->addColumn('action', function ($item) {
+                return <<<HTML
+                <div class="d-flex gap-2">
+                    <button onclick="restore({$item->id})" class="btn btn-sm btn-info" title="Restore"><i class="fa fa-undo"></i></button>
+                    <button onclick="forceDelete({$item->id})" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>
+                </div>
+                HTML;
+            })
+            ->rawColumns(['action'])
+            ->make(true);
+    }
+
+    public function destroyClinicUser($id)
+    {
+        $clinicUser = ClinicUser::findOrFail($id);
+        $clinicUser->delete();
+
+        return response()->json(['status' => 'success', 'message' => __('Clinic user deleted successfully')]);
+    }
+
+    public function restoreClinicUser($id)
+    {
+        $clinicUser = ClinicUser::onlyTrashed()->findOrFail($id);
+        $clinicUser->restore();
+
+        return response()->json(['status' => 'success', 'message' => __('Clinic user restored successfully')]);
+    }
+
+    public function forceDeleteClinicUser($id)
+    {
+        $clinicUser = ClinicUser::onlyTrashed()->findOrFail($id);
+        $clinicUser->forceDelete();
+
+        return response()->json(['status' => 'success', 'message' => __('Clinic user permanently deleted')]);
     }
 }

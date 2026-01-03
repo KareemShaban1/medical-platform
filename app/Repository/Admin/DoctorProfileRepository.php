@@ -17,7 +17,7 @@ class DoctorProfileRepository implements DoctorProfileRepositoryInterface
 
     public function data()
     {
-        $profiles = DoctorProfile::with(['clinicUser', 'reviewer', 'featuredBy','speciality']);
+        $profiles = DoctorProfile::with(['clinicUser', 'reviewer', 'featuredBy', 'speciality']);
 
         return datatables()->of($profiles)
             ->addColumn('profile_photo', fn($item) => $this->profilePhoto($item))
@@ -34,7 +34,7 @@ class DoctorProfileRepository implements DoctorProfileRepositoryInterface
 
     public function pendingData()
     {
-        $profiles = DoctorProfile::with(['clinicUser','speciality'])
+        $profiles = DoctorProfile::with(['clinicUser', 'speciality'])
             ->pending();
 
         return datatables()->of($profiles)
@@ -50,7 +50,7 @@ class DoctorProfileRepository implements DoctorProfileRepositoryInterface
 
     public function show($id)
     {
-        return DoctorProfile::with(['clinicUser', 'reviewer', 'featuredBy','speciality'])->findOrFail($id);
+        return DoctorProfile::with(['clinicUser', 'reviewer', 'featuredBy', 'speciality'])->findOrFail($id);
     }
 
     public function approve($id)
@@ -181,6 +181,8 @@ class DoctorProfileRepository implements DoctorProfileRepositoryInterface
             $actions .= '<button onclick="rejectProfile(' . $item->id . ')" class="btn btn-sm btn-danger" title="Reject"><i class="fa fa-times"></i></button>';
         }
 
+        $actions .= '<button onclick="deleteProfile(' . $item->id . ')" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>';
+
         $actions .= '</div>';
         return $actions;
     }
@@ -195,5 +197,51 @@ class DoctorProfileRepository implements DoctorProfileRepositoryInterface
             <button onclick="rejectProfile({$item->id})" class="btn btn-sm btn-danger" title="Reject"><i class="fa fa-times"></i></button>
         </div>
         HTML;
+    }
+
+    // Trash Methods
+    public function trashData()
+    {
+        $profiles = DoctorProfile::onlyTrashed()->with(['clinicUser', 'speciality'])->get();
+
+        return datatables()->of($profiles)
+            ->addColumn('profile_photo', fn($item) => $this->profilePhoto($item))
+            ->addColumn('doctor_name', fn($item) => $item->name)
+            ->addColumn('clinic_user', fn($item) => $item->clinicUser->name ?? 'N/A')
+            ->addColumn('speciality', fn($item) => $item->speciality->name_en ?? 'N/A')
+            ->addColumn('action', function ($item) {
+                return <<<HTML
+                <div class="d-flex gap-2">
+                    <button onclick="restore({$item->id})" class="btn btn-sm btn-info" title="Restore"><i class="fa fa-undo"></i></button>
+                    <button onclick="forceDelete({$item->id})" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>
+                </div>
+                HTML;
+            })
+            ->rawColumns(['profile_photo', 'action'])
+            ->make(true);
+    }
+
+    public function destroy($id)
+    {
+        $profile = DoctorProfile::findOrFail($id);
+        $profile->delete();
+
+        return response()->json(['status' => 'success', 'message' => __('Doctor profile deleted successfully')]);
+    }
+
+    public function restore($id)
+    {
+        $profile = DoctorProfile::onlyTrashed()->findOrFail($id);
+        $profile->restore();
+
+        return response()->json(['status' => 'success', 'message' => __('Doctor profile restored successfully')]);
+    }
+
+    public function forceDelete($id)
+    {
+        $profile = DoctorProfile::onlyTrashed()->findOrFail($id);
+        $profile->forceDelete();
+
+        return response()->json(['status' => 'success', 'message' => __('Doctor profile permanently deleted')]);
     }
 }

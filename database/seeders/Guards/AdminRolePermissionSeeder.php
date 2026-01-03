@@ -36,7 +36,7 @@ class AdminRolePermissionSeeder extends Seeder
         $permissionGroups = [
             'Dashboard' => ['view dashboard'],
             'Contact Messages' => ['view contact messages', 'view trash contact messages', 'update contact message', 'delete contact message', 'update contact message status', 'add contact message notes'],
-            'Users' => ['view users', 'view trash users', 'create user', 'update user', 'delete user', 'toggle user status', 'change user password'],
+            'Users' => ['view users', 'view trash users', 'create user', 'update user', 'delete user', 'restore user', 'force delete user', 'toggle user status', 'change user password'],
             "System Management" => ['view system management', 'view system clinics', 'view system clinic users', 'view system doctor profiles', 'view system suppliers', 'view system supplier users'],
             'Clinic Management' => ['view clinics', 'view trash clinics', 'view clinic users', 'view clinic doctor profiles', 'create clinic', 'update clinic', 'delete clinic', 'approve clinic', 'reject clinic', 'toggle clinic status', 'toggle clinic allowed'],
             'Specialities' => ['view specialities', 'view trash specialities', 'create speciality', 'update speciality', 'delete speciality', 'restore speciality', 'force delete speciality'],
@@ -111,7 +111,7 @@ class AdminRolePermissionSeeder extends Seeder
                 'update affiliate payouts',
                 'view affiliate users',
             ],
-            'Doctor Profiles' => ['view doctor profiles', 'approve doctor profile', 'reject doctor profile', 'toggle featured doctor profile', 'toggle lock doctor profile'],
+            'Doctor Profiles' => ['view doctor profiles', 'view trash doctor profiles', 'delete doctor profile', 'restore doctor profile', 'force delete doctor profile', 'approve doctor profile', 'reject doctor profile', 'toggle featured doctor profile', 'toggle lock doctor profile'],
             'Notifications' => ['view notifications', 'view trash notifications', 'mark notification as read', 'mark all notifications as read'],
             'Supplier Products' => ['view supplier products', 'view trash supplier products', 'approve supplier product', 'reject supplier product', 'delete supplier product', 'restore supplier product', 'force delete supplier product', 'toggle supplier product status', 'toggle supplier product allowed'],
         ];

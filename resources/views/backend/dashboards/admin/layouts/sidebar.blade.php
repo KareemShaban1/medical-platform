@@ -86,6 +86,13 @@
                             </a>
                         </li>
                         @endhasPermission
+                        @hasPermission('view trash users')
+                        <li>
+                            <a href="{{ route('admin.users-management.clinic-users.trash') }}">
+                                <span> {{ __('Trash Clinic Users') }} </span>
+                            </a>
+                        </li>
+                        @endhasPermission
                         {{-- @hasPermission('view system doctor profiles')
                         <li>
                             <a href="{{ route('admin.users-management.doctor-profiles') }}">
@@ -109,6 +116,14 @@
                             <a href="{{ route('admin.doctor-profiles.index') }}">
                                 <span> {{ __('Doctor Profiles') }}
                                 </span>
+                            </a>
+                        </li>
+                        @endhasPermission
+
+                        @hasPermission('view trash doctor profiles')
+                        <li>
+                            <a href="{{ route('admin.doctor-profiles.trash') }}">
+                                <span> {{ __('Trash Doctor Profiles') }} </span>
                             </a>
                         </li>
                         @endhasPermission
