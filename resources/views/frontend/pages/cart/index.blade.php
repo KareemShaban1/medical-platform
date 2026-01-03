@@ -45,7 +45,7 @@
 								Supplier:
 								{{ $item->supplier->name ?? 'N/A' }}</p>
 							<p class="text-sm font-medium text-gray-900 mt-1">
-								{{ __('EGP') }} {{ number_format($item->price, 2) }}
+								{{ number_format($item->price, 2) }} {{ __('EGP') }} 
 							</p>
 						</div>
 
@@ -68,7 +68,7 @@
 						<div class="text-right min-w-[100px]">
 							<p
 								class="text-lg font-bold text-gray-900 item-total">
-								{{ __('EGP') }} {{ number_format($item->total, 2) }}
+								 {{ number_format($item->total, 2) }} {{ __('EGP') }}
 							</p>
 						</div>
 
@@ -101,12 +101,12 @@
 					<div class="flex justify-between text-gray-700">
 						<span>{{ __('subtotal') }}:</span>
 						<span
-							id="cart-subtotal">{{ __('EGP') }} {{ number_format($cart->subtotal, 2) }}</span>
+							id="cart-subtotal"> {{ number_format($cart->subtotal, 2) }} {{ __('EGP') }}</span>
 					</div>
 					<div class="flex justify-between text-gray-700">
 						<span>{{ __('shipping') }}:</span>
 						<span
-							id="cart-shipping">{{ __('EGP') }} {{ number_format($cart->shipping, 2) }}</span>
+							id="cart-shipping"> {{ number_format($cart->shipping, 2) }} {{ __('EGP') }}</span>
 					</div>
 					{{-- <div class="flex justify-between text-gray-700">
 						<span>{{ __('tax') }}:</span>
@@ -116,13 +116,13 @@
 					<div class="flex justify-between text-gray-700">
 						<span>{{ __('discount') }}:</span>
 						<span
-							id="cart-discount">-{{ __('EGP') }} {{ number_format($cart->discount, 2) }}</span>
+							id="cart-discount">{{ number_format($cart->discount, 2) }} {{ __('EGP') }} </span>
 					</div>
 					<div
 						class="border-t border-gray-300 pt-3 flex justify-between text-xl font-bold text-gray-900">
 						<span>{{ __('total') }}:</span>
 						<span
-							id="cart-total">{{ __('EGP') }} {{ number_format($cart->total, 2) }}</span>
+							id="cart-total"> {{ number_format($cart->total, 2) }} {{ __('EGP') }}</span>
 					</div>
 				</div>
 

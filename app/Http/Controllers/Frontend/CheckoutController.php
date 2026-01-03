@@ -53,6 +53,13 @@ class CheckoutController extends Controller
             'payment_gateway' => 'required|string|in:'.implode(',', PaymentGateway::values()),
             'pay_method' => 'nullable|string|in:card,wallet',
             'wallet_phone' => 'nullable|string',
+            'shipping_address' => 'required|string|min:10|max:500',
+            'phone' => 'required|string|regex:/^01[0-2,5]{1}[0-9]{8}$/',
+        ], [
+            'shipping_address.required' => 'Shipping address is required',
+            'shipping_address.min' => 'Shipping address must be at least 10 characters',
+            'phone.required' => 'Phone number is required',
+            'phone.regex' => 'Phone number must be a valid Egyptian mobile number (e.g., 01XXXXXXXXX)',
         ]);
 
         try {
@@ -129,10 +136,10 @@ class CheckoutController extends Controller
                         'first_name' => $firstName,
                         'last_name' => $lastName,
                         'email' => $user->email ?? 'customer@example.com',
-                        'phone' => $user->phone ?? '01000000000',
+                        'phone' => $request->phone ?? $user->phone ?? '01000000000',
                         'city' => 'Cairo',
                         'country' => 'EG',
-                        'street' => $user->clinic->address ?? 'NA',
+                        'street' => $request->shipping_address ?? $user->clinic->address ?? 'NA',
                         'building' => 'NA',
                         'apartment' => 'NA',
                         'floor' => 'NA',
@@ -182,6 +189,8 @@ class CheckoutController extends Controller
                 'payment_method' => $gatewayName === 'cod' ? 0 : 1,
                 'payment_status' => 'pending',
                 'payment_gateway' => $gatewayName,
+                'shipping_address' => $request->shipping_address,
+                'phone' => $request->phone,
             ]);
 
             // Create order items from cart items

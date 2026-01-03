@@ -210,6 +210,14 @@
                                 <td><strong>{{ __('Date') }}:</strong></td>
                                 <td>{{ $order->created_at->format('Y-m-d H:i') }}</td>
                             </tr>
+                              <tr>
+                                <td><strong>{{ __('Shipping Address') }}:</strong></td>
+                                <td>{{ $order->shipping_address }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>{{ __('Phone') }}:</strong></td>
+                                <td>{{ $order->phone }}</td>
+                            </tr>
                         </table>
                     </div>
                 </div>

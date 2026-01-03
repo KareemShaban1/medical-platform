@@ -30,14 +30,57 @@
 							{{ $item->product->name }}</h3>
 						<p class="text-sm text-gray-600">{{ __('qty') }}:
 							{{ $item->quantity }} ×
-							{{ __('EGP') }} {{ number_format($item->price, 2) }}</p>
+							{{ number_format($item->price, 2) }}
+							{{ __('EGP') }}
+							</p>
 					</div>
 					<div class="text-right">
 						<p class="font-bold text-gray-900">
-							{{ __('EGP') }} {{ number_format($item->total, 2) }}</p>
+							{{ number_format($item->total, 2) }}
+							{{ __('EGP') }}
+							</p>
 					</div>
 				</div>
 				@endforeach
+			</div>
+
+			<!-- Shipping Information -->
+			<div class="bg-white rounded-lg shadow-md p-6 mb-6">
+				<h2 class="text-xl font-bold mb-4 text-gray-900">
+					{{ __('Shipping Information') }}</h2>
+
+				<div class="space-y-4">
+					<div>
+						<label for="shipping_address"
+							class="block text-sm font-medium text-gray-700 mb-2">
+							{{ __('Shipping Address') }} <span
+								class="text-red-500">*</span>
+						</label>
+						<textarea id="shipping_address" name="shipping_address"
+							rows="4" required
+							class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+							placeholder="{{ __('Enter your complete shipping address') }}">{{ old('shipping_address') }}</textarea>
+						<p class="text-xs text-gray-500 mt-1">
+							{{ __('Please provide your complete address including street, building, floor, and apartment number') }}
+						</p>
+					</div>
+
+					<div>
+						<label for="phone"
+							class="block text-sm font-medium text-gray-700 mb-2">
+							{{ __('Phone Number') }} <span
+								class="text-red-500">*</span>
+						</label>
+						<input type="tel" id="phone" name="phone" required
+							pattern="^01[0-2,5]{1}[0-9]{8}$"
+							class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+							placeholder="01XXXXXXXXX"
+							value="{{ old('phone') }}">
+						<p class="text-xs text-gray-500 mt-1">
+							{{ __('Enter your Egyptian mobile number (e.g., 01XXXXXXXXX)') }}
+						</p>
+					</div>
+				</div>
 			</div>
 
 			<!-- Payment Method Selection -->
@@ -112,39 +155,41 @@
 				<div class="space-y-3 mb-6">
 					<div class="flex justify-between text-gray-700">
 						<span>{{ __('subtotal') }}:</span>
-						<span>{{ __('EGP') }} {{ number_format($cart->subtotal, 2) }}</span>
+						<span>{{ number_format($cart->subtotal, 2) }} {{ __('EGP') }}
+							</span>
 					</div>
 					<div class="flex justify-between text-gray-700">
 						<span>{{ __('shipping') }}:</span>
-						<span>{{ __('EGP') }} {{ number_format($cart->shipping, 2) }}</span>
+						<span> {{ number_format($cart->shipping, 2) }} {{ __('EGP') }}
+							</span>
 					</div>
 					{{-- <div class="flex justify-between text-gray-700">
 						<span>{{ __('tax') }}:</span>
-						<span>{{ __('EGP') }} {{ number_format($cart->tax, 2) }}</span>
-					</div> --}}
-					<div class="flex justify-between text-gray-700">
-						<span>{{ __('discount') }}:</span>
-						<span>-{{ __('EGP') }} {{ number_format($cart->discount, 2) }}</span>
-					</div>
-					<div
-						class="border-t border-gray-300 pt-3 flex justify-between text-xl font-bold text-gray-900">
-						<span>{{ __('total') }}:</span>
-						<span>{{ __('EGP') }} {{ number_format($cart->total, 2) }}</span>
-					</div>
+					<span>{{ __('EGP') }} {{ number_format($cart->tax, 2) }}</span>
+				</div> --}}
+				<div class="flex justify-between text-gray-700">
+					<span>{{ __('discount') }}:</span>
+					<span> {{ number_format($cart->discount, 2) }} {{ __('EGP') }}</span>
 				</div>
-
-				<button type="button" id="place-order-btn"
-					class="w-full px-6 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 focus:ring-4 focus:ring-green-300">
-					{{ __('place order') }}
-				</button>
-
-				<a href="{{ route('cart.index') }}"
-					class="block w-full text-center px-6 py-3 mt-3 bg-gray-200 text-gray-900 font-semibold rounded-lg hover:bg-gray-300">
-					{{ __('back to cart') }}
-				</a>
+				<div
+					class="border-t border-gray-300 pt-3 flex justify-between text-xl font-bold text-gray-900">
+					<span>{{ __('total') }}:</span>
+					<span>{{ number_format($cart->total, 2) }} {{ __('EGP') }} </span>
+				</div>
 			</div>
+
+			<button type="button" id="place-order-btn"
+				class="w-full px-6 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 focus:ring-4 focus:ring-green-300">
+				{{ __('place order') }}
+			</button>
+
+			<a href="{{ route('cart.index') }}"
+				class="block w-full text-center px-6 py-3 mt-3 bg-gray-200 text-gray-900 font-semibold rounded-lg hover:bg-gray-300">
+				{{ __('back to cart') }}
+			</a>
 		</div>
 	</div>
+</div>
 </div>
 
 @push('scripts')
@@ -187,6 +232,26 @@ document.addEventListener('DOMContentLoaded', function() {
 	updatePaymobUI();
 
 	placeOrderBtn.addEventListener('click', function() {
+		// Validate shipping information
+		const shippingAddress = document.getElementById(
+			'shipping_address').value.trim();
+		const phone = document.getElementById('phone').value.trim();
+
+		if (!shippingAddress || shippingAddress.length < 10) {
+			alert(
+			'{{ __("Please enter a valid shipping address (at least 10 characters)") }}');
+			document.getElementById('shipping_address')
+			.focus();
+			return;
+		}
+
+		if (!phone || !/^01[0-2,5]{1}[0-9]{8}$/.test(phone)) {
+			alert(
+			'{{ __("Please enter a valid Egyptian mobile number (e.g., 01XXXXXXXXX)") }}');
+			document.getElementById('phone').focus();
+			return;
+		}
+
 		const paymentGateway = document.querySelector(
 				'input[name="payment_gateway"]:checked')
 			.value;
@@ -201,7 +266,7 @@ document.addEventListener('DOMContentLoaded', function() {
 					.trim();
 				if (!walletPhone) {
 					alert(
-						'Please enter wallet phone number'
+						'{{ __("Please enter wallet phone number") }}'
 					);
 					return;
 				}
@@ -220,7 +285,9 @@ document.addEventListener('DOMContentLoaded', function() {
 				body: JSON.stringify({
 					payment_gateway: paymentGateway,
 					pay_method: payMethod,
-					wallet_phone: walletPhone
+					wallet_phone: walletPhone,
+					shipping_address: shippingAddress,
+					phone: phone
 				})
 			})
 			.then(response => response.json())

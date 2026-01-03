@@ -61,19 +61,20 @@ document.addEventListener('DOMContentLoaded', function() {
 			// Add page number
 			formData.append('page', page);
 
-			// Make AJAX request
-			fetch('{{ route("products.filter") }}', {
-					method: 'POST',
-					body: formData,
+			// Build query string from FormData
+			const params = new URLSearchParams();
+			for (const [key, value] of formData.entries()) {
+				if (value) {
+					params.append(key, value);
+				}
+			}
+
+			// Make AJAX request (GET method for filtering)
+			fetch('{{ route("products.filter") }}?' + params.toString(), {
+					method: 'GET',
 					headers: {
 						'X-Requested-With': 'XMLHttpRequest',
-						'X-CSRF-TOKEN': document
-							.querySelector(
-								'meta[name="csrf-token"]'
-							)
-							.getAttribute(
-								'content'
-							)
+						'Accept': 'application/json'
 					}
 				})
 				.then(response => response.json())

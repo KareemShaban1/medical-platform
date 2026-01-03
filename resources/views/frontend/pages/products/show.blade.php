@@ -74,9 +74,9 @@
 						$paymobPercent = config('payment_gateways.paymob.fee_percent', 0);
 						$beforeWithFees = $beforeBase + $paymobFixed + ($beforeBase * ($paymobPercent / 100));
 						@endphp
-						<span class="current-price text-green-700">{{ __('EGP') }} {{ number_format($finalPrice, 2) }}</span>
+						<span class="current-price text-green-700">{{ number_format($finalPrice, 2) }} {{ __('EGP') }} </span>
 						@if($beforeWithFees > $finalPrice)
-						<span class="original-price">{{ __('EGP') }} {{ number_format($beforeWithFees, 2) }}</span>
+						<span class="original-price">  {{ number_format($beforeWithFees, 2) }} {{ __('EGP') }}</span>
 						@php
 						$discountPercentage = round((($beforeWithFees - $finalPrice) / $beforeWithFees) * 100);
 						@endphp

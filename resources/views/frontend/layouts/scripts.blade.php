@@ -139,10 +139,10 @@ document.addEventListener('DOMContentLoaded', function() {
                             </div>
                             <div class="flex-grow min-w-0">
                                 <p class="text-sm font-medium text-black truncate">${item.product_name}</p>
-                                <p class="text-xs text-gray-500">${item.quantity} × {{ __('EGP') }} ${parseFloat(item.price).toFixed(2)}</p>
+                                <p class="text-xs text-gray-500">${item.quantity} ×  ${parseFloat(item.price).toFixed(2)} {{ __('EGP') }}</p>
                             </div>
                             <div class="text-sm font-semibold text-black">
-                                {{ __('EGP') }} ${parseFloat(item.total).toFixed(2)}
+                              ${parseFloat(item.total).toFixed(2)}   {{ __('EGP') }} 
                             </div>
                         </div>
                     </li>
@@ -150,7 +150,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
 
             cartItemsList.innerHTML = itemsHTML;
-            cartSubtotal.textContent = '{{ __('EGP') }} ' + parseFloat(data.subtotal).toFixed(2);
+            cartSubtotal.textContent = parseFloat(data.subtotal).toFixed(2) + " {{ __('EGP') }} " ;
         }
     }
 });

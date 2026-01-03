@@ -38,13 +38,15 @@ Route::group(
         Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
 
         Route::get('/products', [ProductController::class, 'index'])->name('products');
-        Route::get('/products/{id}', [ProductController::class, 'show'])->name('products.show');
-        Route::post('/products/filter', [ProductController::class, 'filter'])->name('products.filter');
-        Route::get('/products/category/{categoryId}', [ProductController::class, 'category'])->name('products.category');
-        Route::get('/products/supplier/{supplierId}', [ProductController::class, 'supplier'])->name('products.supplier');
+        // Specific routes must come before the generic {id} route to avoid route conflicts
+        Route::get('/products/filter', [ProductController::class, 'filter'])->name('products.filter');
         Route::get('/products/on-sale', [ProductController::class, 'onSale'])->name('products.on-sale');
         Route::get('/products/in-stock', [ProductController::class, 'inStock'])->name('products.in-stock');
         Route::get('/products/recent', [ProductController::class, 'recent'])->name('products.recent');
+        Route::get('/products/category/{categoryId}', [ProductController::class, 'category'])->name('products.category');
+        Route::get('/products/supplier/{supplierId}', [ProductController::class, 'supplier'])->name('products.supplier');
+        // Generic route must come last
+        Route::get('/products/{id}', [ProductController::class, 'show'])->name('products.show');
 
         // Rental Spaces (Frontend)
         Route::get('/rental-spaces', [FrontendRentalSpaceController::class, 'index'])->name('rental-spaces');
@@ -74,7 +76,7 @@ Route::group(
 
         // Subscription Plans (Public)
         // Route::get('/subscriptions/plans', [\App\Http\Controllers\Frontend\SubscriptionController::class, 'plans'])->name('subscriptions.plans');
-    
+
         // Doctor Profile Routes
         Route::get('/doctors', [\App\Http\Controllers\Frontend\DoctorController::class, 'index'])->name('doctors.index');
         Route::post('/doctors/filter', [\App\Http\Controllers\Frontend\DoctorController::class, 'filter'])->name('doctors.filter');
