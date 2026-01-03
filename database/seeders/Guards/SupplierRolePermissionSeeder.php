@@ -52,6 +52,7 @@ class SupplierRolePermissionSeeder extends Seeder
             'Subscriptions' => ['view subscriptions', 'subscribe', 'cancel subscription', 'view subscription usage'],
             'Notifications' => ['view notifications', 'mark notification as read', 'mark all notifications as read'],
             'Announcements' => ['dismiss announcement'],
+            'Payouts' => ['view payouts', 'update payout profile', 'request payout'],
         ];
 
         $permissions = [];
@@ -118,6 +119,9 @@ class SupplierRolePermissionSeeder extends Seeder
                 'mark notification as read',
                 'mark all notifications as read',
                 'dismiss announcement',
+                'view payouts',
+                'update payout profile',
+                'request payout',
             ],
             'supplier-staff' => [
                 'view dashboard',

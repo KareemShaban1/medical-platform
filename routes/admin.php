@@ -138,6 +138,14 @@ Route::group(
         Route::post('carousels/update-order', [\App\Http\Controllers\Backend\Dashboards\Admin\CarouselController::class, 'updateOrder'])->name('carousels.update-order');
         Route::delete('carousels/{id}', [\App\Http\Controllers\Backend\Dashboards\Admin\CarouselController::class, 'destroy'])->name('carousels.destroy');
 
+        // Supplier Payouts
+        Route::get('supplier-payouts', [\App\Http\Controllers\Backend\Dashboards\Admin\SupplierPayoutController::class, 'index'])->name('supplier-payouts.index');
+        Route::get('supplier-payouts/data', [\App\Http\Controllers\Backend\Dashboards\Admin\SupplierPayoutController::class, 'data'])->name('supplier-payouts.data');
+        Route::get('supplier-payouts/{id}', [\App\Http\Controllers\Backend\Dashboards\Admin\SupplierPayoutController::class, 'show'])->name('supplier-payouts.show');
+        Route::post('supplier-payouts/{id}/approve', [\App\Http\Controllers\Backend\Dashboards\Admin\SupplierPayoutController::class, 'approve'])->name('supplier-payouts.approve');
+        Route::post('supplier-payouts/{id}/reject', [\App\Http\Controllers\Backend\Dashboards\Admin\SupplierPayoutController::class, 'reject'])->name('supplier-payouts.reject');
+        Route::post('supplier-payouts/{id}/mark-paid', [\App\Http\Controllers\Backend\Dashboards\Admin\SupplierPayoutController::class, 'markPaid'])->name('supplier-payouts.mark-paid');
+
         Route::get('clinics/data', [ClinicController::class, 'data'])->name('clinics.data');
         Route::get('clinics/{id}/users/data', [ClinicController::class, 'clinicUsersData'])->name('clinics.users.data');
         Route::put('clinics/{id}/update-status', [ClinicController::class, 'updateStatus'])->name('clinics.update-status');
