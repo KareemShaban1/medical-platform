@@ -17,4 +17,14 @@ interface UsersManagementRepositoryInterface
     public function getDoctorProfileDetails($doctorProfileId);
     public function getSupplierDetails($supplierId);
     public function getSupplierUserDetails($supplierUserId);
+    public function getSupplierUsersTrashData();
+    public function destroySupplierUser($id);
+    public function restoreSupplierUser($id);
+    public function forceDeleteSupplierUser($id);
+
+    // Patients Trash
+    public function getPatientsTrashData();
+    public function destroyPatient($id);
+    public function restorePatient($id);
+    public function forceDeletePatient($id);
 }

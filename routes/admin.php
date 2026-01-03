@@ -62,12 +62,17 @@ Route::group(
             Route::get('/clinic-users/data', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'clinicUsersData'])->name('clinic-users.data');
             Route::get('/clinic-users/{id}/details', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'clinicUserDetails'])->name('clinic-user-details');
 
-            // Patients
             Route::get('/patients', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'patients'])->name('patients');
             Route::get('/patients/data', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'patientsData'])->name('patients.data');
             Route::get('/patients/{id}/details', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'patientDetails'])->name('patient-details');
 
-            // Doctor Profiles
+            Route::get('/patients/trash', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'patientsTrash'])->name('patients.trash');
+            Route::get('/patients/trash/data', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'patientsTrashData'])->name('patients.trash.data');
+            Route::post('/patients/{id}/restore', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'restorePatient'])->name('patients.restore');
+            Route::delete('/patients/{id}/force-delete', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'forceDeletePatient'])->name('patients.force-delete');
+            Route::delete('/patients/{id}', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'destroyPatient'])->name('patients.destroy');
+
+            //Doctor Profiles
             Route::get('/doctor-profiles', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'doctorProfiles'])->name('doctor-profiles');
             Route::get('/doctor-profiles/data', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'doctorProfilesData'])->name('doctor-profiles.data');
             Route::get('/doctor-profiles/{id}/details', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'doctorProfileDetails'])->name('doctor-profile-details');
@@ -80,6 +85,13 @@ Route::group(
             // Supplier Users
             Route::get('/supplier-users', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'supplierUsers'])->name('supplier-users');
             Route::get('/supplier-users/data', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'supplierUsersData'])->name('supplier-users.data');
+
+            Route::get('/supplier-users/trash', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'supplierUsersTrash'])->name('supplier-users.trash');
+            Route::get('/supplier-users/trash/data', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'supplierUsersTrashData'])->name('supplier-users.trash.data');
+            Route::post('/supplier-users/{id}/restore', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'restoreSupplierUser'])->name('supplier-users.restore');
+            Route::delete('/supplier-users/{id}/force-delete', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'forceDeleteSupplierUser'])->name('supplier-users.force-delete');
+            Route::delete('/supplier-users/{id}', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'destroySupplierUser'])->name('supplier-users.destroy');
+
             Route::get('/supplier-users/{id}/details', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'supplierUserDetails'])->name('supplier-user-details');
 
             // User Management Actions
@@ -106,6 +118,15 @@ Route::group(
         // Announcements
         Route::get('announcements/data', [AnnouncementController::class, 'data'])->name('announcements.data');
         Route::resource('announcements', AnnouncementController::class)->except(['show']);
+
+        // Carousels
+        Route::get('carousels', [\App\Http\Controllers\Backend\Dashboards\Admin\CarouselController::class, 'index'])->name('carousels.index');
+        Route::post('carousels', [\App\Http\Controllers\Backend\Dashboards\Admin\CarouselController::class, 'store'])->name('carousels.store');
+        Route::put('carousels/{id}', [\App\Http\Controllers\Backend\Dashboards\Admin\CarouselController::class, 'update'])->name('carousels.update');
+        Route::put('carousels/{id}/toggle-status', [\App\Http\Controllers\Backend\Dashboards\Admin\CarouselController::class, 'toggleStatus'])->name('carousels.toggle-status');
+        Route::post('carousels/update-order', [\App\Http\Controllers\Backend\Dashboards\Admin\CarouselController::class, 'updateOrder'])->name('carousels.update-order');
+        Route::delete('carousels/{id}', [\App\Http\Controllers\Backend\Dashboards\Admin\CarouselController::class, 'destroy'])->name('carousels.destroy');
+
         Route::get('clinics/data', [ClinicController::class, 'data'])->name('clinics.data');
         Route::get('clinics/{id}/users/data', [ClinicController::class, 'clinicUsersData'])->name('clinics.users.data');
         Route::put('clinics/{id}/update-status', [ClinicController::class, 'updateStatus'])->name('clinics.update-status');
@@ -117,15 +138,20 @@ Route::group(
         Route::get('suppliers/data', [SupplierController::class, 'data'])->name('suppliers.data');
         Route::put('suppliers/{id}/update-status', [SupplierController::class, 'updateStatus'])->name('suppliers.update-status');
         Route::put('suppliers/{id}/update-is-allowed', [SupplierController::class, 'updateIsAllowed'])->name('suppliers.update-is-allowed');
-        Route::get('suppliers/{id}/approval', [SupplierController::class, 'showApproval'])->name('suppliers.approval');
+        Route::get('suppliers/approval/{id}', [SupplierController::class, 'showApproval'])->name('suppliers.approval');
         Route::resource('suppliers', SupplierController::class);
 
         // Supplier Products Management
         Route::group(['prefix' => 'supplier-products'], function () {
             Route::get('/', [\App\Http\Controllers\Backend\Dashboards\Admin\SupplierProductController::class, 'index'])->name('supplier-products.index');
             Route::get('/data', [\App\Http\Controllers\Backend\Dashboards\Admin\SupplierProductController::class, 'data'])->name('supplier-products.data');
+            Route::get('/trash', [\App\Http\Controllers\Backend\Dashboards\Admin\SupplierProductController::class, 'trash'])->name('supplier-products.trash');
+            Route::get('/trash/data', [\App\Http\Controllers\Backend\Dashboards\Admin\SupplierProductController::class, 'trashData'])->name('supplier-products.trash.data');
             Route::get('/{id}', [\App\Http\Controllers\Backend\Dashboards\Admin\SupplierProductController::class, 'show'])->name('supplier-products.show');
             Route::put('/{id}/approval-status', [\App\Http\Controllers\Backend\Dashboards\Admin\SupplierProductController::class, 'updateApprovalStatus'])->name('supplier-products.update-approval-status');
+            Route::post('/{id}/restore', [\App\Http\Controllers\Backend\Dashboards\Admin\SupplierProductController::class, 'restore'])->name('supplier-products.restore');
+            Route::delete('/{id}/force-delete', [\App\Http\Controllers\Backend\Dashboards\Admin\SupplierProductController::class, 'forceDelete'])->name('supplier-products.force-delete');
+            Route::delete('/{id}', [\App\Http\Controllers\Backend\Dashboards\Admin\SupplierProductController::class, 'destroy'])->name('supplier-products.destroy');
             Route::get('/supplier/{supplierId}', [\App\Http\Controllers\Backend\Dashboards\Admin\SupplierProductController::class, 'supplierProducts'])->name('supplier-products.by-supplier');
         });
 

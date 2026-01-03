@@ -31,10 +31,10 @@ class UsersManagementRepository implements UsersManagementRepositoryInterface
                 'total' => DoctorProfile::count(),
                 'approved' => DoctorProfile::where('status', 'approved')->count(),
                 'pending' => DoctorProfile::where('status', 'pending')->count(),
-                'standalone' => DoctorProfile::whereHas('clinicUser', function($q) {
+                'standalone' => DoctorProfile::whereHas('clinicUser', function ($q) {
                     $q->whereNull('clinic_id');
                 })->count(),
-                'clinic_based' => DoctorProfile::whereHas('clinicUser', function($q) {
+                'clinic_based' => DoctorProfile::whereHas('clinicUser', function ($q) {
                     $q->whereNotNull('clinic_id');
                 })->count(),
             ],
@@ -57,11 +57,11 @@ class UsersManagementRepository implements UsersManagementRepositoryInterface
         $clinics = Clinic::withCount(['clinicUsers', 'doctorProfiles'])->get();
 
         return datatables()->of($clinics)
-            ->addColumn('admin_name', function($item) {
+            ->addColumn('admin_name', function ($item) {
                 $admin = $item->clinicUsers()->where('has_clinic', true)->first();
                 return $admin ? $admin->name : 'N/A';
             })
-            ->addColumn('admin_email', function($item) {
+            ->addColumn('admin_email', function ($item) {
                 $admin = $item->clinicUsers()->where('has_clinic', true)->first();
                 return $admin ? $admin->email : 'N/A';
             })
@@ -70,9 +70,9 @@ class UsersManagementRepository implements UsersManagementRepositoryInterface
             ->editColumn('status', fn($item) => $item->status
                 ? '<span class="badge bg-success">Active</span>'
                 : '<span class="badge bg-secondary">Inactive</span>')
-            ->addColumn('action', function($item) {
+            ->addColumn('action', function ($item) {
                 $viewUrl = route('admin.users-management.clinic-details', $item->id);
-                return '<a href="'.$viewUrl.'" class="btn btn-sm btn-info" title="View Details"><i class="fa fa-eye"></i> Details</a>';
+                return '<a href="' . $viewUrl . '" class="btn btn-sm btn-info" title="View Details"><i class="fa fa-eye"></i> Details</a>';
             })
             ->rawColumns(['status', 'action'])
             ->make(true);
@@ -89,7 +89,7 @@ class UsersManagementRepository implements UsersManagementRepositoryInterface
             ->addColumn('email', fn($item) => $item->email)
             ->addColumn('phone', fn($item) => $item->phone ?? 'N/A')
             ->addColumn('clinic_name', fn($item) => $item->clinic ? $item->clinic->name : 'N/A')
-            ->addColumn('role', function($item) {
+            ->addColumn('role', function ($item) {
                 if ($item->has_clinic) {
                     return '<span class="badge bg-primary">Admin</span>';
                 } elseif ($item->doctorProfile) {
@@ -101,9 +101,9 @@ class UsersManagementRepository implements UsersManagementRepositoryInterface
             ->editColumn('status', fn($item) => $item->status
                 ? '<span class="badge bg-success">Active</span>'
                 : '<span class="badge bg-secondary">Inactive</span>')
-            ->addColumn('action', function($item) {
+            ->addColumn('action', function ($item) {
                 $viewUrl = route('admin.users-management.clinic-user-details', $item->id);
-                return '<a href="'.$viewUrl.'" class="btn btn-sm btn-info" title="View Details"><i class="fa fa-eye"></i> Details</a>';
+                return '<a href="' . $viewUrl . '" class="btn btn-sm btn-info" title="View Details"><i class="fa fa-eye"></i> Details</a>';
             })
             ->rawColumns(['role', 'status', 'action'])
             ->make(true);
@@ -119,16 +119,23 @@ class UsersManagementRepository implements UsersManagementRepositoryInterface
             ->addColumn('name', fn($item) => $item->name)
             ->addColumn('email', fn($item) => $item->email)
             ->addColumn('phone', fn($item) => $item->phone ?? 'N/A')
-            ->addColumn('location', function($item) {
+            ->addColumn('location', function ($item) {
                 $parts = [];
-                if ($item->governorate) $parts[] = $item->governorate->name_en;
-                if ($item->city) $parts[] = $item->city->name_en;
+                if ($item->governorate)
+                    $parts[] = $item->governorate->name_en;
+                if ($item->city)
+                    $parts[] = $item->city->name_en;
                 return implode(', ', $parts) ?: 'N/A';
             })
             ->addColumn('doctors_count', fn($item) => $item->doctors_count)
-            ->addColumn('action', function($item) {
+            ->addColumn('action', function ($item) {
                 $viewUrl = route('admin.users-management.patient-details', $item->id);
-                return '<a href="'.$viewUrl.'" class="btn btn-sm btn-info" title="View Details"><i class="fa fa-eye"></i> Details</a>';
+                return <<<HTML
+                <div class="d-flex gap-2">
+                    <a href="{$viewUrl}" class="btn btn-sm btn-info" title="View Details"><i class="fa fa-eye"></i></a>
+                    <button data-id="{$item->id}" class="btn btn-sm btn-danger btn-delete-patient" title="Delete"><i class="fa fa-trash"></i></button>
+                </div>
+                HTML;
             })
             ->rawColumns(['action'])
             ->make(true);
@@ -145,7 +152,7 @@ class UsersManagementRepository implements UsersManagementRepositoryInterface
             ->addColumn('email', fn($item) => $item->email)
             ->addColumn('phone', fn($item) => $item->phone ?? 'N/A')
             ->addColumn('speciality', fn($item) => $item->speciality?->name_en ?? 'N/A')
-            ->addColumn('clinic', function($item) {
+            ->addColumn('clinic', function ($item) {
                 if ($item->clinicUser && $item->clinicUser->clinic_id) {
                     return $item->clinicUser->clinic->name ?? 'N/A';
                 }
@@ -153,7 +160,7 @@ class UsersManagementRepository implements UsersManagementRepositoryInterface
             })
             ->addColumn('patients_count', fn($item) => $item->patients_count)
 
-            ->addColumn('approval_status', function($item) {
+            ->addColumn('approval_status', function ($item) {
                 if ($item->status === 'approved') {
                     return '<span class="badge bg-success">Approved</span>';
                 } elseif ($item->status === 'rejected') {
@@ -163,9 +170,9 @@ class UsersManagementRepository implements UsersManagementRepositoryInterface
                 }
             })
 
-            ->addColumn('action', function($item) {
+            ->addColumn('action', function ($item) {
                 $viewUrl = route('admin.users-management.doctor-profile-details', $item->id);
-                return '<a href="'.$viewUrl.'" class="btn btn-sm btn-info"><i class="fa fa-eye"></i> Details</a>';
+                return '<a href="' . $viewUrl . '" class="btn btn-sm btn-info"><i class="fa fa-eye"></i> Details</a>';
             })
 
             ->rawColumns(['clinic', 'status', 'approval_status', 'action'])
@@ -180,7 +187,7 @@ class UsersManagementRepository implements UsersManagementRepositoryInterface
             ->addColumn('name', fn($item) => $item->name)
             ->addColumn('phone', fn($item) => $item->phone ?? 'N/A')
             ->addColumn('address', fn($item) => $item->address ?? 'N/A')
-            ->addColumn('users_count', function($item) {
+            ->addColumn('users_count', function ($item) {
                 return $item->supplierUsers->count();
             })
             ->editColumn('status', fn($item) => $item->status
@@ -189,9 +196,9 @@ class UsersManagementRepository implements UsersManagementRepositoryInterface
             ->editColumn('is_allowed', fn($item) => $item->is_allowed
                 ? '<span class="badge bg-success">Allowed</span>'
                 : '<span class="badge bg-danger">Not Allowed</span>')
-            ->addColumn('action', function($item) {
+            ->addColumn('action', function ($item) {
                 $viewUrl = route('admin.users-management.supplier-details', $item->id);
-                return '<a href="'.$viewUrl.'" class="btn btn-sm btn-info"><i class="fa fa-eye"></i> Details</a>';
+                return '<a href="' . $viewUrl . '" class="btn btn-sm btn-info"><i class="fa fa-eye"></i> Details</a>';
             })
             ->rawColumns(['status', 'is_allowed', 'action'])
             ->make(true);
@@ -205,7 +212,7 @@ class UsersManagementRepository implements UsersManagementRepositoryInterface
             ->addColumn('name', fn($item) => $item->name)
             ->addColumn('email', fn($item) => $item->email)
             ->addColumn('phone', fn($item) => $item->phone ?? 'N/A')
-            ->addColumn('supplier_name', function($item) {
+            ->addColumn('supplier_name', function ($item) {
                 if (!$item->supplier) {
                     return '<span class="text-muted">N/A</span>';
                 }
@@ -214,9 +221,13 @@ class UsersManagementRepository implements UsersManagementRepositoryInterface
             ->editColumn('status', fn($item) => $item->status
                 ? '<span class="badge bg-success">Active</span>'
                 : '<span class="badge bg-secondary">Inactive</span>')
-            ->addColumn('action', function($item) {
+            ->addColumn('action', function ($item) {
                 $viewUrl = route('admin.users-management.supplier-user-details', $item->id);
-                return '<a href="'.$viewUrl.'" class="btn btn-sm btn-info"><i class="fa fa-eye"></i> Details</a>';
+                return '
+                    <div class="d-flex gap-2">
+                        <a href="' . $viewUrl . '" class="btn btn-sm btn-info"><i class="fa fa-eye"></i> Details</a>
+                        <button onclick="deleteSupplierUser(' . $item->id . ')" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></button>
+                    </div>';
             })
             ->rawColumns(['supplier_name', 'status', 'action'])
             ->make(true);
@@ -225,7 +236,7 @@ class UsersManagementRepository implements UsersManagementRepositoryInterface
     public function getClinicDetails($clinicId)
     {
         return Clinic::with([
-            'clinicUsers' => function($q) {
+            'clinicUsers' => function ($q) {
                 $q->orderBy('created_at', 'desc');
             },
             'governorate',
@@ -247,9 +258,9 @@ class UsersManagementRepository implements UsersManagementRepositoryInterface
         return Patient::with([
             'governorate',
             'city',
-            'doctors' => function($q) {
+            'doctors' => function ($q) {
                 $q->withPivot(['clinic_id', 'assigned_at', 'assigned_by'])
-                  ->with(['clinic', 'speciality']);
+                    ->with(['clinic', 'speciality']);
             }
         ])->findOrFail($patientId);
     }
@@ -259,9 +270,9 @@ class UsersManagementRepository implements UsersManagementRepositoryInterface
         return DoctorProfile::with([
             'clinicUser.clinic',
             'speciality',
-            'patients' => function($q) {
+            'patients' => function ($q) {
                 $q->withPivot(['clinic_id', 'assigned_at', 'assigned_by'])
-                  ->with('clinic');
+                    ->with('clinic');
             }
         ])->findOrFail($doctorProfileId);
     }
@@ -269,7 +280,7 @@ class UsersManagementRepository implements UsersManagementRepositoryInterface
     public function getSupplierDetails($supplierId)
     {
         return Supplier::with([
-            'supplierUsers' => function($q) {
+            'supplierUsers' => function ($q) {
                 $q->orderBy('created_at', 'desc');
             },
             'governorate',
@@ -280,5 +291,101 @@ class UsersManagementRepository implements UsersManagementRepositoryInterface
     public function getSupplierUserDetails($supplierUserId)
     {
         return SupplierUser::with('supplier')->findOrFail($supplierUserId);
+    }
+
+    public function getSupplierUsersTrashData()
+    {
+        $supplierUsers = SupplierUser::onlyTrashed()->with('supplier')->whereNotNull('supplier_id')->get();
+
+        return datatables()->of($supplierUsers)
+            ->addColumn('name', fn($item) => $item->name)
+            ->addColumn('email', fn($item) => $item->email)
+            ->addColumn('supplier_name', fn($item) => $item->supplier ? $item->supplier->name : 'N/A')
+            ->addColumn('action', function ($item) {
+                return '
+                    <div class="d-flex gap-2">
+                        <button onclick="restore(' . $item->id . ')" class="btn btn-sm btn-info" title="Restore"><i class="fa fa-undo"></i></button>
+                        <button onclick="forceDelete(' . $item->id . ')" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>
+                    </div>';
+            })
+            ->rawColumns(['action'])
+            ->make(true);
+    }
+
+    public function destroySupplierUser($id)
+    {
+        $user = SupplierUser::findOrFail($id);
+        $user->delete();
+
+        return response()->json(['status' => 'success', 'message' => __('User deleted successfully')]);
+    }
+
+    public function restoreSupplierUser($id)
+    {
+        $user = SupplierUser::onlyTrashed()->findOrFail($id);
+        $user->restore();
+
+        return response()->json(['status' => 'success', 'message' => __('User restored successfully')]);
+    }
+
+    public function forceDeleteSupplierUser($id)
+    {
+        $user = SupplierUser::onlyTrashed()->findOrFail($id);
+        $user->forceDelete();
+
+        return response()->json(['status' => 'success', 'message' => __('User permanently deleted')]);
+    }
+
+    // Patients Trash Methods
+    public function getPatientsTrashData()
+    {
+        $patients = Patient::onlyTrashed()->with(['governorate', 'city'])->get();
+
+        return datatables()->of($patients)
+            ->addColumn('name', fn($item) => $item->name)
+            ->addColumn('email', fn($item) => $item->email)
+            ->addColumn('phone', fn($item) => $item->phone ?? 'N/A')
+            ->addColumn('location', function ($item) {
+                $parts = [];
+                if ($item->governorate)
+                    $parts[] = $item->governorate->name_en;
+                if ($item->city)
+                    $parts[] = $item->city->name_en;
+                return implode(', ', $parts) ?: 'N/A';
+            })
+            ->addColumn('action', function ($item) {
+                return <<<HTML
+                <div class="d-flex gap-2">
+                    <button onclick="restore({$item->id})" class="btn btn-sm btn-info" title="Restore"><i class="fa fa-undo"></i></button>
+                    <button onclick="forceDelete({$item->id})" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>
+                </div>
+                HTML;
+            })
+            ->rawColumns(['action'])
+            ->make(true);
+    }
+
+    public function destroyPatient($id)
+    {
+        $patient = Patient::findOrFail($id);
+        $patient->delete();
+
+        return response()->json(['status' => 'success', 'message' => __('Patient deleted successfully')]);
+    }
+
+    public function restorePatient($id)
+    {
+        $patient = Patient::onlyTrashed()->findOrFail($id);
+        $patient->restore();
+
+        return response()->json(['status' => 'success', 'message' => __('Patient restored successfully')]);
+    }
+
+    public function forceDeletePatient($id)
+    {
+        $patient = Patient::onlyTrashed()->findOrFail($id);
+        $patient->forceDelete();
+
+        return response()->json(['status' => 'success', 'message' => __('Patient permanently deleted')]);
     }
 }

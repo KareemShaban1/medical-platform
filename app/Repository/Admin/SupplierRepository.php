@@ -51,7 +51,7 @@ class SupplierRepository implements SupplierRepositoryInterface
 
         // fallback to "status" if field is not sent
         $field = $request->field ?? 'status';
-        $value = (bool)$request->value;
+        $value = (bool) $request->value;
 
         $supplier->{$field} = $value;
         $supplier->save();
@@ -68,7 +68,7 @@ class SupplierRepository implements SupplierRepositoryInterface
 
         // fallback to "is_allowed" if field is not sent
         $field = $request->field ?? 'is_allowed';
-        $value = (bool)$request->value;
+        $value = (bool) $request->value;
 
         $supplier->{$field} = $value;
         $supplier->save();
@@ -161,9 +161,9 @@ class SupplierRepository implements SupplierRepositoryInterface
 
         $badgeClass = match ($approved) {
             'under_review' => 'bg-warning',
-            'approved'     => 'bg-success',
-            'rejected'     => 'bg-danger',
-            default        => 'bg-secondary',
+            'approved' => 'bg-success',
+            'rejected' => 'bg-danger',
+            default => 'bg-secondary',
         };
 
         $label = $approved ?? 'pending';
@@ -222,7 +222,6 @@ class SupplierRepository implements SupplierRepositoryInterface
         </div>
         HTML;
     }
-
 
     private function jsonResponse(string $status, string $message)
     {

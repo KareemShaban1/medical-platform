@@ -93,6 +93,41 @@ class UsersManagementController extends Controller
         return view('backend.dashboards.admin.pages.users-management.patient-details', compact('patient'));
     }
 
+    public function patientsTrash()
+    {
+        // apply permissions
+        abort_if(!hasPermission('view trash patients'), 403, __('You are not authorized to view trash'));
+        return view('backend.dashboards.admin.pages.users-management.patients-trash');
+    }
+
+    public function patientsTrashData()
+    {
+        // apply permissions
+        abort_if(!hasPermission('view trash patients'), 403, __('You are not authorized to view trash'));
+        return $this->repo->getPatientsTrashData();
+    }
+
+    public function destroyPatient($id)
+    {
+        // apply permissions
+        abort_if(!hasPermission('delete patient'), 403, __('You are not authorized to delete patient'));
+        return $this->repo->destroyPatient($id);
+    }
+
+    public function restorePatient($id)
+    {
+        // apply permissions
+        abort_if(!hasPermission('restore patient'), 403, __('You are not authorized to restore patient'));
+        return $this->repo->restorePatient($id);
+    }
+
+    public function forceDeletePatient($id)
+    {
+        // apply permissions
+        abort_if(!hasPermission('force delete patient'), 403, __('You are not authorized to force delete patient'));
+        return $this->repo->forceDeletePatient($id);
+    }
+
     // Doctor Profiles
     public function doctorProfiles()
     {
@@ -160,6 +195,44 @@ class UsersManagementController extends Controller
         abort_if(!hasPermission('view system supplier users'), 403, __('You are not authorized to view supplier users'));
         $supplierUser = $this->repo->getSupplierUserDetails($id);
         return view('backend.dashboards.admin.pages.users-management.supplier-user-details', compact('supplierUser'));
+    }
+
+    public function supplierUsersTrash()
+    {
+        // apply permissions
+        abort_if(!hasPermission('view trash users'), 403, __('You are not authorized to view trash users'));
+        return view('backend.dashboards.admin.pages.users-management.supplier-users-trash');
+    }
+
+    public function supplierUsersTrashData()
+    {
+        // apply permissions
+        abort_if(!hasPermission('view trash users'), 403, __('You are not authorized to view trash users'));
+        return $this->repo->getSupplierUsersTrashData();
+    }
+
+    public function destroySupplierUser($id)
+    {
+        // apply permissions
+        abort_if(!hasPermission('delete user'), 403, __('You are not authorized to delete user'));
+        return $this->repo->destroySupplierUser($id);
+    }
+
+    public function restoreSupplierUser($id)
+    {
+        // apply permissions
+        // using delete user as restore permission if no specific restore available, or assuming admins have broad access
+        // checking seeder: 'restore admin user' exists, but generic 'restore user' doesn't.
+        // using 'update user' or 'delete user' logic. Let's stick with 'delete user' for consistency with soft deletes
+        abort_if(!hasPermission('delete user'), 403, __('You are not authorized to restore user'));
+        return $this->repo->restoreSupplierUser($id);
+    }
+
+    public function forceDeleteSupplierUser($id)
+    {
+        // apply permissions
+        abort_if(!hasPermission('delete user'), 403, __('You are not authorized to force delete user'));
+        return $this->repo->forceDeleteSupplierUser($id);
     }
 
     // Password Management

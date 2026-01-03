@@ -78,6 +78,9 @@ class SupplierProductRepository implements SupplierProductRepositoryInterface
                         <button onclick="updateApprovalStatus(' . $product->id . ')" class="btn btn-sm btn-primary">
                             <i class="fa fa-check"></i> Review
                         </button>
+                        <button onclick="deleteProduct(' . $product->id . ')" class="btn btn-sm btn-danger" title="Delete">
+                            <i class="fa fa-trash"></i>
+                        </button>
                     </div>
                 ';
             })
@@ -150,6 +153,64 @@ class SupplierProductRepository implements SupplierProductRepositoryInterface
         return compact('supplier', 'products');
     }
 
+    public function destroy($id)
+    {
+        $product = Product::findOrFail($id);
+        $product->delete();
 
+        return response()->json([
+            'status' => 'success',
+            'message' => __('Product deleted successfully')
+        ]);
+    }
 
+    public function trash()
+    {
+        return view('backend.dashboards.admin.pages.supplier-products.trash');
+    }
+
+    public function trashData()
+    {
+        $products = Product::onlyTrashed()->with(['supplier', 'categories']);
+
+        return datatables($products)
+            ->addColumn('supplier_name', fn($product) => $product->supplier ? $product->supplier->name : 'N/A')
+            ->addColumn('product_name', fn($product) => $product->name)
+            ->addColumn('trash_action', function ($product) {
+                return '
+                    <div class="d-flex gap-2">
+                        <button onclick="restore(' . $product->id . ')" class="btn btn-sm btn-info" title="Restore">
+                            <i class="fa fa-undo"></i>
+                        </button>
+                        <button onclick="forceDelete(' . $product->id . ')" class="btn btn-sm btn-danger" title="Delete">
+                            <i class="fa fa-trash"></i>
+                        </button>
+                    </div>
+                ';
+            })
+            ->rawColumns(['trash_action'])
+            ->make(true);
+    }
+
+    public function restore($id)
+    {
+        $product = Product::onlyTrashed()->findOrFail($id);
+        $product->restore();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => __('Product restored successfully')
+        ]);
+    }
+
+    public function forceDelete($id)
+    {
+        $product = Product::onlyTrashed()->findOrFail($id);
+        $product->forceDelete();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => __('Product permanently deleted')
+        ]);
+    }
 }
