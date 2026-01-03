@@ -78,4 +78,40 @@ class SpecialityRepository implements SpecialityRepositoryInterface
         </div>
         HTML;
     }
+
+    public function trashData()
+    {
+        $items = Speciality::onlyTrashed()->get();
+
+        return datatables()->of($items)
+            ->addColumn('action', fn($item) => $this->trashActions($item))
+            ->rawColumns(['action'])
+            ->make(true);
+    }
+
+    public function restore($id)
+    {
+        $item = Speciality::onlyTrashed()->findOrFail($id);
+        $item->restore();
+
+        return response()->json(['status' => 'success', 'message' => __('Speciality restored successfully')]);
+    }
+
+    public function forceDelete($id)
+    {
+        $item = Speciality::onlyTrashed()->findOrFail($id);
+        $item->forceDelete();
+
+        return response()->json(['status' => 'success', 'message' => __('Speciality permanently deleted')]);
+    }
+
+    private function trashActions($item): string
+    {
+        return <<<HTML
+        <div class="d-flex gap-2">
+            <button onclick="restore({$item->id})" class="btn btn-sm btn-info"><i class="fa fa-undo"></i></button>
+            <button onclick="forceDelete({$item->id})" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></button>
+        </div>
+        HTML;
+    }
 }

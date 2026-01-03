@@ -122,6 +122,14 @@
                         </li>
                         @endhasPermission
 
+                        @hasPermission('view trash specialities')
+                        <li>
+                            <a href="{{ route('admin.specialities.trash') }}">
+                                <span> {{ __('Trash Specialities') }} </span>
+                            </a>
+                        </li>
+                        @endhasPermission
+
                         @hasPermission('view orders')
                         <li>
                             <a href="{{ route('admin.orders.index') }}">

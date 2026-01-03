@@ -58,4 +58,28 @@ class SpecialityController extends Controller
         abort_if(!hasPermission('delete speciality'), 403, __('You are not authorized to delete specialities'));
         return $this->repo->destroy($id);
     }
+
+    public function trash()
+    {
+        abort_if(!hasPermission('view trash specialities'), 403, __('You are not authorized to view trash'));
+        return view('backend.dashboards.admin.pages.specialities.trash');
+    }
+
+    public function trashData()
+    {
+        abort_if(!hasPermission('view trash specialities'), 403, __('You are not authorized to view trash'));
+        return $this->repo->trashData();
+    }
+
+    public function restore($id)
+    {
+        abort_if(!hasPermission('restore speciality'), 403, __('You are not authorized to restore'));
+        return $this->repo->restore($id);
+    }
+
+    public function forceDelete($id)
+    {
+        abort_if(!hasPermission('force delete speciality'), 403, __('You are not authorized to force delete'));
+        return $this->repo->forceDelete($id);
+    }
 }

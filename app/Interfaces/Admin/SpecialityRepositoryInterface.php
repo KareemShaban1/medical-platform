@@ -10,5 +10,8 @@ interface SpecialityRepositoryInterface
     public function store($request);
     public function update($request, $id);
     public function destroy($id);
+    public function trashData();
+    public function restore($id);
+    public function forceDelete($id);
 }
 

@@ -39,7 +39,7 @@ class AdminRolePermissionSeeder extends Seeder
             'Users' => ['view users','view trash users', 'create user', 'update user', 'delete user', 'toggle user status', 'change user password'],
             "System Management"=>['view system management' , 'view system clinics' , 'view system clinic users' , 'view system doctor profiles' , 'view system suppliers' ,'view system supplier users'],
             'Clinic Management'=>['view clinics','view trash clinics' , 'view clinic users' , 'view clinic doctor profiles' , 'create clinic', 'update clinic', 'delete clinic', 'approve clinic', 'reject clinic', 'toggle clinic status', 'toggle clinic allowed'],
-            'Specialities' => ['view specialities','view trash specialities', 'create speciality', 'update speciality', 'delete speciality'],
+            'Specialities' => ['view specialities','view trash specialities', 'create speciality', 'update speciality', 'delete speciality', 'restore speciality', 'force delete speciality'],
             'Orders' => ['view orders','view trash orders', 'update order', 'update order payment status'],
             'Rental Spaces' => ['view rental spaces','view trash rental spaces', 'create rental space', 'update rental space', 'delete rental space', 'restore rental space', 'force delete rental space', 'toggle rental space status'],
             'Patients' => ['view patients','view trash patients', 'create patient', 'update patient', 'delete patient', 'restore patient', 'force delete patient', 'toggle patient status'],

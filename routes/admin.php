@@ -105,8 +105,13 @@ Route::group(
 
         // Doctor Specialities
         Route::get('specialities/data', [SpecialityController::class, 'data'])->name('specialities.data');
-        Route::resource('specialities', SpecialityController::class)->only(['index', 'store', 'show', 'update', 'destroy']);
 
+        // Doctor Specialities Trash
+        Route::get('specialities/trash', [SpecialityController::class, 'trash'])->name('specialities.trash');
+        Route::get('specialities/trash/data', [SpecialityController::class, 'trashData'])->name('specialities.trash.data');
+        Route::post('specialities/{id}/restore', [SpecialityController::class, 'restore'])->name('specialities.restore');
+        Route::delete('specialities/{id}/force-delete', [SpecialityController::class, 'forceDelete'])->name('specialities.force-delete');
+        Route::resource('specialities', SpecialityController::class)->only(['index', 'store', 'show', 'update', 'destroy']);
         // Roles Management
         Route::get('roles/data', [\App\Http\Controllers\Backend\Dashboards\Admin\RoleController::class, 'data'])->name('roles.data');
         Route::get('roles/trash', [\App\Http\Controllers\Backend\Dashboards\Admin\RoleController::class, 'trash'])->name('roles.trash');
@@ -269,6 +274,7 @@ Route::group(
         Route::get('tickets/trash/data', [\App\Http\Controllers\Backend\Dashboards\Admin\TicketController::class, 'trashData'])->name('tickets.trash.data');
         Route::post('tickets/{id}/restore', [\App\Http\Controllers\Backend\Dashboards\Admin\TicketController::class, 'restore'])->name('tickets.restore');
         Route::delete('tickets/{id}/force-delete', [\App\Http\Controllers\Backend\Dashboards\Admin\TicketController::class, 'forceDelete'])->name('tickets.force-delete');
+
         Route::resource('tickets', \App\Http\Controllers\Backend\Dashboards\Admin\TicketController::class)->only(['index', 'show', 'destroy']);
 
         // Governorates Management

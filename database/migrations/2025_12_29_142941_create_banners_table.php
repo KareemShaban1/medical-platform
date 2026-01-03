@@ -48,7 +48,7 @@ return new class extends Migration
             
             $table->index('banner_id');
             $table->index('clicked_at');
-            $table->index(['clickable_type', 'clickable_id']);
+            // $table->index(['clickable_type', 'clickable_id']);
         });
     }
 
