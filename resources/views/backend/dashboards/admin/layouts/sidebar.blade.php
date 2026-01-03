@@ -429,8 +429,14 @@
 					</a>
 				</li>
 				@endhasPermission
-
-
+				@hasPermission('view trash blog posts')
+				<li>
+					<a href="{{ route('admin.blog-posts.trash') }}">
+						<span> {{ __('Trash Blog Posts') }} </span>
+					</a>
+				</li>
+				@endhasPermission
+				
 			</ul>
 		</div>
 	</li>

@@ -21,7 +21,7 @@ class BlogPostRepository implements BlogPostRepositoryInterface
         $posts = BlogPost::query();
 
         return datatables()->of($posts)
-            ->addColumn('category_name', fn($item) => $item->blogCategory->name)
+            ->addColumn('category_name', fn($item) => $item->blogCategory?->name ?? __('Uncategorized'))
             ->editColumn('status', fn($item) => $this->blogPostStatus($item))
             ->addColumn('action', fn($item) => $this->blogPostActions($item))
             ->rawColumns(['status', 'action'])
@@ -51,7 +51,7 @@ class BlogPostRepository implements BlogPostRepositoryInterface
 
         // fallback to "status" if field is not sent
         $field = $request->field ?? 'status';
-        $value = (bool)$request->value;
+        $value = (bool) $request->value;
 
         $post->{$field} = $value;
         $post->save();
@@ -83,7 +83,7 @@ class BlogPostRepository implements BlogPostRepositoryInterface
         $posts = BlogPost::onlyTrashed()->get();
 
         return datatables()->of($posts)
-            ->addColumn('category_name', fn($item) => $item->blogCategory->name)
+            ->addColumn('category_name', fn($item) => $item->blogCategory?->name ?? __('Uncategorized'))
             ->editColumn('status', fn($item) => $this->blogPostStatus($item))
             ->addColumn('trash_action', fn($item) => $this->blogPostTrashActions($item))
             ->rawColumns(['status', 'trash_action'])
@@ -124,11 +124,11 @@ class BlogPostRepository implements BlogPostRepositoryInterface
             if ($request->ajax()) {
                 return response()->json([
                     'status' => 'success',
-                    'message' => __('Blog Post '.$action.' successfully'),
+                    'message' => __('Blog Post ' . $action . ' successfully'),
                 ]);
             }
 
-            return redirect()->route('admin.blog-posts.index')->with('success', __('Blog Post '.$action.' successfully'));
+            return redirect()->route('admin.blog-posts.index')->with('success', __('Blog Post ' . $action . ' successfully'));
         } catch (\Throwable $e) {
             return response()->json([
                 'status' => 'error',
