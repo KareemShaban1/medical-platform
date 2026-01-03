@@ -93,6 +93,41 @@ class UsersManagementController extends Controller
         return view('backend.dashboards.admin.pages.users-management.patient-details', compact('patient'));
     }
 
+    public function patientsTrash()
+    {
+        // apply permissions
+        abort_if(!hasPermission('view trash patients'), 403, __('You are not authorized to view trash'));
+        return view('backend.dashboards.admin.pages.users-management.patients-trash');
+    }
+
+    public function patientsTrashData()
+    {
+        // apply permissions
+        abort_if(!hasPermission('view trash patients'), 403, __('You are not authorized to view trash'));
+        return $this->repo->getPatientsTrashData();
+    }
+
+    public function destroyPatient($id)
+    {
+        // apply permissions
+        abort_if(!hasPermission('delete patient'), 403, __('You are not authorized to delete patient'));
+        return $this->repo->destroyPatient($id);
+    }
+
+    public function restorePatient($id)
+    {
+        // apply permissions
+        abort_if(!hasPermission('restore patient'), 403, __('You are not authorized to restore patient'));
+        return $this->repo->restorePatient($id);
+    }
+
+    public function forceDeletePatient($id)
+    {
+        // apply permissions
+        abort_if(!hasPermission('force delete patient'), 403, __('You are not authorized to force delete patient'));
+        return $this->repo->forceDeletePatient($id);
+    }
+
     // Doctor Profiles
     public function doctorProfiles()
     {

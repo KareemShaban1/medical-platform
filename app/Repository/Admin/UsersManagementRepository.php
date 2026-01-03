@@ -130,7 +130,12 @@ class UsersManagementRepository implements UsersManagementRepositoryInterface
             ->addColumn('doctors_count', fn($item) => $item->doctors_count)
             ->addColumn('action', function ($item) {
                 $viewUrl = route('admin.users-management.patient-details', $item->id);
-                return '<a href="' . $viewUrl . '" class="btn btn-sm btn-info" title="View Details"><i class="fa fa-eye"></i> Details</a>';
+                return <<<HTML
+                <div class="d-flex gap-2">
+                    <a href="{$viewUrl}" class="btn btn-sm btn-info" title="View Details"><i class="fa fa-eye"></i></a>
+                    <button data-id="{$item->id}" class="btn btn-sm btn-danger btn-delete-patient" title="Delete"><i class="fa fa-trash"></i></button>
+                </div>
+                HTML;
             })
             ->rawColumns(['action'])
             ->make(true);
@@ -329,5 +334,58 @@ class UsersManagementRepository implements UsersManagementRepositoryInterface
         $user->forceDelete();
 
         return response()->json(['status' => 'success', 'message' => __('User permanently deleted')]);
+    }
+
+    // Patients Trash Methods
+    public function getPatientsTrashData()
+    {
+        $patients = Patient::onlyTrashed()->with(['governorate', 'city'])->get();
+
+        return datatables()->of($patients)
+            ->addColumn('name', fn($item) => $item->name)
+            ->addColumn('email', fn($item) => $item->email)
+            ->addColumn('phone', fn($item) => $item->phone ?? 'N/A')
+            ->addColumn('location', function ($item) {
+                $parts = [];
+                if ($item->governorate)
+                    $parts[] = $item->governorate->name_en;
+                if ($item->city)
+                    $parts[] = $item->city->name_en;
+                return implode(', ', $parts) ?: 'N/A';
+            })
+            ->addColumn('action', function ($item) {
+                return <<<HTML
+                <div class="d-flex gap-2">
+                    <button onclick="restore({$item->id})" class="btn btn-sm btn-info" title="Restore"><i class="fa fa-undo"></i></button>
+                    <button onclick="forceDelete({$item->id})" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>
+                </div>
+                HTML;
+            })
+            ->rawColumns(['action'])
+            ->make(true);
+    }
+
+    public function destroyPatient($id)
+    {
+        $patient = Patient::findOrFail($id);
+        $patient->delete();
+
+        return response()->json(['status' => 'success', 'message' => __('Patient deleted successfully')]);
+    }
+
+    public function restorePatient($id)
+    {
+        $patient = Patient::onlyTrashed()->findOrFail($id);
+        $patient->restore();
+
+        return response()->json(['status' => 'success', 'message' => __('Patient restored successfully')]);
+    }
+
+    public function forceDeletePatient($id)
+    {
+        $patient = Patient::onlyTrashed()->findOrFail($id);
+        $patient->forceDelete();
+
+        return response()->json(['status' => 'success', 'message' => __('Patient permanently deleted')]);
     }
 }

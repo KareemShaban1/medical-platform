@@ -62,12 +62,17 @@ Route::group(
             Route::get('/clinic-users/data', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'clinicUsersData'])->name('clinic-users.data');
             Route::get('/clinic-users/{id}/details', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'clinicUserDetails'])->name('clinic-user-details');
 
-            // Patients
             Route::get('/patients', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'patients'])->name('patients');
             Route::get('/patients/data', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'patientsData'])->name('patients.data');
             Route::get('/patients/{id}/details', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'patientDetails'])->name('patient-details');
 
-            // Doctor Profiles
+            Route::get('/patients/trash', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'patientsTrash'])->name('patients.trash');
+            Route::get('/patients/trash/data', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'patientsTrashData'])->name('patients.trash.data');
+            Route::post('/patients/{id}/restore', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'restorePatient'])->name('patients.restore');
+            Route::delete('/patients/{id}/force-delete', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'forceDeletePatient'])->name('patients.force-delete');
+            Route::delete('/patients/{id}', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'destroyPatient'])->name('patients.destroy');
+
+            //Doctor Profiles
             Route::get('/doctor-profiles', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'doctorProfiles'])->name('doctor-profiles');
             Route::get('/doctor-profiles/data', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'doctorProfilesData'])->name('doctor-profiles.data');
             Route::get('/doctor-profiles/{id}/details', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'doctorProfileDetails'])->name('doctor-profile-details');
