@@ -113,10 +113,20 @@ Route::group(
         // Announcements
         Route::get('announcements/data', [AnnouncementController::class, 'data'])->name('announcements.data');
         Route::resource('announcements', AnnouncementController::class)->except(['show']);
+
+        // Carousels
+        Route::get('carousels', [\App\Http\Controllers\Backend\Dashboards\Admin\CarouselController::class, 'index'])->name('carousels.index');
+        Route::post('carousels', [\App\Http\Controllers\Backend\Dashboards\Admin\CarouselController::class, 'store'])->name('carousels.store');
+        Route::put('carousels/{id}', [\App\Http\Controllers\Backend\Dashboards\Admin\CarouselController::class, 'update'])->name('carousels.update');
+        Route::put('carousels/{id}/toggle-status', [\App\Http\Controllers\Backend\Dashboards\Admin\CarouselController::class, 'toggleStatus'])->name('carousels.toggle-status');
+        Route::post('carousels/update-order', [\App\Http\Controllers\Backend\Dashboards\Admin\CarouselController::class, 'updateOrder'])->name('carousels.update-order');
+        Route::delete('carousels/{id}', [\App\Http\Controllers\Backend\Dashboards\Admin\CarouselController::class, 'destroy'])->name('carousels.destroy');
+
         Route::get('clinics/data', [ClinicController::class, 'data'])->name('clinics.data');
         Route::get('clinics/{id}/users/data', [ClinicController::class, 'clinicUsersData'])->name('clinics.users.data');
         Route::put('clinics/{id}/update-status', [ClinicController::class, 'updateStatus'])->name('clinics.update-status');
         Route::put('clinics/{id}/update-is-allowed', [ClinicController::class, 'updateIsAllowed'])->name('clinics.update-is-allowed');
+        Route::put('clinics/{id}/toggle-rental-space-company', [ClinicController::class, 'toggleRentalSpaceCompany'])->name('clinics.toggle-rental-space-company');
         Route::get('clinics/{id}/approval', [ClinicController::class, 'showApproval'])->name('clinics.approval');
         Route::resource('clinics', ClinicController::class);
 
@@ -352,7 +362,7 @@ Route::group(
                 ->name('affiliates.update');
         });
 
-        // Banners Management   
+        // Banners Management
         Route::group(['prefix' => 'banners'], function () {
             Route::get('/', [BannerController::class, 'index'])->name('banners.index');
             Route::get('/data', [BannerController::class, 'data'])->name('banners.data');

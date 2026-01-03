@@ -24,10 +24,11 @@ class ClinicRepository implements ClinicRepositoryInterface
             ->addColumn('clinic_users', fn($item) => $item->clinicUsers->count())
             ->editColumn('status', fn($item) => $this->clinicStatus($item))
             ->editColumn('is_allowed', fn($item) => $this->clinicIsAllowed($item))
+            ->addColumn('is_rental_space_company', fn($item) => $this->clinicRentalSpaceCompany($item))
             ->addColumn('approval', fn($item) => $this->clinicApproval($item))
             ->addColumn('attachments', fn($item) => $this->clinicAttachments($item))
             ->addColumn('action', fn($item) => $this->clinicActions($item))
-            ->rawColumns(['status', 'is_allowed', 'action', 'approval', 'attachments'])
+            ->rawColumns(['status', 'is_allowed', 'is_rental_space_company', 'action', 'approval', 'attachments'])
             ->make(true);
     }
 
@@ -175,6 +176,26 @@ class ClinicRepository implements ClinicRepositoryInterface
                    data-id="{$item->id}"
                    data-field="is_allowed"
                    value="1" {$checked}>
+        </div>
+        HTML;
+    }
+
+    private function clinicRentalSpaceCompany($item): string
+    {
+        $checked = $item->is_rental_space_company ? 'checked' : '';
+        $badge = $item->is_rental_space_company
+            ? '<span class="badge bg-info mb-1">Real Estate</span><br>'
+            : '';
+
+        return <<<HTML
+        <div>
+            {$badge}
+            <div class="form-check form-switch mt-1">
+                <input type="checkbox"
+                       class="form-check-input toggle-rental-space-company"
+                       data-id="{$item->id}"
+                       value="1" {$checked}>
+            </div>
         </div>
         HTML;
     }

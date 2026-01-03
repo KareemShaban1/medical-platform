@@ -41,8 +41,8 @@ class HomeController extends Controller
         $suppliers = Supplier::approved()->active()->get();
         $rentalSpaces = RentalSpace::approved()->active()->get();
         $courses = Course::active()->get();
-		$products = Product::approved()->active()->get();
-        $clinics = Clinic::approved()->active()->get();
+        $products = Product::approved()->active()->get();
+        $clinics = Clinic::approved()->active()->notRentalSpaceCompany()->get();
 
         // Get subscription plans
         $planType = $request->get('plan_type', 'doctor'); // doctor, clinic, supplier
@@ -74,7 +74,7 @@ class HomeController extends Controller
 
         // If AJAX request, return only the plans grid
         if ($request->ajax() || $request->wantsJson()) {
-            $plans = match($planType) {
+            $plans = match ($planType) {
                 'clinic' => $clinicPlans,
                 'supplier' => $supplierPlans,
                 default => $doctorPlans,
@@ -86,9 +86,19 @@ class HomeController extends Controller
             ]);
         }
 
-		return view('frontend.pages.home.index', compact(
-            'jobs', 'suppliers', 'rentalSpaces', 'courses', 'products', 'clinics',
-            'doctorPlans', 'clinicPlans', 'supplierPlans', 'planType', 'currentSubscription', 'availableGateways',
+        return view('frontend.pages.home.index', compact(
+            'jobs',
+            'suppliers',
+            'rentalSpaces',
+            'courses',
+            'products',
+            'clinics',
+            'doctorPlans',
+            'clinicPlans',
+            'supplierPlans',
+            'planType',
+            'currentSubscription',
+            'availableGateways',
             'affiliateSettings'
         ));
     }

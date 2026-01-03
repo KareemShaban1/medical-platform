@@ -10,9 +10,10 @@ class ClinicController extends Controller
 {
 	public function index(Request $request)
 	{
-		// Get initial clinics with pagination
+		// Get initial clinics with pagination (exclude rental space companies)
 		$clinics = Clinic::approved()
 			->where('status', true)
+			->notRentalSpaceCompany()
 			->with(['approvement'])
 			->paginate(12);
 
@@ -23,6 +24,7 @@ class ClinicController extends Controller
 	{
 		$query = Clinic::approved()
 			->where('status', true)
+			->notRentalSpaceCompany()
 			->with(['approvement']);
 
 		// Search filter
@@ -50,16 +52,16 @@ class ClinicController extends Controller
 			default:
 				$query->orderBy('name', 'asc');
 		}
-        // Location filters
-        if ($request->filled('governorate_id')) {
-            $query->where('governorate_id', $request->governorate_id);
-        }
-        if ($request->filled('city_id')) {
-            $query->where('city_id', $request->city_id);
-        }
-        if ($request->filled('area_id')) {
-            $query->where('area_id', $request->area_id);
-        }
+		// Location filters
+		if ($request->filled('governorate_id')) {
+			$query->where('governorate_id', $request->governorate_id);
+		}
+		if ($request->filled('city_id')) {
+			$query->where('city_id', $request->city_id);
+		}
+		if ($request->filled('area_id')) {
+			$query->where('area_id', $request->area_id);
+		}
 
 		// Get current page from request
 		$currentPage = $request->get('page', 1);
@@ -105,25 +107,26 @@ class ClinicController extends Controller
 	/**
 	 * Show clinic details
 	 */
-    public function show($id)
-    {
-        $query = Clinic::approved()
-            ->where('status', true)
-            ->with(['approvement']);
+	public function show($id)
+	{
+		$query = Clinic::approved()
+			->where('status', true)
+			->notRentalSpaceCompany()
+			->with(['approvement']);
 
-        $clinic = null;
-        if (!is_numeric($id)) {
-            $clinic = (clone $query)->where('slug', $id)->first();
-        }
-        if (!$clinic) {
-            $clinic = $query->findOrFail($id);
-        }
+		$clinic = null;
+		if (!is_numeric($id)) {
+			$clinic = (clone $query)->where('slug', $id)->first();
+		}
+		if (!$clinic) {
+			$clinic = $query->findOrFail($id);
+		}
 
 		// Get doctor profiles for this clinic
 		$doctors = \App\Models\DoctorProfile::where('status', \App\Models\DoctorProfile::STATUS_APPROVED)
-            ->whereHas('clinicUser', function($q) use ($clinic) {
-                $q->where('clinic_id', $clinic->id);
-            })
+			->whereHas('clinicUser', function ($q) use ($clinic) {
+				$q->where('clinic_id', $clinic->id);
+			})
 			->with(['speciality', 'clinicUser'])
 			->orderBy('is_featured', 'desc')
 			->orderBy('name')
@@ -132,14 +135,16 @@ class ClinicController extends Controller
 		// Get related clinics with same specialization
 		$relatedClinics = Clinic::approved()
 			->where('status', true)
-            ->where('id', '!=', $clinic->id)
+			->notRentalSpaceCompany()
+			->where('id', '!=', $clinic->id)
 			->limit(4)
 			->get();
 
 		// Get nearby clinics
 		$nearbyClinics = Clinic::approved()
 			->where('status', true)
-            ->where('id', '!=', $clinic->id)
+			->notRentalSpaceCompany()
+			->where('id', '!=', $clinic->id)
 			->limit(4)
 			->get();
 
