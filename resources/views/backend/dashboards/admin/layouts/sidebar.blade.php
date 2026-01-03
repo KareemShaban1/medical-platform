@@ -277,7 +277,7 @@
                 'view announcements',
                 'view banners',
                 'view
-                            translations'
+                                        translations'
             )
             <li class="side-nav-item">
                 <a data-bs-toggle="collapse" href="#sidebarUsersManagement" aria-expanded="false"
@@ -649,7 +649,7 @@
                 'view affiliate settings',
                 'view affiliate payouts',
                 'view affiliate
-                            users'
+                                        users'
             )
             <li class="side-nav-item">
                 <a data-bs-toggle="collapse" href="#sidebarAffiliates" aria-expanded="false"
@@ -671,6 +671,13 @@
                         <li>
                             <a href="{{ route('admin.affiliates.users.index') }}">
                                 <span> {{ __('Affiliate Users') }} </span>
+                            </a>
+                        </li>
+                        @endhasPermission
+                        @hasPermission('view trash affiliate users')
+                        <li>
+                            <a href="{{ route('admin.affiliates.users.trash') }}">
+                                <span> {{ __('Trash Affiliate Users') }} </span>
                             </a>
                         </li>
                         @endhasPermission

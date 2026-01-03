@@ -367,11 +367,29 @@ Route::group(
         // Affiliate Management
         Route::group(['prefix' => 'affiliates'], function () {
             Route::get('/', [\App\Http\Controllers\Backend\Dashboards\Admin\AffiliateCodeController::class, 'index'])->name('affiliates.index');
+
+            // Affiliate Users Management
             Route::get('/users', [\App\Http\Controllers\Backend\Dashboards\Admin\AffiliateUserController::class, 'index'])
                 ->name('affiliates.users.index');
+            Route::get('/users/data', [\App\Http\Controllers\Backend\Dashboards\Admin\AffiliateUserController::class, 'data'])
+                ->name('affiliates.users.data');
+            Route::get('/users/trash', [\App\Http\Controllers\Backend\Dashboards\Admin\AffiliateUserController::class, 'trash'])
+                ->name('affiliates.users.trash');
+            Route::get('/users/trash/data', [\App\Http\Controllers\Backend\Dashboards\Admin\AffiliateUserController::class, 'trashData'])
+                ->name('affiliates.users.trash.data');
             Route::get('/users/{affiliateCode}', [\App\Http\Controllers\Backend\Dashboards\Admin\AffiliateUserController::class, 'show'])
                 ->whereNumber('affiliateCode')
                 ->name('affiliates.users.show');
+            Route::delete('/users/{id}', [\App\Http\Controllers\Backend\Dashboards\Admin\AffiliateUserController::class, 'destroy'])
+                ->whereNumber('id')
+                ->name('affiliates.users.destroy');
+            Route::post('/users/{id}/restore', [\App\Http\Controllers\Backend\Dashboards\Admin\AffiliateUserController::class, 'restore'])
+                ->whereNumber('id')
+                ->name('affiliates.users.restore');
+            Route::delete('/users/{id}/force-delete', [\App\Http\Controllers\Backend\Dashboards\Admin\AffiliateUserController::class, 'forceDelete'])
+                ->whereNumber('id')
+                ->name('affiliates.users.force-delete');
+
             Route::get('/settings', [\App\Http\Controllers\Backend\Dashboards\Admin\AffiliateSettingsController::class, 'index'])->name('affiliates.settings');
             Route::post('/settings', [\App\Http\Controllers\Backend\Dashboards\Admin\AffiliateSettingsController::class, 'update'])->name('affiliates.settings.update');
             Route::get('/payouts', [\App\Http\Controllers\Backend\Dashboards\Admin\AffiliatePayoutController::class, 'index'])
