@@ -1,5 +1,9 @@
 @extends('backend.dashboards.admin.layouts.app')
 
+@push('styles')
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
+@endpush
+
 @section('content')
 <div class="card mt-3">
     <div class="card-header">
@@ -79,6 +83,8 @@
 @endsection
 
 @push('scripts')
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
 <script>
     // Main image preview
     document.getElementById('main_image').addEventListener('change', function() {
@@ -92,6 +98,20 @@
             };
             reader.readAsDataURL(file);
         }
+    });
+
+    $(document).ready(function() {
+        $('#content_en').summernote({
+            placeholder: '{{ __('Write content in English here...') }}',
+            tabsize: 2,
+            height: 200
+        });
+        $('#content_ar').summernote({
+             placeholder: '{{ __('Write content in Arabic here...') }}',
+            tabsize: 2,
+            height: 200,
+             direction: 'rtl'
+        });
     });
 </script>
 @endpush
