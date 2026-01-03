@@ -513,9 +513,16 @@
 				</div> -->
 				<div class="blog-meta-item">
 					<i class="fas fa-folder blog-meta-icon"></i>
-					<span>{{ app()->getLocale() == 'ar' ? $blogPost->blogCategory->name_ar : $blogPost->blogCategory->name_en }}</span>
+					<span>
+						{{ 
+							$blogPost->blogCategory
+								? (app()->getLocale() === 'ar'
+									? $blogPost->blogCategory->name_ar
+									: $blogPost->blogCategory->name_en)
+								: __('Uncategorized')
+						}}
+					</span>
 				</div>
-
 			</div>
 		</div>
 	</div>
@@ -616,7 +623,7 @@
 					class="post-card-image">
 				<div class="post-card-content">
 					<span
-						class="post-card-category">{{ app()->getLocale() == 'ar' ? $relatedPost->blogCategory->name_ar : $relatedPost->blogCategory->name_en }}</span>
+						class="post-card-category">{{ $relatedPost->blogCategory ? (app()->getLocale() == 'ar' ? $relatedPost->blogCategory->name_ar : $relatedPost->blogCategory->name_en) : __('Uncategorized') }}</span>
 					<h3 class="post-card-title">{{ $relatedPost->title }}</h3>
 					<!-- <div class="post-card-meta">
 						<span><i class="fas fa-calendar"></i>
