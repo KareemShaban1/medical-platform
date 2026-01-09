@@ -70,6 +70,7 @@ class ClinicRolePermissionSeeder extends Seeder
             'Prescriptions' => ['view prescriptions', 'create prescription', 'update prescription', 'delete prescription', 'view trash prescriptions', 'print prescription', 'download prescription'],
             'Subscriptions' => ['view subscriptions', 'subscribe', 'cancel subscription', 'view subscription usage', 'view trash subscriptions'],
             'Notifications' => ['view notifications', 'mark notification as read', 'mark all notifications as read'],
+            'Tickets' => ['view tickets', 'create ticket', 'reply ticket'],
             'Settings' => ['view settings', 'update settings'],
         ];
 

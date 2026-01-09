@@ -89,7 +89,7 @@ Route::group(
 
             // Alternative: Without middleware (check is done in controller - see ProductController::store)
             // Route::post('/', [ProductController::class, 'store'])->name('products.store');
-
+    
             Route::get('/{id}', [ProductController::class, 'show'])->name('products.show');
             Route::put('/{id}', [ProductController::class, 'update'])->name('products.update');
             Route::patch('/{id}/toggle-status', [ProductController::class, 'toggleStatus'])->name('products.toggle.status');
@@ -197,6 +197,15 @@ Route::group(
             ->name('cities')->withoutMiddleware(['auth:supplier', 'check.supplier.approval']);
         Route::get('/areas', [SupplierController::class, 'getAreas'])
             ->name('areas')->withoutMiddleware(['auth:supplier', 'check.supplier.approval']);
+
+        // Tickets Management
+        Route::group(['prefix' => 'tickets'], function () {
+            Route::get('/data', [\App\Http\Controllers\Backend\Dashboards\Supplier\TicketController::class, 'data'])->name('tickets.data');
+            Route::get('/', [\App\Http\Controllers\Backend\Dashboards\Supplier\TicketController::class, 'index'])->name('tickets.index');
+            Route::post('/', [\App\Http\Controllers\Backend\Dashboards\Supplier\TicketController::class, 'store'])->name('tickets.store');
+            Route::get('/{id}', [\App\Http\Controllers\Backend\Dashboards\Supplier\TicketController::class, 'show'])->name('tickets.show');
+            Route::post('/{id}/reply', [\App\Http\Controllers\Backend\Dashboards\Supplier\TicketController::class, 'reply'])->name('tickets.reply');
+        });
     }
 );
 

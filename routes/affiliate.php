@@ -23,6 +23,15 @@ Route::group(
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::post('/payout-requests', [\App\Http\Controllers\Backend\Dashboards\Affiliate\PayoutRequestController::class, 'store'])
             ->name('payouts.store');
+
+        // Tickets Management
+        Route::group(['prefix' => 'tickets'], function () {
+            Route::get('/data', [\App\Http\Controllers\Backend\Dashboards\Affiliate\TicketController::class, 'data'])->name('tickets.data');
+            Route::get('/', [\App\Http\Controllers\Backend\Dashboards\Affiliate\TicketController::class, 'index'])->name('tickets.index');
+            Route::post('/', [\App\Http\Controllers\Backend\Dashboards\Affiliate\TicketController::class, 'store'])->name('tickets.store');
+            Route::get('/{id}', [\App\Http\Controllers\Backend\Dashboards\Affiliate\TicketController::class, 'show'])->name('tickets.show');
+            Route::post('/{id}/reply', [\App\Http\Controllers\Backend\Dashboards\Affiliate\TicketController::class, 'reply'])->name('tickets.reply');
+        });
     }
 );
 

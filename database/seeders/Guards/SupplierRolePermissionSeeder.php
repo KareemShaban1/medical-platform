@@ -53,6 +53,7 @@ class SupplierRolePermissionSeeder extends Seeder
             'Notifications' => ['view notifications', 'mark notification as read', 'mark all notifications as read'],
             'Announcements' => ['dismiss announcement'],
             'Payouts' => ['view payouts', 'update payout profile', 'request payout'],
+            'Tickets' => ['view tickets', 'create ticket', 'reply ticket'],
         ];
 
         $permissions = [];

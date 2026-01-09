@@ -19,8 +19,8 @@
 
 	<div class="h-100" id="leftside-menu-container" data-simplebar="">
 		<div class="px-3 py-2">
-			<input type="text" id="sidebar-search" class="form-control"
-				placeholder="{{ __('Search menu...') }}" autocomplete="off">
+			<input type="text" id="sidebar-search" class="form-control" placeholder="{{ __('Search menu...') }}"
+				autocomplete="off">
 		</div>
 
 		<ul class="side-nav">
@@ -28,6 +28,12 @@
 				<a href="{{ route('affiliate.dashboard') }}" class="side-nav-link">
 					<i class="uil-home-alt"></i>
 					<span> {{ __('Affiliate Dashboard') }} </span>
+				</a>
+			</li>
+			<li class="side-nav-item">
+				<a href="{{ route('affiliate.tickets.index') }}" class="side-nav-link">
+					<i class="uil-headphones"></i>
+					<span> {{ __('Support Tickets') }} </span>
 				</a>
 			</li>
 		</ul>

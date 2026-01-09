@@ -409,6 +409,15 @@ Route::group(
             Route::get('prescriptions/print/{appointmentId}', [PrescriptionController::class, 'print'])->name('prescriptions.print');
             Route::get('prescriptions/download/{appointmentId}', [PrescriptionController::class, 'downloadPdf'])->name('prescriptions.download');
         });
+
+        // Tickets Management
+        Route::group(['prefix' => 'tickets'], function () {
+            Route::get('/data', [\App\Http\Controllers\Backend\Dashboards\Clinic\TicketController::class, 'data'])->name('tickets.data');
+            Route::get('/', [\App\Http\Controllers\Backend\Dashboards\Clinic\TicketController::class, 'index'])->name('tickets.index');
+            Route::post('/', [\App\Http\Controllers\Backend\Dashboards\Clinic\TicketController::class, 'store'])->name('tickets.store');
+            Route::get('/{id}', [\App\Http\Controllers\Backend\Dashboards\Clinic\TicketController::class, 'show'])->name('tickets.show');
+            Route::post('/{id}/reply', [\App\Http\Controllers\Backend\Dashboards\Clinic\TicketController::class, 'reply'])->name('tickets.reply');
+        });
     }
 );
 

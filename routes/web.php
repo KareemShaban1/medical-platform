@@ -76,7 +76,7 @@ Route::group(
 
         // Subscription Plans (Public)
         // Route::get('/subscriptions/plans', [\App\Http\Controllers\Frontend\SubscriptionController::class, 'plans'])->name('subscriptions.plans');
-
+    
         // Doctor Profile Routes
         Route::get('/doctors', [\App\Http\Controllers\Frontend\DoctorController::class, 'index'])->name('doctors.index');
         Route::post('/doctors/filter', [\App\Http\Controllers\Frontend\DoctorController::class, 'filter'])->name('doctors.filter');
@@ -164,6 +164,13 @@ Route::group([
     Route::get('/orders', [\App\Http\Controllers\Frontend\Doctor\OrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{id}/details', [\App\Http\Controllers\Frontend\Doctor\OrderController::class, 'orderDetails'])->name('orders.show');
     Route::get('/courses', [\App\Http\Controllers\Frontend\Doctor\CourseController::class, 'index'])->name('courses.index');
+
+    // Tickets Management
+    Route::get('/tickets/data', [\App\Http\Controllers\Frontend\Doctor\TicketController::class, 'data'])->name('tickets.data');
+    Route::get('/tickets', [\App\Http\Controllers\Frontend\Doctor\TicketController::class, 'index'])->name('tickets.index');
+    Route::post('/tickets', [\App\Http\Controllers\Frontend\Doctor\TicketController::class, 'store'])->name('tickets.store');
+    Route::get('/tickets/{id}', [\App\Http\Controllers\Frontend\Doctor\TicketController::class, 'show'])->name('tickets.show');
+    Route::post('/tickets/{id}/reply', [\App\Http\Controllers\Frontend\Doctor\TicketController::class, 'reply'])->name('tickets.reply');
 });
 
 // Doctor Registration Routes (public)
