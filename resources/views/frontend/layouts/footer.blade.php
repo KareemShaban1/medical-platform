@@ -29,7 +29,7 @@
 			<div class="space-y-2">
 				<h3 class="text-lg font-semibold mb-4">{{ __('services') }}</h3>
 				<ul class="space-y-2">
-					<li><a href="{{ route('products') }}"
+					<li><a href="{{ route('clinics') }}"
 							class="text-white-400 hover:text-white transition">{{ __('about item 1') }}</a>
 					</li>
 					<li><a href="{{ route('jobs') }}"
