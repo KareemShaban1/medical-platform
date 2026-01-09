@@ -91,14 +91,14 @@
 									'route' => route('user.lab-orders.index')
 								],
 							// Tickets card
-							[
-								'icon' => 'fa-ticket-alt',
-								'color' => 'text-red-500',
-								'title' =>
-									__('Manage Tickets'),
-								'desc' => __('View and manage your support tickets'),
-								'route' => route('user.tickets.index')
-							],
+						[
+							'icon' => 'fa-headset',
+							'color' => 'text-red-500',
+							'title' =>
+								__('Support Tickets'),
+							'desc' => __('Submit and manage support tickets'),
+							'route' => route('user.tickets.index')
+						],
 							];
 						@endphp
 
