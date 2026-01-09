@@ -42,14 +42,14 @@
 								class="form-label mb-1">{{ __('Start Date') }}</label>
 							<input type="date" id="filter_start_date"
 								class="form-control"
-								value="{{ now()->toDateString() }}">
+								value="{{ now()->startOfMonth()->toDateString() }}">
 						</div>
 						<div class="col-md-3">
 							<label
 								class="form-label mb-1">{{ __('End Date') }}</label>
 							<input type="date" id="filter_end_date"
 								class="form-control"
-								value="{{ now()->toDateString() }}">
+								value="{{ now()->endOfMonth()->toDateString() }}">
 						</div>
 						<div class="col-md-3 d-flex gap-2">
 							<button id="applyFilters"
