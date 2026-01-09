@@ -5,7 +5,7 @@ namespace App\Repository\User;
 use App\Interfaces\User\TicketRepositoryInterface;
 use App\Models\Ticket;
 use App\Models\TicketReply;
-use App\Models\User;
+use App\Models\TicketType;
 use Illuminate\Support\Facades\DB;
 
 class TicketRepository implements TicketRepositoryInterface
@@ -17,7 +17,7 @@ class TicketRepository implements TicketRepositoryInterface
 
     public function data()
     {
-        $tickets = Ticket::with(['latestReply'])->mine()->latest();
+        $tickets = Ticket::with(['ticketType', 'latestReply'])->mine()->latest();
 
         return datatables()->of($tickets)
             ->addColumn('ticket_number', fn($item) => $item->ticket_number)
@@ -33,10 +33,21 @@ class TicketRepository implements TicketRepositoryInterface
     public function store($request)
     {
         return DB::transaction(function () use ($request) {
-            $data = $request;
-            $data['user_id'] = auth('patient')->id();
+            $user = $this->getCurrentUser();
 
-            $ticket = Ticket::create($data);
+            if (!$user) {
+                throw new \Exception('No authenticated user found');
+            }
+
+            $data = $request;
+
+            $ticket = Ticket::create([
+                'ticketable_type' => get_class($user),
+                'ticketable_id' => $user->id,
+                'ticket_type_id' => $data['type'],
+                'details' => $data['details'],
+                'status' => Ticket::STATUS_PENDING,
+            ]);
 
             if (!empty($data['attachments'])) {
                 foreach ($data['attachments'] as $attachment) {
@@ -50,7 +61,7 @@ class TicketRepository implements TicketRepositoryInterface
 
     public function show($id)
     {
-        return Ticket::with(['replies.repliedBy'])->mine()->findOrFail($id);
+        return Ticket::with(['ticketType', 'replies.repliedBy'])->mine()->findOrFail($id);
     }
 
     public function reply($id, $request)
@@ -63,10 +74,12 @@ class TicketRepository implements TicketRepositoryInterface
                 throw new \Exception('Cannot reply to a closed ticket');
             }
 
+            $user = $this->getCurrentUser();
+
             $reply = TicketReply::create([
                 'ticket_id' => $ticket->id,
-                'replied_by_type' => User::class,
-                'replied_by_id' => auth('patient')->id(),
+                'replied_by_type' => get_class($user),
+                'replied_by_id' => $user->id,
                 'message' => $request['message'],
                 'is_admin_reply' => false,
             ]);
@@ -75,7 +88,43 @@ class TicketRepository implements TicketRepositoryInterface
         });
     }
 
+    /**
+     * Get available ticket types for the current user.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function getAvailableTypes()
+    {
+        $user = $this->getCurrentUser();
+
+        if (!$user) {
+            return collect();
+        }
+
+        $userType = $user->getTicketUserType();
+
+        return TicketType::active()->forUserType($userType)->get();
+    }
+
     /** ---------------------- PRIVATE HELPERS ---------------------- */
+
+    /**
+     * Get the currently authenticated user from any guard.
+     *
+     * @return mixed|null
+     */
+    private function getCurrentUser()
+    {
+        $guards = ['patient', 'clinic', 'supplier', 'affiliate'];
+
+        foreach ($guards as $guard) {
+            if (auth($guard)->check()) {
+                return auth($guard)->user();
+            }
+        }
+
+        return null;
+    }
 
     private function getLastReplyInfo($item): string
     {

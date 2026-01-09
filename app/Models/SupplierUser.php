@@ -9,11 +9,12 @@ use App\Models\Role;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
+use App\Traits\HasTickets;
 
 class SupplierUser extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\SupplierUserFactory> */
-    use HasFactory, HasRoles, SoftDeletes , Notifiable;
+    use HasFactory, HasRoles, SoftDeletes, Notifiable, HasTickets;
 
     protected $guard_name = 'supplier';
 

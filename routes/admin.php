@@ -296,6 +296,14 @@ Route::group(
 
         Route::resource('tickets', \App\Http\Controllers\Backend\Dashboards\Admin\TicketController::class)->only(['index', 'show', 'destroy']);
 
+        // Ticket Types Management
+        Route::get('ticket-types/data', [\App\Http\Controllers\Backend\Dashboards\Admin\TicketTypeController::class, 'data'])->name('ticket-types.data');
+        Route::get('ticket-types/trash', [\App\Http\Controllers\Backend\Dashboards\Admin\TicketTypeController::class, 'trash'])->name('ticket-types.trash');
+        Route::get('ticket-types/trash/data', [\App\Http\Controllers\Backend\Dashboards\Admin\TicketTypeController::class, 'trashData'])->name('ticket-types.trash.data');
+        Route::post('ticket-types/{id}/restore', [\App\Http\Controllers\Backend\Dashboards\Admin\TicketTypeController::class, 'restore'])->name('ticket-types.restore');
+        Route::delete('ticket-types/{id}/force-delete', [\App\Http\Controllers\Backend\Dashboards\Admin\TicketTypeController::class, 'forceDelete'])->name('ticket-types.force-delete');
+        Route::resource('ticket-types', \App\Http\Controllers\Backend\Dashboards\Admin\TicketTypeController::class)->except(['create', 'edit']);
+
         // Governorates Management
         Route::get('governorates/data', [\App\Http\Controllers\Backend\Dashboards\Admin\GovernorateController::class, 'data'])->name('governorates.data');
         Route::get('governorates/trash', [\App\Http\Controllers\Backend\Dashboards\Admin\GovernorateController::class, 'trash'])->name('governorates.trash');

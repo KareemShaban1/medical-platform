@@ -25,13 +25,11 @@ use Illuminate\Support\ServiceProvider;
 
 
 class RepositoryServiceProvider extends ServiceProvider
-
 {
 
 
 
     public function register()
-
     {
 
         $this->app->bind('App\Interfaces\Admin\CategoryRepositoryInterface', 'App\Repository\Admin\CategoryRepository');
@@ -104,7 +102,7 @@ class RepositoryServiceProvider extends ServiceProvider
 
 
 
-    $this->app->bind('App\Interfaces\Clinic\ExpenseRepositoryInterface', 'App\Repository\Clinic\ExpenseRepository');
+        $this->app->bind('App\Interfaces\Clinic\ExpenseRepositoryInterface', 'App\Repository\Clinic\ExpenseRepository');
 
 
 
@@ -175,9 +173,9 @@ class RepositoryServiceProvider extends ServiceProvider
 
 
 
-			// payslip repository
+        // payslip repository
 
-			$this->app->bind('App\Interfaces\Clinic\PayslipRepositoryInterface', 'App\Repository\Clinic\PayslipRepository');
+        $this->app->bind('App\Interfaces\Clinic\PayslipRepositoryInterface', 'App\Repository\Clinic\PayslipRepository');
 
 
 
@@ -186,6 +184,8 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind('App\Interfaces\Admin\TicketRepositoryInterface', 'App\Repository\Admin\TicketRepository');
 
         $this->app->bind('App\Interfaces\User\TicketRepositoryInterface', 'App\Repository\User\TicketRepository');
+
+        $this->app->bind('App\Interfaces\Admin\TicketTypeRepositoryInterface', 'App\Repository\Admin\TicketTypeRepository');
 
 
 
@@ -231,7 +231,6 @@ class RepositoryServiceProvider extends ServiceProvider
 
 
     public function boot()
-
     {
 
         //

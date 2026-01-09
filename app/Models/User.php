@@ -6,11 +6,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Traits\HasTickets;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasTickets;
 
     /**
      * The attributes that are mass assignable.
@@ -62,14 +63,6 @@ class User extends Authenticatable
     public function otps()
     {
         return $this->morphMany(UserOtp::class, 'otpable');
-    }
-
-    /**
-     * Get the tickets for the user
-     */
-    public function tickets()
-    {
-        return $this->hasMany(Ticket::class);
     }
 
     /**

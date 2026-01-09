@@ -90,7 +90,7 @@ class Patient extends Authenticatable
     {
         return $query->whereHas('doctors', function ($q) use ($doctorProfileId, $clinicId) {
             $q->where('doctor_profiles.id', $doctorProfileId)
-              ->where('doctor_patient.clinic_id', $clinicId);
+                ->where('doctor_patient.clinic_id', $clinicId);
         });
     }
 
@@ -186,6 +186,12 @@ class Patient extends Authenticatable
     public function clinic()
     {
         return $this->belongsToMany(Clinic::class, 'doctor_patient')
-                    ->distinct();
+            ->distinct();
+    }
+
+    //getTicketUserType()
+    public static function getTicketUserType()
+    {
+        return 'user';
     }
 }

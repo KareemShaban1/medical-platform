@@ -17,23 +17,23 @@ class TicketRepository implements TicketRepositoryInterface
 
     public function data()
     {
-        $tickets = Ticket::with(['user', 'latestReply'])->latest();
+        $tickets = Ticket::with(['ticketable', 'ticketType', 'latestReply'])->latest();
 
         return datatables()->of($tickets)
             ->addColumn('ticket_number', fn($item) => $item->ticket_number)
-            ->addColumn('user_name', fn($item) => $item->user->name ?? 'N/A')
+            ->addColumn('user_name', fn($item) => $this->getUserInfo($item))
             ->addColumn('type', fn($item) => $item->type_badge)
             ->addColumn('status', fn($item) => $item->status_badge)
             ->addColumn('created_at', fn($item) => $item->created_at->format('Y-m-d H:i'))
             ->addColumn('last_reply', fn($item) => $this->getLastReplyInfo($item))
             ->addColumn('action', fn($item) => $this->ticketActions($item))
-            ->rawColumns(['type', 'status', 'last_reply', 'action'])
+            ->rawColumns(['user_name', 'type', 'status', 'last_reply', 'action'])
             ->make(true);
     }
 
     public function show($id)
     {
-        return Ticket::with(['user', 'replies.repliedBy'])->findOrFail($id);
+        return Ticket::with(['ticketable', 'ticketType', 'replies.repliedBy'])->findOrFail($id);
     }
 
     public function updateStatus($id, $status)
@@ -78,16 +78,16 @@ class TicketRepository implements TicketRepositoryInterface
 
     public function trashData()
     {
-        $tickets = Ticket::onlyTrashed()->with(['user', 'latestReply'])->latest();
+        $tickets = Ticket::onlyTrashed()->with(['ticketable', 'ticketType', 'latestReply'])->latest();
 
         return datatables()->of($tickets)
             ->addColumn('ticket_number', fn($item) => $item->ticket_number)
-            ->addColumn('user_name', fn($item) => $item->user->name ?? 'N/A')
+            ->addColumn('user_name', fn($item) => $this->getUserInfo($item))
             ->addColumn('type', fn($item) => $item->type_badge)
             ->addColumn('status', fn($item) => '<span class="badge bg-secondary">Deleted</span>')
             ->addColumn('deleted_at', fn($item) => $item->deleted_at->format('Y-m-d H:i:s'))
             ->addColumn('action', fn($item) => $this->trashActions($item))
-            ->rawColumns(['type', 'status', 'action'])
+            ->rawColumns(['user_name', 'type', 'status', 'action'])
             ->make(true);
     }
 
@@ -109,6 +109,13 @@ class TicketRepository implements TicketRepositoryInterface
     }
 
     /** ---------------------- PRIVATE HELPERS ---------------------- */
+
+    private function getUserInfo($item): string
+    {
+        $name = $item->ticketable?->name ?? 'N/A';
+        $typeBadge = $item->user_type_badge;
+        return $name . '<br>' . $typeBadge;
+    }
 
     private function getLastReplyInfo($item): string
     {

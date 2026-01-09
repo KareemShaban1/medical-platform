@@ -58,7 +58,7 @@ class AdminRolePermissionSeeder extends Seeder
             'Course Enrollments' => ['view course enrollments', 'view trash course enrollments', 'update course enrollment', 'delete course enrollment'],
             'Jobs' => ['view jobs', 'view trash jobs', 'create job', 'update job', 'delete job', 'restore job', 'force delete job', 'toggle job status'],
             'Purchase Requests' => ['view purchase requests', 'view trash purchase requests'],
-            'Tickets' => ['view tickets', 'view trash tickets', 'update ticket', 'delete ticket', 'restore ticket', 'force delete ticket', 'reply ticket', 'update ticket status'],
+            'Tickets' => ['view tickets', 'view trash tickets', 'update ticket', 'delete ticket', 'restore ticket', 'force delete ticket', 'reply ticket', 'update ticket status', 'view ticket types', 'view trash ticket types', 'create ticket type', 'update ticket type', 'delete ticket type', 'restore ticket type', 'force delete ticket type'],
             'Locations' => [
                 'view governorates',
                 'view trash governorates',

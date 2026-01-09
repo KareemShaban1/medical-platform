@@ -7,6 +7,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Permission\Traits\HasRoles;
+use App\Traits\HasTickets;
 
 /**
  * @method bool isDoctor()
@@ -15,7 +16,7 @@ use Spatie\Permission\Traits\HasRoles;
 class ClinicUser extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\ClinicUserFactory> */
-    use HasFactory, HasRoles, SoftDeletes, Notifiable;
+    use HasFactory, HasRoles, SoftDeletes, Notifiable, HasTickets;
 
     protected $guard_name = 'clinic';
 

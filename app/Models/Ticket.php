@@ -18,13 +18,11 @@ class Ticket extends Model implements HasMedia
     const STATUS_ACCEPTED = 'accepted';
     const STATUS_REJECTED = 'rejected';
 
-    const TYPE_REFUND = 'refund';
-    const TYPE_COMPLAINT = 'complaint';
-
     protected $fillable = [
         'ticket_number',
-        'user_id',
-        'type',
+        'ticketable_type',
+        'ticketable_id',
+        'ticket_type_id',
         'details',
         'status',
         'closed_at',
@@ -52,9 +50,34 @@ class Ticket extends Model implements HasMedia
         return $number;
     }
 
+    /**
+     * Get the owning ticketable model (User, ClinicUser, SupplierUser, AffiliateUser).
+     */
+    public function ticketable()
+    {
+        return $this->morphTo();
+    }
+
+    /**
+     * Get the ticket type.
+     */
+    public function ticketType()
+    {
+        return $this->belongsTo(TicketType::class);
+    }
+
+    /**
+     * Alias for backward compatibility - get the user if ticketable is User.
+     */
     public function user()
     {
-        return $this->belongsTo(User::class);
+        // Return the ticketable if it's a User, otherwise return null relation
+        if ($this->ticketable_type === User::class) {
+            return $this->ticketable();
+        }
+
+        // Return empty belongsTo for backward compatibility
+        return $this->belongsTo(User::class, 'ticketable_id');
     }
 
     public function replies()
@@ -83,19 +106,66 @@ class Ticket extends Model implements HasMedia
 
     public function getTypeBadgeAttribute()
     {
-        $badges = [
-            self::TYPE_REFUND => 'primary',
-            self::TYPE_COMPLAINT => 'warning'
-        ];
+        if ($this->ticketType) {
+            return $this->ticketType->badge;
+        }
 
-        $class = $badges[$this->type] ?? 'secondary';
-        return '<span class="badge bg-' . $class . '">' . ucfirst($this->type) . '</span>';
+        return '<span class="badge bg-secondary">Unknown</span>';
     }
 
+    /**
+     * Get the user type label for display.
+     */
+    public function getUserTypeLabelAttribute(): string
+    {
+        return match ($this->ticketable_type) {
+            User::class => 'Patient',
+            ClinicUser::class => 'Clinic User',
+            SupplierUser::class => 'Supplier User',
+            AffiliateUser::class => 'Affiliate User',
+            default => 'Unknown',
+        };
+    }
 
+    /**
+     * Get the user type badge for display.
+     */
+    public function getUserTypeBadgeAttribute(): string
+    {
+        $colors = [
+            User::class => 'primary',
+            ClinicUser::class => 'success',
+            SupplierUser::class => 'info',
+            AffiliateUser::class => 'warning',
+        ];
+
+        $color = $colors[$this->ticketable_type] ?? 'secondary';
+        return '<span class="badge bg-' . $color . '">' . $this->user_type_label . '</span>';
+    }
+
+    /**
+     * Scope for tickets belonging to the currently authenticated user.
+     * Works with all auth guards.
+     */
     public function scopeMine($query)
     {
-        return $query->where('user_id', auth('patient')->id());
+        $user = null;
+        $guards = ['patient', 'clinic', 'supplier', 'affiliate'];
+
+        foreach ($guards as $guard) {
+            if (auth($guard)->check()) {
+                $user = auth($guard)->user();
+                break;
+            }
+        }
+
+        if ($user) {
+            return $query->where('ticketable_type', get_class($user))
+                ->where('ticketable_id', $user->id);
+        }
+
+        // No authenticated user, return empty result
+        return $query->whereRaw('1 = 0');
     }
 
     public function scopeByStatus($query, $status)
@@ -103,9 +173,9 @@ class Ticket extends Model implements HasMedia
         return $query->where('status', $status);
     }
 
-    public function scopeByType($query, $type)
+    public function scopeByType($query, $typeId)
     {
-        return $query->where('type', $type);
+        return $query->where('ticket_type_id', $typeId);
     }
 
     public function scopeOpen($query)

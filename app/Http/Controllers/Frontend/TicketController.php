@@ -18,7 +18,8 @@ class TicketController extends Controller
 
     public function index()
     {
-        return view('frontend.tickets.index');
+        $ticketTypes = $this->ticketRepo->getAvailableTypes();
+        return view('frontend.tickets.index', compact('ticketTypes'));
     }
 
     public function data()
