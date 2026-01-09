@@ -101,7 +101,7 @@
 							class="form-label">{{ __('Assign to Doctor') }}</label>
 						<select class="form-select select2" id="doctor_profile_id"
 							required multiple name="doctor_profile_id">
-							<option value="">
+							<option value="" disabled>
 								{{ __('Select Doctor (Optional)') }}
 							</option>
 							@foreach($doctors as $doctor)
@@ -182,7 +182,7 @@
 						<select class="form-select select2"
 							id="edit_doctor_profile_id" multiple
 							name="doctor_profile_id" required>
-							<option value="">
+							<option value="" disabled>
 								{{ __('Select Doctor (Optional)') }}
 							</option>
 							@foreach($doctors as $doctor)
@@ -211,8 +211,26 @@
 @push('scripts')
 @include('backend.components.subscription-limit-handler')
 <script>
-$('.select2').select2();
 $(document).ready(function() {
+	$('#doctor_profile_id').select2({
+		dropdownParent: $('#addPatientModal')
+	});
+	$('#edit_doctor_profile_id').select2({
+		dropdownParent: $('#editPatientModal')
+	});
+
+	$('#addPatientModal').on('shown.bs.modal', function() {
+		$('#doctor_profile_id').select2({
+			dropdownParent: $('#addPatientModal')
+		});
+	});
+
+	$('#editPatientModal').on('shown.bs.modal', function() {
+		$('#edit_doctor_profile_id').select2({
+			dropdownParent: $('#editPatientModal')
+		});
+	});
+
 	// Initialize DataTable
 	var table = $('#patients-table').DataTable({
 		processing: true,
@@ -392,7 +410,7 @@ function editPatient(id) {
 	$('#editPatientModal').modal('show');
 
 	// Clear previous doctor options before appending new ones
-	$('#edit_doctor_profile_id').empty().append('<option value="">Select Doctor (Optional)</option>');
+	$('#edit_doctor_profile_id').empty().append('<option value="" disabled>{{ __('Select Doctor') }}</option>');
 
 	$.ajax({
 		url: "{{ route('clinic.patients.edit', ':id') }}".replace(':id', id),
@@ -417,6 +435,7 @@ function editPatient(id) {
 					</option>
 				`);
 			});
+			$('#edit_doctor_profile_id').trigger('change');
 		},
 		error: function(xhr) {
 			console.error('Error fetching patient:', xhr);
