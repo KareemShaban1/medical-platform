@@ -158,7 +158,7 @@
     </div>
 @endsection
 
-@push('js')
+@push('scripts')
     <script>
         $(document).ready(function () {
             $('#reply-form').on('submit', function (e) {

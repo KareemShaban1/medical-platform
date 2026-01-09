@@ -119,7 +119,7 @@
     </div>
 @endsection
 
-@push('js')
+@push('scripts')
     <script>
         $('#reply-form').on('submit', function (e) {
             e.preventDefault();
