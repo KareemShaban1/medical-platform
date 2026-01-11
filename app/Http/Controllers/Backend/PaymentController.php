@@ -899,29 +899,49 @@ class PaymentController extends Controller
      */
     protected function handleOfferPayment(Request $request, string $gateway, string $orderNumber, array $paymentData)
     {
-        // Extract offer ID from order number (OFFER-{id}-{timestamp}-{uniqid})
-        // Format: OFFER-{offer_id}-{timestamp}-{uniqid}
-        $parts = explode('-', $orderNumber);
-        if (count($parts) < 2 || $parts[0] !== 'OFFER') {
-            Log::error('Invalid offer order number format', [
-                'order_number' => $orderNumber,
-            ]);
-            return redirect()->route('clinic.requests.index')
-                ->with('error', 'Invalid order number format');
-        }
-
-        $offerId = $parts[1]; // The offer ID is the second part
-        $offer = Offer::find($offerId);
-
-        Log::info('Payment return offer', [
-            'offer_id' => $offerId,
-            'offer' => $offer,
+        Log::info('handleOfferPayment called', [
+            'order_number' => $orderNumber,
+            'gateway' => $gateway,
         ]);
 
-        if (! $offer) {
+        // Try to get offer data from cache first (most reliable)
+        $cachedOfferData = \Illuminate\Support\Facades\Cache::get('pending_offer_' . $orderNumber);
+
+        $offerId = null;
+        $offer = null;
+
+        if ($cachedOfferData) {
+            $offerId = $cachedOfferData['offer_id'];
+            $offer = Offer::find($offerId);
+            Log::info('Found offer from cache', ['offer_id' => $offerId]);
+        }
+
+        // If not in cache, try to extract from order number
+        if (!$offer) {
+            // Extract offer ID from order number (OFFER-{id}-{timestamp}-{uniqid})
+            // Format: OFFER-{offer_id}-{timestamp}-{uniqid}
+            $parts = explode('-', $orderNumber);
+            if (count($parts) >= 2 && $parts[0] === 'OFFER') {
+                $offerId = $parts[1]; // The offer ID is the second part
+                $offer = Offer::find($offerId);
+                Log::info('Found offer from order number parsing', ['offer_id' => $offerId]);
+            }
+        }
+
+        // If still not found, try session
+        if (!$offer) {
+            $offerId = session()->get('offer_payment_offer_id');
+            if ($offerId) {
+                $offer = Offer::find($offerId);
+                Log::info('Found offer from session', ['offer_id' => $offerId]);
+            }
+        }
+
+        if (!$offer) {
             Log::error('Offer not found for payment return', [
                 'offer_id' => $offerId,
                 'order_number' => $orderNumber,
+                'has_cache' => !empty($cachedOfferData),
             ]);
 
             return redirect()->route('clinic.requests.index')
@@ -981,7 +1001,7 @@ class PaymentController extends Controller
                         'transaction_id' => $paymentResponse->transactionId ?? $transactionId,
                     ]);
 
-                    // Clear payment session data
+                    // Clear payment session and cache data
                     session()->forget([
                         'payment_order_number',
                         'offer_payment_offer_id',
@@ -989,6 +1009,7 @@ class PaymentController extends Controller
                         'offer_payment_gateway',
                         'offer_payment_transaction_id'
                     ]);
+                    \Illuminate\Support\Facades\Cache::forget('pending_offer_' . $orderNumber);
 
                     return redirect()->route('clinic.requests.show', ['id' => $offer->request_id])
                         ->with('success', 'Payment processed successfully and offer accepted');
@@ -1010,7 +1031,7 @@ class PaymentController extends Controller
                     'transaction_id' => $transactionId,
                 ]);
 
-                // Clear payment session data
+                // Clear payment session and cache data
                 session()->forget([
                     'payment_order_number',
                     'offer_payment_offer_id',
@@ -1018,6 +1039,7 @@ class PaymentController extends Controller
                     'offer_payment_gateway',
                     'offer_payment_transaction_id'
                 ]);
+                \Illuminate\Support\Facades\Cache::forget('pending_offer_' . $orderNumber);
 
                 return redirect()->route('clinic.requests.show', ['id' => $offer->request_id])
                     ->with('success', 'Payment processed successfully and offer accepted');

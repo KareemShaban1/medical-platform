@@ -73,8 +73,8 @@ class RequestController extends Controller
 
     public function show($id)
     {
-                     // apply permissions
-             abort_if(!hasPermission('view purchase requests'), 403, __('You are not authorized to show purchase request'));
+        // apply permissions
+        abort_if(!hasPermission('view purchase requests'), 403, __('You are not authorized to show purchase request'));
 
         try {
             $request = $this->requestRepository->show($id);
@@ -87,8 +87,8 @@ class RequestController extends Controller
 
     public function edit($id)
     {
-                     // apply permissions
-             abort_if(!hasPermission('update purchase request'), 403, __('You are not authorized to update purchase request'));
+        // apply permissions
+        abort_if(!hasPermission('update purchase request'), 403, __('You are not authorized to update purchase request'));
 
         try {
             $request = $this->requestRepository->show($id);
@@ -303,7 +303,7 @@ class RequestController extends Controller
 
             // Prepare payment data
             // Generate unique order number to avoid Paymob duplicate errors on retries
-            $uniqueOrderNumber = 'OFFER-'.$offer->id.'-'.time().'-'.uniqid();
+            $uniqueOrderNumber = 'OFFER-' . $offer->id . '-' . time() . '-' . uniqid();
 
             $paymentData = [
                 'amount' => $totalAmount,
@@ -343,15 +343,28 @@ class RequestController extends Controller
             session()->put('offer_payment_request_id', $requestId);
             session()->put('offer_payment_gateway', $gatewayName);
             session()->put('offer_payment_transaction_id', $paymentResponse->transactionId);
+            session()->put('payment_order_number', $uniqueOrderNumber); // For PaymentController routing
+
+            // Also store in cache for reliability (2 hours)
+            \Illuminate\Support\Facades\Cache::put(
+                'pending_offer_' . $uniqueOrderNumber,
+                [
+                    'offer_id' => $offer->id,
+                    'request_id' => $requestId,
+                    'gateway' => $gatewayName,
+                    'transaction_id' => $paymentResponse->transactionId,
+                    'order_number' => $uniqueOrderNumber,
+                ],
+                now()->addHours(2)
+            );
 
             return response()->json([
                 'success' => true,
                 'redirect_url' => $paymentResponse->redirectUrl,
                 'message' => 'Redirecting to payment gateway...',
             ]);
-
         } catch (\Exception $e) {
-            Log::error('Offer payment processing error: '.$e->getMessage(), [
+            Log::error('Offer payment processing error: ' . $e->getMessage(), [
                 'request_id' => $requestId,
                 'exception' => $e,
             ]);
@@ -429,9 +442,8 @@ class RequestController extends Controller
 
             return redirect()->route('clinic.requests.show', $requestId)
                 ->with('error', 'Payment was not successful. Please try again.');
-
         } catch (\Exception $e) {
-            Log::error('Offer payment return error: '.$e->getMessage());
+            Log::error('Offer payment return error: ' . $e->getMessage());
 
             return redirect()->route('clinic.requests.show', $requestId)
                 ->with('error', 'Payment processing error. Please contact support.');
@@ -459,7 +471,7 @@ class RequestController extends Controller
             // Verify payment
             $paymentResponse = $gateway->verifyPayment($paymentData);
 
-            Log::info('Payment response: '.json_encode($paymentResponse));
+            Log::info('Payment response: ' . json_encode($paymentResponse));
 
             if ($paymentResponse->success) {
                 // Accept the offer with payment info
@@ -488,9 +500,8 @@ class RequestController extends Controller
                     'message' => $paymentResponse->message ?? 'Payment verification failed',
                 ], 400);
             }
-
         } catch (\Exception $e) {
-            Log::error('Offer payment callback error: '.$e->getMessage(), [
+            Log::error('Offer payment callback error: ' . $e->getMessage(), [
                 'exception' => $e,
             ]);
 
