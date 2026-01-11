@@ -1371,6 +1371,7 @@ class PaymentController extends Controller
                 return redirect()->route('home', ['plan_type' => $planType])
                     ->withFragment('subscriptions-plans')
                     ->with('success', $successMessage)
+                    ->with('subscription_success', $successMessage) // Specific key for toaster
                     ->with('message', $successMessage);
             } catch (\Exception $e) {
                 DB::rollBack();
