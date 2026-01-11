@@ -50,7 +50,7 @@ class CheckoutController extends Controller
     public function placeOrder(Request $request)
     {
         $request->validate([
-            'payment_gateway' => 'required|string|in:'.implode(',', PaymentGateway::values()),
+            'payment_gateway' => 'required|string|in:' . implode(',', PaymentGateway::values()),
             'pay_method' => 'nullable|string|in:card,wallet',
             'wallet_phone' => 'nullable|string',
             'shipping_address' => 'required|string|min:10|max:500',
@@ -235,8 +235,22 @@ class CheckoutController extends Controller
                     $order->update(['transaction_id' => $paymentResponse->transactionId]);
                 }
 
-                // Store order ID in session for return handler
+                // Store order ID and number in session for return handler
                 session()->put('payment_order_id', $order->id);
+                session()->put('payment_order_number', $orderNumber);
+
+                // Also store in cache for 2 hours (more reliable for payment callbacks)
+                \Illuminate\Support\Facades\Cache::put(
+                    'pending_order_' . $orderNumber,
+                    [
+                        'order_id' => $order->id,
+                        'order_number' => $orderNumber,
+                        'clinic_user_id' => $user->id,
+                        'clinic_id' => $user->clinic_id,
+                        'cart_id' => $cart->id,
+                    ],
+                    now()->addHours(2)
+                );
             } else {
                 // For COD, process payment now
                 $nameParts = explode(' ', $user->name ?? 'Customer', 2);
@@ -328,7 +342,7 @@ class CheckoutController extends Controller
 
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to place order: '.$e->getMessage(),
+                'message' => 'Failed to place order: ' . $e->getMessage(),
             ], 500);
         }
     }
@@ -354,6 +368,4 @@ class CheckoutController extends Controller
     {
         return view('frontend.pages.checkout.failed');
     }
-
-
 }

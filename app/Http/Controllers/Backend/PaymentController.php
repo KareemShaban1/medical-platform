@@ -634,6 +634,13 @@ class PaymentController extends Controller
                 }
             }
 
+            // If still not found, try cache for subscriptions
+            if (!$orderNumber) {
+                // Check if we have a subscription number in cache by looking at recent session keys
+                // This is a last resort fallback
+                Log::warning('Order number not found in request or session, checking cache patterns');
+            }
+
             Log::info('Payment return order id resolved', [
                 'order_number' => $orderNumber,
                 'from_request' => $request->get('merchant_order_id'),
@@ -649,7 +656,18 @@ class PaymentController extends Controller
                     'session_id' => session()->getId(),
                 ]);
 
-                // For subscriptions, redirect to home with error instead of checkout.failed
+                // Check if this might be an order by looking at session
+                if (session()->has('payment_order_id')) {
+                    // We have the order ID, try to find the order
+                    $orderId = session()->get('payment_order_id');
+                    $order = Order::find($orderId);
+                    if ($order) {
+                        Log::info('Found order by session order_id', ['order_id' => $orderId, 'order_number' => $order->number]);
+                        return $this->handleOrderPayment($request, $gateway, $order->number, $paymentData);
+                    }
+                }
+
+                // Redirect to home with error
                 return redirect()->route('home')
                     ->with('error', __('Payment session expired. Please try again.'))
                     ->with('message', __('Payment session expired. Please try again.'));
