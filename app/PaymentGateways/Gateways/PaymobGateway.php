@@ -9,7 +9,11 @@ use Illuminate\Support\Facades\Log;
 
 class PaymobGateway extends BasePaymentGateway
 {
-    private const API_URL = 'https://accept.paymob.com/api';
+    // Legacy API URL (still used for wallet payments and some operations)
+    private const LEGACY_API_URL = 'https://accept.paymob.com/api';
+
+    // New Unified Checkout API URL
+    private const INTENTION_API_URL = 'https://accept.paymob.com/v1/intention/';
 
     // get the name of the gateway
     public function getName(): string
@@ -23,11 +27,11 @@ class PaymobGateway extends BasePaymentGateway
         return 'Paymob';
     }
 
-    // process the payment
+    // process the payment using the new Unified Checkout (Intention API)
     public function processPayment(array $data): PaymentResponse
     {
         try {
-            $this->validateConfig(['api_key', 'integration_id', 'hmac_secret']);
+            $this->validateConfig(['integration_id', 'hmac_secret']);
 
             $amount = $data['amount'] ?? 0;
             $orderId = $data['order_id'] ?? null;
@@ -35,137 +39,42 @@ class PaymobGateway extends BasePaymentGateway
             $customerInfo = $data['customer'] ?? [];
             $method = $data['method'] ?? 'card'; // 'card' | 'wallet'
             $walletPhone = $data['wallet_phone'] ?? null;
+            $currency = $data['currency'] ?? 'EGP';
 
-            // Step 1: Get authentication token
-            $authToken = $this->getAuthToken();
-            if (!$authToken) {
-                return PaymentResponse::failure(
-                    'Failed to authenticate with Paymob',
-                    gateway: $this->getName()
-                );
-            }
-
-            // Step 2: Create order
-            $paymobOrder = $this->createOrder($authToken, [
-                'amount_cents' => (int)($amount * 100), // Convert to cents
-                'currency' => $data['currency'] ?? 'EGP',
-                'merchant_order_id' => $orderNumber ?? $orderId,
-            ]);
-
-            if (!$paymobOrder) {
-                return PaymentResponse::failure(
-                    'Failed to create Paymob order',
-                    gateway: $this->getName()
-                );
-            }
-
-            // Step 3: Create payment key
             // Ensure all required fields have valid values (not empty strings)
-            $firstName = !empty($customerInfo['first_name']) ? $customerInfo['first_name'] : 'Test';
-            $lastName = !empty($customerInfo['last_name']) ? $customerInfo['last_name'] : 'Customer';
-            $email = !empty($customerInfo['email']) ? $customerInfo['email'] : 'test@test.com';
+            $firstName = !empty($customerInfo['first_name']) ? $customerInfo['first_name'] : 'Customer';
+            $lastName = !empty($customerInfo['last_name']) ? $customerInfo['last_name'] : 'User';
+            $email = !empty($customerInfo['email']) ? $customerInfo['email'] : 'customer@example.com';
             $phone = !empty($customerInfo['phone']) ? $customerInfo['phone'] : '01000000000';
-
-            // Return URL is configured in Paymob dashboard, not in API
-            // But we'll use it for reference if needed
 
             // Choose integration id based on method (card vs wallet)
             $integrationId = $method === 'wallet'
                 ? ($this->getConfigValue('wallet_integration_id') ?? $this->getConfigValue('integration_id'))
                 : $this->getConfigValue('integration_id');
 
-            // Prepare payment key data
-            $paymentKeyData = [
-                'amount_cents' => (int)($amount * 100),
-                'currency' => $data['currency'] ?? 'EGP',
-                'order_id' => $paymobOrder['id'],
-                'integration_id' => $integrationId,
-                'lock_order_when_paid' => false,
-                'billing_data' => [
-                    'apartment' => !empty($customerInfo['apartment']) ? $customerInfo['apartment'] : 'NA',
-                    'email' => $email,
-                    'floor' => !empty($customerInfo['floor']) ? $customerInfo['floor'] : 'NA',
-                    'first_name' => $firstName,
-                    'street' => !empty($customerInfo['street']) ? $customerInfo['street'] : 'NA',
-                    'building' => !empty($customerInfo['building']) ? $customerInfo['building'] : 'NA',
-                    'phone_number' => $phone,
-                    'shipping_method' => 'PKG',
-                    'postal_code' => !empty($customerInfo['postal_code']) ? $customerInfo['postal_code'] : 'NA',
-                    'city' => !empty($customerInfo['city']) ? $customerInfo['city'] : 'Cairo',
-                    'country' => !empty($customerInfo['country']) ? $customerInfo['country'] : 'EG',
-                    'last_name' => $lastName,
-                    'state' => !empty($customerInfo['state']) ? $customerInfo['state'] : 'NA',
-                ],
-            ];
-
-            // Force 3D Secure if configured (some Paymob integrations support this)
-            // Note: 3D Secure is usually controlled by Paymob dashboard integration settings
-            // If your integration requires 3D Secure, it should trigger automatically
-            // If it's not appearing, check Paymob dashboard → Integrations → Your Integration → 3D Secure settings
-
-            Log::info('Creating Paymob payment key', [
-                'integration_id' => $integrationId,
-                'amount_cents' => $paymentKeyData['amount_cents'],
-                'order_id' => $paymobOrder['id'],
-                'note' => '3D Secure is controlled by Paymob integration settings. Check dashboard if 3D Secure not appearing.',
-            ]);
-
-            $paymentKey = $this->createPaymentKey($authToken, $paymentKeyData);
-
-            if (!$paymentKey) {
-                return PaymentResponse::failure(
-                    'Failed to create payment key',
-                    gateway: $this->getName()
-                );
-            }
-
-            // Step 4: Depending on method, either use redirect URL (card) or wallet flow
+            // For wallet payments, use the LEGACY flow with OLD api_key (JWT token)
             if ($method === 'wallet') {
-                if (empty($walletPhone)) {
-                    return PaymentResponse::failure('Wallet phone is required', gateway: $this->getName());
+                // Wallet uses the OLD api_key (the JWT-like token starting with ZXlK...)
+                $legacyApiKey = $this->getConfigValue('api_key');
+                if (empty($legacyApiKey)) {
+                    return PaymentResponse::failure(
+                        'Missing required configuration: api_key (required for wallet payments)',
+                        gateway: $this->getName()
+                    );
                 }
+                return $this->processWalletPayment($data, $legacyApiKey, $integrationId);
+            }
 
-                $walletResult = $this->initiateWalletPayment($paymentKey, $walletPhone);
-                if (!$walletResult || empty($walletResult['redirect_url'])) {
-                    return PaymentResponse::failure('Failed to initiate wallet payment', gateway: $this->getName());
-                }
-
-                return PaymentResponse::success(
-                    message: 'Wallet payment initiated successfully',
-                    redirectUrl: $walletResult['redirect_url'],
-                    transactionId: (string)$paymobOrder['id'],
-                    data: [
-                        'paymob_order_id' => $paymobOrder['id'],
-                        'payment_key' => $paymentKey,
-                    ],
-                    gateway: $this->getName()
-                );
-            } else {
-                // Card - Use redirect URL (iframe deprecated by Paymob)
-                // Even though iframes are deprecated, the iframe URL still works as a redirect URL
-                // The URL format: /api/acceptance/iframes/{iframeId}?payment_token={token}
-                // We use integration_id as iframe_id (they're usually the same)
-                $iframeId = $this->getConfigValue('iframe_id', $integrationId);
-                $redirectUrl = "https://accept.paymob.com/api/acceptance/iframes/{$iframeId}?payment_token={$paymentKey}";
-
-                Log::info('Paymob card payment redirect URL generated', [
-                    'integration_id' => $integrationId,
-                    'iframe_id' => $iframeId,
-                    'redirect_url' => $redirectUrl,
-                    'note' => 'Iframe embedding deprecated, but URL still works for redirects.',
-                ]);
-
-                return PaymentResponse::success(
-                    message: 'Payment URL generated successfully',
-                    redirectUrl: $redirectUrl,
-                    transactionId: (string)$paymobOrder['id'],
-                    data: [
-                        'paymob_order_id' => $paymobOrder['id'],
-                        'payment_key' => $paymentKey,
-                    ],
+            // For card payments, use the NEW Unified Checkout with secret_key (egy_sk_...)
+            $secretKey = $this->getConfigValue('secret_key');
+            if (empty($secretKey)) {
+                return PaymentResponse::failure(
+                    'Missing required configuration: secret_key (required for card payments with Unified Checkout)',
                     gateway: $this->getName()
                 );
             }
+
+            return $this->processCardPaymentWithIntention($data, $secretKey, $integrationId);
         } catch (\Exception $e) {
             Log::error('Paymob payment error: ' . $e->getMessage(), [
                 'data' => $data,
@@ -177,6 +86,254 @@ class PaymobGateway extends BasePaymentGateway
                 gateway: $this->getName()
             );
         }
+    }
+
+    /**
+     * Process card payment using the new Unified Checkout (Intention API)
+     * This replaces the deprecated iFrame approach
+     */
+    private function processCardPaymentWithIntention(array $data, string $secretKey, int|string $integrationId): PaymentResponse
+    {
+        $amount = $data['amount'] ?? 0;
+        $orderId = $data['order_id'] ?? null;
+        $orderNumber = $data['order_number'] ?? null;
+        $customerInfo = $data['customer'] ?? [];
+        $currency = $data['currency'] ?? 'EGP';
+
+        // Prepare customer data
+        $firstName = !empty($customerInfo['first_name']) ? $customerInfo['first_name'] : 'Customer';
+        $lastName = !empty($customerInfo['last_name']) ? $customerInfo['last_name'] : 'User';
+        $email = !empty($customerInfo['email']) ? $customerInfo['email'] : 'customer@example.com';
+        $phone = !empty($customerInfo['phone']) ? $customerInfo['phone'] : '01000000000';
+
+        // Build the intention payload for Unified Checkout
+        $intentionPayload = [
+            'amount' => (int)($amount * 100), // Amount in cents
+            'currency' => $currency,
+            'payment_methods' => [(int)$integrationId, "card"], // Array of integration IDs
+            'billing_data' => [
+                'apartment' => !empty($customerInfo['apartment']) ? $customerInfo['apartment'] : 'NA',
+                'first_name' => $firstName,
+                'last_name' => $lastName,
+                'street' => !empty($customerInfo['street']) ? $customerInfo['street'] : 'NA',
+                'building' => !empty($customerInfo['building']) ? $customerInfo['building'] : 'NA',
+                'phone_number' => $phone,
+                'city' => !empty($customerInfo['city']) ? $customerInfo['city'] : 'Cairo',
+                'country' => !empty($customerInfo['country']) ? $customerInfo['country'] : 'EG',
+                'email' => $email,
+                'floor' => !empty($customerInfo['floor']) ? $customerInfo['floor'] : 'NA',
+                'state' => !empty($customerInfo['state']) ? $customerInfo['state'] : 'NA',
+            ],
+            'customer' => [
+                'first_name' => $firstName,
+                'last_name' => $lastName,
+                'email' => $email,
+            ],
+            'items' => [
+                [
+                    'name' => $data['item_name'] ?? 'Order Payment',
+                    'amount' => (int)($amount * 100),
+                    'description' => $data['item_description'] ?? 'Payment for order',
+                    'quantity' => 1,
+                ],
+            ],
+        ];
+
+        // Add merchant order id if available
+        if ($orderNumber || $orderId) {
+            $intentionPayload['merchant_order_id'] = (string)($orderNumber ?? $orderId);
+        }
+
+        // Add notification/callback URL if configured
+        $callbackUrl = $this->getConfigValue('callback_url') ?? $data['callback_url'] ?? null;
+        if ($callbackUrl) {
+            $intentionPayload['notification_url'] = $callbackUrl;
+        }
+
+        // Add redirect URL if configured (for after payment completion)
+        $redirectUrl = $this->getConfigValue('redirect_url') ?? $data['redirect_url'] ?? null;
+        if ($redirectUrl) {
+            $intentionPayload['redirection_url'] = $redirectUrl;
+        }
+
+        Log::info('Creating Paymob payment intention (Unified Checkout)', [
+            'integration_id' => $integrationId,
+            'amount_cents' => $intentionPayload['amount'],
+            'currency' => $currency,
+            'merchant_order_id' => $intentionPayload['merchant_order_id'] ?? null,
+        ]);
+
+        // Call the Intention API
+        try {
+            $response = Http::withHeaders([
+                'Authorization' => 'Token ' . $secretKey,
+                'Content-Type' => 'application/json',
+            ])->post(self::INTENTION_API_URL, $intentionPayload);
+
+            $responseData = $response->json();
+
+            Log::info('Paymob Intention API response', [
+                'status' => $response->status(),
+                'has_client_secret' => isset($responseData['client_secret']),
+                'has_id' => isset($responseData['id']),
+            ]);
+
+            if (!$response->successful()) {
+                Log::error('Paymob Intention API failed', [
+                    'status' => $response->status(),
+                    'response' => $response->body(),
+                ]);
+
+                $errorMessage = $responseData['message'] ?? $responseData['detail'] ?? 'Failed to create payment intention';
+                return PaymentResponse::failure($errorMessage, gateway: $this->getName());
+            }
+
+            // Get the client_secret from response
+            $clientSecret = $responseData['client_secret'] ?? null;
+            $intentionId = $responseData['id'] ?? null;
+
+            if (empty($clientSecret)) {
+                Log::error('Paymob Intention API response missing client_secret', [
+                    'response' => $responseData,
+                ]);
+                return PaymentResponse::failure('Invalid response from Paymob: missing client_secret', gateway: $this->getName());
+            }
+
+            // Build the Unified Checkout redirect URL
+            // Format: https://accept.paymob.com/unifiedcheckout/?publicKey={PUBLIC_KEY}&clientSecret={CLIENT_SECRET}
+            $publicKey = $this->getConfigValue('public_key');
+
+            if (!empty($publicKey)) {
+                // If public_key is available, use the SDK-style URL
+                $checkoutUrl = "https://accept.paymob.com/unifiedcheckout/?publicKey={$publicKey}&clientSecret={$clientSecret}";
+            } else {
+                // Alternative: Direct redirect URL (simpler, works without public_key)
+                $checkoutUrl = "https://accept.paymob.com/unifiedcheckout/?clientSecret={$clientSecret}";
+            }
+
+            Log::info('Paymob Unified Checkout URL generated', [
+                'intention_id' => $intentionId,
+                'checkout_url' => $checkoutUrl,
+                'has_public_key' => !empty($publicKey),
+            ]);
+
+            return PaymentResponse::success(
+                message: 'Payment URL generated successfully',
+                redirectUrl: $checkoutUrl,
+                transactionId: (string)$intentionId,
+                data: [
+                    'intention_id' => $intentionId,
+                    'client_secret' => $clientSecret,
+                    'paymob_order_id' => $intentionId, // For backward compatibility
+                ],
+                gateway: $this->getName()
+            );
+        } catch (\Exception $e) {
+            Log::error('Paymob Intention API error: ' . $e->getMessage(), [
+                'exception' => $e,
+            ]);
+
+            return PaymentResponse::failure(
+                'Failed to create payment intention: ' . $e->getMessage(),
+                gateway: $this->getName()
+            );
+        }
+    }
+
+    /**
+     * Process wallet payment using the legacy flow
+     * Wallet payments still work well with the old API
+     */
+    private function processWalletPayment(array $data, string $secretKey, int|string $integrationId): PaymentResponse
+    {
+        $amount = $data['amount'] ?? 0;
+        $orderId = $data['order_id'] ?? null;
+        $orderNumber = $data['order_number'] ?? null;
+        $customerInfo = $data['customer'] ?? [];
+        $walletPhone = $data['wallet_phone'] ?? null;
+        $currency = $data['currency'] ?? 'EGP';
+
+        if (empty($walletPhone)) {
+            return PaymentResponse::failure('Wallet phone is required', gateway: $this->getName());
+        }
+
+        // Step 1: Get authentication token (using secret_key as api_key)
+        $authToken = $this->getAuthToken($secretKey);
+        if (!$authToken) {
+            return PaymentResponse::failure(
+                'Failed to authenticate with Paymob',
+                gateway: $this->getName()
+            );
+        }
+
+        // Step 2: Create order
+        $paymobOrder = $this->createOrder($authToken, [
+            'amount_cents' => (int)($amount * 100),
+            'currency' => $currency,
+            'merchant_order_id' => $orderNumber ?? $orderId,
+        ]);
+
+        if (!$paymobOrder) {
+            return PaymentResponse::failure(
+                'Failed to create Paymob order',
+                gateway: $this->getName()
+            );
+        }
+
+        // Step 3: Create payment key
+        $firstName = !empty($customerInfo['first_name']) ? $customerInfo['first_name'] : 'Customer';
+        $lastName = !empty($customerInfo['last_name']) ? $customerInfo['last_name'] : 'User';
+        $email = !empty($customerInfo['email']) ? $customerInfo['email'] : 'customer@example.com';
+        $phone = !empty($customerInfo['phone']) ? $customerInfo['phone'] : '01000000000';
+
+        $paymentKeyData = [
+            'amount_cents' => (int)($amount * 100),
+            'currency' => $currency,
+            'order_id' => $paymobOrder['id'],
+            'integration_id' => (int)$integrationId,
+            'lock_order_when_paid' => false,
+            'billing_data' => [
+                'apartment' => !empty($customerInfo['apartment']) ? $customerInfo['apartment'] : 'NA',
+                'email' => $email,
+                'floor' => !empty($customerInfo['floor']) ? $customerInfo['floor'] : 'NA',
+                'first_name' => $firstName,
+                'street' => !empty($customerInfo['street']) ? $customerInfo['street'] : 'NA',
+                'building' => !empty($customerInfo['building']) ? $customerInfo['building'] : 'NA',
+                'phone_number' => $phone,
+                'shipping_method' => 'PKG',
+                'postal_code' => !empty($customerInfo['postal_code']) ? $customerInfo['postal_code'] : 'NA',
+                'city' => !empty($customerInfo['city']) ? $customerInfo['city'] : 'Cairo',
+                'country' => !empty($customerInfo['country']) ? $customerInfo['country'] : 'EG',
+                'last_name' => $lastName,
+                'state' => !empty($customerInfo['state']) ? $customerInfo['state'] : 'NA',
+            ],
+        ];
+
+        $paymentKey = $this->createPaymentKey($authToken, $paymentKeyData);
+
+        if (!$paymentKey) {
+            return PaymentResponse::failure(
+                'Failed to create payment key',
+                gateway: $this->getName()
+            );
+        }
+
+        // Step 4: Initiate wallet payment
+        $walletResult = $this->initiateWalletPayment($paymentKey, $walletPhone);
+        if (!$walletResult || empty($walletResult['redirect_url'])) {
+            return PaymentResponse::failure('Failed to initiate wallet payment', gateway: $this->getName());
+        }
+
+        return PaymentResponse::success(
+            message: 'Wallet payment initiated successfully',
+            redirectUrl: $walletResult['redirect_url'],
+            transactionId: (string)$paymobOrder['id'],
+            data: [
+                'paymob_order_id' => $paymobOrder['id'],
+                'payment_key' => $paymentKey,
+            ],
+            gateway: $this->getName()
+        );
     }
 
 
@@ -271,12 +428,15 @@ class PaymobGateway extends BasePaymentGateway
 
     /**
      * Get authentication token from Paymob
+     * @param string|null $apiKey Optional API key - if not provided, uses config value
      */
-    private function getAuthToken(): ?string
+    private function getAuthToken(?string $apiKey = null): ?string
     {
         try {
-            $response = Http::post(self::API_URL . '/auth/tokens', [
-                'api_key' => $this->getConfigValue('api_key'),
+            $key = $apiKey ?? $this->getConfigValue('api_key') ?? $this->getConfigValue('secret_key');
+
+            $response = Http::post(self::LEGACY_API_URL . '/auth/tokens', [
+                'api_key' => $key,
             ]);
 
             if ($response->successful()) {
@@ -299,7 +459,7 @@ class PaymobGateway extends BasePaymentGateway
         try {
             $response = Http::withHeaders([
                 'Authorization' => "Bearer {$authToken}",
-            ])->post(self::API_URL . '/ecommerce/orders', $orderData);
+            ])->post(self::LEGACY_API_URL . '/ecommerce/orders', $orderData);
 
             if ($response->successful()) {
                 return $response->json();
@@ -321,7 +481,7 @@ class PaymobGateway extends BasePaymentGateway
         try {
             $response = Http::withHeaders([
                 'Authorization' => "Bearer {$authToken}",
-            ])->post(self::API_URL . '/acceptance/payment_keys', $paymentData);
+            ])->post(self::LEGACY_API_URL . '/acceptance/payment_keys', $paymentData);
 
             if ($response->successful()) {
                 return $response->json('token');
@@ -350,7 +510,7 @@ class PaymobGateway extends BasePaymentGateway
                 'payment_token' => $paymentKey,
             ];
 
-            $response = Http::post(self::API_URL . '/acceptance/payments/pay', $payload);
+            $response = Http::post(self::LEGACY_API_URL . '/acceptance/payments/pay', $payload);
 
             $json = $response->json();
             // Paymob may return redirection_url or redirect_url
@@ -392,7 +552,7 @@ class PaymobGateway extends BasePaymentGateway
             // Paymob API endpoint to get transaction details
             $response = Http::withHeaders([
                 'Authorization' => "Bearer {$authToken}",
-            ])->get(self::API_URL . '/acceptance/transactions/' . $transactionId);
+            ])->get(self::LEGACY_API_URL . '/acceptance/transactions/' . $transactionId);
 
             if ($response->successful()) {
                 $transactionData = $response->json();
