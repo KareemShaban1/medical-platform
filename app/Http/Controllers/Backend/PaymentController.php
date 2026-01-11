@@ -606,21 +606,53 @@ class PaymentController extends Controller
             // Get all request data (query params or POST)
             $paymentData = $request->all();
 
-            Log::info('Payment return data', [
+            Log::info('Payment return data (full)', [
+                'gateway' => $gateway,
                 'payment_data' => $paymentData,
+                'url' => $request->fullUrl(),
+                'method' => $request->method(),
             ]);
 
-            // For Paymob, get order ID from query or session
-            // $orderId = $request->get('order_id') ?? session()->get('payment_order_id');
-            $orderNumber = $request->get('merchant_order_id') ?? session()->get('payment_order_number');
+            // For Paymob Unified Checkout, get order ID from query params or session
+            // Paymob returns merchant_order_id in the redirect URL
+            $orderNumber = $request->get('merchant_order_id');
 
-            Log::info('Payment return order id', [
+            // Also check session for various payment types
+            if (!$orderNumber) {
+                // Check order session
+                $orderNumber = session()->get('payment_order_number');
+            }
+            if (!$orderNumber) {
+                // Check subscription session
+                $orderNumber = session()->get('payment_subscription_number');
+            }
+            if (!$orderNumber) {
+                // Try to get from pending_subscription session
+                $pendingSubscription = session()->get('pending_subscription');
+                if ($pendingSubscription && !empty($pendingSubscription['subscription_number'])) {
+                    $orderNumber = $pendingSubscription['subscription_number'];
+                }
+            }
+
+            Log::info('Payment return order id resolved', [
                 'order_number' => $orderNumber,
+                'from_request' => $request->get('merchant_order_id'),
+                'from_session_order' => session()->get('payment_order_number'),
+                'from_session_subscription' => session()->get('payment_subscription_number'),
+                'has_pending_subscription' => session()->has('pending_subscription'),
             ]);
 
-            if (! $orderNumber) {
-                return redirect()->route('checkout.failed')
-                    ->with('error', 'Order not found');
+            if (!$orderNumber) {
+                Log::error('Payment return: Order number not found', [
+                    'gateway' => $gateway,
+                    'request_params' => array_keys($paymentData),
+                    'session_id' => session()->getId(),
+                ]);
+
+                // For subscriptions, redirect to home with error instead of checkout.failed
+                return redirect()->route('home')
+                    ->with('error', __('Payment session expired. Please try again.'))
+                    ->with('message', __('Payment session expired. Please try again.'));
             }
 
             // Check if this is an order (ORD-), offer (OFFER-), or subscription (SUB-) payment
@@ -640,13 +672,18 @@ class PaymentController extends Controller
                     return $this->handleOrderPayment($request, $gateway, $orderNumber, $paymentData);
                 }
 
+                Log::error('Payment return: Invalid order number format', [
+                    'order_number' => $orderNumber,
+                ]);
+
                 return redirect()->route('checkout.failed')
                     ->with('error', 'Invalid order number format');
             }
         } catch (\Exception $e) {
-            Log::error('Payment return error: '.$e->getMessage(), [
+            Log::error('Payment return error: ' . $e->getMessage(), [
                 'gateway' => $gateway,
                 'request' => $request->all(),
+                'trace' => $e->getTraceAsString(),
             ]);
 
             return redirect()->route('checkout.failed')
@@ -1080,16 +1117,27 @@ class PaymentController extends Controller
      */
     protected function handleSubscriptionPayment(Request $request, string $gateway, string $subscriptionNumber, array $paymentData)
     {
+        Log::info('handleSubscriptionPayment called', [
+            'subscription_number' => $subscriptionNumber,
+            'gateway' => $gateway,
+            'has_pending_subscription' => session()->has('pending_subscription'),
+            'session_id' => session()->getId(),
+            'payment_data_keys' => array_keys($paymentData),
+        ]);
+
         // Get pending subscription data from session
         $pendingSubscription = session()->get('pending_subscription');
 
         if (!$pendingSubscription) {
             Log::error('Pending subscription data not found in session', [
                 'subscription_number' => $subscriptionNumber,
+                'session_id' => session()->getId(),
+                'all_session_keys' => array_keys(session()->all()),
             ]);
             return redirect()->route('home')
                 ->withFragment('subscriptions-plans')
-                ->with(['success' => false, 'message' => 'Subscription session expired. Please try again.']);
+                ->with('error', __('Subscription session expired. Please try again.'))
+                ->with('message', __('Subscription session expired. Please try again.'));
         }
 
         // Verify subscription number matches
@@ -1100,7 +1148,8 @@ class PaymentController extends Controller
             ]);
             return redirect()->route('home')
                 ->withFragment('subscriptions-plans')
-                ->with(['success' => false, 'message' => 'Invalid subscription request.']);
+                ->with('error', __('Invalid subscription request.'))
+                ->with('message', __('Invalid subscription request.'));
         }
 
         // Verify payment with gateway
@@ -1113,11 +1162,18 @@ class PaymentController extends Controller
         $success = $successValue === 'true'
             || $successValue === true
             || $successValue === '1'
+            || $successValue === 1
             || $request->get('txn_response_code') === 'APPROVED';
 
-        if ($errorOccurred === 'true' || $errorOccurred === true || $errorOccurred === '1') {
+        if ($errorOccurred === 'true' || $errorOccurred === true || $errorOccurred === '1' || $errorOccurred === 1) {
             $success = false;
         }
+
+        Log::info('handleSubscriptionPayment: payment verification', [
+            'success_value' => $successValue,
+            'error_occurred' => $errorOccurred,
+            'calculated_success' => $success,
+        ]);
 
         // Get plan to determine type for redirect
         $plan = \App\Models\Plan::find($pendingSubscription['plan_id']);
@@ -1180,7 +1236,7 @@ class PaymentController extends Controller
 
                     $successMessage = __('Subscription activated successfully.');
 
-                    return redirect()->route('home' , ['plan_type' => $planType])
+                    return redirect()->route('home', ['plan_type' => $planType])
                         ->withFragment('subscriptions-plans')
                         ->with('success', $successMessage)
                         ->with('message', $successMessage);
@@ -1191,7 +1247,7 @@ class PaymentController extends Controller
                         'pending_subscription' => $pendingSubscription,
                     ]);
 
-                    return redirect()->route('home' , ['plan_type' => $planType])
+                    return redirect()->route('home', ['plan_type' => $planType])
                         ->withFragment('subscriptions-plans')
                         ->with(['success' => false, 'message' => 'Payment successful but subscription creation failed. Please contact support.']);
                 }
@@ -1211,7 +1267,7 @@ class PaymentController extends Controller
                 'payment_subscription_number',
             ]);
 
-            return redirect()->route('home' , ['plan_type' => $planType])
+            return redirect()->route('home', ['plan_type' => $planType])
                 ->withFragment('subscriptions-plans')
                 ->with(['success' => false, 'message' => $errorMessage]);
         }
@@ -1272,7 +1328,7 @@ class PaymentController extends Controller
 
                 $successMessage = __('Subscription activated successfully.');
 
-                return redirect()->route('home' , ['plan_type' => $planType])
+                return redirect()->route('home', ['plan_type' => $planType])
                     ->withFragment('subscriptions-plans')
                     ->with('success', $successMessage)
                     ->with('message', $successMessage);
@@ -1283,7 +1339,7 @@ class PaymentController extends Controller
                     'pending_subscription' => $pendingSubscription,
                 ]);
 
-                return redirect()->route('home' , ['plan_type' => $planType])
+                return redirect()->route('home', ['plan_type' => $planType])
                     ->withFragment('subscriptions-plans')
                     ->with(['success' => false, 'message' => 'Payment successful but subscription creation failed. Please contact support.']);
             }
@@ -1304,7 +1360,7 @@ class PaymentController extends Controller
             'payment_subscription_number',
         ]);
 
-        return redirect()->route('home' , ['plan_type' => $planType])
+        return redirect()->route('home', ['plan_type' => $planType])
             ->withFragment('subscriptions-plans')
             ->with(['success' => false, 'message' => $errorMessage]);
     }
@@ -1435,7 +1491,7 @@ class PaymentController extends Controller
             return redirect()->route('checkout.index')
                 ->with('error', $paymentResponse->message);
         } catch (\Exception $e) {
-            Log::error('Payment callback error: '.$e->getMessage(), [
+            Log::error('Payment callback error: ' . $e->getMessage(), [
                 'gateway' => $gateway,
                 'request' => $request->all(),
             ]);

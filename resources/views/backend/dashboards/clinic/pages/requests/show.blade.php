@@ -1,735 +1,610 @@
 @extends('backend.dashboards.clinic.layouts.app')
 
 @push('styles')
-<style>
-	.hidden {
-		display:none;
-	}
-</style>
+    <style>
+        .hidden {
+            display: none;
+        }
+    </style>
 @endpush
 
 @section('title', __('Request Details'))
 
 @section('content')
-@if(session('success'))
-<div class="alert alert-success alert-dismissible fade show" role="alert">
-	<i class="mdi mdi-check-circle me-2"></i>
-	{{ session('success') }}
-	<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-</div>
-@endif
+    @if (session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="mdi mdi-check-circle me-2"></i>
+            {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
 
-@if(session('error'))
-<div class="alert alert-danger alert-dismissible fade show" role="alert">
-	<i class="mdi mdi-alert-circle me-2"></i>
-	{{ session('error') }}
-	<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-</div>
-@endif
+    @if (session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="mdi mdi-alert-circle me-2"></i>
+            {{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
 
-<div class="container-fluid">
-	<div class="row">
-		<div class="col-12">
-			<div class="page-title-box">
-				<div class="page-title-right">
-					<ol class="breadcrumb m-0">
-						<li class="breadcrumb-item"><a
-								href="{{ route('clinic.dashboard') }}">{{ __('Dashboard') }}</a>
-						</li>
-						<li class="breadcrumb-item"><a
-								href="{{ route('clinic.requests.index') }}">{{ __('Purchase Requests') }}</a>
-						</li>
-						<li class="breadcrumb-item active">
-							{{ __('Request Details') }}</li>
-					</ol>
-				</div>
-				<h4 class="page-title">{{ __('Request Details') }}</h4>
-			</div>
-		</div>
-	</div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="page-title-box">
+                    <div class="page-title-right">
+                        <ol class="breadcrumb m-0">
+                            <li class="breadcrumb-item"><a href="{{ route('clinic.dashboard') }}">{{ __('Dashboard') }}</a>
+                            </li>
+                            <li class="breadcrumb-item"><a
+                                    href="{{ route('clinic.requests.index') }}">{{ __('Purchase Requests') }}</a>
+                            </li>
+                            <li class="breadcrumb-item active">
+                                {{ __('Request Details') }}</li>
+                        </ol>
+                    </div>
+                    <h4 class="page-title">{{ __('Request Details') }}</h4>
+                </div>
+            </div>
+        </div>
 
-	<div class="row">
-		<div class="col-lg-8">
-			<div class="card">
-				<div class="card-body">
-					<div class="d-flex justify-content-between align-items-start mb-4">
-						<h5 class="card-title mb-0">{{ __('Request Information') }}
-						</h5>
-						@if($request->status === 'open')
-						<span class="badge bg-success fs-6">{{ __('Open') }}</span>
-						@elseif($request->status === 'closed')
-						<span
-							class="badge bg-primary fs-6">{{ __('Closed') }}</span>
-						@else
-						<span
-							class="badge bg-danger fs-6">{{ __('Canceled') }}</span>
-						@endif
-					</div>
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-4">
+                            <h5 class="card-title mb-0">{{ __('Request Information') }}
+                            </h5>
+                            @if ($request->status === 'open')
+                                <span class="badge bg-success fs-6">{{ __('Open') }}</span>
+                            @elseif($request->status === 'closed')
+                                <span class="badge bg-primary fs-6">{{ __('Closed') }}</span>
+                            @else
+                                <span class="badge bg-danger fs-6">{{ __('Canceled') }}</span>
+                            @endif
+                        </div>
 
-					<div class="row mb-3">
-						<div class="col-md-6">
-							<strong>{{ __('Request ID:') }}</strong>
-							<p class="mb-2">#{{ $request->id }}</p>
-						</div>
-						<div class="col-md-6">
-							<strong>{{ __('Categories:') }}</strong>
-							<p class="mb-2">
-								{{ $request->categories->pluck('name')->join(', ') }}
-							</p>
-						</div>
-					</div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <strong>{{ __('Request ID:') }}</strong>
+                                <p class="mb-2">#{{ $request->id }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>{{ __('Categories:') }}</strong>
+                                <p class="mb-2">
+                                    {{ $request->categories->pluck('name')->join(', ') }}
+                                </p>
+                            </div>
+                        </div>
 
-					<div class="row mb-3">
-						<div class="col-md-6">
-							<strong>{{ __('Quantity:') }}</strong>
-							<p class="mb-2">
-								{{ number_format($request->quantity) }}
-							</p>
-						</div>
-						<div class="col-md-6">
-							<strong>{{ __('Timeline:') }}</strong>
-							<p class="mb-2">
-								@if($request->timeline)
-								{{ $request->timeline->format('M d, Y') }}
-								<small
-									class="text-muted">({{ $request->timeline->diffForHumans() }})</small>
-								@else
-								<span
-									class="text-muted">{{ __('Not specified') }}</span>
-								@endif
-							</p>
-						</div>
-					</div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <strong>{{ __('Quantity:') }}</strong>
+                                <p class="mb-2">
+                                    {{ number_format($request->quantity) }}
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>{{ __('Timeline:') }}</strong>
+                                <p class="mb-2">
+                                    @if ($request->timeline)
+                                        {{ $request->timeline->format('M d, Y') }}
+                                        <small class="text-muted">({{ $request->timeline->diffForHumans() }})</small>
+                                    @else
+                                        <span class="text-muted">{{ __('Not specified') }}</span>
+                                    @endif
+                                </p>
+                            </div>
+                        </div>
 
-					<div class="mb-3">
-						<strong>{{ __('Description:') }}</strong>
-						<div class="border rounded p-3 mt-2 bg-light">
-							{{ $request->description }}
-						</div>
-					</div>
+                        <div class="mb-3">
+                            <strong>{{ __('Description:') }}</strong>
+                            <div class="border rounded p-3 mt-2 bg-light">
+                                {{ $request->description }}
+                            </div>
+                        </div>
 
-					@if($request->preferred_specs)
-					<div class="mb-3">
-						<strong>{{ __('Preferred Specifications:') }}</strong>
-						<div class="border rounded p-3 mt-2 bg-light">
-							{{ $request->preferred_specs }}
-						</div>
-					</div>
-					@endif
+                        @if ($request->preferred_specs)
+                            <div class="mb-3">
+                                <strong>{{ __('Preferred Specifications:') }}</strong>
+                                <div class="border rounded p-3 mt-2 bg-light">
+                                    {{ $request->preferred_specs }}
+                                </div>
+                            </div>
+                        @endif
 
-					@if(count($request->attachments) > 0)
-					<div class="mb-3">
-						<strong>{{ __('Attachments:') }}</strong>
-						<div class="mt-2">
-							@foreach($request->attachments as $attachment)
-							<div
-								class="d-flex align-items-center border rounded p-2 mb-2">
-								<i
-									class="mdi mdi-file-document me-2 text-primary"></i>
-								<a href="{{ $attachment['url'] }}"
-									target="_blank"
-									class="flex-grow-1 text-decoration-none">
-									{{ $attachment['name'] }}
-								</a>
-								<small class="text-muted">{{ number_format($attachment['size'] / 1024, 1) }}
-									KB</small>
-							</div>
-							@endforeach
-						</div>
-					</div>
-					@endif
+                        @if (count($request->attachments) > 0)
+                            <div class="mb-3">
+                                <strong>{{ __('Attachments:') }}</strong>
+                                <div class="mt-2">
+                                    @foreach ($request->attachments as $attachment)
+                                        <div class="d-flex align-items-center border rounded p-2 mb-2">
+                                            <i class="mdi mdi-file-document me-2 text-primary"></i>
+                                            <a href="{{ $attachment['url'] }}" target="_blank"
+                                                class="flex-grow-1 text-decoration-none">
+                                                {{ $attachment['name'] }}
+                                            </a>
+                                            <small class="text-muted">{{ number_format($attachment['size'] / 1024, 1) }}
+                                                KB</small>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
 
-					<div class="row">
-						<div class="col-md-6">
-							<strong>{{ __('Created:') }}</strong>
-							<p class="mb-2">
-								{{ $request->created_at->format('M d, Y H:i') }}
-							</p>
-						</div>
-						<div class="col-md-6">
-							<strong>{{ __('Last Updated:') }}</strong>
-							<p class="mb-2">
-								{{ $request->updated_at->format('M d, Y H:i') }}
-							</p>
-						</div>
-					</div>
-				</div>
-			</div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <strong>{{ __('Created:') }}</strong>
+                                <p class="mb-2">
+                                    {{ $request->created_at->format('M d, Y H:i') }}
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>{{ __('Last Updated:') }}</strong>
+                                <p class="mb-2">
+                                    {{ $request->updated_at->format('M d, Y H:i') }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-			<!-- Offers Section -->
-			<div class="card">
-				<div class="card-body">
-					<div class="d-flex justify-content-between align-items-center mb-4">
-						<h5 class="card-title mb-0">{{ __('Received Offers') }}
-							({{ $request->offers->count() }})</h5>
-						@if($request->status === 'open' &&
-						$request->offers->where('status', 'pending')->count() > 0)
-						<small
-							class="text-muted">{{ __('Click "Accept" to choose the best offer') }}</small>
-						@endif
-					</div>
+                <!-- Offers Section -->
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5 class="card-title mb-0">{{ __('Received Offers') }}
+                                ({{ $request->offers->count() }})</h5>
+                            @if ($request->status === 'open' && $request->offers->where('status', 'pending')->count() > 0)
+                                <small class="text-muted">{{ __('Click "Accept" to choose the best offer') }}</small>
+                            @endif
+                        </div>
 
-					@if($request->offers->count() === 0)
-					<div class="text-center py-5">
-						<i class="mdi mdi-email-outline display-4 text-muted"></i>
-						<h5 class="mt-3 text-muted">
-							{{ __('No offers received yet') }}</h5>
-						<p class="text-muted">
-							{{ __('Suppliers will submit their offers soon. You\'ll be notified when new offers arrive.') }}
-						</p>
-					</div>
-					@else
-					<div class="row">
-						@foreach($request->offers->sortBy('final_price') as $index
-						=> $offer)
-						<div class="col-md-6 mb-4">
-							<div
-								class="card border {{ $offer->status === 'accepted' ? 'border-success' : ($offer->status === 'declined' ? 'border-secondary' : 'border-warning') }}">
-								<div
-									class="card-header d-flex justify-content-between align-items-center">
-									<h6 class="mb-0">
-										{{ $offer->supplier->name }}
-									</h6>
-									@if($offer->status ===
-									'pending')
-									<span
-										class="badge bg-warning">{{ __('Pending') }}</span>
-									@elseif($offer->status ===
-									'accepted')
-									<span
-										class="badge bg-success">{{ __('Accepted') }}</span>
-									@else
-									<span
-										class="badge bg-secondary">{{ __('Declined') }}</span>
-									@endif
-								</div>
-								<div class="card-body">
-									<div class="row mb-3">
-										<div class="col-6">
-											<small
-												class="text-muted">{{ __('Original Price') }}</small>
-											<div
-												class="fw-bold">
-												${{ number_format($offer->price, 2) }}
-											</div>
-										</div>
-										<div class="col-6">
-											<small
-												class="text-muted">{{ __('Discount') }}</small>
-											<div
-												class="fw-bold text-success">
-												@if($offer->discount)
-												-${{ number_format($offer->discount, 2) }}
-												@else
-												$0.00
-												@endif
-											</div>
-										</div>
-									</div>
-									<div class="row mb-3">
-										<div class="col-6">
-											<small class="text-muted">{{ __('Shipping') }}</small>
-											<div class="fw-bold">
-												${{ number_format($offer->shipping ?? 0, 2) }}
-											</div>
-										</div>
-										<div class="col-6">
-											<small class="text-muted">{{ __('Tax') }}</small>
-											<div class="fw-bold">
-												${{ number_format($offer->tax ?? 0, 2) }}
-											</div>
-										</div>
-									</div>
+                        @if ($request->offers->count() === 0)
+                            <div class="text-center py-5">
+                                <i class="mdi mdi-email-outline display-4 text-muted"></i>
+                                <h5 class="mt-3 text-muted">
+                                    {{ __('No offers received yet') }}</h5>
+                                <p class="text-muted">
+                                    {{ __('Suppliers will submit their offers soon. You\'ll be notified when new offers arrive.') }}
+                                </p>
+                            </div>
+                        @else
+                            <div class="row">
+                                @foreach ($request->offers->sortBy('final_price') as $index => $offer)
+                                    <div class="col-md-6 mb-4">
+                                        <div
+                                            class="card border {{ $offer->status === 'accepted' ? 'border-success' : ($offer->status === 'declined' ? 'border-secondary' : 'border-warning') }}">
+                                            <div class="card-header d-flex justify-content-between align-items-center">
+                                                <h6 class="mb-0">
+                                                    {{ $offer->supplier->name }}
+                                                </h6>
+                                                @if ($offer->status === 'pending')
+                                                    <span class="badge bg-warning">{{ __('Pending') }}</span>
+                                                @elseif($offer->status === 'accepted')
+                                                    <span class="badge bg-success">{{ __('Accepted') }}</span>
+                                                @else
+                                                    <span class="badge bg-secondary">{{ __('Declined') }}</span>
+                                                @endif
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="row mb-3">
+                                                    <div class="col-6">
+                                                        <small class="text-muted">{{ __('Original Price') }}</small>
+                                                        <div class="fw-bold">
+                                                            ${{ number_format($offer->price, 2) }}
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <small class="text-muted">{{ __('Discount') }}</small>
+                                                        <div class="fw-bold text-success">
+                                                            @if ($offer->discount)
+                                                                -${{ number_format($offer->discount, 2) }}
+                                                            @else
+                                                                $0.00
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row mb-3">
+                                                    <div class="col-6">
+                                                        <small class="text-muted">{{ __('Shipping') }}</small>
+                                                        <div class="fw-bold">
+                                                            ${{ number_format($offer->shipping ?? 0, 2) }}
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <small class="text-muted">{{ __('Tax') }}</small>
+                                                        <div class="fw-bold">
+                                                            ${{ number_format($offer->tax ?? 0, 2) }}
+                                                        </div>
+                                                    </div>
+                                                </div>
 
-									<div class="mb-3">
-										<small
-											class="text-muted">{{ __('Final Price (incl. shipping)') }}</small>
-										<div
-											class="h5 text-primary mb-0">
-											${{ number_format($offer->price - ($offer->discount ?? 0) + ($offer->shipping ?? 0) + ($offer->tax ?? 0), 2) }}
-										</div>
-										@if($index === 0)
-										<small
-											class="badge bg-success">{{ __('Best Price') }}</small>
-										@endif
-									</div>
+                                                <div class="mb-3">
+                                                    <small
+                                                        class="text-muted">{{ __('Final Price (incl. shipping)') }}</small>
+                                                    <div class="h5 text-primary mb-0">
+                                                        ${{ number_format($offer->price - ($offer->discount ?? 0) + ($offer->shipping ?? 0) + ($offer->tax ?? 0), 2) }}
+                                                    </div>
+                                                    @if ($index === 0)
+                                                        <small class="badge bg-success">{{ __('Best Price') }}</small>
+                                                    @endif
+                                                </div>
 
-									<div class="mb-3">
-										<small
-											class="text-muted">{{ __('Delivery Date') }}</small>
-										<div
-											class="fw-bold">
-											{{ $offer->delivery_time->format('M d, Y') }}
-										</div>
-										<small
-											class="text-muted">{{ $offer->delivery_time->diffForHumans() }}</small>
-									</div>
+                                                <div class="mb-3">
+                                                    <small class="text-muted">{{ __('Delivery Date') }}</small>
+                                                    <div class="fw-bold">
+                                                        {{ $offer->delivery_time->format('M d, Y') }}
+                                                    </div>
+                                                    <small
+                                                        class="text-muted">{{ $offer->delivery_time->diffForHumans() }}</small>
+                                                </div>
 
-									<div class="mb-3">
-										<small
-											class="text-muted">{{ __('Terms & Conditions') }}</small>
-										<div class="small">
-											{{ Str::limit($offer->terms, 100) }}
-										</div>
-									</div>
+                                                <div class="mb-3">
+                                                    <small class="text-muted">{{ __('Terms & Conditions') }}</small>
+                                                    <div class="small">
+                                                        {{ Str::limit($offer->terms, 100) }}
+                                                    </div>
+                                                </div>
 
-									<div class="mb-3">
-										<small
-											class="text-muted">{{ __('Submitted') }}</small>
-										<div class="small">
-											{{ $offer->created_at->format('M d, Y H:i') }}
-										</div>
-									</div>
+                                                <div class="mb-3">
+                                                    <small class="text-muted">{{ __('Submitted') }}</small>
+                                                    <div class="small">
+                                                        {{ $offer->created_at->format('M d, Y H:i') }}
+                                                    </div>
+                                                </div>
 
-									@if($request->status ===
-									'open' && $offer->status ===
-									'pending')
-									<div class="d-grid gap-2">
-										<button class="btn btn-success btn-sm"
-											onclick="acceptOffer({{ $offer->id }})">
-											<i
-												class="mdi mdi-check me-1"></i>
-											{{ __('Accept Offer') }}
-										</button>
-										<button class="btn btn-outline-secondary btn-sm"
-											onclick="viewOfferDetails({{ $offer->id }})">
-											<i
-												class="mdi mdi-eye me-1"></i>
-											{{ __('View Details') }}
-										</button>
-									</div>
-									@elseif($offer->status ===
-									'accepted')
-									<div class="d-grid gap-2">
-										<div
-											class="alert alert-success mb-0">
-											<i
-												class="mdi mdi-check-circle me-2"></i>
-											<strong>{{ __('Accepted!') }}</strong>
-											{{ __('This offer has been accepted.') }}
-										</div>
-										<a href="{{ route('clinic.offers.invoice', ['offerId' => $offer->id]) }}"
-											class="btn btn-outline-primary btn-sm">
-											<i
-												class="mdi mdi-file-document me-1"></i>
-											{{ __('View Invoice') }}
-										</a>
-									</div>
-									@endif
-								</div>
-							</div>
-						</div>
-						@endforeach
-					</div>
-					@endif
-				</div>
-			</div>
-		</div>
+                                                @if ($request->status === 'open' && $offer->status === 'pending')
+                                                    <div class="d-grid gap-2">
+                                                        <button class="btn btn-success btn-sm"
+                                                            onclick="acceptOffer({{ $offer->id }})">
+                                                            <i class="mdi mdi-check me-1"></i>
+                                                            {{ __('Accept Offer') }}
+                                                        </button>
+                                                        <button class="btn btn-outline-secondary btn-sm"
+                                                            onclick="viewOfferDetails({{ $offer->id }})">
+                                                            <i class="mdi mdi-eye me-1"></i>
+                                                            {{ __('View Details') }}
+                                                        </button>
+                                                    </div>
+                                                @elseif($offer->status === 'accepted')
+                                                    <div class="d-grid gap-2">
+                                                        <div class="alert alert-success mb-0">
+                                                            <i class="mdi mdi-check-circle me-2"></i>
+                                                            <strong>{{ __('Accepted!') }}</strong>
+                                                            {{ __('This offer has been accepted.') }}
+                                                        </div>
+                                                        <a href="{{ route('clinic.offers.invoice', ['offerId' => $offer->id]) }}"
+                                                            class="btn btn-outline-primary btn-sm">
+                                                            <i class="mdi mdi-file-document me-1"></i>
+                                                            {{ __('View Invoice') }}
+                                                        </a>
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
 
-		<div class="col-lg-4">
-			<!-- Request Summary -->
-			<div class="card">
-				<div class="card-body">
-					<h5 class="card-title">{{ __('Request Summary') }}</h5>
+            <div class="col-lg-4">
+                <!-- Request Summary -->
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ __('Request Summary') }}</h5>
 
-					<div class="mb-3">
-						<strong>{{ __('Total Offers:') }}</strong>
-						<p class="mb-2">{{ $request->offers->count() }}</p>
-					</div>
+                        <div class="mb-3">
+                            <strong>{{ __('Total Offers:') }}</strong>
+                            <p class="mb-2">{{ $request->offers->count() }}</p>
+                        </div>
 
-					<div class="mb-3">
-						<strong>{{ __('Pending Offers:') }}</strong>
-						<p class="mb-2">
-							{{ $request->offers->where('status', 'pending')->count() }}
-						</p>
-					</div>
+                        <div class="mb-3">
+                            <strong>{{ __('Pending Offers:') }}</strong>
+                            <p class="mb-2">
+                                {{ $request->offers->where('status', 'pending')->count() }}
+                            </p>
+                        </div>
 
-					@if($request->offers->count() > 0)
-					<div class="mb-3">
-						<strong>{{ __('Price Range:') }}</strong>
-						<p class="mb-2">
-							${{ number_format($request->offers->min('final_price'), 2) }}
-							-
-							${{ number_format($request->offers->max('final_price'), 2) }}
-						</p>
-					</div>
+                        @if ($request->offers->count() > 0)
+                            <div class="mb-3">
+                                <strong>{{ __('Price Range:') }}</strong>
+                                <p class="mb-2">
+                                    ${{ number_format($request->offers->min('final_price'), 2) }}
+                                    -
+                                    ${{ number_format($request->offers->max('final_price'), 2) }}
+                                </p>
+                            </div>
 
-					<div class="mb-3">
-						<strong>{{ __('Average Price:') }}</strong>
-						<p class="mb-2">
-							${{ number_format($request->offers->avg('final_price'), 2) }}
-						</p>
-					</div>
-					@endif
+                            <div class="mb-3">
+                                <strong>{{ __('Average Price:') }}</strong>
+                                <p class="mb-2">
+                                    ${{ number_format($request->offers->avg('final_price'), 2) }}
+                                </p>
+                            </div>
+                        @endif
 
-					@if($request->acceptedOffer)
-					<div class="mb-3">
-						<strong>{{ __('Accepted Offer:') }}</strong>
-						<div class="alert alert-success">
-							<strong>{{ $request->acceptedOffer->supplier->name }}</strong><br>
-							<small>{{ __('Price:') }}
-								${{ number_format($request->acceptedOffer->final_price, 2) }}</small>
-						</div>
-					</div>
-					@endif
-				</div>
-			</div>
+                        @if ($request->acceptedOffer)
+                            <div class="mb-3">
+                                <strong>{{ __('Accepted Offer:') }}</strong>
+                                <div class="alert alert-success">
+                                    <strong>{{ $request->acceptedOffer->supplier->name }}</strong><br>
+                                    <small>{{ __('Price:') }}
+                                        ${{ number_format($request->acceptedOffer->final_price, 2) }}</small>
+                                </div>
+                            </div>
+                        @endif
+                    </div>
+                </div>
 
-			<!-- Actions -->
-			<div class="card">
-				<div class="card-body">
-					<h5 class="card-title">{{ __('Actions') }}</h5>
+                <!-- Actions -->
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ __('Actions') }}</h5>
 
-					<div class="d-grid gap-2">
-						@if($request->status === 'open')
-						<a href="{{ route('clinic.requests.edit', $request->id) }}"
-							class="btn btn-primary">
-							<i class="mdi mdi-pencil me-1"></i>
-							{{ __('Edit Request') }}
-						</a>
-						<button class="btn btn-warning"
-							onclick="cancelRequest({{ $request->id }})">
-							<i class="mdi mdi-cancel me-1"></i>
-							{{ __('Cancel Request') }}
-						</button>
-						@endif
+                        <div class="d-grid gap-2">
+                            @if ($request->status === 'open')
+                                <a href="{{ route('clinic.requests.edit', $request->id) }}" class="btn btn-primary">
+                                    <i class="mdi mdi-pencil me-1"></i>
+                                    {{ __('Edit Request') }}
+                                </a>
+                                <button class="btn btn-warning" onclick="cancelRequest({{ $request->id }})">
+                                    <i class="mdi mdi-cancel me-1"></i>
+                                    {{ __('Cancel Request') }}
+                                </button>
+                            @endif
 
-						<a href="{{ route('clinic.requests.index') }}"
-							class="btn btn-outline-secondary">
-							<i class="mdi mdi-arrow-left me-1"></i>
-							{{ __('Back to Requests') }}
-						</a>
+                            <a href="{{ route('clinic.requests.index') }}" class="btn btn-outline-secondary">
+                                <i class="mdi mdi-arrow-left me-1"></i>
+                                {{ __('Back to Requests') }}
+                            </a>
 
-						@if($request->status !== 'closed' ||
-						!$request->acceptedOffer)
-						<button class="btn btn-outline-danger"
-							onclick="deleteRequest({{ $request->id }})">
-							<i class="mdi mdi-delete me-1"></i>
-							{{ __('Delete Request') }}
-						</button>
-						@endif
-					</div>
-				</div>
-			</div>
+                            @if ($request->status !== 'closed' || !$request->acceptedOffer)
+                                <button class="btn btn-outline-danger" onclick="deleteRequest({{ $request->id }})">
+                                    <i class="mdi mdi-delete me-1"></i>
+                                    {{ __('Delete Request') }}
+                                </button>
+                            @endif
+                        </div>
+                    </div>
+                </div>
 
-			<!-- Tips -->
-			@if($request->status === 'open' && $request->offers->where('status', 'pending')->count() >
-			0)
-			<div class="card">
-				<div class="card-body">
-					<h5 class="card-title">{{ __('Selection Tips') }}</h5>
-					<ul class="list-unstyled mb-0">
-						<li class="mb-2">
-							<i
-								class="mdi mdi-lightbulb text-warning me-2"></i>
-							{{ __('Compare prices and delivery times') }}
-						</li>
-						<li class="mb-2">
-							<i
-								class="mdi mdi-lightbulb text-warning me-2"></i>
-							{{ __('Read terms & conditions carefully') }}
-						</li>
-						<li class="mb-2">
-							<i
-								class="mdi mdi-lightbulb text-warning me-2"></i>
-							{{ __('Consider supplier reputation') }}
-						</li>
-						<li class="mb-2">
-							<i
-								class="mdi mdi-lightbulb text-warning me-2"></i>
-							{{ __('Check warranty and return policies') }}
-						</li>
-					</ul>
-				</div>
-			</div>
-			@endif
-		</div>
-	</div>
-</div>
+                <!-- Tips -->
+                @if ($request->status === 'open' && $request->offers->where('status', 'pending')->count() > 0)
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ __('Selection Tips') }}</h5>
+                            <ul class="list-unstyled mb-0">
+                                <li class="mb-2">
+                                    <i class="mdi mdi-lightbulb text-warning me-2"></i>
+                                    {{ __('Compare prices and delivery times') }}
+                                </li>
+                                <li class="mb-2">
+                                    <i class="mdi mdi-lightbulb text-warning me-2"></i>
+                                    {{ __('Read terms & conditions carefully') }}
+                                </li>
+                                <li class="mb-2">
+                                    <i class="mdi mdi-lightbulb text-warning me-2"></i>
+                                    {{ __('Consider supplier reputation') }}
+                                </li>
+                                <li class="mb-2">
+                                    <i class="mdi mdi-lightbulb text-warning me-2"></i>
+                                    {{ __('Check warranty and return policies') }}
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                @endif
+            </div>
+        </div>
+    </div>
 
-<!-- Offer Details Modal -->
-<div class="modal fade" id="offerDetailsModal" tabindex="-1" aria-labelledby="offerDetailsModalLabel"
-	aria-hidden="true">
-	<div class="modal-dialog modal-lg">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title" id="offerDetailsModalLabel">{{ __('Offer Details') }}
-				</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal"
-					aria-label="Close"></button>
-			</div>
-			<div class="modal-body" id="offerDetailsContent">
-				<!-- Content will be loaded here -->
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary"
-					data-bs-dismiss="modal">{{ __('Close') }}</button>
-			</div>
-		</div>
-	</div>
-</div>
+    <!-- Offer Details Modal -->
+    <div class="modal fade" id="offerDetailsModal" tabindex="-1" aria-labelledby="offerDetailsModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="offerDetailsModalLabel">{{ __('Offer Details') }}
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="offerDetailsContent">
+                    <!-- Content will be loaded here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary"
+                        data-bs-dismiss="modal">{{ __('Close') }}</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<!-- Payment Method Selection Modal -->
-<div class="modal fade" id="paymentMethodModal" tabindex="-1" aria-labelledby="paymentMethodModalLabel"
-	aria-hidden="true">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title" id="paymentMethodModalLabel">
-					{{ __('Select Payment Method') }}</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal"
-					aria-label="Close"></button>
-			</div>
-			<div class="modal-body">
-				<div id="paymentMethodContent">
-					<p class="mb-3"><strong>{{ __('Total Amount:') }}</strong> <span
-							id="paymentTotalAmount"
-							class="text-success fs-5">$0.00</span></p>
+    <!-- Payment Method Selection Modal -->
+    <div class="modal fade" id="paymentMethodModal" tabindex="-1" aria-labelledby="paymentMethodModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="paymentMethodModalLabel">
+                        {{ __('Select Payment Method') }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="paymentMethodContent">
+                        <p class="mb-3"><strong>{{ __('Total Amount:') }}</strong> <span id="paymentTotalAmount"
+                                class="text-success fs-5">$0.00</span></p>
 
-					<div class="mb-3">
-						<label
-							class="form-label">{{ __('Payment Method:') }}</label>
-						<div class="form-check mb-2">
-							<input class="form-check-input" type="radio"
-								name="payment_gateway" id="payment_cod"
-								value="cod" checked>
-							<label class="form-check-label" for="payment_cod">
-								<strong>{{ __('Cash on Delivery (COD)') }}</strong>
-								<small
-									class="d-block text-muted">{{ __('Pay when you receive the order') }}</small>
-							</label>
-						</div>
-						<div class="form-check mb-2">
-							<input class="form-check-input" type="radio"
-								name="payment_gateway"
-								id="payment_paymob" value="paymob">
-							<label class="form-check-label"
-								for="payment_paymob">
-								<strong>{{ __('Pay Online (Paymob)') }}</strong>
-								<small
-									class="d-block text-muted">{{ __('Pay securely online using card or wallet') }}</small>
-							</label>
-						</div>
-					</div>
+                        <div class="mb-3">
+                            <label class="form-label">{{ __('Payment Method:') }}</label>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="payment_gateway" id="payment_cod"
+                                    value="cod" checked>
+                                <label class="form-check-label" for="payment_cod">
+                                    <strong>{{ __('Cash on Delivery (COD)') }}</strong>
+                                    <small class="d-block text-muted">{{ __('Pay when you receive the order') }}</small>
+                                </label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="payment_gateway"
+                                    id="payment_paymob" value="paymob">
+                                <label class="form-check-label" for="payment_paymob">
+                                    <strong>{{ __('Online Payment') }}</strong>
+                                    <small
+                                        class="d-block text-muted">{{ __('Pay securely online via Card or Mobile Wallet') }}</small>
+                                </label>
+                            </div>
 
-					<!-- Paymob sub-options: Card or Wallet -->
-					<div id="paymob-options" class="mb-3 hidden">
-						<label class="form-label">{{ __('Payment Type:') }}</label>
-						<div class="form-check mb-2">
-							<input class="form-check-input" type="radio"
-								name="pay_method" id="pay_method_card"
-								value="card" checked>
-							<label class="form-check-label"
-								for="pay_method_card">
-								{{ __('Card') }}
-							</label>
-						</div>
-						<div class="form-check mb-2">
-							<input class="form-check-input" type="radio"
-								name="pay_method" id="pay_method_wallet"
-								value="wallet">
-							<label class="form-check-label"
-								for="pay_method_wallet">
-								{{ __('Wallet (Vodafone, Etisalat, Orange, WE)') }}
-							</label>
-						</div>
-						<div id="wallet-phone-wrapper" class="mt-3 hidden">
-							<label
-								class="form-label">{{ __('Wallet Phone (Egypt)') }}</label>
-							<input type="tel" id="wallet-phone"
-								name="wallet_phone"
-								placeholder="01XXXXXXXXX"
-								class="form-control">
-							<small
-								class="text-muted">{{ __('Enter the wallet phone number starting with 01') }}</small>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary"
-					data-bs-dismiss="modal">{{ __('Cancel') }}</button>
-				<button type="button" class="btn btn-success" id="proceedPaymentBtn"
-					onclick="proceedWithPayment()">
-					<i class="mdi mdi-check me-1"></i> {{ __('Proceed with Payment') }}
-				</button>
-			</div>
-		</div>
-	</div>
-</div>
-@endsection
+                            <!-- Card/Wallet selection is now handled by Paymob's Unified Checkout page -->
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary"
+                            data-bs-dismiss="modal">{{ __('Cancel') }}</button>
+                        <button type="button" class="btn btn-success" id="proceedPaymentBtn"
+                            onclick="proceedWithPayment()">
+                            <i class="mdi mdi-check me-1"></i> {{ __('Proceed with Payment') }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endsection
 
-@push('scripts')
-<script>
-let selectedOfferId = null;
-let selectedOfferData = null;
+    @push('scripts')
+        <script>
+            let selectedOfferId = null;
+            let selectedOfferData = null;
 
-function acceptOffer(offerId) {
-	// Find the offer data from the current page
-	const offers = @json($request->offers);
-	const offer = offers.find(o => o.id === offerId);
+            function acceptOffer(offerId) {
+                // Find the offer data from the current page
+                const offers = @json($request->offers);
+                const offer = offers.find(o => o.id === offerId);
 
-	if (!offer) {
-		Swal.fire('{{ __("Error!") }}', '{{ __("Offer not found") }}', 'error');
-		return;
-	}
+                if (!offer) {
+                    Swal.fire('{{ __('Error!') }}', '{{ __('Offer not found') }}', 'error');
+                    return;
+                }
 
-	selectedOfferId = offerId;
-	selectedOfferData = offer;
+                selectedOfferId = offerId;
+                selectedOfferData = offer;
 
-	// Calculate total amount (price - discount + shipping + tax)
-	const totalAmount = parseFloat(offer.price) - (parseFloat(offer.discount) || 0) + (parseFloat(offer.shipping) || 0) + (parseFloat(offer.tax) || 0);
+                // Calculate total amount (price - discount + shipping + tax)
+                const totalAmount = parseFloat(offer.price) - (parseFloat(offer.discount) || 0) + (parseFloat(offer.shipping) ||
+                    0) + (parseFloat(offer.tax) || 0);
 
-	// Update payment modal with offer details
-	document.getElementById('paymentTotalAmount').textContent = '$' + totalAmount.toFixed(2);
+                // Update payment modal with offer details
+                document.getElementById('paymentTotalAmount').textContent = '$' + totalAmount.toFixed(2);
 
-	// Show payment method selection modal
-	const paymentModal = new bootstrap.Modal(document.getElementById('paymentMethodModal'));
-	paymentModal.show();
+                // Show payment method selection modal
+                const paymentModal = new bootstrap.Modal(document.getElementById('paymentMethodModal'));
+                paymentModal.show();
 
-	// Setup payment gateway UI handlers
-	setupPaymentGatewayUI();
-}
+                // Setup payment gateway UI handlers
+                setupPaymentGatewayUI();
+            }
 
-function setupPaymentGatewayUI() {
-	const paymobOptions = document.getElementById('paymob-options');
-	const walletPhoneWrapper = document.getElementById('wallet-phone-wrapper');
-	const walletPhoneInput = document.getElementById('wallet-phone');
+            function setupPaymentGatewayUI() {
+                // Payment method selection is now handled by Paymob's Unified Checkout page
+                // No UI setup needed here anymore
+            }
 
-	function updatePaymobUI() {
-		const selectedGateway = document.querySelector('input[name="payment_gateway"]:checked')?.value;
-		if (selectedGateway === 'paymob') {
-			paymobOptions.classList.remove('hidden');
-			const payMethod = document.querySelector('input[name="pay_method"]:checked')?.value ||
-				'card';
-			if (payMethod === 'wallet') {
-				walletPhoneWrapper.classList.remove('hidden');
-			} else {
-				walletPhoneWrapper.classList.add('hidden');
-			}
-		} else {
-			paymobOptions.classList.add('hidden');
-			walletPhoneWrapper.classList.add('hidden');
-		}
-	}
+            function proceedWithPayment() {
+                if (!selectedOfferId) {
+                    Swal.fire('{{ __('Error!') }}', '{{ __('No offer selected') }}', 'error');
+                    return;
+                }
 
-	// Add event listeners
-	document.querySelectorAll('input[name="payment_gateway"]').forEach(el => {
-		el.addEventListener('change', updatePaymobUI);
-	});
+                const paymentGateway = document.querySelector('input[name="payment_gateway"]:checked')?.value;
 
-	document.querySelectorAll('input[name="pay_method"]').forEach(el => {
-		el.addEventListener('change', updatePaymobUI);
-	});
+                // Close payment modal
+                const paymentModal = bootstrap.Modal.getInstance(document.getElementById('paymentMethodModal'));
+                paymentModal.hide();
 
-	// Initial update
-	updatePaymobUI();
-}
+                // Show loading
+                Swal.fire({
+                    title: '{{ __('Processing...') }}',
+                    text: '{{ __('Please wait while we process your payment') }}',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
 
-function proceedWithPayment() {
-	if (!selectedOfferId) {
-		Swal.fire('{{ __("Error!") }}', '{{ __("No offer selected") }}', 'error');
-		return;
-	}
+                // Process payment
+                $.ajax({
+                    url: "{{ route('clinic.requests.process-offer-payment', $request->id) }}",
+                    type: 'POST',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        "offer_id": selectedOfferId,
+                        "payment_gateway": paymentGateway
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            if (paymentGateway === 'cod') {
+                                // For COD, accept offer directly
+                                Swal.fire({
+                                    title: '{{ __('Success!') }}',
+                                    text: response
+                                        .message,
+                                    icon: 'success',
+                                    confirmButtonText: '{{ __('OK') }}'
+                                }).then(() => {
+                                    location
+                                        .reload();
+                                });
+                            } else if (paymentGateway === 'paymob' && response
+                                .redirect_url) {
+                                // For Paymob, redirect to payment page
+                                window.location.href = response
+                                    .redirect_url;
+                            } else {
+                                Swal.fire('{{ __('Error!') }}',
+                                    '{{ __('Invalid payment response') }}',
+                                    'error');
+                            }
+                        } else {
+                            Swal.fire('{{ __('Error!') }}', response.message,
+                                'error');
+                        }
+                    },
+                    error: function(xhr) {
+                        Swal.fire('{{ __('Error!') }}', xhr.responseJSON?.message ||
+                            '{{ __('Something went wrong!') }}',
+                            'error');
+                    }
+                });
+            }
 
-	const paymentGateway = document.querySelector('input[name="payment_gateway"]:checked')?.value;
-	const payMethod = document.querySelector('input[name="pay_method"]:checked')?.value || 'card';
-	const walletPhone = document.getElementById('wallet-phone')?.value || '';
+            function viewOfferDetails(offerId) {
+                $('#offerDetailsModal').modal('show');
+                $('#offerDetailsContent').html(
+                    '<div class="text-center p-4"><i class="mdi mdi-loading mdi-spin"></i> {{ __('Loading...') }}</div>'
+                );
 
-	// Validate wallet phone if wallet payment is selected
-	if (paymentGateway === 'paymob' && payMethod === 'wallet' && !walletPhone) {
-		Swal.fire('{{ __("Error!") }}', '{{ __("Wallet phone is required for wallet payments") }}',
-			'error');
-		return;
-	}
+                // Find the offer data from the current page
+                const offers = @json($request->offers);
+                const offer = offers.find(o => o.id === offerId);
 
-	// Close payment modal
-	const paymentModal = bootstrap.Modal.getInstance(document.getElementById('paymentMethodModal'));
-	paymentModal.hide();
+                if (!offer) {
+                    $('#offerDetailsContent').html('<div class="alert alert-danger">{{ __('Offer not found') }}</div>');
+                    return;
+                }
 
-	// Show loading
-	Swal.fire({
-		title: '{{ __("Processing...") }}',
-		text: '{{ __("Please wait while we process your payment") }}',
-		allowOutsideClick: false,
-		didOpen: () => {
-			Swal.showLoading();
-		}
-	});
+                const priceValue = parseFloat(offer.price || 0);
+                const discountValue = parseFloat(offer.discount || 0);
+                const shippingValue = parseFloat(offer.shipping || 0);
+                const taxValue = parseFloat(offer.tax || 0);
+                const finalPrice = priceValue - discountValue;
+                const totalPrice = finalPrice + shippingValue + taxValue;
+                const statusBadge = getStatusBadge(offer.status);
+                const canAccept = offer.status === 'pending' && '{{ $request->status }}' === 'open';
 
-	// Process payment
-	$.ajax({
-		url: "{{ route('clinic.requests.process-offer-payment', $request->id) }}",
-		type: 'POST',
-		data: {
-			"_token": "{{ csrf_token() }}",
-			"offer_id": selectedOfferId,
-			"payment_gateway": paymentGateway,
-			"pay_method": payMethod,
-			"wallet_phone": walletPhone
-		},
-		success: function(response) {
-			if (response.success) {
-				if (paymentGateway === 'cod') {
-					// For COD, accept offer directly
-					Swal.fire({
-						title: '{{ __("Success!") }}',
-						text: response
-							.message,
-						icon: 'success',
-						confirmButtonText: '{{ __("OK") }}'
-					}).then(() => {
-						location
-							.reload();
-					});
-				} else if (paymentGateway === 'paymob' && response
-					.redirect_url) {
-					// For Paymob, redirect to payment page
-					window.location.href = response
-						.redirect_url;
-				} else {
-					Swal.fire('{{ __("Error!") }}',
-						'{{ __("Invalid payment response") }}',
-						'error');
-				}
-			} else {
-				Swal.fire('{{ __("Error!") }}', response.message,
-					'error');
-			}
-		},
-		error: function(xhr) {
-			Swal.fire('{{ __("Error!") }}', xhr.responseJSON?.message ||
-				'{{ __("Something went wrong!") }}',
-				'error');
-		}
-	});
-}
-
-function viewOfferDetails(offerId) {
-	$('#offerDetailsModal').modal('show');
-	$('#offerDetailsContent').html(
-		'<div class="text-center p-4"><i class="mdi mdi-loading mdi-spin"></i> {{ __("Loading...") }}</div>'
-	);
-
-	// Find the offer data from the current page
-	const offers = @json($request->offers);
-	const offer = offers.find(o => o.id === offerId);
-
-	if (!offer) {
-		$('#offerDetailsContent').html('<div class="alert alert-danger">{{ __("Offer not found") }}</div>');
-		return;
-	}
-
-	const priceValue = parseFloat(offer.price || 0);
-	const discountValue = parseFloat(offer.discount || 0);
-	const shippingValue = parseFloat(offer.shipping || 0);
-	const taxValue = parseFloat(offer.tax || 0);
-	const finalPrice = priceValue - discountValue;
-	const totalPrice = finalPrice + shippingValue + taxValue;
-	const statusBadge = getStatusBadge(offer.status);
-	const canAccept = offer.status === 'pending' && '{{ $request->status }}' === 'open';
-
-	const content = `
+                const content = `
         <div class="row">
             <div class="col-md-6">
                 <h6 class="text-muted mb-3">{{ __('Supplier Information') }}</h6>
@@ -763,17 +638,17 @@ function viewOfferDetails(offerId) {
                     })}</p>
                 </div>
                 ${offer.updated_at !== offer.created_at ? `
-                <div class="mb-3">
-                    <strong>{{ __('Last Updated:') }}</strong>
-                    <p class="mb-1">${new Date(offer.updated_at).toLocaleDateString('{{ app()->getLocale() }}', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                    })}</p>
-                </div>
-                ` : ''}
+                                        <div class="mb-3">
+                                            <strong>{{ __('Last Updated:') }}</strong>
+                                            <p class="mb-1">${new Date(offer.updated_at).toLocaleDateString('{{ app()->getLocale() }}', {
+                                                year: 'numeric',
+                                                month: 'long',
+                                                day: 'numeric',
+                                                hour: '2-digit',
+                                                minute: '2-digit'
+                                            })}</p>
+                                        </div>
+                                        ` : ''}
             </div>
         </div>
 
@@ -788,12 +663,12 @@ function viewOfferDetails(offerId) {
                         <strong>$${parseFloat(offer.price).toFixed(2)}</strong>
                     </div>
                     ${offer.discount ? `
-                    <div class="d-flex justify-content-between mb-2 text-success">
-                        <span>{{ __('Discount:') }}</span>
-                        <strong>-$${parseFloat(offer.discount).toFixed(2)}</strong>
-                    </div>
-                    <hr class="my-2">
-                    ` : ''}
+                                            <div class="d-flex justify-content-between mb-2 text-success">
+                                                <span>{{ __('Discount:') }}</span>
+                                                <strong>-$${parseFloat(offer.discount).toFixed(2)}</strong>
+                                            </div>
+                                            <hr class="my-2">
+                                            ` : ''}
                     <div class="d-flex justify-content-between mb-2">
                         <span>{{ __('Shipping:') }}</span>
                         <strong>$${parseFloat(offer.shipping || 0).toFixed(2)}</strong>
@@ -838,204 +713,204 @@ function viewOfferDetails(offerId) {
         </div>
 
         ${canAccept ? `
-        <hr>
-        <div class="text-center">
-            <button class="btn btn-success me-2" onclick="acceptOfferFromModal(${offer.id})">
-                <i class="mdi mdi-check me-1"></i> {{ __('Accept This Offer') }}
-            </button>
-            <button class="btn btn-secondary" data-bs-dismiss="modal">{{ __('Close') }}</button>
-        </div>
-        ` : ''}
+                                <hr>
+                                <div class="text-center">
+                                    <button class="btn btn-success me-2" onclick="acceptOfferFromModal(${offer.id})">
+                                        <i class="mdi mdi-check me-1"></i> {{ __('Accept This Offer') }}
+                                    </button>
+                                    <button class="btn btn-secondary" data-bs-dismiss="modal">{{ __('Close') }}</button>
+                                </div>
+                                ` : ''}
     `;
 
-	$('#offerDetailsContent').html(content);
-}
+                $('#offerDetailsContent').html(content);
+            }
 
-function getStatusBadge(status) {
-	const badges = {
-		'pending': '<span class="badge bg-warning">{{ __("Pending") }}</span>',
-		'accepted': '<span class="badge bg-success">{{ __("Accepted") }}</span>',
-		'declined': '<span class="badge bg-danger">{{ __("Declined") }}</span>'
-	};
-	return badges[status] || '<span class="badge bg-secondary">{{ __("Unknown") }}</span>';
-}
+            function getStatusBadge(status) {
+                const badges = {
+                    'pending': '<span class="badge bg-warning">{{ __('Pending') }}</span>',
+                    'accepted': '<span class="badge bg-success">{{ __('Accepted') }}</span>',
+                    'declined': '<span class="badge bg-danger">{{ __('Declined') }}</span>'
+                };
+                return badges[status] || '<span class="badge bg-secondary">{{ __('Unknown') }}</span>';
+            }
 
-function acceptOfferFromModal(offerId) {
-	$('#offerDetailsModal').modal('hide');
-	acceptOffer(offerId);
-}
+            function acceptOfferFromModal(offerId) {
+                $('#offerDetailsModal').modal('hide');
+                acceptOffer(offerId);
+            }
 
-function cancelRequest(id) {
-	Swal.fire({
-		title: '{{ __("Cancel Request?") }}',
-		text: '{{ __("This will decline all pending offers and close the request.") }}',
-		icon: 'warning',
-		showCancelButton: true,
-		confirmButtonColor: '#f1556c',
-		cancelButtonColor: '#6c757d',
-		confirmButtonText: '{{ __("Yes, cancel it!") }}',
-		cancelButtonText: '{{ __("No, keep it") }}'
-	}).then((result) => {
-		if (result.isConfirmed) {
-			$.ajax({
-				url: "{{ route('clinic.requests.cancel', $request->id) }}",
-				type: 'POST',
-				data: {
-					"_token": "{{ csrf_token() }}"
-				},
-				success: function(response) {
-					if (response
-						.success
-					) {
-						Swal.fire({
-								title: '{{ __("Canceled!") }}',
-								text: response
-									.message,
-								icon: 'success',
-								confirmButtonText: '{{ __("OK") }}'
-							})
-							.then(() => {
-								location
-									.reload();
-							});
-					} else {
-						Swal.fire('{{ __("Error!") }}',
-							response
-							.message,
-							'error'
-						);
-					}
-				},
-				error: function(xhr) {
-					Swal.fire('{{ __("Error!") }}',
-						xhr
-						.responseJSON
-						?.message ||
-						'{{ __("Something went wrong!") }}',
-						'error'
-					);
-				}
-			});
-		}
-	});
-}
+            function cancelRequest(id) {
+                Swal.fire({
+                    title: '{{ __('Cancel Request?') }}',
+                    text: '{{ __('This will decline all pending offers and close the request.') }}',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#f1556c',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: '{{ __('Yes, cancel it!') }}',
+                    cancelButtonText: '{{ __('No, keep it') }}'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: "{{ route('clinic.requests.cancel', $request->id) }}",
+                            type: 'POST',
+                            data: {
+                                "_token": "{{ csrf_token() }}"
+                            },
+                            success: function(response) {
+                                if (response
+                                    .success
+                                ) {
+                                    Swal.fire({
+                                            title: '{{ __('Canceled!') }}',
+                                            text: response
+                                                .message,
+                                            icon: 'success',
+                                            confirmButtonText: '{{ __('OK') }}'
+                                        })
+                                        .then(() => {
+                                            location
+                                                .reload();
+                                        });
+                                } else {
+                                    Swal.fire('{{ __('Error!') }}',
+                                        response
+                                        .message,
+                                        'error'
+                                    );
+                                }
+                            },
+                            error: function(xhr) {
+                                Swal.fire('{{ __('Error!') }}',
+                                    xhr
+                                    .responseJSON
+                                    ?.message ||
+                                    '{{ __('Something went wrong!') }}',
+                                    'error'
+                                );
+                            }
+                        });
+                    }
+                });
+            }
 
-function deleteRequest(id) {
-	Swal.fire({
-		title: '{{ __("Are you sure?") }}',
-		text: '{{ __("You won\'t be able to revert this!") }}',
-		icon: 'warning',
-		showCancelButton: true,
-		confirmButtonColor: '#3085d6',
-		cancelButtonColor: '#d33',
-		confirmButtonText: '{{ __("Yes, delete it!") }}',
-		cancelButtonText: '{{ __("Cancel") }}'
-	}).then((result) => {
-		if (result.isConfirmed) {
-			$.ajax({
-				url: "{{ route('clinic.requests.destroy', $request->id) }}",
-				type: 'DELETE',
-				data: {
-					"_token": "{{ csrf_token() }}"
-				},
-				success: function(response) {
-					if (response
-						.success
-					) {
-						Swal.fire({
-								title: '{{ __("Deleted!") }}',
-								text: response
-									.message,
-								icon: 'success',
-								confirmButtonText: '{{ __("OK") }}'
-							})
-							.then(() => {
-								window.location
-									.href =
-									"{{ route('clinic.requests.index') }}";
-							});
-					} else {
-						Swal.fire('{{ __("Error!") }}',
-							response
-							.message,
-							'error'
-						);
-					}
-				},
-				error: function(xhr) {
-					Swal.fire('{{ __("Error!") }}',
-						xhr
-						.responseJSON
-						?.message ||
-						'{{ __("Something went wrong!") }}',
-						'error'
-					);
-				}
-			});
-		}
-	});
-}
-</script>
-@endpush
+            function deleteRequest(id) {
+                Swal.fire({
+                    title: '{{ __('Are you sure?') }}',
+                    text: '{{ __("You won\'t be able to revert this!") }}',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: '{{ __('Yes, delete it!') }}',
+                    cancelButtonText: '{{ __('Cancel') }}'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: "{{ route('clinic.requests.destroy', $request->id) }}",
+                            type: 'DELETE',
+                            data: {
+                                "_token": "{{ csrf_token() }}"
+                            },
+                            success: function(response) {
+                                if (response
+                                    .success
+                                ) {
+                                    Swal.fire({
+                                            title: '{{ __('Deleted!') }}',
+                                            text: response
+                                                .message,
+                                            icon: 'success',
+                                            confirmButtonText: '{{ __('OK') }}'
+                                        })
+                                        .then(() => {
+                                            window.location
+                                                .href =
+                                                "{{ route('clinic.requests.index') }}";
+                                        });
+                                } else {
+                                    Swal.fire('{{ __('Error!') }}',
+                                        response
+                                        .message,
+                                        'error'
+                                    );
+                                }
+                            },
+                            error: function(xhr) {
+                                Swal.fire('{{ __('Error!') }}',
+                                    xhr
+                                    .responseJSON
+                                    ?.message ||
+                                    '{{ __('Something went wrong!') }}',
+                                    'error'
+                                );
+                            }
+                        });
+                    }
+                });
+            }
+        </script>
+    @endpush
 
-@push('styles')
-<style>
-.card-title {
-	color: #6c757d;
-	font-weight: 600;
-}
+    @push('styles')
+        <style>
+            .card-title {
+                color: #6c757d;
+                font-weight: 600;
+            }
 
-.bg-light {
-	background-color: #f8f9fa !important;
-}
+            .bg-light {
+                background-color: #f8f9fa !important;
+            }
 
-.border {
-	border: 1px solid #dee2e6 !important;
-}
+            .border {
+                border: 1px solid #dee2e6 !important;
+            }
 
-.fs-6 {
-	font-size: 0.875rem !important;
-}
+            .fs-6 {
+                font-size: 0.875rem !important;
+            }
 
-.alert {
-	border-radius: 0.375rem;
-}
+            .alert {
+                border-radius: 0.375rem;
+            }
 
-.list-unstyled li {
-	padding: 0.25rem 0;
-}
+            .list-unstyled li {
+                padding: 0.25rem 0;
+            }
 
-.text-decoration-none:hover {
-	text-decoration: underline !important;
-}
+            .text-decoration-none:hover {
+                text-decoration: underline !important;
+            }
 
-.card.border-success {
-	border-color: #28a745 !important;
-}
+            .card.border-success {
+                border-color: #28a745 !important;
+            }
 
-.card.border-warning {
-	border-color: #ffc107 !important;
-}
+            .card.border-warning {
+                border-color: #ffc107 !important;
+            }
 
-.card.border-secondary {
-	border-color: #6c757d !important;
-}
+            .card.border-secondary {
+                border-color: #6c757d !important;
+            }
 
-.h5 {
-	font-size: 1.25rem;
-	font-weight: 500;
-}
+            .h5 {
+                font-size: 1.25rem;
+                font-weight: 500;
+            }
 
-.fw-bold {
-	font-weight: 700 !important;
-}
+            .fw-bold {
+                font-weight: 700 !important;
+            }
 
-.d-grid {
-	display: grid !important;
-}
+            .d-grid {
+                display: grid !important;
+            }
 
-.gap-2 {
-	gap: 0.5rem !important;
-}
-</style>
-@endpush
+            .gap-2 {
+                gap: 0.5rem !important;
+            }
+        </style>
+    @endpush
