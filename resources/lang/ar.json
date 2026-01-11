@@ -2914,5 +2914,6 @@
     "Shipped": "تم الشحن",
     "Delivered": "تم التوصيل",
     "Accepted": "مقبول",
-    "Rejected": "مرفوض"
+    "Rejected": "مرفوض",
+    "Transaction ID": "رقم المعاملة"
 }

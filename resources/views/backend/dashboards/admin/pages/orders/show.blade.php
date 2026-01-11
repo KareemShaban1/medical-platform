@@ -212,6 +212,12 @@
                                 <td><strong>{{ __('Payment Method') }}:</strong></td>
                                 <td>{{ $order->payment_method == 0 ? 'COD' : 'Online' }}</td>
                             </tr>
+                            @if ($order->payment_method != 0 && $order->transaction_id)
+                                <tr>
+                                    <td><strong>{{ __('Transaction ID') }}:</strong></td>
+                                    <td>{{ $order->transaction_id }}</td>
+                                </tr>
+                            @endif
                             <tr>
                                 <td><strong>{{ __('Total') }}:</strong></td>
                                 <td>${{ number_format($order->total, 2) }}</td>
@@ -232,11 +238,11 @@
                                 <td><strong>{{ __('Date') }}:</strong></td>
                                 <td>{{ $order->created_at->format('Y-m-d H:i') }}</td>
                             </tr>
-                             <tr>
+                            <tr>
                                 <td><strong>{{ __('Shipping Address') }}:</strong></td>
                                 <td>{{ $order->shipping_address }}</td>
                             </tr>
-                             <tr>
+                            <tr>
                                 <td><strong>{{ __('Phone') }}:</strong></td>
                                 <td>{{ $order->phone }}</td>
                             </tr>

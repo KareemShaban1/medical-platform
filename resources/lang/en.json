@@ -2700,5 +2700,6 @@
     "Shipped": "Shipped",
     "Delivered": "Delivered",
     "Accepted": "Accepted",
-    "Rejected": "Rejected"
+    "Rejected": "Rejected",
+    "Transaction ID": "Transaction ID"
 }
