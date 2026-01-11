@@ -60,6 +60,7 @@
 							rows="4" required
 							class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
 							placeholder="{{ __('Enter your complete shipping address') }}">{{ old('shipping_address') }}</textarea>
+						<p id="shipping_address_error" class="text-sm text-red-600 mt-1 hidden"></p>
 						<p class="text-xs text-gray-500 mt-1">
 							{{ __('Please provide your complete address including street, building, floor, and apartment number') }}
 						</p>
@@ -76,6 +77,7 @@
 							class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
 							placeholder="01XXXXXXXXX"
 							value="{{ old('phone') }}">
+						<p id="phone_error" class="text-sm text-red-600 mt-1 hidden"></p>
 						<p class="text-xs text-gray-500 mt-1">
 							{{ __('Enter your Egyptian mobile number (e.g., 01XXXXXXXXX)') }}
 						</p>
@@ -98,7 +100,7 @@
 							{{ $loop->first ? 'checked' : '' }}>
 						<div class="ml-3">
 							<div class="font-semibold text-gray-900">
-								{{ $gateway['display_name'] }}</div>
+								{{ $gateway['name'] === 'paymob' ? __('Online Payment') : $gateway['display_name'] }}</div>
 							<div class="text-sm text-gray-600">
 								@if($gateway['name'] === 'cod')
 								{{ __('pay when you receive your order') }}
@@ -137,6 +139,7 @@
 							<input type="tel" id="wallet-phone"
 								placeholder="01XXXXXXXXX"
 								class="w-full border rounded px-3 py-2 focus:outline-none focus:ring" />
+							<p id="wallet_phone_error" class="text-sm text-red-600 mt-1 hidden"></p>
 							<p class="text-xs text-gray-500 mt-1">
 								{{ __('enter the wallet phone number starting with 01') }}
 							</p>
@@ -200,6 +203,21 @@ document.addEventListener('DOMContentLoaded', function() {
 	const paymobOptions = document.getElementById('paymob-options');
 	const walletPhoneWrapper = document.getElementById('wallet-phone-wrapper');
 	const walletPhoneInput = document.getElementById('wallet-phone');
+	const shippingAddressError = document.getElementById('shipping_address_error');
+	const phoneError = document.getElementById('phone_error');
+	const walletPhoneError = document.getElementById('wallet_phone_error');
+
+	function resetFieldErrors() {
+		shippingAddressError.textContent = '';
+		shippingAddressError.classList.add('hidden');
+		phoneError.textContent = '';
+		phoneError.classList.add('hidden');
+		walletPhoneError.textContent = '';
+		walletPhoneError.classList.add('hidden');
+		document.getElementById('shipping_address').classList.remove('border-red-500');
+		document.getElementById('phone').classList.remove('border-red-500');
+		walletPhoneInput.classList.remove('border-red-500');
+	}
 
 	function updatePaymobUI() {
 		const selectedGateway = document.querySelector(
@@ -232,22 +250,24 @@ document.addEventListener('DOMContentLoaded', function() {
 	updatePaymobUI();
 
 	placeOrderBtn.addEventListener('click', function() {
+		resetFieldErrors();
 		// Validate shipping information
 		const shippingAddress = document.getElementById(
 			'shipping_address').value.trim();
 		const phone = document.getElementById('phone').value.trim();
 
 		if (!shippingAddress || shippingAddress.length < 10) {
-			alert(
-			'{{ __("Please enter a valid shipping address (at least 10 characters)") }}');
-			document.getElementById('shipping_address')
-			.focus();
+			shippingAddressError.textContent = '{{ __("Please enter a valid shipping address (at least 10 characters)") }}';
+			shippingAddressError.classList.remove('hidden');
+			document.getElementById('shipping_address').classList.add('border-red-500');
+			document.getElementById('shipping_address').focus();
 			return;
 		}
 
 		if (!phone || !/^01[0-2,5]{1}[0-9]{8}$/.test(phone)) {
-			alert(
-			'{{ __("Please enter a valid Egyptian mobile number (e.g., 01XXXXXXXXX)") }}');
+			phoneError.textContent = '{{ __("Please enter a valid Egyptian mobile number (e.g., 01XXXXXXXXX)") }}';
+			phoneError.classList.remove('hidden');
+			document.getElementById('phone').classList.add('border-red-500');
 			document.getElementById('phone').focus();
 			return;
 		}
@@ -265,9 +285,10 @@ document.addEventListener('DOMContentLoaded', function() {
 				walletPhone = walletPhoneInput.value
 					.trim();
 				if (!walletPhone) {
-					alert(
-						'{{ __("Please enter wallet phone number") }}'
-					);
+					walletPhoneError.textContent = '{{ __("Please enter wallet phone number") }}';
+					walletPhoneError.classList.remove('hidden');
+					walletPhoneInput.classList.add('border-red-500');
+					walletPhoneInput.focus();
 					return;
 				}
 			}
@@ -310,7 +331,11 @@ document.addEventListener('DOMContentLoaded', function() {
 							.redirect_url;
 					}
 				} else {
-					alert(data.message);
+					if (typeof toast_error === 'function') {
+						toast_error(data.message);
+					} else {
+						Swal.fire('{{ __("Error") }}', data.message, 'error');
+					}
 					placeOrderBtn
 						.disabled =
 						false;
@@ -322,9 +347,11 @@ document.addEventListener('DOMContentLoaded', function() {
 			.catch(error => {
 				console.error('Error:',
 					error);
-				alert(
-					'An error occurred. Please try again.'
-				);
+				if (typeof toast_error === 'function') {
+					toast_error('{{ __("An error occurred. Please try again.") }}');
+				} else {
+					Swal.fire('{{ __("Error") }}', '{{ __("An error occurred. Please try again.") }}', 'error');
+				}
 				placeOrderBtn.disabled =
 					false;
 				placeOrderBtn.textContent =
