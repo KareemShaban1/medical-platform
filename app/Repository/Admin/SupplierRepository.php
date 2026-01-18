@@ -16,10 +16,11 @@ class SupplierRepository implements SupplierRepositoryInterface
 
     public function data()
     {
-        $suppliers = Supplier::query()->withCount('supplierUsers');
+        $suppliers = Supplier::query()->withCount(['supplierUsers', 'products']);
 
         return datatables()->of($suppliers)
             ->addColumn('supplier_users', fn($item) => $item->supplierUsers->count())
+            ->addColumn('products_count', fn($item) => $item->products_count)
             ->editColumn('status', fn($item) => $this->supplierStatus($item))
             ->editColumn('is_allowed', fn($item) => $this->supplierIsAllowed($item))
             ->addColumn('approval', fn($item) => $this->supplierApproval($item))
