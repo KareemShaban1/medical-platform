@@ -123,7 +123,14 @@ class RentalSpaceRepository implements RentalSpaceRepositoryInterface
     {
         try {
             DB::beginTransaction();
-            $rentalSpace->fill($request->validated())->save();
+
+            // Handle amenities as array
+            $data = $request->validated();
+            if (isset($data['amenities']) && is_array($data['amenities'])) {
+                $data['amenities'] = array_values(array_filter($data['amenities']));
+            }
+
+            $rentalSpace->fill($data)->save();
 
             if ($action == 'created') {
                 $adminId = Admin::query()->value('id');
@@ -143,7 +150,6 @@ class RentalSpaceRepository implements RentalSpaceRepositoryInterface
                 }
             }
 
-
             // Media
             if ($request->hasFile('main_image') || $request->hasFile('images')) {
                 $this->processMedia($rentalSpace, $request, [
@@ -154,16 +160,42 @@ class RentalSpaceRepository implements RentalSpaceRepositoryInterface
 
             // Availability (one-to-one)
             if ($request->has('availability')) {
+                $availabilityData = $request->availability;
                 $rentalSpace->availability()->updateOrCreate([
                     'rental_space_id' => $rentalSpace->id,
-                ], $request->availability);
+                ], $availabilityData);
             }
 
-            // Pricing (one-to-one)
-            if ($request->has('pricing')) {
-                $rentalSpace->pricing()->updateOrCreate([
-                    'rental_space_id' => $rentalSpace->id,
-                ], $request->pricing);
+            // Pricing with pricing_type - only for rent listings
+            $listingType = $request->input('listing_type', 'rent');
+            if ($listingType === 'rent' && $request->has('pricing')) {
+                $pricingData = $request->pricing;
+                // Only create/update pricing if price is provided
+                if (!empty($pricingData['price'])) {
+                    $rentalSpace->pricing()->updateOrCreate([
+                        'rental_space_id' => $rentalSpace->id,
+                    ], $pricingData);
+                }
+            } elseif ($listingType === 'sale') {
+                // For sale listings, delete any existing pricing record
+                $rentalSpace->pricing()->delete();
+            }
+
+            // Handle schedules (recurring availability)
+            if ($request->has('schedules')) {
+                // Delete existing schedules and recreate
+                $rentalSpace->schedules()->delete();
+
+                foreach ($request->schedules as $schedule) {
+                    if (!empty($schedule['start_time']) && !empty($schedule['end_time'])) {
+                        $rentalSpace->schedules()->create([
+                            'day_of_week' => $schedule['day_of_week'],
+                            'start_time' => $schedule['start_time'],
+                            'end_time' => $schedule['end_time'],
+                            'is_available' => $schedule['is_available'] ?? true,
+                        ]);
+                    }
+                }
             }
 
             DB::commit();
