@@ -31,6 +31,7 @@
 								<th>{{ __('Is Allowed') }}</th>
 								<th>{{ __('Status') }}</th>
 								<th>{{ __('Users') }}</th>
+								<th>{{ __('Products') }}</th>
 								<th>{{ __('Approval') }}</th>
 								<th>{{ __('Attachments') }}</th>
 								<th>{{ __('Actions') }}</th>
