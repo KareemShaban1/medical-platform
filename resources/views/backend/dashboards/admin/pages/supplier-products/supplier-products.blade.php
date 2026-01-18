@@ -36,77 +36,81 @@
                                     </thead>
                                     <tbody>
                                         @foreach ($products as $product)
-                                            <tr>
-                                                <td>{{ $product->id }}</td>
-                                                <td>
-                                                    @if ($product->first_image)
-                                                        <img src="{{ $product->first_image }}" alt="Product"
-                                                            style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
-                                                    @else
-                                                        <span class="badge bg-secondary">No Image</span>
-                                                    @endif
-                                                </td>
-                                                <td>{{ $product->name }}</td>
-                                                <td>
-                                                    @if ($product->categories->count() > 0)
-                                                        @foreach ($product->categories->take(2) as $category)
-                                                            <span class="badge bg-primary me-1">{{ $category->name }}</span>
-                                                        @endforeach
-                                                        @if ($product->categories->count() > 2)
-                                                            <span
-                                                                class="badge bg-info">+{{ $product->categories->count() - 2 }}</span>
-                                                        @endif
-                                                    @else
-                                                        <span class="badge bg-secondary">No Categories</span>
-                                                    @endif
-                                                </td>
-                                                <td>
-                                                    <div class="text-muted">{{ __('Price After') }}: {{ __('EGP') }} {{ number_format($product->price_after ?? $product->price_before, 2) }}</div>
-                                                    <div class="fw-bold">{{ __('Final Price') }}: {{ __('EGP') }} {{ number_format($product->final_price ?? $product->price_after ?? $product->price_before, 2) }}</div>
-                                                </td>
-                                                <td>
-                                                    @php
-                                                        $stockClass =
-                                                            $product->stock > 10
-                                                                ? 'success'
-                                                                : ($product->stock > 0
-                                                                    ? 'warning'
-                                                                    : 'danger');
-                                                    @endphp
-                                                    <span class="badge bg-{{ $stockClass }}">{{ $product->stock }}</span>
-                                                </td>
-                                                <td>
-                                                    @if ($product->approvement)
-                                                        @php
-                                                            $badges = [
-                                                                'pending' => 'warning',
-                                                                'under_review' => 'info',
-                                                                'approved' => 'success',
-                                                                'rejected' => 'danger',
-                                                            ];
-                                                            $class =
-                                                                $badges[$product->approvement->action] ?? 'secondary';
-                                                        @endphp
-                                                        <span class="badge bg-{{ $class }}">
-                                                            {{ ucfirst(str_replace('_', ' ', $product->approvement->action)) }}
-                                                        </span>
-                                                    @else
-                                                        <span class="badge bg-secondary">No Record</span>
-                                                    @endif
-                                                </td>
-                                                <td>
-                                                    <div class="d-flex gap-2">
-                                                        <a href="{{ route('admin.supplier-products.show', $product->id) }}"
-                                                            class="btn btn-sm btn-info">
-                                                            <i class="fa fa-eye"></i>
-                                                        </a>
-                                                        <button onclick="updateApprovalStatus({{ $product->id }}, {!! json_encode(optional($product->approvement)->action ?? 'under_review') !!}, {!! json_encode(optional($product->approvement)->notes ?? '') !!})"
-                                                            class="btn btn-sm btn-primary">
-                                                            <i class="fa fa-check"></i>
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
+                                                    <tr>
+                                                        <td>{{ $product->id }}</td>
+                                                        <td>
+                                                            @if ($product->first_image)
+                                                                <img src="{{ $product->first_image }}" alt="Product"
+                                                                    style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
+                                                            @else
+                                                                <span class="badge bg-secondary">No Image</span>
+                                                            @endif
+                                                        </td>
+                                                        <td>{{ $product->name }}</td>
+                                                        <td>
+                                                            @if ($product->categories->count() > 0)
+                                                                @foreach ($product->categories->take(2) as $category)
+                                                                    <span class="badge bg-primary me-1">{{ $category->name }}</span>
+                                                                @endforeach
+                                                                @if ($product->categories->count() > 2)
+                                                                    <span class="badge bg-info">+{{ $product->categories->count() - 2 }}</span>
+                                                                @endif
+                                                            @else
+                                                                <span class="badge bg-secondary">No Categories</span>
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            <div class="text-muted">{{ __('Price After') }}: {{ __('EGP') }}
+                                                                {{ number_format($product->price_after ?? $product->price_before, 2) }}
+                                                            </div>
+                                                            <div class="fw-bold">{{ __('Final Price') }}: {{ __('EGP') }}
+                                                                {{ number_format($product->final_price ?? $product->price_after ?? $product->price_before, 2) }}
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                            @php
+                                                $stockClass =
+                                                    $product->stock > 10
+                                                    ? 'success'
+                                                    : ($product->stock > 0
+                                                        ? 'warning'
+                                                        : 'danger');
+                                            @endphp
+                                                            <span class="badge bg-{{ $stockClass }}">{{ $product->stock }}</span>
+                                                        </td>
+                                                        <td>
+                                                            @if ($product->approvement)
+                                                                @php
+                                                                    $badges = [
+                                                                        'pending' => 'warning',
+                                                                        'under_review' => 'info',
+                                                                        'approved' => 'success',
+                                                                        'rejected' => 'danger',
+                                                                    ];
+                                                                    $class =
+                                                                        $badges[$product->approvement->action] ?? 'secondary';
+                                                                @endphp
+                                                                <span class="badge bg-{{ $class }}">
+                                                                    {{ ucfirst(str_replace('_', ' ', $product->approvement->action)) }}
+                                                                </span>
+                                                            @else
+                                                                <span class="badge bg-secondary">No Record</span>
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            <div class="d-flex gap-2">
+                                                                <a href="{{ route('admin.supplier-products.show', $product->id) }}"
+                                                                    class="btn btn-sm btn-info">
+                                                                    <i class="fa fa-eye"></i>
+                                                                </a>
+                                                                <button
+                                                                    onclick="updateApprovalStatus({{ $product->id }}, {!! json_encode(optional($product->approvement)->action ?? 'under_review') !!}, {!! json_encode(optional($product->approvement)->notes ?? '') !!})"
+                                                                    class="btn btn-sm btn-primary">
+                                                                    <i class="fa fa-check"></i>
+                                                                </button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
                                         @endforeach
                                     </tbody>
                                 </table>
@@ -139,21 +143,17 @@
 
                         <div class="mb-3">
                             <label for="action" class="form-label">Status</label>
-                            @php
-                                $approvalAction = optional($product->approvement)->action ?? 'under_review';
-                                $approvalNotes = optional($product->approvement)->notes ?? '';
-                            @endphp
                             <select name="action" id="action" class="form-select" required>
-                                <option value="under_review" {{ $approvalAction == 'under_review' ? 'selected' : '' }}>Under Review</option>
-                                <option value="approved" {{ $approvalAction == 'approved' ? 'selected' : '' }}>Approved</option>
-                                <option value="rejected" {{ $approvalAction == 'rejected' ? 'selected' : '' }}>Rejected</option>
+                                <option value="under_review">Under Review</option>
+                                <option value="approved">Approved</option>
+                                <option value="rejected">Rejected</option>
                             </select>
                         </div>
 
                         <div class="mb-3">
                             <label for="notes" class="form-label">Notes</label>
                             <textarea name="notes" id="notes" class="form-control" rows="3"
-                                placeholder="Add notes (required for rejection)">{{ $approvalNotes }}</textarea>
+                                placeholder="Add notes (required for rejection)"></textarea>
                         </div>
                     </form>
                 </div>
@@ -185,14 +185,14 @@
                 }
 
                 $.ajax({
-                    url: `{{ route('admin.supplier-products.update-approval-status' , ':id') }}`.replace(':id', productId),
+                    url: `{{ route('admin.supplier-products.update-approval-status', ':id') }}`.replace(':id', productId),
                     method: 'PUT',
                     data: {
                         _token: '{{ csrf_token() }}',
                         action: action,
                         notes: notes
                     },
-                    success: function(response) {
+                    success: function (response) {
                         if (response.success) {
                             $('#approvalModal').modal('hide');
                             location.reload();
@@ -201,7 +201,7 @@
                             Swal.fire('Error!', response.message, 'error');
                         }
                     },
-                    error: function() {
+                    error: function () {
                         Swal.fire('Error!', 'Something went wrong', 'error');
                     }
                 });
