@@ -14,6 +14,7 @@ class ProductController extends Controller
     {
         $products = Product::approved()
             ->active()
+            ->hasActiveSupplier()
             ->with('categories')
             ->withSum('orderItems as total_sold', 'quantity')
             ->orderByDesc('total_sold')
@@ -28,6 +29,7 @@ class ProductController extends Controller
         try {
             $query = Product::approved()
                 ->active()
+                ->hasActiveSupplier()
                 ->with('categories')
                 ->withSum('orderItems as total_sold', 'quantity');
 
@@ -91,7 +93,7 @@ class ProductController extends Controller
             // If priceRange is set and sort is not explicitly set to price, use priceRange
             $sortBy = $request->get('sort');
             $priceRange = $request->get('priceRange');
-            
+
             // If priceRange is set and sort doesn't explicitly handle price, use priceRange for sorting
             if ($priceRange && !in_array($sortBy, ['price', 'price-desc'])) {
                 if ($priceRange === 'highest') {
@@ -220,7 +222,7 @@ class ProductController extends Controller
     public function category($categoryId)
     {
         $category = Category::active()->findOrFail($categoryId);
-        $products = Product::approved()->active()
+        $products = Product::approved()->active()->hasActiveSupplier()
             ->whereHas('categories', function ($q) use ($categoryId) {
                 $q->where('categories.id', $categoryId);
             })
@@ -237,7 +239,7 @@ class ProductController extends Controller
      */
     public function supplier($supplierId)
     {
-        $products = Product::approved()->active()
+        $products = Product::approved()->active()->hasActiveSupplier()
             ->where('supplier_id', $supplierId)
             ->with('categories')
             ->paginate(20);
@@ -252,7 +254,7 @@ class ProductController extends Controller
      */
     public function onSale()
     {
-        $products = Product::approved()->active()
+        $products = Product::approved()->active()->hasActiveSupplier()
             ->where('discount_value', '>', 0)
             ->with('categories')
             ->orderBy('discount_value', 'desc')
@@ -268,7 +270,7 @@ class ProductController extends Controller
      */
     public function inStock()
     {
-        $products = Product::approved()->active()
+        $products = Product::approved()->active()->hasActiveSupplier()
             ->where('stock', '>', 0)
             ->with('categories')
             ->orderBy('stock', 'desc')
@@ -284,7 +286,7 @@ class ProductController extends Controller
      */
     public function recent()
     {
-        $products = Product::approved()->active()
+        $products = Product::approved()->active()->hasActiveSupplier()
             ->with('categories')
             ->orderBy('created_at', 'desc')
             ->paginate(20);
@@ -299,12 +301,12 @@ class ProductController extends Controller
      */
     public function show($id)
     {
-        $product = Product::approved()->active()
+        $product = Product::approved()->active()->hasActiveSupplier()
             ->with(['categories', 'supplier'])
             ->findOrFail($id);
 
         // Get related products from the same category
-        $relatedProducts = Product::approved()->active()
+        $relatedProducts = Product::approved()->active()->hasActiveSupplier()
             ->where('id', '!=', $id)
             ->whereHas('categories', function ($query) use ($product) {
                 $query->whereIn('categories.id', $product->categories->pluck('id'));
@@ -314,7 +316,7 @@ class ProductController extends Controller
             ->get();
 
         // Get products from the same supplier
-        $supplierProducts = Product::approved()->active()
+        $supplierProducts = Product::approved()->active()->hasActiveSupplier()
             ->where('id', '!=', $id)
             ->where('supplier_id', $product->supplier_id)
             ->with('categories')

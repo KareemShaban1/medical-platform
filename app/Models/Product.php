@@ -34,7 +34,7 @@ class Product extends Model implements HasMedia
         'status',
     ];
 
-    public $appends = ['images', 'first_image' , 'name'];
+    public $appends = ['images', 'first_image', 'name'];
 
     protected $casts = [
         'price_before' => 'decimal:2',
@@ -126,6 +126,13 @@ class Product extends Model implements HasMedia
     {
         return $query->whereHas('approvement', function ($query) {
             $query->where('action', 'approved');
+        });
+    }
+
+    public function scopeHasActiveSupplier($query)
+    {
+        return $query->whereHas('supplier', function ($q) {
+            $q->where('status', 1)->where('is_allowed', 1);
         });
     }
 
