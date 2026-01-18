@@ -5,46 +5,51 @@
             serverSide: true,
             ajax: '{{ route('admin.suppliers.data') }}',
             columns: [{
-                    data: 'id',
-                    name: 'id'
-                },
-                {
-                    data: 'name',
-                    name: 'name'
-                },
-                {
-                    data: 'phone',
-                    name: 'phone'
-                },
+                data: 'id',
+                name: 'id'
+            },
+            {
+                data: 'name',
+                name: 'name'
+            },
+            {
+                data: 'phone',
+                name: 'phone'
+            },
 
-                {
-                    data: 'is_allowed',
-                    name: 'is_allowed'
-                },
-                {
-                    data: 'status',
-                    name: 'status'
-                },
-                {
-                    data: 'supplier_users',
-                    name: 'supplier_users'
-                },
-                {
-                    data: 'approval',
-                    name: 'approval'
-                },
-                {
-                    data: 'attachments',
-                    name: 'attachments',
-                    orderable: false,
-                    searchable: false
-                },
-                {
-                    data: 'action',
-                    name: 'action',
-                    orderable: false,
-                    searchable: false
-                },
+            {
+                data: 'is_allowed',
+                name: 'is_allowed'
+            },
+            {
+                data: 'status',
+                name: 'status'
+            },
+            {
+                data: 'supplier_users',
+                name: 'supplier_users'
+            },
+            {
+                data: 'products_count',
+                name: 'products_count',
+                searchable: false
+            },
+            {
+                data: 'approval',
+                name: 'approval'
+            },
+            {
+                data: 'attachments',
+                name: 'attachments',
+                orderable: false,
+                searchable: false
+            },
+            {
+                data: 'action',
+                name: 'action',
+                orderable: false,
+                searchable: false
+            },
 
             ],
             order: [
@@ -55,34 +60,34 @@
             responsive: true,
             language: languages[language],
             buttons: [{
-                    extend: 'print',
-                    exportOptions: {
-                        columns: [0, 1, 2, 3, 4, 5, 6]
-                    }
-                },
-                {
-                    extend: 'excel',
-                    text: 'Excel',
-                    title: 'Suppliers Data',
-                    exportOptions: {
-                        columns: [0, 1, 2, 3, 4, 5, 6]
-                    }
-                },
-                {
-                    extend: 'copy',
-                    exportOptions: {
-                        columns: [0, 1, 2, 3, 4, 5, 6]
-                    }
-                },
+                extend: 'print',
+                exportOptions: {
+                    columns: [0, 1, 2, 3, 4, 5, 6]
+                }
+            },
+            {
+                extend: 'excel',
+                text: 'Excel',
+                title: 'Suppliers Data',
+                exportOptions: {
+                    columns: [0, 1, 2, 3, 4, 5, 6]
+                }
+            },
+            {
+                extend: 'copy',
+                exportOptions: {
+                    columns: [0, 1, 2, 3, 4, 5, 6]
+                }
+            },
             ],
-            drawCallback: function() {
+            drawCallback: function () {
                 $('.dataTables_paginate > .pagination').addClass(
                     'pagination-rounded');
             }
         });
 
 
-        $('#images').on('change', function(e) {
+        $('#images').on('change', function (e) {
             const files = this.files;
             const $preview = $('#imagesPreview');
             $preview.empty(); // clear old previews
@@ -95,7 +100,7 @@
                 if (!file.type.startsWith('image/')) return; // skip non-images
 
                 const reader = new FileReader();
-                reader.onload = function(ev) {
+                reader.onload = function (ev) {
                     const img = $('<img>')
                         .attr('src', ev.target.result)
                         .addClass('img-fluid rounded me-2 mb-2')
@@ -121,7 +126,7 @@
         }
 
         // Handle Add/Edit Form Submission
-        $('#suppliersForm').on('submit', function(e) {
+        $('#suppliersForm').on('submit', function (e) {
             e.preventDefault();
 
             let id = $('#supplierId').val();
@@ -147,16 +152,16 @@
                 data: formData,
                 processData: false, // don't let jQuery transform FormData
                 contentType: false,
-                success: function(response) {
+                success: function (response) {
                     $('#suppliersModal').modal('hide');
                     table.ajax.reload();
                     Swal.fire('Success', response.message, 'success');
                 },
-                error: function(xhr) {
+                error: function (xhr) {
                     if (xhr.status === 422) {
                         let errors = xhr.responseJSON.errors || {};
                         let messages = [];
-                        Object.keys(errors).forEach(function(key) {
+                        Object.keys(errors).forEach(function (key) {
                             messages.push(errors[key][0]);
                             let nameSelector = '[name="' + key + '"]';
                             let $input = $(nameSelector);
@@ -184,7 +189,7 @@
         // Edit
         function editSupplier(id) {
             const url = '{{ route('admin.suppliers.show', ':id') }}'.replace(':id', id);
-            $.get(url, function(data) {
+            $.get(url, function (data) {
                 $('#supplierId').val(data.id);
                 $('#name').val(data.name);
                 $('#phone').val(data.phone);
@@ -217,11 +222,11 @@
                         method: 'DELETE',
                         headers: {
                             'X-CSRF-TOKEN': $(
-                                    'meta[name="csrf-token"]'
-                                )
+                                'meta[name="csrf-token"]'
+                            )
                                 .attr('content')
                         },
-                        success: function(response) {
+                        success: function (response) {
                             table.ajax.reload();
                             Swal.fire('Deleted!', response.message, 'success');
                         }
@@ -232,23 +237,23 @@
 
         function showSupplier(id) {
             const url = '{{ route('admin.suppliers.show', ':id') }}'.replace(':id', id);
-            $.get(url, function(data) {
+            $.get(url, function (data) {
                 $('#showSupplierModal').modal('show');
                 $('#showName').text(data.name);
                 $('#showPhone').text(data.phone);
                 $('#showAddress').text(data.address);
                 $('#showIsAllowed').html(
                     data.is_allowed == 1 ? "<span class='badge bg-success'>{{ __('Allowed') }}</span>" :
-                    "<span class='badge bg-danger'>{{ __('Not Allowed') }}</span>"
+                        "<span class='badge bg-danger'>{{ __('Not Allowed') }}</span>"
                 );
                 $('#showStatus').html(
                     data.status == 1 ? "<span class='badge bg-success'>{{ __('Active') }}</span>" :
-                    "<span class='badge bg-danger'>{{ __('Inactive') }}</span>"
+                        "<span class='badge bg-danger'>{{ __('Inactive') }}</span>"
                 );
                 const usersCount = data.supplier_users_count ?? data.supplierUsers ?? 0;
                 $('#showUsers').text(usersCount);
                 const images = Array.isArray(data.images) ? data.images : [];
-                $('#showImages').html(images.map(function(image) {
+                $('#showImages').html(images.map(function (image) {
                     return '<img src="' + image + '" width="100" height="100" class="me-2 mb-2 rounded">';
                 }).join(''));
 
@@ -256,13 +261,13 @@
         }
 
         // action buttons inside datatable rows
-        $(document).on('click', '.btn-show-supplier', function() {
+        $(document).on('click', '.btn-show-supplier', function () {
             showSupplier($(this).data('id'));
         });
-        $(document).on('click', '.btn-edit-supplier', function() {
+        $(document).on('click', '.btn-edit-supplier', function () {
             editSupplier($(this).data('id'));
         });
-        $(document).on('click', '.btn-delete-supplier', function() {
+        $(document).on('click', '.btn-delete-supplier', function () {
             deleteSupplier($(this).data('id'));
         });
 
@@ -280,7 +285,7 @@
                 $.ajax({
                     url: '/admin/approvements/' + approvementId,
                     method: 'GET',
-                    success: function(data) {
+                    success: function (data) {
                         $('#action').val(data.action);
                         $('#notes').val(data.notes);
                     }
@@ -291,7 +296,7 @@
         }
 
         // Handle form submit
-        $('#approvalForm').on('submit', function(e) {
+        $('#approvalForm').on('submit', function (e) {
             e.preventDefault();
 
             let moduleId = $('#moduleId').val();
@@ -308,12 +313,12 @@
                         action: $('#action').val(),
                         notes: $('#notes').val(),
                     },
-                    success: function(res) {
+                    success: function (res) {
                         $('#approvalModal').modal('hide');
                         table.ajax.reload();
                         Swal.fire('Success!', res.message, 'success');
                     },
-                    error: function(err) {
+                    error: function (err) {
                         Swal.fire('Error!', 'Something went wrong.', 'error');
                     }
                 });
@@ -330,12 +335,12 @@
                         action: $('#action').val(),
                         notes: $('#notes').val(),
                     },
-                    success: function(res) {
+                    success: function (res) {
                         $('#approvalModal').modal('hide');
                         table.ajax.reload();
                         Swal.fire('Success!', res.message, 'success');
                     },
-                    error: function(err) {
+                    error: function (err) {
                         Swal.fire('Error!', 'Something went wrong.', 'error');
                     }
                 });
@@ -344,7 +349,7 @@
 
 
         // change status toggle
-        $(document).on('change', '.toggle-boolean-status', function(e) {
+        $(document).on('change', '.toggle-boolean-status', function (e) {
             let id = $(this).data('id');
             let field = $(this).data('field');
             let value = $(this).is(':checked') ? 1 : 0;
@@ -362,18 +367,18 @@
                     field: field,
                     value: value
                 },
-                success: function(response) {
+                success: function (response) {
                     table.ajax.reload(null, false); // reload but keep current page
                     Swal.fire('Success!', response.message, 'success');
                 },
-                error: function() {
+                error: function () {
                     Swal.fire('Error!', 'Something went wrong', 'error');
                 }
             });
         });
 
         // change is allowed toggle
-        $(document).on('change', '.toggle-boolean-is-allowed', function(e) {
+        $(document).on('change', '.toggle-boolean-is-allowed', function (e) {
             let id = $(this).data('id');
             let field = $(this).data('field');
             let value = $(this).is(':checked') ? 1 : 0;
@@ -391,11 +396,11 @@
                     field: field,
                     value: value
                 },
-                success: function(response) {
+                success: function (response) {
                     table.ajax.reload(null, false); // reload but keep current page
                     Swal.fire('Success!', response.message, 'success');
                 },
-                error: function() {
+                error: function () {
                     Swal.fire('Error!', 'Something went wrong', 'error');
                 }
             });
