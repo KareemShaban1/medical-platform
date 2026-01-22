@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Backend\Dashboards\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Interfaces\Admin\UsersManagementRepositoryInterface;
+use Illuminate\Support\Facades\Hash;
 
 class UsersManagementController extends Controller
 {
@@ -284,12 +285,12 @@ class UsersManagementController extends Controller
             if ($userType === 'clinic_user') {
                 // Clinic User - password stored directly in clinic_users table
                 $user = \App\Models\ClinicUser::findOrFail($userId);
-                $user->password = \Hash::make($request->new_password);
+                $user->password = Hash::make($request->new_password);
                 $user->save();
             } elseif ($userType === 'supplier_user') {
                 // Supplier User - password stored directly in supplier_users table
                 $user = \App\Models\SupplierUser::findOrFail($userId);
-                $user->password = \Hash::make($request->new_password);
+                $user->password = Hash::make($request->new_password);
                 $user->save();
             } elseif ($userType === 'doctor_profile') {
                 // Doctor Profile - password stored in clinic_users table via clinic_user_id
@@ -299,7 +300,7 @@ class UsersManagementController extends Controller
                 }
 
                 $clinicUser = \App\Models\ClinicUser::findOrFail($doctorProfile->clinic_user_id);
-                $clinicUser->password = \Hash::make($request->new_password);
+                $clinicUser->password = Hash::make($request->new_password);
                 $clinicUser->save();
             } else {
                 // Patient - password stored in users table via user_id
@@ -309,7 +310,7 @@ class UsersManagementController extends Controller
                 }
 
                 $user = \App\Models\User::findOrFail($patient->user_id);
-                $user->password = \Hash::make($request->new_password);
+                $user->password = Hash::make($request->new_password);
                 $user->save();
             }
 
