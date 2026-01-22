@@ -286,13 +286,11 @@ class UsersManagementController extends Controller
                 $user = \App\Models\ClinicUser::findOrFail($userId);
                 $user->password = \Hash::make($request->new_password);
                 $user->save();
-
             } elseif ($userType === 'supplier_user') {
                 // Supplier User - password stored directly in supplier_users table
                 $user = \App\Models\SupplierUser::findOrFail($userId);
                 $user->password = \Hash::make($request->new_password);
                 $user->save();
-
             } elseif ($userType === 'doctor_profile') {
                 // Doctor Profile - password stored in clinic_users table via clinic_user_id
                 $doctorProfile = \App\Models\DoctorProfile::findOrFail($userId);
@@ -303,7 +301,6 @@ class UsersManagementController extends Controller
                 $clinicUser = \App\Models\ClinicUser::findOrFail($doctorProfile->clinic_user_id);
                 $clinicUser->password = \Hash::make($request->new_password);
                 $clinicUser->save();
-
             } else {
                 // Patient - password stored in users table via user_id
                 $patient = \App\Models\Patient::findOrFail($userId);
@@ -341,23 +338,32 @@ class UsersManagementController extends Controller
             $userType = $request->user_type;
             $userId = $request->user_id;
             $newStatus = (int) $request->status;
+            $subject = __('Account');
 
             // Get the user based on type
             if ($userType === 'clinic_user') {
                 $user = \App\Models\ClinicUser::findOrFail($userId);
+                $subject = __('Clinic User');
             } elseif ($userType === 'supplier_user') {
                 $user = \App\Models\SupplierUser::findOrFail($userId);
+                $subject = __('Supplier User');
+            } elseif ($userType === 'user') {
+                // Assuming 'user' refers to the main User model for patients/others
+                $user = \App\Models\User::findOrFail($userId);
+                $subject = __('User');
             }
 
-            // Update status
-            $user->status = $newStatus;
-            $user->save();
+            if (isset($user)) {
+                // Update status
+                $user->status = $newStatus;
+                $user->save();
+            }
 
             $statusText = $newStatus ? __('activated') : __('deactivated');
 
             return response()->json([
                 'success' => true,
-                'message' => __('Account') . ' ' . $statusText . ' ' . __('successfully'),
+                'message' => $subject . ' ' . $statusText . ' ' . __('successfully'),
             ]);
         } catch (\Exception $e) {
             return response()->json([

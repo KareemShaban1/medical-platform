@@ -223,9 +223,17 @@ class UsersManagementRepository implements UsersManagementRepositoryInterface
                 }
                 return $item->supplier->name;
             })
-            ->editColumn('status', fn($item) => $item->status
-                ? '<span class="badge bg-success">Active</span>'
-                : '<span class="badge bg-secondary">Inactive</span>')
+            ->editColumn('status', function ($item) {
+                $checked = $item->status ? 'checked' : '';
+                return '
+                    <div class="form-check form-switch">
+                        <input class="form-check-input toggle-status" type="checkbox" role="switch"
+                            data-id="' . $item->id . '"
+                            data-type="supplier_user"
+                            ' . $checked . '>
+                        <label class="form-check-label"></label>
+                    </div>';
+            })
             ->addColumn('action', function ($item) {
                 $viewUrl = route('admin.users-management.supplier-user-details', $item->id);
                 return '
