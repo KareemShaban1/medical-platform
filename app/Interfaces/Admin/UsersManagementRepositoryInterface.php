@@ -7,6 +7,7 @@ interface UsersManagementRepositoryInterface
     public function getOverviewStats();
     public function getClinicsData();
     public function getClinicUsersData();
+    public function getStandaloneDoctorsData();
     public function getPatientsData();
     public function getDoctorProfilesData();
     public function getSuppliersData();

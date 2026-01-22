@@ -68,6 +68,12 @@ Route::group(
             Route::delete('/clinic-users/{id}/force-delete', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'forceDeleteClinicUser'])->name('clinic-users.force-delete');
             Route::delete('/clinic-users/{id}', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'destroyClinicUser'])->name('clinic-users.destroy');
 
+            // Standalone Doctors (clinic users without clinic_id)
+            Route::get('/standalone-doctors', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'standaloneDoctors'])->name('standalone-doctors');
+            Route::get('/standalone-doctors/data', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'standaloneDoctorsData'])->name('standalone-doctors.data');
+            Route::get('/standalone-doctors/{id}/details', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'standaloneDoctorDetails'])->name('standalone-doctor-details');
+            Route::delete('/standalone-doctors/{id}', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'destroyStandaloneDoctor'])->name('standalone-doctors.destroy');
+
             Route::get('/patients', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'patients'])->name('patients');
             Route::get('/patients/data', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'patientsData'])->name('patients.data');
             Route::get('/patients/{id}/details', [\App\Http\Controllers\Backend\Dashboards\Admin\UsersManagementController::class, 'patientDetails'])->name('patient-details');

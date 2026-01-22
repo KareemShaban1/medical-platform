@@ -71,6 +71,32 @@ class UsersManagementController extends Controller
         return view('backend.dashboards.admin.pages.users-management.clinic-user-details', compact('clinicUser'));
     }
 
+    // Standalone Doctors (clinic users without clinic_id)
+    public function standaloneDoctors()
+    {
+        abort_if(!hasPermission('view system clinic users'), 403, __('You are not authorized to view standalone doctors'));
+        return view('backend.dashboards.admin.pages.users-management.standalone-doctors');
+    }
+
+    public function standaloneDoctorsData()
+    {
+        abort_if(!hasPermission('view system clinic users'), 403, __('You are not authorized to view standalone doctors'));
+        return $this->repo->getStandaloneDoctorsData();
+    }
+
+    public function standaloneDoctorDetails($id)
+    {
+        abort_if(!hasPermission('view system clinic users'), 403, __('You are not authorized to view standalone doctors'));
+        $clinicUser = $this->repo->getClinicUserDetails($id);
+        return view('backend.dashboards.admin.pages.users-management.standalone-doctor-details', compact('clinicUser'));
+    }
+
+    public function destroyStandaloneDoctor($id)
+    {
+        abort_if(!hasPermission('delete user'), 403, __('You are not authorized to delete user'));
+        return $this->repo->destroyClinicUser($id);
+    }
+
     // Patients
     public function patients()
     {

@@ -38,29 +38,29 @@
 
             <!-- @hasPermission('view dashboard')
     <li class="side-nav-item">
-                <a href="{{ route('admin.dashboard') }}" class="side-nav-link">
-                 <i class="uil-home-alt"></i>
-                 <span>
-                  {{ __('Admin Dashboard') }}
-                 </span>
-                </a>
-               </li>
+                    <a href="{{ route('admin.dashboard') }}" class="side-nav-link">
+                     <i class="uil-home-alt"></i>
+                     <span>
+                      {{ __('Admin Dashboard') }}
+                     </span>
+                    </a>
+                   </li>
 @endhasPermission -->
 
             <!-- Contact Messages -->
             @hasPermission('view contact messages')
-            <li class="side-nav-item">
-                <a href="{{ route('admin.contact-messages.index') }}" class="side-nav-link">
-                    <i class="uil-envelope"></i>
-                    <span> {{ __('Contact Messages') }} </span>
-                    @php
-                        $newMessagesCount = \App\Models\ContactMessage::where('status', 'new')->count();
-                    @endphp
-                    @if ($newMessagesCount > 0)
-                        <span class="badge bg-danger rounded-pill ms-1">{{ $newMessagesCount }}</span>
-                    @endif
-                </a>
-            </li>
+                <li class="side-nav-item">
+                    <a href="{{ route('admin.contact-messages.index') }}" class="side-nav-link">
+                        <i class="uil-envelope"></i>
+                        <span> {{ __('Contact Messages') }} </span>
+                        @php
+                            $newMessagesCount = \App\Models\ContactMessage::where('status', 'new')->count();
+                        @endphp
+                        @if ($newMessagesCount > 0)
+                            <span class="badge bg-danger rounded-pill ms-1">{{ $newMessagesCount }}</span>
+                        @endif
+                    </a>
+                </li>
             @endhasPermission
 
             <li class="side-nav-item">
@@ -73,18 +73,18 @@
                 <div class="collapse" id="sidebarClinicsManagement">
                     <ul class="side-nav-second-level">
                         @hasPermission('view system clinics')
-                        <li>
-                            <a href="{{ route('admin.users-management.clinics') }}">
-                                <span> {{ __('Clinics Info') }} </span>
-                            </a>
-                        </li>
+                            <li>
+                                <a href="{{ route('admin.users-management.clinics') }}">
+                                    <span> {{ __('Clinics Info') }} </span>
+                                </a>
+                            </li>
                         @endhasPermission
                         @hasPermission('view system clinic users')
-                        <li>
-                            <a href="{{ route('admin.users-management.clinic-users') }}">
-                                <span> {{ __('Clinic Users') }} </span>
-                            </a>
-                        </li>
+                            <li>
+                                <a href="{{ route('admin.users-management.clinic-users') }}">
+                                    <span> {{ __('Clinic Users') }} </span>
+                                </a>
+                            </li>
                         @endhasPermission
                         {{-- @hasPermission('view system doctor profiles')
                         <li>
@@ -96,113 +96,121 @@
                         @endhasPermission --}}
 
                         @hasPermission('view clinics')
-                        <li>
+                            <li>
 
-                            <a href="{{ route('admin.clinics.index') }}">
-                                <span> {{ __('Clinics Management') }}
-                                </span>
-                            </a>
-                        </li>
+                                <a href="{{ route('admin.clinics.index') }}">
+                                    <span> {{ __('Clinics Management') }}
+                                    </span>
+                                </a>
+                            </li>
                         @endhasPermission
                         @hasPermission('view clinic doctor profiles')
-                        <li>
-                            <a href="{{ route('admin.doctor-profiles.index') }}">
-                                <span> {{ __('Doctor Profiles') }}
-                                </span>
-                            </a>
-                        </li>
+                            <li>
+                                <a href="{{ route('admin.doctor-profiles.index') }}">
+                                    <span> {{ __('Doctor Profiles') }}
+                                    </span>
+                                </a>
+                            </li>
+                        @endhasPermission
+
+                        @hasPermission('view system clinic users')
+                            <li>
+                                <a href="{{ route('admin.users-management.standalone-doctors') }}">
+                                    <span> {{ __('Standalone Doctors') }} </span>
+                                </a>
+                            </li>
                         @endhasPermission
 
                         @hasPermission('view trash doctor profiles')
-                        <li>
-                            <a href="{{ route('admin.doctor-profiles.trash') }}">
-                                <span> {{ __('Trash Doctor Profiles') }} </span>
-                            </a>
-                        </li>
+                            <li>
+                                <a href="{{ route('admin.doctor-profiles.trash') }}">
+                                    <span> {{ __('Trash Doctor Profiles') }} </span>
+                                </a>
+                            </li>
                         @endhasPermission
 
                         @hasPermission('view specialities')
-                        <li>
-                            <a href="{{ route('admin.specialities.index') }}">
-                                <span> {{ __('Doctor Specialites') }}
-                                </span>
-                            </a>
-                        </li>
+                            <li>
+                                <a href="{{ route('admin.specialities.index') }}">
+                                    <span> {{ __('Doctor Specialites') }}
+                                    </span>
+                                </a>
+                            </li>
                         @endhasPermission
 
                         @hasPermission('view trash specialities')
-                        <li>
-                            <a href="{{ route('admin.specialities.trash') }}">
-                                <span> {{ __('Trash Specialities') }} </span>
-                            </a>
-                        </li>
+                            <li>
+                                <a href="{{ route('admin.specialities.trash') }}">
+                                    <span> {{ __('Trash Specialities') }} </span>
+                                </a>
+                            </li>
                         @endhasPermission
 
                         @hasPermission('view orders')
-                        <li>
-                            <a href="{{ route('admin.orders.index') }}">
-                                <span> {{ __('All Orders') }} </span>
-                            </a>
-                        </li>
+                            <li>
+                                <a href="{{ route('admin.orders.index') }}">
+                                    <span> {{ __('All Orders') }} </span>
+                                </a>
+                            </li>
                         @endhasPermission
                         @hasPermission('view rental spaces')
-                        <li>
-                            <a href="{{ route('admin.rental-spaces.index') }}">
-                                <span> {{ __('Rental Spaces') }} </span>
-                            </a>
-                        </li>
+                            <li>
+                                <a href="{{ route('admin.rental-spaces.index') }}">
+                                    <span> {{ __('Rental Spaces') }} </span>
+                                </a>
+                            </li>
                         @endhasPermission
                         @hasPermission('view trash rental spaces')
-                        <li>
-                            <a href="{{ route('admin.rental-spaces.trash') }}">
-                                <span> {{ __('Trash Rental Spaces') }} </span>
-                            </a>
-                        </li>
+                            <li>
+                                <a href="{{ route('admin.rental-spaces.trash') }}">
+                                    <span> {{ __('Trash Rental Spaces') }} </span>
+                                </a>
+                            </li>
                         @endhasPermission
                         @hasPermission('view jobs')
-                        <li>
-                            <a href="{{ route('admin.jobs.index') }}">
-                                <span> {{ __('Jobs') }} </span>
-                            </a>
-                        </li>
+                            <li>
+                                <a href="{{ route('admin.jobs.index') }}">
+                                    <span> {{ __('Jobs') }} </span>
+                                </a>
+                            </li>
                         @endhasPermission
                         @hasPermission('view trash jobs')
-                        <li>
-                            <a href="{{ route('admin.jobs.trash') }}">
-                                <span> {{ __('Trash Jobs') }} </span>
-                            </a>
-                        </li>
+                            <li>
+                                <a href="{{ route('admin.jobs.trash') }}">
+                                    <span> {{ __('Trash Jobs') }} </span>
+                                </a>
+                            </li>
                         @endhasPermission
                     </ul>
                 </div>
             </li>
             @hasPermission('view patients')
-            <li class="side-nav-item">
-                <a data-bs-toggle="collapse" href="#sidebarPatientsManagement" aria-expanded="false"
-                    aria-controls="sidebarPatientsManagement" class="side-nav-link">
-                    <i class="uil-users-alt"></i>
-                    <span> {{ __('Patients Management') }} </span>
-                    <span class="menu-arrow"></span>
-                </a>
-                <div class="collapse" id="sidebarPatientsManagement">
-                    <ul class="side-nav-second-level">
-                        @hasPermission('view patients')
-                        <li>
-                            <a href="{{ route('admin.users-management.patients') }}">
-                                <span> {{ __('Patients') }} </span>
-                            </a>
-                        </li>
-                        @endhasPermission
-                        @hasPermission('view trash patients')
-                        <li>
-                            <a href="{{ route('admin.users-management.patients.trash') }}">
-                                <span> {{ __('Trash Patients') }} </span>
-                            </a>
-                        </li>
-                        @endhasPermission
-                    </ul>
-                </div>
-            </li>
+                <li class="side-nav-item">
+                    <a data-bs-toggle="collapse" href="#sidebarPatientsManagement" aria-expanded="false"
+                        aria-controls="sidebarPatientsManagement" class="side-nav-link">
+                        <i class="uil-users-alt"></i>
+                        <span> {{ __('Patients Management') }} </span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    <div class="collapse" id="sidebarPatientsManagement">
+                        <ul class="side-nav-second-level">
+                            @hasPermission('view patients')
+                                <li>
+                                    <a href="{{ route('admin.users-management.patients') }}">
+                                        <span> {{ __('Patients') }} </span>
+                                    </a>
+                                </li>
+                            @endhasPermission
+                            @hasPermission('view trash patients')
+                                <li>
+                                    <a href="{{ route('admin.users-management.patients.trash') }}">
+                                        <span> {{ __('Trash Patients') }} </span>
+                                    </a>
+                                </li>
+                            @endhasPermission
+                        </ul>
+                    </div>
+                </li>
             @endhasPermission
             <!-- suppliers management -->
             <li class="side-nav-item">
@@ -215,56 +223,56 @@
                 <div class="collapse" id="sidebarSuppliersManagement">
                     <ul class="side-nav-second-level">
                         @hasPermission('view system suppliers')
-                        <li>
-                            <a href="{{ route('admin.users-management.suppliers') }}">
-                                <span> {{ __('Suppliers Info') }} </span>
-                            </a>
-                        </li>
+                            <li>
+                                <a href="{{ route('admin.users-management.suppliers') }}">
+                                    <span> {{ __('Suppliers Info') }} </span>
+                                </a>
+                            </li>
                         @endhasPermission
                         @hasPermission('view system supplier users')
-                        <li>
-                            <a href="{{ route('admin.users-management.supplier-users') }}">
-                                <span> {{ __('Supplier Users') }} </span>
-                            </a>
-                        </li>
+                            <li>
+                                <a href="{{ route('admin.users-management.supplier-users') }}">
+                                    <span> {{ __('Supplier Users') }} </span>
+                                </a>
+                            </li>
                         @endhasPermission
                         @hasPermission('view trash users')
-                        <li>
-                            <a href="{{ route('admin.users-management.supplier-users.trash') }}">
-                                <span> {{ __('Trash Supplier Users') }} </span>
-                            </a>
-                        </li>
+                            <li>
+                                <a href="{{ route('admin.users-management.supplier-users.trash') }}">
+                                    <span> {{ __('Trash Supplier Users') }} </span>
+                                </a>
+                            </li>
                         @endhasPermission
                         @hasPermission('view suppliers')
-                        <li>
-                            <a href="{{ route('admin.suppliers.index') }}">
-                                <span> {{ __('Suppliers Management') }}
-                                </span>
-                            </a>
-                        </li>
+                            <li>
+                                <a href="{{ route('admin.suppliers.index') }}">
+                                    <span> {{ __('Suppliers Management') }}
+                                    </span>
+                                </a>
+                            </li>
                         @endhasPermission
                         @hasPermission('view supplier products')
-                        <li>
-                            <a href="{{ route('admin.supplier-products.index') }}">
-                                <span> {{ __('Supplier Products') }}
-                                </span>
-                            </a>
-                        </li>
+                            <li>
+                                <a href="{{ route('admin.supplier-products.index') }}">
+                                    <span> {{ __('Supplier Products') }}
+                                    </span>
+                                </a>
+                            </li>
                         @endhasPermission
                         @hasPermission('view trash supplier products')
-                        <li>
-                            <a href="{{ route('admin.supplier-products.trash') }}">
-                                <span> {{ __('Trash Supplier Products') }}
-                                </span>
-                            </a>
-                        </li>
+                            <li>
+                                <a href="{{ route('admin.supplier-products.trash') }}">
+                                    <span> {{ __('Trash Supplier Products') }}
+                                    </span>
+                                </a>
+                            </li>
                         @endhasPermission
                         @hasPermission('view supplier payouts')
-                        <li>
-                            <a href="{{ route('admin.supplier-payouts.index') }}">
-                                <span> {{ __('Supplier Payouts') }} </span>
-                            </a>
-                        </li>
+                            <li>
+                                <a href="{{ route('admin.supplier-payouts.index') }}">
+                                    <span> {{ __('Supplier Payouts') }} </span>
+                                </a>
+                            </li>
                         @endhasPermission
                     </ul>
                 </div>
@@ -277,7 +285,7 @@
                 'view announcements',
                 'view banners',
                 'view
-                                                                translations'
+                                                                            translations'
             )
             <li class="side-nav-item">
                 <a data-bs-toggle="collapse" href="#sidebarUsersManagement" aria-expanded="false"
@@ -290,29 +298,29 @@
                     <ul class="side-nav-second-level">
 
                         @hasPermission('view system management')
-                        <li>
-                            <a href="{{ route('admin.users-management.index') }}">
-                                <span> {{ __('Overview') }} </span>
-                            </a>
-                        </li>
+                            <li>
+                                <a href="{{ route('admin.users-management.index') }}">
+                                    <span> {{ __('Overview') }} </span>
+                                </a>
+                            </li>
                         @endhasPermission
                         @hasPermission('view categories')
-                        <li>
+                            <li>
 
-                            <a href="{{ route('admin.categories.index') }}">
-                                <span> {{ __('Categories') }} </span>
-                            </a>
-                        </li>
+                                <a href="{{ route('admin.categories.index') }}">
+                                    <span> {{ __('Categories') }} </span>
+                                </a>
+                            </li>
                         @endhasPermission
 
                         <!-- Announcements -->
                         @hasPermission('view announcements')
-                        <li class="side-nav-item">
-                            <a href="{{ route('admin.announcements.index') }}" class="side-nav-link">
-                                <i class="uil-megaphone"></i>
-                                <span> {{ __('Announcements') }} </span>
-                            </a>
-                        </li>
+                            <li class="side-nav-item">
+                                <a href="{{ route('admin.announcements.index') }}" class="side-nav-link">
+                                    <i class="uil-megaphone"></i>
+                                    <span> {{ __('Announcements') }} </span>
+                                </a>
+                            </li>
                         @endhasPermission
 
                         <!-- Banners -->
@@ -332,13 +340,13 @@
                         </li>
 
                         @hasPermission('view translations')
-                        <!-- Translations Management -->
-                        <li class="side-nav-item">
-                            <a href="{{ route('admin.translations.index') }}" class="side-nav-link">
-                                <i class="uil-language"></i>
-                                <span> {{ __('Translations') }} </span>
-                            </a>
-                        </li>
+                            <!-- Translations Management -->
+                            <li class="side-nav-item">
+                                <a href="{{ route('admin.translations.index') }}" class="side-nav-link">
+                                    <i class="uil-language"></i>
+                                    <span> {{ __('Translations') }} </span>
+                                </a>
+                            </li>
                         @endhasPermission
                     </ul>
                 </div>
@@ -357,46 +365,46 @@
                 <div class="collapse" id="sidebarLocation">
                     <ul class="side-nav-second-level">
                         @hasPermission('view governorates')
-                        <li>
-                            <a href="{{ route('admin.governorates.index') }}">
-                                <span> {{ __('Governorates') }} </span>
-                            </a>
-                        </li>
+                            <li>
+                                <a href="{{ route('admin.governorates.index') }}">
+                                    <span> {{ __('Governorates') }} </span>
+                                </a>
+                            </li>
                         @endhasPermission
                         @hasPermission('view trash governorates')
-                        <li>
-                            <a href="{{ route('admin.governorates.trash') }}">
-                                <span> {{ __('Trash Governorates') }} </span>
-                            </a>
-                        </li>
+                            <li>
+                                <a href="{{ route('admin.governorates.trash') }}">
+                                    <span> {{ __('Trash Governorates') }} </span>
+                                </a>
+                            </li>
                         @endhasPermission
                         @hasPermission('view cities')
-                        <li>
-                            <a href="{{ route('admin.cities.index') }}">
-                                <span> {{ __('Cities') }} </span>
-                            </a>
-                        </li>
+                            <li>
+                                <a href="{{ route('admin.cities.index') }}">
+                                    <span> {{ __('Cities') }} </span>
+                                </a>
+                            </li>
                         @endhasPermission
                         @hasPermission('view trash cities')
-                        <li>
-                            <a href="{{ route('admin.cities.trash') }}">
-                                <span> {{ __('Trash Cities') }} </span>
-                            </a>
-                        </li>
+                            <li>
+                                <a href="{{ route('admin.cities.trash') }}">
+                                    <span> {{ __('Trash Cities') }} </span>
+                                </a>
+                            </li>
                         @endhasPermission
                         @hasPermission('view areas')
-                        <li>
-                            <a href="{{ route('admin.areas.index') }}">
-                                <span> {{ __('Areas') }} </span>
-                            </a>
-                        </li>
+                            <li>
+                                <a href="{{ route('admin.areas.index') }}">
+                                    <span> {{ __('Areas') }} </span>
+                                </a>
+                            </li>
                         @endhasPermission
                         @hasPermission('view trash areas')
-                        <li>
-                            <a href="{{ route('admin.areas.trash') }}">
-                                <span> {{ __('Trash Areas') }} </span>
-                            </a>
-                        </li>
+                            <li>
+                                <a href="{{ route('admin.areas.trash') }}">
+                                    <span> {{ __('Trash Areas') }} </span>
+                                </a>
+                            </li>
                         @endhasPermission
                     </ul>
                 </div>
@@ -417,32 +425,32 @@
                 <div class="collapse" id="sidebarAdminUsers">
                     <ul class="side-nav-second-level">
                         @hasPermission('view admin users')
-                        <li>
-                            <a href="{{ route('admin.admin-users.index') }}">
-                                <span> {{ __('Admin Users') }} </span>
-                            </a>
-                        </li>
+                            <li>
+                                <a href="{{ route('admin.admin-users.index') }}">
+                                    <span> {{ __('Admin Users') }} </span>
+                                </a>
+                            </li>
                         @endhasPermission
                         @hasPermission('view trash admin users')
-                        <li>
-                            <a href="{{ route('admin.admin-users.trash') }}">
-                                <span> {{ __('Trash Admin Users') }} </span>
-                            </a>
-                        </li>
+                            <li>
+                                <a href="{{ route('admin.admin-users.trash') }}">
+                                    <span> {{ __('Trash Admin Users') }} </span>
+                                </a>
+                            </li>
                         @endhasPermission
                         @hasPermission('view roles')
-                        <li>
-                            <a href="{{ route('admin.roles.index') }}">
-                                <span> {{ __('Roles') }} </span>
-                            </a>
-                        </li>
+                            <li>
+                                <a href="{{ route('admin.roles.index') }}">
+                                    <span> {{ __('Roles') }} </span>
+                                </a>
+                            </li>
                         @endhasPermission
                         @hasPermission('view trash roles')
-                        <li>
-                            <a href="{{ route('admin.roles.trash') }}">
-                                <span> {{ __('Trash Roles') }} </span>
-                            </a>
-                        </li>
+                            <li>
+                                <a href="{{ route('admin.roles.trash') }}">
+                                    <span> {{ __('Trash Roles') }} </span>
+                                </a>
+                            </li>
                         @endhasPermission
                     </ul>
                 </div>
@@ -454,201 +462,201 @@
 
             <!-- Purchase Requests & Offers -->
             @hasAnyPermission('view purchase requests')
-            <li class="side-nav-item">
-                <a data-bs-toggle="collapse" href="#sidebarPurchaseRequests" aria-expanded="false"
-                    aria-controls="sidebarPurchaseRequests" class="side-nav-link">
-                    <i class="uil-file-alt"></i>
-                    <span> {{ __('Purchase & Offers') }} </span>
-                    <span class="menu-arrow"></span>
-                </a>
-                <div class="collapse" id="sidebarPurchaseRequests">
-                    <ul class="side-nav-second-level">
-                        @hasPermission('view purchase requests')
-                        <li>
-                            <a href="{{ route('admin.purchase-requests.index') }}">
-                                <span> {{ __('Purchase Requests') }}
-                                </span>
-                            </a>
-                        </li>
-                        @endhasPermission
-                    </ul>
-                </div>
-            </li>
+                <li class="side-nav-item">
+                    <a data-bs-toggle="collapse" href="#sidebarPurchaseRequests" aria-expanded="false"
+                        aria-controls="sidebarPurchaseRequests" class="side-nav-link">
+                        <i class="uil-file-alt"></i>
+                        <span> {{ __('Purchase & Offers') }} </span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    <div class="collapse" id="sidebarPurchaseRequests">
+                        <ul class="side-nav-second-level">
+                            @hasPermission('view purchase requests')
+                                <li>
+                                    <a href="{{ route('admin.purchase-requests.index') }}">
+                                        <span> {{ __('Purchase Requests') }}
+                                        </span>
+                                    </a>
+                                </li>
+                            @endhasPermission
+                        </ul>
+                    </div>
+                </li>
             @endhasAnyPermission
 
 
             <!-- Notifications -->
             @hasPermission('view notifications')
-            <li class="side-nav-item">
-                <a href="{{ route('admin.notifications.index') }}" class="side-nav-link">
-                    <i class="uil-bell"></i>
-                    <span> {{ __('Notifications') }} </span>
-                    <span class="badge bg-danger rounded-pill" id="sidebar-notification-count"
-                        style="display: none;">0</span>
-                </a>
-            </li>
+                <li class="side-nav-item">
+                    <a href="{{ route('admin.notifications.index') }}" class="side-nav-link">
+                        <i class="uil-bell"></i>
+                        <span> {{ __('Notifications') }} </span>
+                        <span class="badge bg-danger rounded-pill" id="sidebar-notification-count"
+                            style="display: none;">0</span>
+                    </a>
+                </li>
             @endhasPermission
 
             <!-- Blogs -->
             @hasAnyPermission('view blog categories', 'view blog posts', 'view blog categories trash', 'view blog posts trash')
-            <li class="side-nav-item">
-                <a data-bs-toggle="collapse" href="#sidebarBlogs" aria-expanded="false" aria-controls="sidebarBlogs"
-                    class="side-nav-link">
-                    <i class="uil-book-alt"></i>
-                    <span> {{ __('Blogs') }} </span>
-                    <span class="menu-arrow"></span>
-                </a>
-                <div class="collapse" id="sidebarBlogs">
-                    <ul class="side-nav-second-level">
-                        @hasPermission('view blog categories')
-                        <li>
-                            <a href="{{ route('admin.blog-categories.index') }}">
-                                <span> {{ __('Blog Categories') }} </span>
-                            </a>
-                        </li>
-                        @endhasPermission
-                        @hasPermission('view trash blog categories')
-                        <li>
-                            <a href="{{ route('admin.blog-categories.trash') }}">
-                                <span> {{ __('Trash Blog Categories') }} </span>
-                            </a>
-                        </li>
-                        @endhasPermission
+                <li class="side-nav-item">
+                    <a data-bs-toggle="collapse" href="#sidebarBlogs" aria-expanded="false" aria-controls="sidebarBlogs"
+                        class="side-nav-link">
+                        <i class="uil-book-alt"></i>
+                        <span> {{ __('Blogs') }} </span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    <div class="collapse" id="sidebarBlogs">
+                        <ul class="side-nav-second-level">
+                            @hasPermission('view blog categories')
+                                <li>
+                                    <a href="{{ route('admin.blog-categories.index') }}">
+                                        <span> {{ __('Blog Categories') }} </span>
+                                    </a>
+                                </li>
+                            @endhasPermission
+                            @hasPermission('view trash blog categories')
+                                <li>
+                                    <a href="{{ route('admin.blog-categories.trash') }}">
+                                        <span> {{ __('Trash Blog Categories') }} </span>
+                                    </a>
+                                </li>
+                            @endhasPermission
 
-                        @hasPermission('view blog posts')
-                        <li>
-                            <a href="{{ route('admin.blog-posts.index') }}">
-                                <span> {{ __('Blog Posts') }} </span>
-                            </a>
-                        </li>
-                        @endhasPermission
-                        @hasPermission('view trash blog posts')
-                        <li>
-                            <a href="{{ route('admin.blog-posts.trash') }}">
-                                <span> {{ __('Trash Blog Posts') }} </span>
-                            </a>
-                        </li>
-                        @endhasPermission
+                            @hasPermission('view blog posts')
+                                <li>
+                                    <a href="{{ route('admin.blog-posts.index') }}">
+                                        <span> {{ __('Blog Posts') }} </span>
+                                    </a>
+                                </li>
+                            @endhasPermission
+                            @hasPermission('view trash blog posts')
+                                <li>
+                                    <a href="{{ route('admin.blog-posts.trash') }}">
+                                        <span> {{ __('Trash Blog Posts') }} </span>
+                                    </a>
+                                </li>
+                            @endhasPermission
 
-                    </ul>
-                </div>
-            </li>
+                        </ul>
+                    </div>
+                </li>
             @endhasAnyPermission
 
 
             <!-- Courses -->
             @hasAnyPermission('view courses', 'view course enrollments')
-            <li class="side-nav-item">
-                <a data-bs-toggle="collapse" href="#sidebarCourses" aria-expanded="false" aria-controls="sidebarCourses"
-                    class="side-nav-link">
-                    <i class="uil-book-open"></i>
-                    <span> {{ __('Courses') }} </span>
-                    <span class="menu-arrow"></span>
-                </a>
-                <div class="collapse" id="sidebarCourses">
-                    <ul class="side-nav-second-level">
-                        @hasPermission('view courses')
-                        <li>
-                            <a href="{{ route('admin.courses.index') }}">
-                                <span> {{ __('Courses') }} </span>
-                            </a>
-                        </li>
-                        @endhasPermission
-                        @hasPermission('view trash courses')
-                        <li>
-                            <a href="{{ route('admin.courses.trash') }}">
-                                <span> {{ __('Trash Courses') }} </span>
-                            </a>
-                        </li>
-                        @endhasPermission
-                        @hasPermission('view course enrollments')
-                        <li>
-                            <a href="{{ route('admin.course-enrollments.index') }}">
-                                <span> {{ __('Course Enrollments') }} </span>
-                            </a>
-                        </li>
-                        @endhasPermission
+                <li class="side-nav-item">
+                    <a data-bs-toggle="collapse" href="#sidebarCourses" aria-expanded="false"
+                        aria-controls="sidebarCourses" class="side-nav-link">
+                        <i class="uil-book-open"></i>
+                        <span> {{ __('Courses') }} </span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    <div class="collapse" id="sidebarCourses">
+                        <ul class="side-nav-second-level">
+                            @hasPermission('view courses')
+                                <li>
+                                    <a href="{{ route('admin.courses.index') }}">
+                                        <span> {{ __('Courses') }} </span>
+                                    </a>
+                                </li>
+                            @endhasPermission
+                            @hasPermission('view trash courses')
+                                <li>
+                                    <a href="{{ route('admin.courses.trash') }}">
+                                        <span> {{ __('Trash Courses') }} </span>
+                                    </a>
+                                </li>
+                            @endhasPermission
+                            @hasPermission('view course enrollments')
+                                <li>
+                                    <a href="{{ route('admin.course-enrollments.index') }}">
+                                        <span> {{ __('Course Enrollments') }} </span>
+                                    </a>
+                                </li>
+                            @endhasPermission
 
 
-                    </ul>
-                </div>
-            </li>
+                        </ul>
+                    </div>
+                </li>
             @endhasAnyPermission
 
 
             <!-- Tickets -->
             @hasAnyPermission('view tickets')
-            <li class="side-nav-item">
-                <a data-bs-toggle="collapse" href="#sidebarTickets" aria-expanded="false" aria-controls="sidebarTickets"
-                    class="side-nav-link">
-                    <i class="uil-ticket"></i>
-                    <span> {{ __('Tickets') }} </span>
-                    <span class="menu-arrow"></span>
-                </a>
-                <div class="collapse" id="sidebarTickets">
-                    <ul class="side-nav-second-level">
-                        @hasPermission('view tickets')
-                        <li>
-                            <a href="{{ route('admin.tickets.index') }}">
-                                <span> {{ __('All Tickets') }} </span>
-                            </a>
-                        </li>
-                        @endhasPermission
-                        @hasPermission('view trash tickets')
-                        <li>
-                            <a href="{{ route('admin.tickets.trash') }}">
-                                <span> {{ __('Trash Tickets') }} </span>
-                            </a>
-                        </li>
-                        @endhasPermission
-                        @hasPermission('view ticket types')
-                        <li>
-                            <a href="{{ route('admin.ticket-types.index') }}">
-                                <span> {{ __('Ticket Types') }} </span>
-                            </a>
-                        </li>
-                        @endhasPermission
-                    </ul>
-                </div>
-            </li>
+                <li class="side-nav-item">
+                    <a data-bs-toggle="collapse" href="#sidebarTickets" aria-expanded="false"
+                        aria-controls="sidebarTickets" class="side-nav-link">
+                        <i class="uil-ticket"></i>
+                        <span> {{ __('Tickets') }} </span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    <div class="collapse" id="sidebarTickets">
+                        <ul class="side-nav-second-level">
+                            @hasPermission('view tickets')
+                                <li>
+                                    <a href="{{ route('admin.tickets.index') }}">
+                                        <span> {{ __('All Tickets') }} </span>
+                                    </a>
+                                </li>
+                            @endhasPermission
+                            @hasPermission('view trash tickets')
+                                <li>
+                                    <a href="{{ route('admin.tickets.trash') }}">
+                                        <span> {{ __('Trash Tickets') }} </span>
+                                    </a>
+                                </li>
+                            @endhasPermission
+                            @hasPermission('view ticket types')
+                                <li>
+                                    <a href="{{ route('admin.ticket-types.index') }}">
+                                        <span> {{ __('Ticket Types') }} </span>
+                                    </a>
+                                </li>
+                            @endhasPermission
+                        </ul>
+                    </div>
+                </li>
             @endhasAnyPermission
 
             <!-- Subscriptions -->
             @hasAnyPermission('view plans', 'view features', 'view subscriptions')
-            <li class="side-nav-item">
-                <a data-bs-toggle="collapse" href="#sidebarSubscriptions" aria-expanded="false"
-                    aria-controls="sidebarSubscriptions" class="side-nav-link">
-                    <i class="uil-money-bill"></i>
-                    <span> {{ __('Subscriptions') }} </span>
-                    <span class="menu-arrow"></span>
-                </a>
-                <div class="collapse" id="sidebarSubscriptions">
-                    <ul class="side-nav-second-level">
+                <li class="side-nav-item">
+                    <a data-bs-toggle="collapse" href="#sidebarSubscriptions" aria-expanded="false"
+                        aria-controls="sidebarSubscriptions" class="side-nav-link">
+                        <i class="uil-money-bill"></i>
+                        <span> {{ __('Subscriptions') }} </span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    <div class="collapse" id="sidebarSubscriptions">
+                        <ul class="side-nav-second-level">
 
-                        @hasPermission('view plans')
-                        <li>
-                            <a href="{{ route('admin.plans.index') }}">
-                                <span> {{ __('Plans') }} </span>
-                            </a>
-                        </li>
-                        @endhasPermission
-                        @hasPermission('view features')
-                        <li>
-                            <a href="{{ route('admin.features.index') }}">
-                                <span> {{ __('Features') }} </span>
-                            </a>
-                        </li>
-                        @endhasPermission
-                        @hasPermission('view subscriptions')
-                        <li>
-                            <a href="{{ route('admin.subscriptions.index') }}">
-                                <span> {{ __('Subscriptions') }} </span>
-                            </a>
-                        </li>
-                        @endhasPermission
-                    </ul>
-                </div>
-            </li>
+                            @hasPermission('view plans')
+                                <li>
+                                    <a href="{{ route('admin.plans.index') }}">
+                                        <span> {{ __('Plans') }} </span>
+                                    </a>
+                                </li>
+                            @endhasPermission
+                            @hasPermission('view features')
+                                <li>
+                                    <a href="{{ route('admin.features.index') }}">
+                                        <span> {{ __('Features') }} </span>
+                                    </a>
+                                </li>
+                            @endhasPermission
+                            @hasPermission('view subscriptions')
+                                <li>
+                                    <a href="{{ route('admin.subscriptions.index') }}">
+                                        <span> {{ __('Subscriptions') }} </span>
+                                    </a>
+                                </li>
+                            @endhasPermission
+                        </ul>
+                    </div>
+                </li>
             @endhasAnyPermission
 
             @hasAnyPermission(
@@ -656,48 +664,48 @@
                 'view affiliate settings',
                 'view affiliate payouts',
                 'view affiliate
-                                                                users'
+                                                                            users'
             )
-            <li class="side-nav-item">
-                <a data-bs-toggle="collapse" href="#sidebarAffiliates" aria-expanded="false"
-                    aria-controls="sidebarAffiliates" class="side-nav-link">
-                    <i class="uil-user-check"></i>
-                    <span> {{ __('Affiliates') }} </span>
-                    <span class="menu-arrow"></span>
-                </a>
-                <div class="collapse" id="sidebarAffiliates">
-                    <ul class="side-nav-second-level">
-                        @hasPermission('view affiliates')
-                        <li>
-                            <a href="{{ route('admin.affiliates.index') }}">
-                                <span> {{ __('Affiliate Codes') }} </span>
-                            </a>
-                        </li>
-                        @endhasPermission
-                        @hasPermission('view affiliate users')
-                        <li>
-                            <a href="{{ route('admin.affiliates.users.index') }}">
-                                <span> {{ __('Affiliate Users') }} </span>
-                            </a>
-                        </li>
-                        @endhasPermission
-                        @hasPermission('view affiliate settings')
-                        <li>
-                            <a href="{{ route('admin.affiliates.settings') }}">
-                                <span> {{ __('Affiliate Settings') }} </span>
-                            </a>
-                        </li>
-                        @endhasPermission
-                        @hasPermission('view affiliate payouts')
-                        <li>
-                            <a href="{{ route('admin.affiliates.payouts') }}">
-                                <span> {{ __('Payout Requests') }} </span>
-                            </a>
-                        </li>
-                        @endhasPermission
-                    </ul>
-                </div>
-            </li>
+                <li class="side-nav-item">
+                    <a data-bs-toggle="collapse" href="#sidebarAffiliates" aria-expanded="false"
+                        aria-controls="sidebarAffiliates" class="side-nav-link">
+                        <i class="uil-user-check"></i>
+                        <span> {{ __('Affiliates') }} </span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    <div class="collapse" id="sidebarAffiliates">
+                        <ul class="side-nav-second-level">
+                            @hasPermission('view affiliates')
+                                <li>
+                                    <a href="{{ route('admin.affiliates.index') }}">
+                                        <span> {{ __('Affiliate Codes') }} </span>
+                                    </a>
+                                </li>
+                            @endhasPermission
+                            @hasPermission('view affiliate users')
+                                <li>
+                                    <a href="{{ route('admin.affiliates.users.index') }}">
+                                        <span> {{ __('Affiliate Users') }} </span>
+                                    </a>
+                                </li>
+                            @endhasPermission
+                            @hasPermission('view affiliate settings')
+                                <li>
+                                    <a href="{{ route('admin.affiliates.settings') }}">
+                                        <span> {{ __('Affiliate Settings') }} </span>
+                                    </a>
+                                </li>
+                            @endhasPermission
+                            @hasPermission('view affiliate payouts')
+                                <li>
+                                    <a href="{{ route('admin.affiliates.payouts') }}">
+                                        <span> {{ __('Payout Requests') }} </span>
+                                    </a>
+                                </li>
+                            @endhasPermission
+                        </ul>
+                    </div>
+                </li>
             @endhasAnyPermission
 
 

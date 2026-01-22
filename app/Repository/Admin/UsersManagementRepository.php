@@ -114,6 +114,57 @@ class UsersManagementRepository implements UsersManagementRepositoryInterface
             ->make(true);
     }
 
+    public function getStandaloneDoctorsData()
+    {
+        // Get clinic users without a clinic (standalone doctors)
+        $standaloneDoctors = ClinicUser::with('doctorProfile.speciality')
+            ->whereNull('clinic_id')
+            ->get();
+
+        return datatables()->of($standaloneDoctors)
+            ->addColumn('name', fn($item) => $item->name)
+            ->addColumn('email', fn($item) => $item->email)
+            ->addColumn('phone', fn($item) => $item->phone ?? 'N/A')
+            ->addColumn('speciality', function ($item) {
+                return $item->doctorProfile?->speciality?->name_en ?? 'N/A';
+            })
+            ->addColumn('doctor_status', function ($item) {
+                if (!$item->doctorProfile) {
+                    return '<span class="badge bg-secondary">No Profile</span>';
+                }
+                $status = $item->doctorProfile->status;
+                if ($status === 'approved') {
+                    return '<span class="badge bg-success">Approved</span>';
+                } elseif ($status === 'rejected') {
+                    return '<span class="badge bg-danger">Rejected</span>';
+                } else {
+                    return '<span class="badge bg-warning">Pending</span>';
+                }
+            })
+            ->editColumn('status', function ($item) {
+                $checked = $item->status ? 'checked' : '';
+                return '
+                    <div class="form-check form-switch">
+                        <input class="form-check-input toggle-status" type="checkbox" role="switch"
+                            data-id="' . $item->id . '"
+                            data-type="clinic_user"
+                            ' . $checked . '>
+                        <label class="form-check-label"></label>
+                    </div>';
+            })
+            ->addColumn('action', function ($item) {
+                $viewUrl = route('admin.users-management.standalone-doctor-details', $item->id);
+                return <<<HTML
+                <div class="d-flex gap-2">
+                    <a href="{$viewUrl}" class="btn btn-sm btn-info" title="View Details"><i class="fa fa-eye"></i></a>
+                    <button onclick="deleteStandaloneDoctor({$item->id})" class="btn btn-sm btn-danger" title="Delete"><i class="fa fa-trash"></i></button>
+                </div>
+                HTML;
+            })
+            ->rawColumns(['doctor_status', 'status', 'action'])
+            ->make(true);
+    }
+
     public function getPatientsData()
     {
         $patients = Patient::with(['governorate', 'city'])
