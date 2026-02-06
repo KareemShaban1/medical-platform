@@ -91,6 +91,70 @@
 
         </style>
 
+	<style>
+		@media (max-width: 768px) {
+			.page-title-box {
+				display: block !important;
+				overflow: visible !important;
+			}
+
+			.page-title-right {
+				float: none !important;
+				width: 100%;
+				display: flex !important;
+				flex-wrap: wrap;
+				gap: 0.6rem;
+				justify-content: flex-start;
+				margin-top: 0.5rem;
+			}
+
+			.page-title-right .btn {
+				width: 100%;
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				white-space: nowrap;
+				border-radius: 10px;
+				padding: 0.65rem 1rem;
+				font-weight: 600;
+				box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+				transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+			}
+
+			.page-title-right .btn i {
+				margin-inline-end: 0.4rem;
+				font-size: 0.95em;
+			}
+
+			.page-title-right .btn:active {
+				transform: translateY(1px);
+				box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+			}
+
+			.page-title-right .btn:focus {
+				outline: 0;
+				box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.2), 0 6px 14px rgba(0, 0, 0, 0.08);
+			}
+
+			.page-title-right .btn-primary {
+				background-image: linear-gradient(135deg, #0d6efd, #3b82f6);
+				border: none;
+			}
+
+			.page-title-right .btn-info {
+				background-image: linear-gradient(135deg, #0dcaf0, #22d3ee);
+				border: none;
+				color: #fff;
+			}
+
+			.page-title-right .btn-secondary {
+				background-image: linear-gradient(135deg, #6c757d, #94a3b8);
+				border: none;
+				color: #fff;
+			}
+		}
+	</style>
+
 	<!-- Custom CSS -->
 	@stack('styles')
 </head>
