@@ -41,6 +41,10 @@ class DoctorController extends Controller
                     ->orWhere('doctor_profiles.bio', 'like', "%{$searchTerm}%")
                     ->orWhereHas('clinicUser', function ($qq) use ($searchTerm) {
                         $qq->where('name', 'like', "%{$searchTerm}%");
+                    })
+                    ->orWhereHas('speciality', function ($qq) use ($searchTerm) {
+                        $qq->where('name_en', 'like', "%{$searchTerm}%")
+                            ->orWhere('name_ar', 'like', "%{$searchTerm}%");
                     });
             });
         }
@@ -69,17 +73,17 @@ class DoctorController extends Controller
         }
 
         // Location filters
-        if ($request->filled('governorate_id')) {
+        if ($request->filled('governorate_id') && $request->governorate_id !== 'all') {
             $query->whereHas('clinicUser.clinic', function($q) use ($request) {
                 $q->where('governorate_id', $request->governorate_id);
             });
         }
-        if ($request->filled('city_id')) {
+        if ($request->filled('city_id') && $request->city_id !== 'all') {
             $query->whereHas('clinicUser.clinic', function($q) use ($request) {
                 $q->where('city_id', $request->city_id);
             });
         }
-        if ($request->filled('area_id')) {
+        if ($request->filled('area_id') && $request->area_id !== 'all') {
             $query->whereHas('clinicUser.clinic', function($q) use ($request) {
                 $q->where('area_id', $request->area_id);
             });

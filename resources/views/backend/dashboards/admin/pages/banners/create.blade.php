@@ -69,6 +69,10 @@
 								class="text-muted">{{ __('Recommended size: 1920x600px. Max size: 5MB') }}</small>
 							<div id="image-preview" class="mt-2"></div>
 						</div>
+						<input type="hidden" name="image_width" value="{{ old('image_width') }}">
+						<input type="hidden" name="image_height" value="{{ old('image_height') }}">
+						<input type="hidden" name="image_position_x" value="{{ old('image_position_x', 50) }}">
+						<input type="hidden" name="image_position_y" value="{{ old('image_position_y', 50) }}">
 						<div class="mb-3">
 							<label class="form-label">{{ __('Mobile Image') }}
 								({{ __('Optional') }})</label>
@@ -506,6 +510,10 @@
 									</div>
 								</div>
 							</div>
+							<div id="banner-resize-handle" title="{{ __('Drag to resize') }}"
+								style="position: absolute; right: 6px; bottom: 6px; width: 18px; height: 18px; background: rgba(0,0,0,0.35); border-radius: 3px; cursor: nwse-resize; display: none; align-items: center; justify-content: center; z-index: 20;">
+								<div style="width: 10px; height: 10px; border-right: 2px solid #fff; border-bottom: 2px solid #fff;"></div>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -524,6 +532,15 @@
 	}
 	.ql-editor {
 		min-height: 300px;
+	}
+	.banner-preview-container.resizing {
+		user-select: none;
+	}
+	#preview-image {
+		cursor: grab;
+	}
+	#preview-image.dragging {
+		cursor: grabbing;
 	}
 </style>
 @endpush
@@ -599,6 +616,10 @@ $(document).ready(function() {
 		$('#content-textarea').val(window.quill.root.innerHTML);
 	});
 
+	const previewContainer = $('#banner-preview');
+	const previewImageContainer = $('#preview-image-container');
+	const previewImage = $('#preview-image');
+
 	// Position mapping function
 	function getPositionStyles(position) {
 		const positions = {
@@ -666,6 +687,56 @@ $(document).ready(function() {
 		let textAlignment = $('select[name="text_alignment"]').val() || 'left';
 		let buttonColor = $('input[name="button_color"]').val() || '#007bff';
 		let buttonTextColor = $('input[name="button_text_color"]').val() || '#ffffff';
+		let imageWidth = parseInt($('input[name="image_width"]').val(), 10);
+		let imageHeight = parseInt($('input[name="image_height"]').val(), 10);
+		let imagePosX = parseInt($('input[name="image_position_x"]').val(), 10);
+		let imagePosY = parseInt($('input[name="image_position_y"]').val(), 10);
+
+		if (imageWidth) {
+			previewContainer.css({
+				'max-width': imageWidth + 'px',
+				'margin-left': 'auto',
+				'margin-right': 'auto'
+			});
+		} else {
+			previewContainer.css({
+				'max-width': '',
+				'margin-left': '',
+				'margin-right': ''
+			});
+		}
+
+		if (imageHeight) {
+			previewImageContainer.css({
+				'height': imageHeight + 'px',
+				'min-height': imageHeight + 'px'
+			});
+			previewContainer.css('min-height', imageHeight + 'px');
+			previewImage.css({
+				'height': '100%',
+				'width': '100%',
+				'object-fit': 'cover',
+				'max-height': ''
+			});
+		} else {
+			previewImageContainer.css({
+				'height': '',
+				'min-height': '400px'
+			});
+			previewContainer.css('min-height', '400px');
+			previewImage.css({
+				'height': 'auto',
+				'width': '100%',
+				'object-fit': 'cover',
+				'max-height': '500px'
+			});
+		}
+
+		if (Number.isNaN(imagePosX)) imagePosX = 50;
+		if (Number.isNaN(imagePosY)) imagePosY = 50;
+		$('input[name="image_position_x"]').val(imagePosX);
+		$('input[name="image_position_y"]').val(imagePosY);
+		previewImage.css('object-position', `${imagePosX}% ${imagePosY}%`);
 
 		// Update title
 		let title = $('input[name="title"]').val();
@@ -928,6 +999,8 @@ $(document).ready(function() {
 	$('select[name="text_alignment"]').on('change', updatePreview);
 	$('input[name="button_color"], input[name="button_text_color"]').on('input change',
 		updatePreview);
+	$('input[name="image_width"], input[name="image_height"]').on('input', debouncedUpdatePreview);
+	$('input[name="image_position_x"], input[name="image_position_y"]').on('input', debouncedUpdatePreview);
 	// Image preview
 	$('input[name="image"]').on('change', function(e) {
 		let file = e.target.files[0];
@@ -948,6 +1021,8 @@ $(document).ready(function() {
 					.show();
 				$('#preview-image-placeholder')
 					.hide();
+				$('#banner-resize-handle').css('display', 'flex');
+				updatePreview();
 			};
 			reader.readAsDataURL(file);
 		}
@@ -973,6 +1048,82 @@ $(document).ready(function() {
 	// Ensure preview container is visible
 	if ($('#banner-preview').length) {
 		$('#banner-preview').show();
+	}
+
+	// Drag to reposition image (object-position)
+	let isDraggingImage = false;
+	let dragStartX = 0;
+	let dragStartY = 0;
+	let startPosX = 50;
+	let startPosY = 50;
+
+	function clamp(val, min, max) {
+		return Math.min(Math.max(val, min), max);
+	}
+
+	previewImage.on('mousedown', function(e) {
+		if (!previewImage.is(':visible')) return;
+		isDraggingImage = true;
+		previewImage.addClass('dragging');
+		dragStartX = e.clientX;
+		dragStartY = e.clientY;
+		startPosX = parseInt($('input[name="image_position_x"]').val(), 10) || 50;
+		startPosY = parseInt($('input[name="image_position_y"]').val(), 10) || 50;
+		$(document).on('mousemove.bannerImageDrag', function(ev) {
+			if (!isDraggingImage) return;
+			const dx = ev.clientX - dragStartX;
+			const dy = ev.clientY - dragStartY;
+			const containerWidth = Math.max(1, previewImageContainer.width());
+			const containerHeight = Math.max(1, previewImageContainer.height());
+			const newX = clamp(startPosX - (dx / containerWidth) * 100, 0, 100);
+			const newY = clamp(startPosY - (dy / containerHeight) * 100, 0, 100);
+			$('input[name="image_position_x"]').val(Math.round(newX));
+			$('input[name="image_position_y"]').val(Math.round(newY));
+			updatePreview();
+		});
+		$(document).on('mouseup.bannerImageDrag', function() {
+			isDraggingImage = false;
+			previewImage.removeClass('dragging');
+			$(document).off('mousemove.bannerImageDrag mouseup.bannerImageDrag');
+		});
+	});
+
+	// Resize handle logic
+	const resizeHandle = $('#banner-resize-handle');
+	let isResizing = false;
+	let startX = 0;
+	let startY = 0;
+	let startWidth = 0;
+	let startHeight = 0;
+
+	resizeHandle.on('mousedown', function(e) {
+		e.preventDefault();
+		isResizing = true;
+		startX = e.clientX;
+		startY = e.clientY;
+		startWidth = previewContainer.outerWidth();
+		startHeight = previewImageContainer.outerHeight();
+		previewContainer.addClass('resizing');
+		$(document).on('mousemove.bannerResize', function(ev) {
+			if (!isResizing) return;
+			const dx = ev.clientX - startX;
+			const dy = ev.clientY - startY;
+			const newWidth = clamp(startWidth + dx, 200, 2000);
+			const newHeight = clamp(startHeight + dy, 120, 1200);
+			$('input[name="image_width"]').val(Math.round(newWidth));
+			$('input[name="image_height"]').val(Math.round(newHeight));
+			updatePreview();
+		});
+		$(document).on('mouseup.bannerResize', function() {
+			isResizing = false;
+			previewContainer.removeClass('resizing');
+			$(document).off('mousemove.bannerResize mouseup.bannerResize');
+		});
+	});
+
+	// If an image is already set, show the resize handle
+	if ($('#preview-image').attr('src')) {
+		$('#banner-resize-handle').css('display', 'flex');
 	}
 
 	// Initialize preview after a short delay to ensure editor is ready
@@ -1011,6 +1162,12 @@ $(document).ready(function() {
 	// Form submission
 	$('#banner-form').on('submit', function(e) {
 		e.preventDefault();
+
+		// Persist current preview size before submit
+		if ($('#preview-image').is(':visible')) {
+			$('input[name="image_width"]').val(Math.round(previewContainer.outerWidth()));
+			$('input[name="image_height"]').val(Math.round(previewImageContainer.outerHeight()));
+		}
 
 		let formData = new FormData(this);
 

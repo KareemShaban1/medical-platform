@@ -67,13 +67,15 @@ document.addEventListener('DOMContentLoaded', function() {
 			if (sortSelect?.value) formData.append('sort',
 				sortSelect.value);
 
-			if (governorateSelect?.value) formData.append(
-				'governorate_id',
-				governorateSelect.value);
-			if (citySelect?.value) formData.append('city_id',
-				citySelect.value);
-			if (areaSelect?.value) formData.append('area_id',
-				areaSelect.value);
+			if (governorateSelect?.value && governorateSelect.value !== 'all') {
+				formData.append('governorate_id', governorateSelect.value);
+			}
+			if (citySelect?.value && citySelect.value !== 'all') {
+				formData.append('city_id', citySelect.value);
+			}
+			if (areaSelect?.value && areaSelect.value !== 'all') {
+				formData.append('area_id', areaSelect.value);
+			}
 
 			// Update active filters count
 			let activeCount = 0;

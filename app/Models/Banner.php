@@ -30,6 +30,10 @@ class Banner extends Model implements HasMedia
         'text_alignment',
         'button_color',
         'button_text_color',
+        'image_width',
+        'image_height',
+        'image_position_x',
+        'image_position_y',
         'start_at',
         'end_at',
         'status',
@@ -60,6 +64,10 @@ class Banner extends Model implements HasMedia
         'views_count' => 'integer',
         'clicks_count' => 'integer',
         'text_background_opacity' => 'integer',
+        'image_width' => 'integer',
+        'image_height' => 'integer',
+        'image_position_x' => 'integer',
+        'image_position_y' => 'integer',
     ];
 
     /**
@@ -209,6 +217,4 @@ class Banner extends Model implements HasMedia
             ->singleFile();
     }
 }
-
-
 

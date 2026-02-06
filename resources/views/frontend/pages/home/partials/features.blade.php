@@ -1,4 +1,4 @@
-<section class="relative py-24 overflow-hidden bg-gradient-to-b from-white via-indigo-50/30 to-white">
+<section id="our-services" class="relative py-24 overflow-hidden bg-gradient-to-b from-white via-indigo-50/30 to-white">
 	<!-- 🌸 Animated background shapes -->
 	<div class="absolute inset-0 overflow-hidden pointer-events-none">
 		<!-- Circle 1 -->
@@ -39,6 +39,7 @@
 			<x-frontend.feature-card title="{{ __('clinics service') }}"
 				description="{{ __('clinics service description') }}"
 				:features=" __('clinics service features')" icon="fas fa-hospital"
+				href="{{ route('clinics') }}"
 				svgIcon="{{ asset('frontend/images/clinic.svg') }}" iconColor="text-blue-600"
 				bgColor="bg-indigo-50" titleColor="group-hover:text-blue-600"
 				hoverBgColor="group-hover:bg-blue-600"
@@ -48,6 +49,7 @@
 			<x-frontend.feature-card title="{{ __('patients service') }}"
 				description="{{ __('patients service description') }}"
 				:features="[__('patients can book appointments'), __('patients can view their appointments')]"
+				href="{{ route('doctors.index') }}"
 				icon="fas fa-user" svgIcon="{{ asset('frontend/images/patient.svg') }}"
 				iconColor="text-[#0f7986]" bgColor="bg-[#0f7986]"
 				titleColor="group-hover:text-[#0f7986]" hoverBgColor="group-hover:bg-[#0f7986]"
@@ -57,6 +59,7 @@
 			<x-frontend.feature-card title="{{ __('jobs service') }}"
 				description="{{ __('jobs service description') }}"
 				:features=" __('jobs service features')" icon="fas fa-briefcase"
+				href="{{ route('jobs') }}"
 				svgIcon="{{ asset('frontend/images/job.svg') }}" iconColor="text-[#ffc10d]"
 				bgColor="bg-[#ffc10d]" titleColor="group-hover:text-[#ffc10d]"
 				hoverBgColor="group-hover:bg-[#ffc10d]"
@@ -66,6 +69,7 @@
 			<x-frontend.feature-card title="{{ __('rental spaces service') }}"
 				description="{{ __('rental spaces service description') }}"
 				:features=" __('rental spaces service features')" icon="fas fa-building"
+				href="{{ route('rental-spaces') }}"
 				svgIcon="{{ asset('frontend/images/rental-space.svg') }}"
 				iconColor="text-[#e04f5f]" bgColor="bg-[#e04f5f]"
 				titleColor="group-hover:text-[#e04f5f]" hoverBgColor="group-hover:bg-[#e04f5f]"
@@ -75,6 +79,7 @@
 			<x-frontend.feature-card title="{{ __('suppliers service') }}"
 				description="{{ __('suppliers service description') }}"
 				:features=" __('suppliers service features')" icon="fas fa-truck"
+				href="{{ route('suppliers') }}"
 				svgIcon="{{ asset('frontend/images/supplier.svg') }}" iconColor="text-[#90dfaa]"
 				bgColor="bg-[#90dfaa]" titleColor="group-hover:text-[#90dfaa]"
 				hoverBgColor="group-hover:bg-[#90dfaa]"
@@ -84,6 +89,7 @@
 			<x-frontend.feature-card title="{{ __('blogs service') }}"
 				description="{{ __('blogs service description') }}"
 				:features=" __('blogs service features')" icon="fas fa-blog"
+				href="{{ route('blogs') }}"
 				iconColor="text-[#ffe6b8]" svgIcon="{{ asset('frontend/images/blog.svg') }}"
 				bgColor="bg-[#ffe6b8]" titleColor="group-hover:text-[#ffe6b8]"
 				hoverBgColor="group-hover:bg-[#ffe6b8]"
@@ -93,6 +99,7 @@
 			<x-frontend.feature-card title="{{ __('courses service') }}"
 				description="{{ __('courses service description') }}"
 				:features=" __('courses service features')" icon="fas fa-book"
+				href="{{ route('courses') }}"
 				iconColor="text-[#0455bf]" svgIcon="{{ asset('frontend/images/course.svg') }}"
 				bgColor="bg-[#0455bf]" titleColor="group-hover:text-[#0455bf]"
 				hoverBgColor="group-hover:bg-[#0455bf]"

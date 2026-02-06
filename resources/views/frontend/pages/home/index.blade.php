@@ -36,9 +36,11 @@
 				</div>
 			</div>
 			<div class="w-full px-4 lg:w-1/2 flex justify-end">
-				<div class="text-center lg:text-right"><a
-						class="font-semibold rounded-lg mx-auto inline-flex items-center justify-center bg-white py-4 px-9 hover:bg-opacity-90"
+				<div class="text-center lg:text-right flex flex-wrap items-center justify-center lg:justify-end gap-3">
+					<a class="font-semibold rounded-lg inline-flex items-center justify-center bg-white py-3 px-7 text-sm sm:text-base hover:bg-opacity-90"
 						href="{{ route('doctors.index') }}">{{ __('create your first appointment') }}</a>
+					<a class="font-semibold rounded-lg inline-flex items-center justify-center bg-transparent text-white border border-white py-3 px-7 text-sm sm:text-base hover:bg-white hover:text-primary transition"
+						href="{{ route('doctors.index') }}">{{ __('search for doctor or specialization') }}</a>
 				</div>
 			</div>
 		</div>

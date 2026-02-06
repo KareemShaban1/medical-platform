@@ -52,6 +52,10 @@ class StoreBannerRequest extends FormRequest
             'text_alignment' => 'nullable|in:left,center,right',
             'button_color' => 'nullable|string|max:7',
             'button_text_color' => 'nullable|string|max:7',
+            'image_width' => 'nullable|integer|min:50|max:4000',
+            'image_height' => 'nullable|integer|min:50|max:2000',
+            'image_position_x' => 'nullable|integer|min:0|max:100',
+            'image_position_y' => 'nullable|integer|min:0|max:100',
         ];
     }
 

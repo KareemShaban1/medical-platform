@@ -205,7 +205,7 @@
 		<div class="max-w-2xl mx-auto animate-fade-in-up animation-delay-400">
 			<div class="relative group">
 				<input type="text" id="heroSearch"
-					placeholder="{{ __('search for doctors...') }}"
+					placeholder="{{ __('search for doctor or specialization...') }}"
 					class="w-full px-6 py-4 pl-14 pr-6 text-white rounded-full shadow-2xl focus:outline-none focus:ring-4 focus:ring-white/30 transition-all duration-300 group-hover:scale-105">
 				<i
 					class="fas fa-search absolute left-5 top-1/2 transform -translate-y-1/4 text-white text-lg"></i>
@@ -268,7 +268,7 @@
 						class="block text-sm font-semibold text-gray-700 mb-3">{{ __('search doctors') }}</label>
 					<div class="relative">
 						<input type="text" id="search"
-							placeholder="{{ __('search doctors...') }}"
+							placeholder="{{ __('search for doctor or specialization...') }}"
 							class="form-input w-full pl-10 pr-4 py-3 group-hover:scale-105 transition-transform duration-300">
 						<i
 							class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/4 text-gray-400"></i>
@@ -378,7 +378,7 @@
 							class="form-input w-full px-3 py-3 group-hover:scale-105 transition-transform duration-300">
 							<option value="all">{{ __('all cities') }}
 							</option>
-							
+
 						</select>
 					</div>
 				</div>
@@ -392,7 +392,7 @@
 							class="form-input w-full px-3 py-3 group-hover:scale-105 transition-transform duration-300">
 							<option value="all">{{ __('all areas') }}
 							</option>
-							
+
 						</select>
 					</div>
 				</div>
@@ -405,7 +405,7 @@
 			</div>
 			</div>
 
-			
+
 		</div>
 	</div>
 </section>

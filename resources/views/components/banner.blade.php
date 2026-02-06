@@ -89,15 +89,26 @@
         $buttonContainerStyle .= "{$key}: {$value}; ";
     }
     $buttonContainerStyle .= "padding: 15px; z-index: 10; ";
+
+    $bannerHeight = $banner->image_height ? (int) $banner->image_height . 'px' : null;
+    $containerStyle = 'position: relative; width: 100%; overflow: hidden; ';
+    if ($bannerHeight) {
+        $containerStyle .= "height: {$bannerHeight}; ";
+    }
+    $imagePosX = $banner->image_position_x ?? 50;
+    $imagePosY = $banner->image_position_y ?? 50;
+    $imageStyle = $bannerHeight
+        ? "width: 100%; height: 100%; object-fit: cover; object-position: {$imagePosX}% {$imagePosY}%; display: block;"
+        : "width: 100%; height: auto; object-fit: cover; object-position: {$imagePosX}% {$imagePosY}%; display: block;";
 @endphp
 
-<div class="banner-container" style="position: relative; width: 100%; overflow: hidden;">
-    <div class="banner-image-container" style="position: relative; width: 100%;">
+<div class="banner-container" style="{{ $containerStyle }}">
+    <div class="banner-image-container" style="position: relative; width: 100%; height: 100%;">
         @if($banner->image)
             <img src="{{ $banner->image }}" alt="{{ $banner->title ?? '' }}" 
                  class="banner-image" 
-                 style="width: 100%; height: auto; display: block;"
-                 onload="this.style.height='auto';">
+                 style="{{ $imageStyle }}"
+                 @if(!$bannerHeight) onload="this.style.height='auto';" @endif>
         @endif
         
         <!-- Overlay Content -->
@@ -141,4 +152,3 @@
         </div>
     </div>
 </div>
-

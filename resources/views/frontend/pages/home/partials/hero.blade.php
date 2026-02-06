@@ -19,6 +19,11 @@
 
                 </a>
 
+                <a href="#our-services"
+                    class="flex items-center justify-center gap-2 border border-[var(--primary-color)] text-[var(--primary-color)] px-6 py-3 rounded-full font-semibold hover:bg-indigo-50 transition">
+                    {{ __('our services') }}
+                </a>
+
                 <button type="button" onclick="openDemoModal()"
                     class="flex items-center justify-center gap-2 border border-[var(--primary-color)] text-[var(--primary-color)] px-6 py-3 rounded-full font-semibold hover:bg-indigo-50 transition group">
                     <span
