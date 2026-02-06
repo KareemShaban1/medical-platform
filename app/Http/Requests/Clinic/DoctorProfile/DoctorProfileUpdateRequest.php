@@ -25,19 +25,19 @@ class DoctorProfileUpdateRequest extends FormRequest
             'name' => 'required|string|max:255',
             'bio' => 'nullable|string|max:2000',
             'email' => 'required|email|max:255',
-            'phone' => 'nullable|string|max:20',
+            'phone' => 'required|string|max:20',
             'twitter_link' => 'nullable|url|max:255',
             'linkedin_link' => 'nullable|url|max:255',
             'facebook_link' => 'nullable|url|max:255',
             'instagram_link' => 'nullable|url|max:255',
             'research_links' => 'nullable|array',
-            'research_links.*' => 'url|max:255',
+            'research_links.*' => 'nullable|url|max:255',
             'years_experience' => 'nullable|integer|min:0|max:50',
-            'speciality_id' => 'nullable|exists:specialties,id',
+            'speciality_id' => 'required|exists:specialties,id',
             'specialties' => 'nullable|array',
-            'specialties.*' => 'string|max:100',
+            'specialties.*' => 'nullable|string|max:100',
             'services_offered' => 'nullable|array',
-            'services_offered.*' => 'string|max:100',
+            'services_offered.*' => 'nullable|string|max:100',
             'education' => 'nullable|array',
             'education.*.degree' => 'nullable|string|max:255',
             'education.*.institution' => 'nullable|string|max:255',
@@ -61,6 +61,8 @@ class DoctorProfileUpdateRequest extends FormRequest
             'name.required' => 'The doctor name is required.',
             'email.required' => 'The email address is required.',
             'email.email' => 'Please provide a valid email address.',
+            'phone.required' => 'The phone number is required.',
+            'speciality_id.required' => 'The main speciality is required.',
             'speciality_id.exists' => 'Selected speciality is invalid.',
             'profile_photo.mimes' => 'Profile photo must be a file of type: jpeg, png, jpg, gif, svg, webp.',
             'profile_photo.max' => 'Profile photo may not be greater than 2MB.',
@@ -73,5 +75,27 @@ class DoctorProfileUpdateRequest extends FormRequest
             'years_experience.min' => 'Years of experience cannot be negative.',
             'years_experience.max' => 'Years of experience cannot exceed 50 years.',
         ];
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'research_links' => $this->filterEmptyArray($this->input('research_links')),
+            'specialties' => $this->filterEmptyArray($this->input('specialties')),
+            'services_offered' => $this->filterEmptyArray($this->input('services_offered')),
+        ]);
+    }
+
+    private function filterEmptyArray($value): ?array
+    {
+        if (!is_array($value)) {
+            return $value;
+        }
+
+        $filtered = array_values(array_filter($value, function ($item) {
+            return $item !== null && $item !== '';
+        }));
+
+        return $filtered ?: null;
     }
 }

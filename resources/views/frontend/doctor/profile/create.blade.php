@@ -46,21 +46,14 @@
                             </div>
 
                             <div>
-                                <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Phone') }}</label>
-                                <input type="text" id="phone" name="phone"
+                                <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Phone') }} <span class="text-red-500">*</span></label>
+                                <input type="text" id="phone" name="phone" required
                                     class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                                 <div class="invalid-feedback text-red-500 text-sm mt-1"></div>
                             </div>
 
                             <div>
-                                <label for="years_experience" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Years of Experience') }}</label>
-                                <input type="number" id="years_experience" name="years_experience" min="0" max="50"
-                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                <div class="invalid-feedback text-red-500 text-sm mt-1"></div>
-                            </div>
-
-                            <div>
-                                <label for="speciality_id" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Main Speciality') }}</label>
+                                <label for="speciality_id" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Main Speciality') }} <span class="text-red-500">*</span></label>
                                 <select id="speciality_id" name="speciality_id" required
                                     class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                                     <option value="">{{ __('Select Speciality') }}</option>
@@ -68,6 +61,13 @@
                                         <option value="{{ $spec->id }}">{{ $spec->name_en }} - {{ $spec->name_ar }}</option>
                                     @endforeach
                                 </select>
+                                <div class="invalid-feedback text-red-500 text-sm mt-1"></div>
+                            </div>
+
+                            <div>
+                                <label for="years_experience" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Years of Experience') }}</label>
+                                <input type="number" id="years_experience" name="years_experience" min="0" max="50"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                                 <div class="invalid-feedback text-red-500 text-sm mt-1"></div>
                             </div>
 
@@ -430,4 +430,3 @@ $('#profileForm').on('submit', function(e) {
 </script>
 @endpush
 @endsection
-

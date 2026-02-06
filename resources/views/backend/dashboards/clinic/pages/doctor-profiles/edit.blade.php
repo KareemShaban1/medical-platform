@@ -51,19 +51,13 @@
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label for="phone" class="form-label">{{ __('Phone') }}</label>
-                                <input type="text" class="form-control" id="phone" name="phone" value="{{ $profile->phone }}">
+                                <label for="phone" class="form-label">{{ __('Phone') }} <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="phone" name="phone" value="{{ $profile->phone }}" required>
                                 <div class="invalid-feedback"></div>
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label for="years_experience" class="form-label">{{ __('Years of Experience') }}</label>
-                                <input type="number" class="form-control" id="years_experience" name="years_experience" value="{{ $profile->years_experience }}" min="0" max="50">
-                                <div class="invalid-feedback"></div>
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <label for="speciality_id" class="form-label">{{ __('Main Speciality') }}</label>
+                                <label for="speciality_id" class="form-label">{{ __('Main Speciality') }} <span class="text-danger">*</span></label>
                                 <select class="form-select" id="speciality_id" name="speciality_id" required>
                                     <option value="">{{ __('Select Speciality') }}</option>
                                     @foreach($specialities as $spec)
@@ -72,6 +66,12 @@
                                         </option>
                                     @endforeach
                                 </select>
+                                <div class="invalid-feedback"></div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="years_experience" class="form-label">{{ __('Years of Experience') }}</label>
+                                <input type="number" class="form-control" id="years_experience" name="years_experience" value="{{ $profile->years_experience }}" min="0" max="50">
                                 <div class="invalid-feedback"></div>
                             </div>
 
