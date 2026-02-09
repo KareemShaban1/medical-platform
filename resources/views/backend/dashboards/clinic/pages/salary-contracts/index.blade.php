@@ -11,14 +11,6 @@
 						<i class="mdi mdi-plus"></i>
 						{{ __('Add Salary Contract') }}
 					</a>
-
-					<!-- Trash -->
-					<a href="{{ route('clinic.salary-contracts.trash') }}"
-						class="btn btn-danger">
-						<i class="mdi mdi-trash-can"></i>
-						{{ __('Trash') }}
-					</a>
-
 				</div>
 				<h4 class="page-title">{{ __('Salary Contracts') }}</h4>
 			</div>

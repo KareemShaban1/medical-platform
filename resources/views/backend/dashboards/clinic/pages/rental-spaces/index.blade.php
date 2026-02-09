@@ -9,10 +9,6 @@
                         <a href="{{ route('clinic.rental-spaces.create') }}" class="btn btn-primary">
                             <i class="mdi mdi-plus"></i> {{ __('Add Rental Space') }}
                         </a>
-                        <!-- Trash -->
-                        <a href="{{ route('clinic.rental-spaces.trash') }}" class="btn btn-danger">
-                            <i class="mdi mdi-trash-can"></i> {{ __('Trash') }}
-                        </a>
                     </div>
                     <h4 class="page-title">{{ __('Rental Spaces') }}</h4>
                 </div>

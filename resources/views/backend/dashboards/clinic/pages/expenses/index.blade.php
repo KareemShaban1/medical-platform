@@ -20,13 +20,6 @@
 						{{ __('Expenses Analytics') }}
 					</a>
 					@endhasPermission
-					@hasPermission('view trash expenses')
-					<!-- trash button -->
-					<a href="{{ route('clinic.expenses.trash') }}"
-						class="btn btn-warning">
-						<i class="mdi mdi-delete"></i> {{ __('Trash') }}
-					</a>
-					@endhasPermission
 				</div>
 				<h4 class="page-title">{{ __('Expenses') }}</h4>
 			</div>

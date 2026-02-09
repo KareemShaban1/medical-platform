@@ -17,12 +17,6 @@
 						<i class="mdi mdi-cart-outline"></i>
 						{{ __('Preview Products') }}
 					</a>
-					<!-- Trash -->
-					<a href="{{ route('clinic.clinic-inventories.trash') }}"
-						class="btn btn-danger">
-						<i class="mdi mdi-trash-can"></i>
-						{{ __('Trash') }}
-					</a>
 				</div>
 				<h4 class="page-title">{{ __('Clinic Inventories') }}</h4>
 			</div>

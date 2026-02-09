@@ -10,10 +10,6 @@
 					<a href="{{ route('clinic.jobs.create') }}" class="btn btn-primary">
 						<i class="mdi mdi-plus"></i> {{ __('Add Job') }}
 					</a>
-					<!-- Trash -->
-					<a href="{{ route('clinic.jobs.trash') }}" class="btn btn-danger">
-						<i class="mdi mdi-trash-can"></i> {{ __('Trash') }}
-					</a>
 				</div>
 				<h4 class="page-title">{{ __('Jobs') }}</h4>
 			</div>

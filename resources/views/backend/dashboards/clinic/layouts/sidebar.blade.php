@@ -75,13 +75,6 @@
 							</a>
 						</li>
 						@endhasPermission
-						@hasPermission('view roles')
-						<li>
-							<a href="{{ route('clinic.roles.trash') }}">
-								<span> {{__('Trash Roles')}} </span>
-							</a>
-						</li>
-						@endhasPermission
 
 					</ul>
 				</div>
@@ -221,7 +214,7 @@
 						@hasPermission('view course enrollments')
 						<li class="side-nav-item">
 							<a href="{{ route('clinic.course-enrollments.index') }}" class="side-nav-link">
-								<i class="uil-book-open"></i>
+								<i class=""></i>
 								<span> {{ __('Course Enrollments') }}
 								</span>
 							</a>
@@ -272,7 +265,7 @@
 						@hasPermission('view medical records')
 						<li class="side-nav-item">
 							<a href="{{ route('clinic.medical-records.index') }}" class="side-nav-link">
-								<i class="uil-notes"></i>
+								<i class=""></i>
 								<span> {{ __('Medical Records') }}
 								</span>
 							</a>
@@ -285,7 +278,7 @@
 
 
 			<!-- Patients Management -->
-			@hasAnyPermission('view patients', 'view trash patients')
+			@hasPermission('view patients')
 			<li class="side-nav-item">
 				<a data-bs-toggle="collapse" href="#sidebarPatients" aria-expanded="false"
 					aria-controls="sidebarPatients" class="side-nav-link">
@@ -302,18 +295,10 @@
 							</a>
 						</li>
 						@endhasPermission
-						@hasPermission('view trash patients')
-						<li>
-							<a href="{{ route('clinic.patients.trash') }}">
-								<span> {{__('Trash Patients')}}
-								</span>
-							</a>
-						</li>
-						@endhasPermission
 					</ul>
 				</div>
 			</li>
-			@endhasAnyPermission
+			@endhasPermission
 
 
 			@hasAnyPermission('view lab orders', 'create lab orders')
@@ -376,7 +361,7 @@
 						<!-- Invoices -->
 						<li class="side-nav-item">
 							<a href="{{ route('clinic.invoices.index') }}" class="side-nav-link">
-								<i class="uil-receipt-alt"></i>
+								<i class=""></i>
 								<span> {{ __('Invoices') }} </span>
 							</a>
 						</li>
@@ -390,7 +375,7 @@
 			@hasPermission('view subscriptions')
 			<li class="side-nav-item">
 				<a href="{{ route('clinic.subscriptions.index') }}" class="side-nav-link">
-					<i class="uil-credit-card"></i>
+					<i class="uil-receipt-alt"></i>
 					<span> {{__('My Subscription')}} </span>
 				</a>
 			</li>

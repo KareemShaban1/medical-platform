@@ -7,12 +7,6 @@
 		<div class="col-12">
 			<div class="page-title-box">
 				<div class="page-title-right">
-					@hasPermission('view trash appointments')
-					<a href="{{ route('clinic.appointments.trash') }}"
-						class="btn btn-secondary me-2">
-						<i class="fas fa-trash"></i> {{ __('Trash') }}
-					</a>
-					@endhasPermission
 					@hasPermission('create appointment')
 					<a href="{{ route('clinic.appointments.analytics', $doctors->first()?->id ?? 0) }}"
 						class="btn btn-info me-2">

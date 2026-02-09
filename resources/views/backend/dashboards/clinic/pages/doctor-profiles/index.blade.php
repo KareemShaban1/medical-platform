@@ -18,12 +18,6 @@
 						<i class="mdi mdi-plus"></i> {{ __('Create Profile') }}
 					</a>
 					@endhasPermission
-					@hasPermission('view trash doctor profiles')
-					<a href="{{ route('clinic.doctor-profiles.trash') }}"
-						class="btn btn-secondary">
-						<i class="fas fa-trash"></i> {{ __('Trash') }}
-					</a>
-					@endhasPermission
 				</div>
 				<h4 class="page-title">{{ __('Doctor Profile Management') }}</h4>
 			</div>

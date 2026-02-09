@@ -49,10 +49,6 @@ Route::group(
 
         // Roles Management
         Route::get('roles/data', [RoleController::class, 'data'])->name('roles.data');
-        Route::get('roles/trash', [RoleController::class, 'trash'])->name('roles.trash');
-        Route::get('roles/trash/data', [RoleController::class, 'trashData'])->name('roles.trash.data');
-        Route::post('roles/{id}/restore', [RoleController::class, 'restore'])->name('roles.restore');
-        Route::delete('roles/{id}/force-delete', [RoleController::class, 'forceDelete'])->name('roles.forceDelete');
         Route::resource('roles', RoleController::class);
 
         // Announcements - dismiss
@@ -61,10 +57,6 @@ Route::group(
         // Rental Space Management
         Route::group(['middleware' => 'check.subscription:rental_spaces_module'], function () {
             Route::get('rental-spaces/data', [RentalSpaceController::class, 'data'])->name('rental-spaces.data');
-            Route::get('rental-spaces/trash', [RentalSpaceController::class, 'trash'])->name('rental-spaces.trash');
-            Route::get('rental-spaces/trash/data', [RentalSpaceController::class, 'trashData'])->name('rental-spaces.trash.data');
-            Route::post('rental-spaces/{id}/restore', [RentalSpaceController::class, 'restore'])->name('rental-spaces.restore');
-            Route::delete('rental-spaces/{id}/force-delete', [RentalSpaceController::class, 'forceDelete'])->name('rental-spaces.force-delete');
             Route::put('rental-spaces/{id}/update-status', [RentalSpaceController::class, 'updateStatus'])->name('rental-spaces.update-status');
             Route::resource('rental-spaces', RentalSpaceController::class);
         });
@@ -92,10 +84,6 @@ Route::group(
         Route::group(['prefix' => 'users'], function () {
             Route::get('/roles', [\App\Http\Controllers\Backend\Dashboards\Clinic\UserController::class, 'roles'])->name('users.roles');
             Route::get('/data', [\App\Http\Controllers\Backend\Dashboards\Clinic\UserController::class, 'data'])->name('users.data');
-            Route::get('/trash', [\App\Http\Controllers\Backend\Dashboards\Clinic\UserController::class, 'trash'])->name('users.trash');
-            Route::get('/trash/data', [\App\Http\Controllers\Backend\Dashboards\Clinic\UserController::class, 'trashData'])->name('users.trash.data');
-            Route::post('/restore/{id}', [\App\Http\Controllers\Backend\Dashboards\Clinic\UserController::class, 'restore'])->name('users.restore');
-            Route::delete('/force/{id}', [\App\Http\Controllers\Backend\Dashboards\Clinic\UserController::class, 'forceDelete'])->name('users.force.delete');
             Route::post('/toggle-status/{id}', [\App\Http\Controllers\Backend\Dashboards\Clinic\UserController::class, 'toggleStatus'])->name('users.toggle.status');
             Route::get('/', [\App\Http\Controllers\Backend\Dashboards\Clinic\UserController::class, 'index'])->name('users.index');
             Route::post('/', [\App\Http\Controllers\Backend\Dashboards\Clinic\UserController::class, 'store'])->name('users.store');
@@ -174,10 +162,6 @@ Route::group(
         // Doctor Profiles Management
         Route::group(['prefix' => 'doctor-profiles'], function () {
             Route::get('/my-profile', [\App\Http\Controllers\Backend\Dashboards\Clinic\DoctorProfileController::class, 'myProfile'])->name('doctor-profiles.my-profile');
-            Route::get('/trash', [\App\Http\Controllers\Backend\Dashboards\Clinic\DoctorProfileController::class, 'trash'])->name('doctor-profiles.trash');
-            Route::get('/trash/data', [\App\Http\Controllers\Backend\Dashboards\Clinic\DoctorProfileController::class, 'trashData'])->name('doctor-profiles.trash.data');
-            Route::post('/{id}/restore', [\App\Http\Controllers\Backend\Dashboards\Clinic\DoctorProfileController::class, 'restore'])->name('doctor-profiles.restore');
-            Route::delete('/{id}/force-delete', [\App\Http\Controllers\Backend\Dashboards\Clinic\DoctorProfileController::class, 'forceDelete'])->name('doctor-profiles.force-delete');
 
             Route::get('/data', [\App\Http\Controllers\Backend\Dashboards\Clinic\DoctorProfileController::class, 'data'])->name('doctor-profiles.data');
             Route::post('/submit/{id}', [\App\Http\Controllers\Backend\Dashboards\Clinic\DoctorProfileController::class, 'submit'])->name('doctor-profiles.submit');
@@ -202,10 +186,6 @@ Route::group(
         // Jobs Management (feature: post_jobs)
         Route::middleware('check.subscription:post_jobs')->group(function () {
             Route::get('jobs/data', [JobController::class, 'data'])->name('jobs.data');
-            Route::get('jobs/trash', [JobController::class, 'trash'])->name('jobs.trash');
-            Route::get('jobs/trash/data', [JobController::class, 'trashData'])->name('jobs.trash.data');
-            Route::post('jobs/{id}/restore', [JobController::class, 'restore'])->name('jobs.restore');
-            Route::delete('jobs/{id}/force-delete', [JobController::class, 'forceDelete'])->name('jobs.force-delete');
             Route::put('jobs/{id}/update-status', [JobController::class, 'updateStatus'])->name('jobs.update-status');
             Route::get('jobs/{id}/applicants', [JobController::class, 'applicants'])->name('jobs.applicants');
             Route::get('job-applications/{applicationId}/details', [JobController::class, 'getApplicationDetails'])->name('job-applications.details');
@@ -241,10 +221,6 @@ Route::group(
         // Patients Management
         Route::group(['prefix' => 'patients'], function () {
             Route::get('/data', [\App\Http\Controllers\Backend\Dashboards\Clinic\PatientController::class, 'data'])->name('patients.data');
-            Route::get('/trash', [\App\Http\Controllers\Backend\Dashboards\Clinic\PatientController::class, 'trash'])->name('patients.trash');
-            Route::get('/trash/data', [\App\Http\Controllers\Backend\Dashboards\Clinic\PatientController::class, 'trashData'])->name('patients.trash.data');
-            Route::post('/{id}/restore', [\App\Http\Controllers\Backend\Dashboards\Clinic\PatientController::class, 'restore'])->name('patients.restore');
-            Route::delete('/{id}/force-delete', [\App\Http\Controllers\Backend\Dashboards\Clinic\PatientController::class, 'forceDelete'])->name('patients.force-delete');
             Route::get('/{id}/edit', [\App\Http\Controllers\Backend\Dashboards\Clinic\PatientController::class, 'edit'])->name('patients.edit');
             Route::get('/', [\App\Http\Controllers\Backend\Dashboards\Clinic\PatientController::class, 'index'])->name('patients.index');
             Route::post('/', [\App\Http\Controllers\Backend\Dashboards\Clinic\PatientController::class, 'store'])->name('patients.store')->middleware('check.subscription:max_patients');
@@ -262,10 +238,6 @@ Route::group(
 
         // Clinic Inventory Management
         Route::get('clinic-inventories/data', [ClinicInventoryController::class, 'data'])->name('clinic-inventories.data');
-        Route::get('clinic-inventories/trash', [ClinicInventoryController::class, 'trash'])->name('clinic-inventories.trash');
-        Route::get('clinic-inventories/trash/data', [ClinicInventoryController::class, 'trashData'])->name('clinic-inventories.trash.data');
-        Route::post('clinic-inventories/{id}/restore', [ClinicInventoryController::class, 'restore'])->name('clinic-inventories.restore');
-        Route::delete('clinic-inventories/{id}/force-delete', [ClinicInventoryController::class, 'forceDelete'])->name('clinic-inventories.force-delete');
         Route::resource('clinic-inventories', ClinicInventoryController::class)->except(['store']);
         Route::post('clinic-inventories', [ClinicInventoryController::class, 'store'])
             ->middleware('check.subscription:inventory_module')
@@ -275,10 +247,6 @@ Route::group(
         Route::group(['middleware' => 'check.subscription:inventory_module'], function () {
             Route::get('clinic-inventory-movements/data/{id}', [ClinicInventoryMovementsController::class, 'data'])->name('clinic-inventory-movements.data');
             Route::get('clinic-inventory-movements/index/{id}', [ClinicInventoryMovementsController::class, 'index'])->name('clinic-inventory-movements.index');
-            Route::get('clinic-inventory-movements/trash', [ClinicInventoryMovementsController::class, 'trash'])->name('clinic-inventory-movements.trash');
-            Route::get('clinic-inventory-movements/trash/data', [ClinicInventoryMovementsController::class, 'trashData'])->name('clinic-inventory-movements.trash.data');
-            Route::post('clinic-inventory-movements/{id}/restore', [ClinicInventoryMovementsController::class, 'restore'])->name('clinic-inventory-movements.restore');
-            Route::delete('clinic-inventory-movements/{id}/force-delete', [ClinicInventoryMovementsController::class, 'forceDelete'])->name('clinic-inventory-movements.force-delete');
             Route::get('clinic-inventory-movements/create/{id}', [ClinicInventoryMovementsController::class, 'create'])->name('clinic-inventory-movements.create');
             Route::post('clinic-inventory-movements/store', [ClinicInventoryMovementsController::class, 'store'])->name('clinic-inventory-movements.store');
             Route::get('clinic-inventory-movements/edit/{id}', [ClinicInventoryMovementsController::class, 'edit'])->name('clinic-inventory-movements.edit');
@@ -290,19 +258,11 @@ Route::group(
 
         // Clinic User Salaries Management
         Route::get('clinic-user-salaries/data', [ClinicUserSalaryController::class, 'data'])->name('clinic-user-salaries.data');
-        Route::get('clinic-user-salaries/trash', [ClinicUserSalaryController::class, 'trash'])->name('clinic-user-salaries.trash');
-        Route::get('clinic-user-salaries/trash/data', [ClinicUserSalaryController::class, 'trashData'])->name('clinic-user-salaries.trash.data');
-        Route::post('clinic-user-salaries/{id}/restore', [ClinicUserSalaryController::class, 'restore'])->name('clinic-user-salaries.restore');
-        Route::delete('clinic-user-salaries/{id}/force-delete', [ClinicUserSalaryController::class, 'forceDelete'])->name('clinic-user-salaries.force-delete');
         Route::get('clinic-user-salaries/user/{userId}/salary-data', [ClinicUserSalaryController::class, 'getUserSalaryData'])->name('clinic-user-salaries.user-salary-data');
         Route::resource('clinic-user-salaries', ClinicUserSalaryController::class);
 
         // Salary Contracts Management
         Route::get('salary-contracts/data', [SalaryContractController::class, 'data'])->name('salary-contracts.data');
-        Route::get('salary-contracts/trash', [SalaryContractController::class, 'trash'])->name('salary-contracts.trash');
-        Route::get('salary-contracts/trash/data', [SalaryContractController::class, 'trashData'])->name('salary-contracts.trash.data');
-        Route::post('salary-contracts/{id}/restore', [SalaryContractController::class, 'restore'])->name('salary-contracts.restore');
-        Route::delete('salary-contracts/{id}/force-delete', [SalaryContractController::class, 'forceDelete'])->name('salary-contracts.force-delete');
         Route::resource('salary-contracts', SalaryContractController::class);
 
 
@@ -310,18 +270,10 @@ Route::group(
         Route::get('payslips/data', [PayslipController::class, 'data'])->name('payslips.data');
         Route::get('payslips/create/{userId}', [PayslipController::class, 'create'])->name('payslips.create');
         Route::get('payslips/edit/{id}', [PayslipController::class, 'edit'])->name('payslips.edit');
-        Route::get('payslips/trash', [PayslipController::class, 'trash'])->name('payslips.trash');
-        Route::get('payslips/trash/data', [PayslipController::class, 'trashData'])->name('payslips.trash.data');
-        Route::post('payslips/{id}/restore', [PayslipController::class, 'restore'])->name('payslips.restore');
-        Route::delete('payslips/{id}/force-delete', [PayslipController::class, 'forceDelete'])->name('payslips.force-delete');
         Route::resource('payslips', PayslipController::class);
 
         // Availability Overrides Management
         Route::get('availability-overrides/data', [\App\Http\Controllers\Backend\Dashboards\Clinic\AvailabilityOverrideController::class, 'data'])->name('availability-overrides.data');
-        Route::get('availability-overrides/trash', [\App\Http\Controllers\Backend\Dashboards\Clinic\AvailabilityOverrideController::class, 'trash'])->name('availability-overrides.trash');
-        Route::get('availability-overrides/trash/data', [\App\Http\Controllers\Backend\Dashboards\Clinic\AvailabilityOverrideController::class, 'trashData'])->name('availability-overrides.trash.data');
-        Route::post('availability-overrides/{id}/restore', [\App\Http\Controllers\Backend\Dashboards\Clinic\AvailabilityOverrideController::class, 'restore'])->name('availability-overrides.restore');
-        Route::delete('availability-overrides/{id}/force-delete', [\App\Http\Controllers\Backend\Dashboards\Clinic\AvailabilityOverrideController::class, 'forceDelete'])->name('availability-overrides.force-delete');
         Route::get('availability-overrides/doctor/{doctorId}', [\App\Http\Controllers\Backend\Dashboards\Clinic\AvailabilityOverrideController::class, 'forDoctor'])->name('availability-overrides.for-doctor');
         Route::resource('availability-overrides', \App\Http\Controllers\Backend\Dashboards\Clinic\AvailabilityOverrideController::class);
 
@@ -336,10 +288,6 @@ Route::group(
         // Appointments Management
         Route::group(['middleware' => 'check.subscription:appointments_module'], function () {
             Route::get('appointments/data', [\App\Http\Controllers\Backend\Dashboards\Clinic\AppointmentController::class, 'data'])->name('appointments.data');
-            Route::get('appointments/trash', [\App\Http\Controllers\Backend\Dashboards\Clinic\AppointmentController::class, 'trash'])->name('appointments.trash');
-            Route::get('appointments/trash/data', [\App\Http\Controllers\Backend\Dashboards\Clinic\AppointmentController::class, 'trashData'])->name('appointments.trash.data');
-            Route::post('appointments/{id}/restore', [\App\Http\Controllers\Backend\Dashboards\Clinic\AppointmentController::class, 'restore'])->name('appointments.restore');
-            Route::delete('appointments/{id}/force-delete', [\App\Http\Controllers\Backend\Dashboards\Clinic\AppointmentController::class, 'forceDelete'])->name('appointments.force-delete');
             Route::get('appointments/{doctorId}/analytics', [\App\Http\Controllers\Backend\Dashboards\Clinic\AppointmentController::class, 'analytics'])->name('appointments.analytics');
             Route::get('appointments/available-periods', [\App\Http\Controllers\Backend\Dashboards\Clinic\AppointmentController::class, 'getAvailablePeriods'])->name('appointments.available-periods');
             Route::post('appointments/{id}/confirm', [\App\Http\Controllers\Backend\Dashboards\Clinic\AppointmentController::class, 'confirm'])->name('appointments.confirm');
@@ -352,19 +300,11 @@ Route::group(
         Route::group(['middleware' => 'check.subscription:expenses_module'], function () {
             // Expense Categories Management
             Route::get('expense-categories/data', [ExpenseCategoryController::class, 'data'])->name('expense-categories.data');
-            Route::get('expense-categories/trash', [ExpenseCategoryController::class, 'trash'])->name('expense-categories.trash');
-            Route::get('expense-categories/trash/data', [ExpenseCategoryController::class, 'trashData'])->name('expense-categories.trash.data');
-            Route::post('expense-categories/{id}/restore', [ExpenseCategoryController::class, 'restore'])->name('expense-categories.restore');
-            Route::delete('expense-categories/{id}/force-delete', [ExpenseCategoryController::class, 'forceDelete'])->name('expense-categories.force-delete');
             Route::put('expense-categories/{id}/update-status', [ExpenseCategoryController::class, 'updateStatus'])->name('expense-categories.update-status');
             Route::resource('expense-categories', ExpenseCategoryController::class);
 
             // Expenses Management
             Route::get('expenses/data', [ExpenseController::class, 'data'])->name('expenses.data');
-            Route::get('expenses/trash', [ExpenseController::class, 'trash'])->name('expenses.trash');
-            Route::get('expenses/trash/data', [ExpenseController::class, 'trashData'])->name('expenses.trash.data');
-            Route::post('expenses/{id}/restore', [ExpenseController::class, 'restore'])->name('expenses.restore');
-            Route::delete('expenses/{id}/force-delete', [ExpenseController::class, 'forceDelete'])->name('expenses.force-delete');
             Route::get('expenses/analytics', [ExpenseController::class, 'analytics'])->name('expenses.analytics');
             Route::resource('expenses', ExpenseController::class);
         });

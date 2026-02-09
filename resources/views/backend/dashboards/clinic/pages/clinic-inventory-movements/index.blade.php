@@ -11,12 +11,6 @@
 						<i class="mdi mdi-plus"></i>
 						{{ __('Add Clinic Inventory Movement') }}
 					</a>
-					<!-- trash -->
-					<a href="{{ route('clinic.clinic-inventory-movements.trash') }}"
-						class="btn btn-danger">
-						<i class="mdi mdi-trash-can"></i>
-						{{ __('Trash') }}
-					</a>
 				</div>
 				<h4 class="page-title">{{ __('Clinic Inventory Movements') }}</h4>
 			</div>

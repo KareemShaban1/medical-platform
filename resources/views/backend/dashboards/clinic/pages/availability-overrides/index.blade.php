@@ -7,12 +7,6 @@
 		<div class="col-12">
 			<div class="page-title-box">
 				<div class="page-title-right">
-					@hasPermission('view trash availability overrides')
-					<a href="{{ route('clinic.availability-overrides.trash') }}"
-						class="btn btn-warning me-2">
-						<i class="mdi mdi-delete"></i> {{ __('Trash') }}
-					</a>
-					@endhasPermission
 					@hasPermission('create availability override')
 					<button type="button" class="btn btn-primary" data-bs-toggle="modal"
 						data-bs-target="#overrideModal" onclick="resetForm()">

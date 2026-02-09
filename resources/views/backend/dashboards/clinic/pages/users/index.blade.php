@@ -6,12 +6,6 @@
 		<div class="col-12">
 			<div class="page-title-box">
 				<div class="page-title-right">
-					@hasPermission('view trash users')
-					<a href="{{ route('clinic.users.trash') }}"
-						class="btn btn-warning me-2">
-						<i class="mdi mdi-delete"></i> {{ __('Trash') }}
-					</a>
-					@endhasPermission
 					@hasPermission('create user')
 					<button type="button" class="btn btn-primary" data-bs-toggle="modal"
 						data-bs-target="#usersModal" onclick="resetForm()">
