@@ -87,13 +87,10 @@ class PaymobGateway extends BasePaymentGateway
         }
 
         // Add wallet integration ID if different from card
-        // TEMPORARY: Restricted to card only as per user request
-        /*
         $walletIntegrationId = $this->getConfigValue('wallet_integration_id');
         if (!empty($walletIntegrationId) && $walletIntegrationId != $cardIntegrationId) {
             $paymentMethods[] = (int)$walletIntegrationId;
         }
-        */
 
         // Build the intention payload for Unified Checkout
         $intentionPayload = [
