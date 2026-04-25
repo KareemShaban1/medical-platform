@@ -65,9 +65,10 @@ $(function() {
 
 	$(document).on('click', '.add-payslip', function() {
 		const userId = $(this).data('user-id');
-		window.location.href =
-			'{{ route("clinic.payslips.create") }}' + '/' +
-			userId;
+		const createUrl =
+			'{{ route("clinic.payslips.create", ["userId" => "__USER_ID__"]) }}'
+			.replace('__USER_ID__', userId);
+		window.location.href = createUrl;
 	});
 
 	$(document).on('click', '.edit-payslip', function() {
